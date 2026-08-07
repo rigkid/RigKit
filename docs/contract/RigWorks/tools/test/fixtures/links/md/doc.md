@@ -1,3 +1,0 @@
-# Fixture
-
-[broken](./nope.md)

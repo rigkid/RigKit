@@ -1,8 +1,0 @@
-node_modules/
-_site/
-
-# Test carts built by tools/test/make-*.mjs: the exported cart plus a headless
-# harness. Regenerated in seconds, so they are not worth tracking.
-examples/*-smoke.p8
-examples/jailbreak-mech-*.p8
-examples/jailbreak-load-probe.p8
