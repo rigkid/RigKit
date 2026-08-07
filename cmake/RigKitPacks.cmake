@@ -14,11 +14,14 @@
 # Requires RIGKIT_ROOT (set by RigKit's CMakeLists).
 #
 # Requires CMake >= 3.19 for string(JSON ...)
+#
+# Pack bookkeeping uses GLOBAL properties (reset every configure). Do not use
+# CACHE INTERNAL for these — that survives reconfigure, targets do not, and you
+# get false "Target missing; rebuilding pack" warnings.
 
-# Global variable to track all pack include paths
-if(NOT DEFINED RIGKIT_GLOBAL_PACK_INCLUDE_PATHS)
-	set(RIGKIT_GLOBAL_PACK_INCLUDE_PATHS "" CACHE INTERNAL "Global list of all pack include paths")
-endif()
+# Drop legacy cache keys from older RigKitPacks (harmless if absent).
+unset(RIGKIT_PROCESSED_PACKS CACHE)
+unset(RIGKIT_GLOBAL_PACK_INCLUDE_PATHS CACHE)
 
 # Read optional JSON string member; sets OUT_VAR to "" if missing.
 function(rigkit_json_get_string JSON_TEXT OUT_VAR)
@@ -43,8 +46,13 @@ function(rigkit_load_packs MANIFEST_PATH OUT_VAR)
 	message(STATUS "### Running CMake ${CMAKE_VERSION} (${CMAKE_COMMAND})")
 	file(READ "${MANIFEST_PATH}" _manifest)
 
-	if(NOT DEFINED RIGKIT_PROCESSED_PACKS)
-		set(RIGKIT_PROCESSED_PACKS "" CACHE INTERNAL "List of processed packs")
+	get_property(_processed GLOBAL PROPERTY RIGKIT_PROCESSED_PACKS)
+	if(NOT _processed)
+		set(_processed "")
+	endif()
+	get_property(_pack_includes GLOBAL PROPERTY RIGKIT_GLOBAL_PACK_INCLUDE_PATHS)
+	if(NOT _pack_includes)
+		set(_pack_includes "")
 	endif()
 
 	string(JSON _depsLen ERROR_VARIABLE _depsErr LENGTH "${_manifest}" dependencies)
@@ -85,17 +93,16 @@ function(rigkit_load_packs MANIFEST_PATH OUT_VAR)
 		endif()
 		set(PACK_DIR "${RIGKIT_ROOT}/packs/${depName}")
 
-		list(FIND RIGKIT_PROCESSED_PACKS ${depName} _found)
+		list(FIND _processed ${depName} _found)
 		if(NOT _found EQUAL -1)
-			message(STATUS "[RigKitPacks] Package ${depName} already processed, checking if target exists")
 			if(TARGET ${depName})
 				list(APPEND _pack_libs ${depName})
 				message(STATUS "[RigKitPacks] Added ${depName} to _pack_libs (already processed)")
 				continue()
 			endif()
+			# Same-configure inconsistency only (should be rare).
 			message(WARNING "[RigKitPacks] Target ${depName} missing; rebuilding pack")
-			list(REMOVE_ITEM RIGKIT_PROCESSED_PACKS ${depName})
-			set(RIGKIT_PROCESSED_PACKS ${RIGKIT_PROCESSED_PACKS} CACHE INTERNAL "List of processed packs")
+			list(REMOVE_ITEM _processed ${depName})
 		endif()
 
 		# Prefer local tree (in-org checkout or initialized submodule). Do not
@@ -152,23 +159,25 @@ function(rigkit_load_packs MANIFEST_PATH OUT_VAR)
 						string(JSON INCLUDE_PATH GET "${PACK_JSON}" include_paths ${path_idx})
 						set(FULL_INCLUDE_PATH "${PACK_DIR}/${INCLUDE_PATH}")
 						target_include_directories(${depName} PUBLIC "${FULL_INCLUDE_PATH}")
-						list(APPEND RIGKIT_GLOBAL_PACK_INCLUDE_PATHS "${FULL_INCLUDE_PATH}")
+						list(APPEND _pack_includes "${FULL_INCLUDE_PATH}")
 						message(STATUS "[RigKitPacks] Added include path: ${FULL_INCLUDE_PATH}")
 					endforeach()
-					list(REMOVE_DUPLICATES RIGKIT_GLOBAL_PACK_INCLUDE_PATHS)
-					set(RIGKIT_GLOBAL_PACK_INCLUDE_PATHS ${RIGKIT_GLOBAL_PACK_INCLUDE_PATHS} CACHE INTERNAL "Global list of all pack include paths")
+					list(REMOVE_DUPLICATES _pack_includes)
 				endif()
 			endif()
 		else()
 			message(WARNING "[RigKitPacks] Target ${depName} was not created!")
 		endif()
 
-		list(APPEND RIGKIT_PROCESSED_PACKS ${depName})
-		set(RIGKIT_PROCESSED_PACKS ${RIGKIT_PROCESSED_PACKS} CACHE INTERNAL "List of processed packs")
-
+		list(APPEND _processed ${depName})
 		list(APPEND _pack_libs ${depName})
 		message(STATUS "[RigKitPacks] Added ${depName} to _pack_libs (newly processed)")
 	endforeach()
+
+	set_property(GLOBAL PROPERTY RIGKIT_PROCESSED_PACKS "${_processed}")
+	set_property(GLOBAL PROPERTY RIGKIT_GLOBAL_PACK_INCLUDE_PATHS "${_pack_includes}")
+	# Keep the old variable name readable for add_rigkit_application consumers.
+	set(RIGKIT_GLOBAL_PACK_INCLUDE_PATHS "${_pack_includes}" PARENT_SCOPE)
 
 	list(REMOVE_DUPLICATES _pack_libs)
 	set(${OUT_VAR} ${_pack_libs} PARENT_SCOPE)
