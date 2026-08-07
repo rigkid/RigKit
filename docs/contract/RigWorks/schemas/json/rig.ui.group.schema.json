@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rig.works/schemas/rig.ui.group.schema.json",
+  "title": "rig.ui.group",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "panel": {
+      "$ref": "./_defs.schema.json#/$defs/entity"
+    },
+    "parent": {
+      "$ref": "./_defs.schema.json#/$defs/entity"
+    },
+    "order": {
+      "$ref": "./_defs.schema.json#/$defs/int"
+    },
+    "orientation": {
+      "type": "string",
+      "enum": [
+        "vertical",
+        "horizontal"
+      ]
+    },
+    "collapsed": {
+      "$ref": "./_defs.schema.json#/$defs/bool"
+    }
+  },
+  "required": [
+    "panel",
+    "order"
+  ],
+  "description": "Section/row inside a panel. Nesting via parent (group entity). Flow hints are advisory."
+}

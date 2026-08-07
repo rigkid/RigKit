@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rig.works/schemas/rig.music.transport.schema.json",
+  "title": "rig.music.transport",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "playing": {
+      "$ref": "./_defs.schema.json#/$defs/bool"
+    },
+    "bpm": {
+      "$ref": "./_defs.schema.json#/$defs/float"
+    },
+    "timeSigNum": {
+      "$ref": "./_defs.schema.json#/$defs/int"
+    },
+    "timeSigDen": {
+      "$ref": "./_defs.schema.json#/$defs/int"
+    },
+    "positionBeats": {
+      "$ref": "./_defs.schema.json#/$defs/float"
+    },
+    "loop": {
+      "$ref": "./_defs.schema.json#/$defs/bool"
+    },
+    "loopStartBeats": {
+      "$ref": "./_defs.schema.json#/$defs/float"
+    },
+    "loopEndBeats": {
+      "$ref": "./_defs.schema.json#/$defs/float"
+    }
+  },
+  "required": [
+    "bpm"
+  ]
+}

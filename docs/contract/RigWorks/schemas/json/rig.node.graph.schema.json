@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rig.works/schemas/rig.node.graph.schema.json",
+  "title": "rig.node.graph",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "nodes",
+    "links",
+    "nextId"
+  ],
+  "properties": {
+    "nodes": {
+      "type": "array",
+      "items": {
+        "$ref": "./rig.node.node.schema.json"
+      }
+    },
+    "links": {
+      "type": "array",
+      "items": {
+        "$ref": "./rig.node.link.schema.json"
+      }
+    },
+    "nextId": {
+      "$ref": "./_defs.schema.json#/$defs/uint"
+    }
+  }
+}

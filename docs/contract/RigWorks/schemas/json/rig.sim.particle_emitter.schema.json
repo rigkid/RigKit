@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rig.works/schemas/rig.sim.particle_emitter.schema.json",
+  "title": "rig.sim.particle_emitter",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "rate": {
+      "$ref": "./_defs.schema.json#/$defs/float"
+    },
+    "lifetime": {
+      "$ref": "./_defs.schema.json#/$defs/float"
+    },
+    "maxParticles": {
+      "$ref": "./_defs.schema.json#/$defs/int"
+    },
+    "gravity": {
+      "$ref": "./_defs.schema.json#/$defs/vec3"
+    },
+    "damping": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "startRgba": {
+      "$ref": "./_defs.schema.json#/$defs/rgba"
+    },
+    "endRgba": {
+      "$ref": "./_defs.schema.json#/$defs/rgba"
+    }
+  },
+  "required": [
+    "rate",
+    "lifetime",
+    "maxParticles"
+  ]
+}

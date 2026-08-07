@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rig.works/schemas/rig.node.param.schema.json",
+  "title": "rig.node.param",
+  "description": "Serialize key, type, and only the storage field selected by type (f/i/s/v).",
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "key",
+        "type",
+        "f"
+      ],
+      "properties": {
+        "key": {
+          "$ref": "./_defs.schema.json#/$defs/string"
+        },
+        "type": {
+          "const": "float"
+        },
+        "f": {
+          "$ref": "./_defs.schema.json#/$defs/float"
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "key",
+        "type",
+        "f"
+      ],
+      "properties": {
+        "key": {
+          "$ref": "./_defs.schema.json#/$defs/string"
+        },
+        "type": {
+          "const": "double"
+        },
+        "f": {
+          "$ref": "./_defs.schema.json#/$defs/float"
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "key",
+        "type",
+        "i"
+      ],
+      "properties": {
+        "key": {
+          "$ref": "./_defs.schema.json#/$defs/string"
+        },
+        "type": {
+          "enum": [
+            "bool",
+            "int",
+            "uint",
+            "enum",
+            "entity"
+          ]
+        },
+        "i": {
+          "$ref": "./_defs.schema.json#/$defs/int"
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "key",
+        "type",
+        "s"
+      ],
+      "properties": {
+        "key": {
+          "$ref": "./_defs.schema.json#/$defs/string"
+        },
+        "type": {
+          "const": "string"
+        },
+        "s": {
+          "$ref": "./_defs.schema.json#/$defs/string"
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "key",
+        "type",
+        "v"
+      ],
+      "properties": {
+        "key": {
+          "$ref": "./_defs.schema.json#/$defs/string"
+        },
+        "type": {
+          "enum": [
+            "vec2",
+            "vec3",
+            "vec4",
+            "quat"
+          ]
+        },
+        "v": {
+          "$ref": "./_defs.schema.json#/$defs/vec4"
+        }
+      }
+    }
+  ]
+}

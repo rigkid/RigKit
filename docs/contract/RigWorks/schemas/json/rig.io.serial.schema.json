@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rig.works/schemas/rig.io.serial.schema.json",
+  "title": "rig.io.serial",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "port": {
+      "$ref": "./_defs.schema.json#/$defs/string"
+    },
+    "baud": {
+      "$ref": "./_defs.schema.json#/$defs/int"
+    },
+    "enabled": {
+      "$ref": "./_defs.schema.json#/$defs/bool"
+    }
+  },
+  "required": [
+    "port"
+  ]
+}

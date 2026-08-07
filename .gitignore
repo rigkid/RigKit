@@ -1,0 +1,51 @@
+# Pack checkouts under packs/ are ignored by default.
+# Only host-basic packs are git submodules (see .gitmodules / packs/README.md).
+# Everything else: local clone or CPM at app.json url+ref.
+packs/*
+!packs/README.md
+
+# Host examples not ready for the first private land (keep local; do not stage).
+examples/svgEditor/
+examples/example-lowpoly/
+
+# Build trees (root optional docs/tools; examples use examples/<name>/build/)
+build/
+build-*/
+**/build/
+
+# Generated API docs (CMake `docs` target → usually under build/; keep local runs out of git)
+docs/api/html/
+docs/api/xml/
+docs/api/latex/
+**/doxygen.warn
+
+# CMake / compile artifacts
+CMakeCache.txt
+CMakeFiles/
+cmake-build-*/
+compile_commands.json
+cpm-package-lock.cmake
+_deps/
+
+# IDE / editor — everyone's own editor config, not repo content. .editorconfig
+# and .clang-format are the tracked, cross-editor source of truth; see
+# "Editor setup" in docs/contributing.md.
+.vs/
+.vscode/
+*.user
+*.suo
+*.sln
+*.vcxproj*
+
+# Runtime / user state
+assets/user/workspaces/imgui.ini
+assets/user/workspaces/current.json
+
+# Logs (spdlog runtime output, local debug redirects)
+*.log
+
+# AI tool-vendor folders — not shared repo content. skills/ + AGENTS.md are
+# the one tracked source; each agent bootstraps its own tool's discovery
+# folder locally from those (see "Tool-specific folders" in AGENTS.md).
+.cursor/
+.claude/

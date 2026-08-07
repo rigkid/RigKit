@@ -1,0 +1,10 @@
+#include <memory>
+#include "core/RigKitEngine.h"
+#include "app.h"
+
+int main(int argc, char* argv[]) {
+	auto appInstance = std::make_unique<MinimalApp>();
+	rigkit::RigKitEngine engine(std::move(appInstance), {}, argc, argv);
+	engine.run();
+	return 0;
+}

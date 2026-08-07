@@ -1,0 +1,16 @@
+{
+  "rig": "0.4.0",
+  "entities": [
+    {
+      "id": "dot",
+      "components": {
+        "rig.meta.named": { "name": "dot", "stableId": "dot" },
+        "rig.spatial.transform": {
+          "position": [0, 0, 0],
+          "rotation": [0, 0, 0, 1],
+          "scale": [1, 1, 1]
+        }
+      }
+    }
+  ]
+}

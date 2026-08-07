@@ -1,0 +1,22 @@
+name: Docs
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+# Pack-scoped Doxygen -> https://rigkid.github.io/<pack>/
+# Requires host reusable workflow on rigkid/RigKit@main and Pages (Actions) enabled once.
+# Secret: RIGKIT_CI_TOKEN (Contents:read on host + packs).
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  docs:
+    uses: rigkid/RigKit/.github/workflows/pack-docs.yml@main
+    with:
+      pack: rigTemplate
+    secrets: inherit

@@ -1,0 +1,11 @@
+{
+  "rig": "0.4.0",
+  "entities": [
+    {
+      "id": "x",
+      "components": {
+        "rig.invented.thing": { "foo": 1 }
+      }
+    }
+  ]
+}

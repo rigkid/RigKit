@@ -1,0 +1,11 @@
+{
+  "rig": "9.9.9",
+  "entities": [
+    {
+      "id": "x",
+      "components": {
+        "rig.meta.named": { "name": "x", "stableId": "x" }
+      }
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "name": "MyApp",
+  "version": "0.1.0",
+  "license": "MIT",
+  "description": "Product app started from templates/app",
+  "window": {
+    "width": 800,
+    "height": 600,
+    "title": "MyApp"
+  },
+  "dependencies": [
+    {
+      "name": "rigComponent",
+      "url": "https://github.com/rigkid/rigComponent.git",
+      "ref": "main"
+    },
+    {
+      "name": "rigSystems",
+      "url": "https://github.com/rigkid/rigSystems.git",
+      "ref": "main"
+    },
+    {
+      "name": "rigImGui",
+      "url": "https://github.com/rigkid/rigImGui.git",
+      "ref": "main"
+    }
+  ]
+}

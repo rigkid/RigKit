@@ -1,0 +1,11 @@
+{
+  "rig": "0.4.0",
+  "entities": [
+    {
+      "id": "dot",
+      "components": {
+        "rig.spatial.relationship": { "parent": "missing" }
+      }
+    }
+  ]
+}

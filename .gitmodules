@@ -1,0 +1,36 @@
+[submodule "third_party/glm"]
+	path = third_party/glm
+	url = https://github.com/g-truc/glm.git
+	branch = master
+[submodule "third_party/entt"]
+	path = third_party/entt
+	url = https://github.com/skypjack/entt.git
+	branch = main
+[submodule "third_party/json"]
+	path = third_party/json
+	url = https://github.com/nlohmann/json.git
+	branch = develop
+[submodule "third_party/spdlog"]
+	path = third_party/spdlog
+	url = https://github.com/gabime/spdlog.git
+	branch = v1.x
+[submodule "third_party/glfw"]
+	path = third_party/glfw
+	url = https://github.com/glfw/glfw.git
+	branch = master
+[submodule "packs/rigComponent"]
+	path = packs/rigComponent
+	url = https://github.com/rigkid/rigComponent.git
+[submodule "packs/rigSystems"]
+	path = packs/rigSystems
+	url = https://github.com/rigkid/rigSystems.git
+[submodule "packs/rigProject"]
+	path = packs/rigProject
+	url = https://github.com/rigkid/rigProject.git
+[submodule "packs/rigImGui"]
+	path = packs/rigImGui
+	url = https://github.com/rigkid/rigImGui.git
+[submodule "docs/contract/RigWorks"]
+	path = docs/contract/RigWorks
+	url = https://github.com/rigkid/RigWorks.git
+	branch = master

@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rig.works/schemas/rig.paint.solid.schema.json",
+  "title": "rig.paint.solid",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "rgba": {
+      "$ref": "./_defs.schema.json#/$defs/rgba"
+    },
+    "cmyk": {
+      "$ref": "./_defs.schema.json#/$defs/vec4"
+    }
+  },
+  "required": [
+    "rgba"
+  ]
+}

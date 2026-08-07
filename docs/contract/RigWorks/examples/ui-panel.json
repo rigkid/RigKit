@@ -1,0 +1,92 @@
+{
+  "rig": "0.9.0",
+  "document": {
+    "title": "LED panel — colour and pulse",
+    "defaultUnit": "px"
+  },
+  "entities": [
+    {
+      "id": "fill",
+      "components": {
+        "rig.meta.named": { "name": "fill", "stableId": "fill" },
+        "rig.paint.solid": {
+          "rgba": [1, 0.35, 0.1, 1],
+          "cmyk": [0, 0, 0, 0]
+        }
+      }
+    },
+    {
+      "id": "pulse",
+      "components": {
+        "rig.meta.named": { "name": "pulse", "stableId": "pulse" },
+        "rig.mod.lfo": {
+          "waveform": "sine",
+          "frequency": 0.5,
+          "amplitude": 1,
+          "offset": 0,
+          "phase": 0
+        }
+      }
+    },
+    {
+      "id": "install-panel",
+      "components": {
+        "rig.meta.named": { "name": "Install", "stableId": "install-panel" },
+        "rig.ui.panel": {
+          "role": "led.install",
+          "order": 0,
+          "visible": true,
+          "preferredWidth": 320,
+          "preferredHeight": 240
+        }
+      }
+    },
+    {
+      "id": "ctrl-colour",
+      "components": {
+        "rig.meta.named": { "name": "Colour", "stableId": "ctrl-colour" },
+        "rig.ui.control": {
+          "panel": "install-panel",
+          "order": 0,
+          "target": "fill",
+          "propertyKey": "rgba",
+          "type": "vec4",
+          "enabled": true,
+          "readOnly": false,
+          "widget": "color"
+        }
+      }
+    },
+    {
+      "id": "ctrl-rate",
+      "components": {
+        "rig.meta.named": { "name": "Pulse rate", "stableId": "ctrl-rate" },
+        "rig.ui.control": {
+          "panel": "install-panel",
+          "order": 1,
+          "target": "pulse",
+          "propertyKey": "frequency",
+          "type": "float",
+          "min": 0.05,
+          "max": 4,
+          "step": 0.05,
+          "enabled": true,
+          "readOnly": false,
+          "widget": "slider"
+        }
+      }
+    },
+    {
+      "id": "act-reset",
+      "components": {
+        "rig.meta.named": { "name": "Reset phase", "stableId": "act-reset" },
+        "rig.ui.action": {
+          "panel": "install-panel",
+          "order": 2,
+          "actionId": "lfo.resetPhase",
+          "enabled": true
+        }
+      }
+    }
+  ]
+}

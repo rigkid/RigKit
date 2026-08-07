@@ -1,0 +1,141 @@
+# Pack-scoped API docs — configured by tools/generate-pack-docs.sh
+# Generate: ./tools/generate-pack-docs.sh <packName>
+
+PROJECT_NAME           = "@PACK_NAME@"
+PROJECT_NUMBER         = "@PROJECT_VERSION@"
+PROJECT_BRIEF          = "RigKit pack API — @PACK_NAME@"
+OUTPUT_DIRECTORY       = "@RIGKIT_DOXY_OUT@"
+CREATE_SUBDIRS         = NO
+ALLOW_UNICODE_NAMES    = NO
+OUTPUT_LANGUAGE        = English
+
+BRIEF_MEMBER_DESC      = YES
+REPEAT_BRIEF           = YES
+ALWAYS_DETAILED_SEC    = NO
+INLINE_INHERITED_MEMB  = NO
+FULL_PATH_NAMES        = YES
+STRIP_FROM_PATH        = "@RIGKIT_ROOT@"
+STRIP_FROM_INC_PATH    = "@RIGKIT_ROOT@/src" \
+                         "@RIGKIT_ROOT@/packs"
+
+JAVADOC_AUTOBRIEF      = YES
+QT_AUTOBRIEF           = NO
+MULTILINE_CPP_IS_BRIEF = NO
+INHERIT_DOCS           = YES
+SEPARATE_MEMBER_PAGES  = NO
+TAB_SIZE               = 4
+MARKDOWN_SUPPORT       = YES
+AUTOLINK_SUPPORT       = YES
+BUILTIN_STL_SUPPORT    = YES
+
+EXTRACT_ALL            = NO
+EXTRACT_PRIVATE        = NO
+EXTRACT_PRIV_VIRTUAL   = NO
+EXTRACT_PACKAGE        = NO
+EXTRACT_STATIC         = NO
+EXTRACT_LOCAL_CLASSES  = NO
+EXTRACT_LOCAL_METHODS  = NO
+HIDE_UNDOC_MEMBERS     = YES
+HIDE_UNDOC_CLASSES     = YES
+HIDE_FRIEND_COMPOUNDS  = YES
+HIDE_IN_BODY_DOCS      = NO
+INTERNAL_DOCS          = NO
+CASE_SENSE_NAMES       = YES
+HIDE_SCOPE_NAMES       = NO
+HIDE_COMPOUND_REFERENCE= NO
+SHOW_HEADERFILE        = YES
+SHOW_INCLUDE_FILES     = YES
+SHOW_GROUPED_MEMB_INC  = NO
+FORCE_LOCAL_INCLUDES   = NO
+INLINE_INFO            = YES
+SORT_MEMBER_DOCS       = YES
+SORT_BRIEF_DOCS        = NO
+SORT_MEMBERS_CTORS_1ST = YES
+GENERATE_TODOLIST      = NO
+GENERATE_TESTLIST      = NO
+GENERATE_BUGLIST       = NO
+GENERATE_DEPRECATEDLIST= YES
+MAX_INITIALIZER_LINES  = 30
+SHOW_USED_FILES        = YES
+SHOW_FILES             = YES
+SHOW_NAMESPACES        = YES
+
+QUIET                  = YES
+WARNINGS               = YES
+WARN_IF_UNDOCUMENTED   = NO
+WARN_IF_DOC_ERROR      = YES
+WARN_IF_INCOMPLETE_DOC = YES
+WARN_NO_PARAMDOC       = NO
+WARN_AS_ERROR          = NO
+WARN_LOGFILE           = "@RIGKIT_DOXY_OUT@/doxygen.warn"
+
+INPUT                  = "@RIGKIT_DOXY_OUT@/mainpage.md" \
+                         "@RIGKIT_ROOT@/packs/@PACK_NAME@"
+INPUT_ENCODING         = UTF-8
+FILE_PATTERNS          = *.h \
+                         *.hpp \
+                         *.md
+RECURSIVE              = YES
+EXCLUDE                =
+EXCLUDE_SYMLINKS       = NO
+EXCLUDE_PATTERNS       = */third_party/* \
+                         */.git/* \
+                         */build/* \
+                         */build-*/* \
+                         */CMakeLists.txt \
+                         */README.md \
+                         */examples/*
+EXCLUDE_SYMBOLS        =
+
+USE_MDFILE_AS_MAINPAGE = "@RIGKIT_DOXY_OUT@/mainpage.md"
+
+SOURCE_BROWSER         = NO
+INLINE_SOURCES         = NO
+STRIP_CODE_COMMENTS    = YES
+REFERENCED_BY_RELATION = NO
+REFERENCES_RELATION    = NO
+REFERENCES_LINK_SOURCE = YES
+SOURCE_TOOLTIPS        = YES
+VERBATIM_HEADERS       = NO
+
+ALPHABETICAL_INDEX     = YES
+
+GENERATE_HTML          = YES
+HTML_OUTPUT            = html
+HTML_FILE_EXTENSION    = .html
+HTML_COLORSTYLE        = AUTO_LIGHT
+HTML_DYNAMIC_MENUS     = YES
+DISABLE_INDEX          = NO
+GENERATE_TREEVIEW      = YES
+FULL_SIDEBAR           = NO
+ENUM_VALUES_PER_LINE   = 4
+TREEVIEW_WIDTH         = 250
+EXT_LINKS_IN_WINDOW    = NO
+OBFUSCATE_EMAILS       = YES
+HTML_FORMULA_FORMAT    = png
+FORMULA_FONTSIZE       = 10
+SEARCHENGINE           = YES
+
+GENERATE_LATEX         = NO
+GENERATE_RTF           = NO
+GENERATE_MAN           = NO
+GENERATE_XML           = NO
+GENERATE_DOCBOOK       = NO
+
+ENABLE_PREPROCESSING   = YES
+MACRO_EXPANSION        = YES
+EXPAND_ONLY_PREDEF     = YES
+SEARCH_INCLUDES        = YES
+INCLUDE_PATH           = "@RIGKIT_ROOT@/src" \
+                         "@RIGKIT_ROOT@/packs"
+PREDEFINED             = "RIGKIT_GLES=0"
+SKIP_FUNCTION_MACROS   = YES
+
+HAVE_DOT               = @RIGKIT_DOXY_HAVE_DOT@
+DOT_NUM_THREADS        = 0
+DOT_IMAGE_FORMAT       = svg
+INTERACTIVE_SVG        = YES
+DOT_GRAPH_MAX_NODES    = 50
+MAX_DOT_GRAPH_DEPTH    = 0
+GENERATE_LEGEND        = YES
+DOT_CLEANUP            = YES

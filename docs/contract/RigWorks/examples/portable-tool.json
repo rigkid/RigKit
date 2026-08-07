@@ -1,0 +1,159 @@
+{
+  "rig": "0.9.0",
+  "document": {
+    "title": "Portable LFO tool — load in any UI pack",
+    "defaultUnit": "px"
+  },
+  "entities": [
+    {
+      "id": "lfo",
+      "components": {
+        "rig.meta.named": { "name": "Pulse", "stableId": "lfo" },
+        "rig.mod.lfo": {
+          "waveform": "sine",
+          "frequency": 1.25,
+          "amplitude": 0.8,
+          "offset": 0,
+          "phase": 0
+        }
+      }
+    },
+    {
+      "id": "tint",
+      "components": {
+        "rig.meta.named": { "name": "Tint", "stableId": "tint" },
+        "rig.paint.solid": {
+          "rgba": [0.2, 0.7, 1, 1],
+          "cmyk": [0, 0, 0, 0]
+        }
+      }
+    },
+    {
+      "id": "lfo-tool",
+      "components": {
+        "rig.meta.named": { "name": "LFO tool", "stableId": "lfo-tool" },
+        "rig.ui.panel": {
+          "role": "mod.lfo",
+          "order": 0,
+          "visible": true,
+          "preferredWidth": 360,
+          "preferredHeight": 280
+        }
+      }
+    },
+    {
+      "id": "grp-mod",
+      "components": {
+        "rig.meta.named": { "name": "Modulator", "stableId": "grp-mod" },
+        "rig.ui.group": {
+          "panel": "lfo-tool",
+          "parent": null,
+          "order": 0,
+          "orientation": "vertical",
+          "collapsed": false
+        }
+      }
+    },
+    {
+      "id": "grp-look",
+      "components": {
+        "rig.meta.named": { "name": "Look", "stableId": "grp-look" },
+        "rig.ui.group": {
+          "panel": "lfo-tool",
+          "parent": null,
+          "order": 1,
+          "orientation": "horizontal",
+          "collapsed": false
+        }
+      }
+    },
+    {
+      "id": "ctrl-freq",
+      "components": {
+        "rig.meta.named": { "name": "Frequency", "stableId": "ctrl-freq" },
+        "rig.ui.control": {
+          "panel": "lfo-tool",
+          "group": "grp-mod",
+          "order": 0,
+          "target": "lfo",
+          "propertyKey": "frequency",
+          "type": "float",
+          "min": 0.05,
+          "max": 8,
+          "step": 0.05,
+          "enabled": true,
+          "readOnly": false,
+          "widget": "slider"
+        }
+      }
+    },
+    {
+      "id": "ctrl-amp",
+      "components": {
+        "rig.meta.named": { "name": "Amplitude", "stableId": "ctrl-amp" },
+        "rig.ui.control": {
+          "panel": "lfo-tool",
+          "group": "grp-mod",
+          "order": 1,
+          "target": "lfo",
+          "propertyKey": "amplitude",
+          "type": "float",
+          "min": 0,
+          "max": 1,
+          "step": 0.01,
+          "enabled": true,
+          "readOnly": false,
+          "widget": "knob"
+        }
+      }
+    },
+    {
+      "id": "ctrl-wave",
+      "components": {
+        "rig.meta.named": { "name": "Waveform", "stableId": "ctrl-wave" },
+        "rig.ui.control": {
+          "panel": "lfo-tool",
+          "group": "grp-mod",
+          "order": 2,
+          "target": "lfo",
+          "propertyKey": "waveform",
+          "type": "enum",
+          "options": ["sine", "tri", "saw", "square"],
+          "enabled": true,
+          "readOnly": false,
+          "widget": "dropdown"
+        }
+      }
+    },
+    {
+      "id": "ctrl-tint",
+      "components": {
+        "rig.meta.named": { "name": "Tint", "stableId": "ctrl-tint" },
+        "rig.ui.control": {
+          "panel": "lfo-tool",
+          "group": "grp-look",
+          "order": 0,
+          "target": "tint",
+          "propertyKey": "rgba",
+          "type": "vec4",
+          "enabled": true,
+          "readOnly": false,
+          "widget": "color"
+        }
+      }
+    },
+    {
+      "id": "act-reset",
+      "components": {
+        "rig.meta.named": { "name": "Reset phase", "stableId": "act-reset" },
+        "rig.ui.action": {
+          "panel": "lfo-tool",
+          "group": "grp-mod",
+          "order": 3,
+          "actionId": "lfo.resetPhase",
+          "enabled": true
+        }
+      }
+    }
+  ]
+}

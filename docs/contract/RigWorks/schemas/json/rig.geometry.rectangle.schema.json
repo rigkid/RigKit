@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rig.works/schemas/rig.geometry.rectangle.schema.json",
+  "title": "rig.geometry.rectangle",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "x": {
+      "$ref": "./_defs.schema.json#/$defs/float"
+    },
+    "y": {
+      "$ref": "./_defs.schema.json#/$defs/float"
+    },
+    "width": {
+      "$ref": "./_defs.schema.json#/$defs/float"
+    },
+    "height": {
+      "$ref": "./_defs.schema.json#/$defs/float"
+    },
+    "cornerRadius": {
+      "$ref": "./_defs.schema.json#/$defs/float"
+    }
+  },
+  "required": [
+    "x",
+    "y",
+    "width",
+    "height"
+  ]
+}

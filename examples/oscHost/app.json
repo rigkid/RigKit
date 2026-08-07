@@ -1,0 +1,33 @@
+{
+  "name": "oscHost",
+  "version": "0.1.0",
+  "license": "MIT",
+  "description": "RigKit OSC show host — multi-instance via network id + UDP (author / show).",
+  "window": {
+    "width": 640,
+    "height": 400,
+    "title": "RigKit — oscHost"
+  },
+  "dependencies": [
+    {
+      "name": "rigComponent",
+      "url": "https://github.com/rigkid/rigComponent.git",
+      "ref": "main"
+    },
+    {
+      "name": "rigSystems",
+      "url": "https://github.com/rigkid/rigSystems.git",
+      "ref": "main"
+    },
+    {
+      "name": "rigImGui",
+      "url": "https://github.com/rigkid/rigImGui.git",
+      "ref": "main"
+    },
+    {
+      "name": "rigOsc",
+      "url": "https://github.com/rigkid/rigOsc.git",
+      "ref": "main"
+    }
+  ]
+}

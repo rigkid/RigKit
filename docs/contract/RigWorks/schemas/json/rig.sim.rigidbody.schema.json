@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rig.works/schemas/rig.sim.rigidbody.schema.json",
+  "title": "rig.sim.rigidbody",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "velocity": {
+      "$ref": "./_defs.schema.json#/$defs/vec3"
+    },
+    "mass": {
+      "$ref": "./_defs.schema.json#/$defs/float"
+    },
+    "drag": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "gravity": {
+      "$ref": "./_defs.schema.json#/$defs/vec3"
+    }
+  }
+}

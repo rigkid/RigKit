@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rig.works/schemas/rig.geometry.regular_polygon.schema.json",
+  "title": "rig.geometry.regular_polygon",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "cx": {
+      "$ref": "./_defs.schema.json#/$defs/float"
+    },
+    "cy": {
+      "$ref": "./_defs.schema.json#/$defs/float"
+    },
+    "radius": {
+      "$ref": "./_defs.schema.json#/$defs/float"
+    },
+    "sides": {
+      "type": "integer",
+      "minimum": 3
+    },
+    "rotationDegrees": {
+      "$ref": "./_defs.schema.json#/$defs/float"
+    }
+  },
+  "required": [
+    "cx",
+    "cy",
+    "radius",
+    "sides"
+  ]
+}

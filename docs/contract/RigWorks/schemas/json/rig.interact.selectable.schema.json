@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rig.works/schemas/rig.interact.selectable.schema.json",
+  "title": "rig.interact.selectable",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "enabled": {
+      "$ref": "./_defs.schema.json#/$defs/bool"
+    }
+  },
+  "minProperties": 0
+}

@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rig.works/schemas/rig.node.publish.schema.json",
+  "title": "rig.node.publish",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "pin": {
+      "$ref": "./_defs.schema.json#/$defs/uint"
+    },
+    "innerNode": {
+      "$ref": "./_defs.schema.json#/$defs/uint"
+    },
+    "innerPin": {
+      "$ref": "./_defs.schema.json#/$defs/uint"
+    }
+  },
+  "required": [
+    "pin",
+    "innerNode",
+    "innerPin"
+  ]
+}

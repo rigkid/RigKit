@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rig.works/schemas/rig.spatial.relationship.schema.json",
+  "title": "rig.spatial.relationship",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "parent": {
+      "$ref": "./_defs.schema.json#/$defs/entity"
+    },
+    "order": {
+      "$ref": "./_defs.schema.json#/$defs/int"
+    }
+  },
+  "required": [
+    "parent"
+  ]
+}

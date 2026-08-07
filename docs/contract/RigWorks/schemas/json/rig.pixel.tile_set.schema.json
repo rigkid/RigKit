@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rig.works/schemas/rig.pixel.tile_set.schema.json",
+  "title": "rig.pixel.tile_set",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "palette": {
+      "$ref": "./_defs.schema.json#/$defs/entity"
+    },
+    "tileWidth": {
+      "$ref": "./_defs.schema.json#/$defs/int"
+    },
+    "tileHeight": {
+      "$ref": "./_defs.schema.json#/$defs/int"
+    },
+    "tilesAcross": {
+      "$ref": "./_defs.schema.json#/$defs/int"
+    },
+    "tileRows": {
+      "$ref": "./_defs.schema.json#/$defs/int"
+    },
+    "indices": {
+      "type": "array",
+      "items": {
+        "$ref": "./_defs.schema.json#/$defs/uint8"
+      }
+    },
+    "flags": {
+      "type": "array",
+      "items": {
+        "$ref": "./_defs.schema.json#/$defs/uint8"
+      }
+    }
+  },
+  "required": [
+    "palette",
+    "tileWidth",
+    "tileHeight",
+    "tilesAcross",
+    "tileRows",
+    "indices"
+  ]
+}

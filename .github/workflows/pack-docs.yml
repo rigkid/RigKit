@@ -1,0 +1,86 @@
+name: Pack docs (reusable)
+
+# Called from each pack remote's docs.yml.
+# Publishes pack-scoped Doxygen → https://rigkid.github.io/<pack>/
+#
+# Caller must pass secrets: inherit (needs RIGKIT_CI_TOKEN for private host).
+
+on:
+  workflow_call:
+    inputs:
+      pack:
+        description: Pack folder / pack.json name
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages-pack-${{ inputs.pack }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require private-repo CI token
+        env:
+          RIGKIT_CI_TOKEN: ${{ secrets.RIGKIT_CI_TOKEN }}
+        run: |
+          if [ -z "$RIGKIT_CI_TOKEN" ]; then
+            echo "::error::Missing secret RIGKIT_CI_TOKEN. Create a fine-grained PAT with Contents:read on rigkid/RigKit and the in-org pack remotes, then set it as an org or repo Actions secret named RIGKIT_CI_TOKEN."
+            exit 1
+          fi
+
+      - name: Checkout pack
+        uses: actions/checkout@v4
+        with:
+          path: pack
+
+      - name: Checkout RigKit host
+        uses: actions/checkout@v4
+        with:
+          repository: rigkid/RigKit
+          path: host
+          submodules: recursive
+          token: ${{ secrets.RIGKIT_CI_TOKEN }}
+
+      - name: Overlay pack under test
+        env:
+          PACK: ${{ inputs.pack }}
+        run: |
+          rm -rf "host/packs/${PACK}"
+          mkdir -p host/packs
+          cp -a pack "host/packs/${PACK}"
+
+      - name: Install Doxygen
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y doxygen graphviz
+
+      - name: Generate pack docs
+        env:
+          PACK: ${{ inputs.pack }}
+        working-directory: host
+        run: |
+          chmod +x tools/generate-pack-docs.sh
+          ./tools/generate-pack-docs.sh "$PACK" "$PWD" "$PWD/build/docs/pack/$PACK"
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: host/build/docs/pack/${{ inputs.pack }}/html
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

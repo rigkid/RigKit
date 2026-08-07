@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rig.works/schemas/rig.io.osc.schema.json",
+  "title": "rig.io.osc",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "listenEnabled": {
+      "$ref": "./_defs.schema.json#/$defs/bool"
+    },
+    "listenPort": {
+      "$ref": "./_defs.schema.json#/$defs/int"
+    },
+    "sendEnabled": {
+      "$ref": "./_defs.schema.json#/$defs/bool"
+    },
+    "sendHost": {
+      "$ref": "./_defs.schema.json#/$defs/string"
+    },
+    "sendPort": {
+      "$ref": "./_defs.schema.json#/$defs/int"
+    },
+    "addressPrefix": {
+      "$ref": "./_defs.schema.json#/$defs/string"
+    }
+  }
+}

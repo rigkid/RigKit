@@ -1,0 +1,12 @@
+{
+  "description": "Optimized for vector works",
+  "imguiLayout": "",
+  "name": "Vector Editor",
+  "windowVisibility": {
+    "Canvas": true,
+    "Info": true,
+    "Properties": true,
+    "Stroke": true,
+    "Toolbar": true
+  }
+}

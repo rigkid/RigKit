@@ -1,0 +1,21 @@
+{
+  "rig": "0.6.0",
+  "entities": [
+    {
+      "id": "petal",
+      "components": {
+        "rig.meta.named": { "name": "petal" },
+        "rig.spatial.transform": {
+          "position": [0, 0, 0],
+          "rotation": [0, 0, 0, 1],
+          "scale": [1, 1, 1]
+        },
+        "x.acme.flower_of_life": {
+          "radius": 40,
+          "rings": 3,
+          "showOuterCircle": true
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rig.works/schemas/rig.paint.library.schema.json",
+  "title": "rig.paint.library",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "paints": {
+      "type": "array",
+      "items": {
+        "$ref": "./_defs.schema.json#/$defs/entity"
+      }
+    }
+  },
+  "required": [
+    "paints"
+  ]
+}

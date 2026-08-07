@@ -1,0 +1,13 @@
+{
+  "name": "rigTemplate",
+  "url": "https://github.com/rigkid/rigTemplate.git",
+  "ref": "main",
+  "version": "0.1.0",
+  "author": "Rigkid",
+  "license": "MIT Rigkid Contributors",
+  "description": "Scaffold for a new RigKit pack. Rename before publishing.",
+  "dependencies": [],
+  "include_paths": [
+    "src"
+  ]
+}

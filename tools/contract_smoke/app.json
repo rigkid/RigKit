@@ -1,0 +1,23 @@
+{
+	"name": "contract_smoke",
+	"version": "0.1.0",
+	"license": "MIT",
+	"description": "Headless doctest smoke for core + spine packs (data layer)",
+	"dependencies": [
+		{
+			"name": "rigComponent",
+			"url": "https://github.com/rigkid/rigComponent.git",
+			"ref": "main"
+		},
+		{
+			"name": "rigSystems",
+			"url": "https://github.com/rigkid/rigSystems.git",
+			"ref": "main"
+		},
+		{
+			"name": "rigProject",
+			"url": "https://github.com/rigkid/rigProject.git",
+			"ref": "main"
+		}
+	]
+}

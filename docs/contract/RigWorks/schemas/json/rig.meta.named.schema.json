@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rig.works/schemas/rig.meta.named.schema.json",
+  "title": "rig.meta.named",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "name": {
+      "$ref": "./_defs.schema.json#/$defs/string"
+    },
+    "stableId": {
+      "$ref": "./_defs.schema.json#/$defs/string"
+    }
+  },
+  "required": [
+    "name"
+  ]
+}

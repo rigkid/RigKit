@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rig.works/schemas/rig.geometry.mesh.schema.json",
+  "title": "rig.geometry.mesh",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "positions": {
+      "oneOf": [
+        {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "./_defs.schema.json#/$defs/vec3"
+          }
+        }
+      ]
+    },
+    "indices": {
+      "type": "array",
+      "items": {
+        "$ref": "./_defs.schema.json#/$defs/uint32"
+      }
+    },
+    "texcoords": {
+      "oneOf": [
+        {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "./_defs.schema.json#/$defs/vec2"
+          }
+        }
+      ]
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "triangles",
+        "lines",
+        "lineStrip"
+      ]
+    },
+    "faceColors": {
+      "type": "array",
+      "items": {
+        "$ref": "./_defs.schema.json#/$defs/rgba"
+      }
+    },
+    "facePalette": {
+      "type": "array",
+      "items": {
+        "$ref": "./_defs.schema.json#/$defs/uint8"
+      }
+    }
+  },
+  "required": [
+    "positions",
+    "mode"
+  ]
+}

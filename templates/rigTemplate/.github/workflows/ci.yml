@@ -1,0 +1,64 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+
+# Scaffold packs rename PACK/HERO when copying from rigTemplate.
+# Private RigKit host + sibling packs need org/repo secret RIGKIT_CI_TOKEN
+# (PAT with Contents:read on rigkid/RigKit and in-org pack remotes).
+env:
+  PACK: rigTemplate
+  HERO: demo
+
+jobs:
+  example:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require private-repo CI token
+        env:
+          RIGKIT_CI_TOKEN: ${{ secrets.RIGKIT_CI_TOKEN }}
+        run: |
+          if [ -z "$RIGKIT_CI_TOKEN" ]; then
+            echo "::error::Missing secret RIGKIT_CI_TOKEN. Create a fine-grained PAT with Contents:read on rigkid/RigKit and the in-org pack remotes, then set it as an org or repo Actions secret named RIGKIT_CI_TOKEN."
+            exit 1
+          fi
+
+      - name: Checkout pack
+        uses: actions/checkout@v4
+        with:
+          path: pack
+
+      - name: Checkout RigKit host
+        uses: actions/checkout@v4
+        with:
+          repository: rigkid/RigKit
+          path: host
+          submodules: recursive
+          token: ${{ secrets.RIGKIT_CI_TOKEN }}
+
+      - name: Overlay pack under test
+        run: |
+          rm -rf "host/packs/${PACK}"
+          mkdir -p host/packs
+          cp -a pack "host/packs/${PACK}"
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential cmake ninja-build \
+            libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev \
+            libgl1-mesa-dev
+
+      - name: Configure hero
+        working-directory: host
+        run: >
+          cmake -S "packs/${PACK}/examples/${HERO}"
+          -B "packs/${PACK}/examples/${HERO}/build"
+          -G Ninja
+          -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build hero
+        working-directory: host
+        run: cmake --build "packs/${PACK}/examples/${HERO}/build"

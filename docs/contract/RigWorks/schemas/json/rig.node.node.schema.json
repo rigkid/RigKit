@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rig.works/schemas/rig.node.node.schema.json",
+  "title": "rig.node.node",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "typeId",
+    "title",
+    "pos",
+    "pins",
+    "params"
+  ],
+  "properties": {
+    "id": {
+      "$ref": "./_defs.schema.json#/$defs/uint"
+    },
+    "typeId": {
+      "$ref": "./_defs.schema.json#/$defs/string"
+    },
+    "title": {
+      "$ref": "./_defs.schema.json#/$defs/string"
+    },
+    "pos": {
+      "$ref": "./_defs.schema.json#/$defs/vec2"
+    },
+    "pins": {
+      "type": "array",
+      "items": {
+        "$ref": "./rig.node.pin.schema.json"
+      }
+    },
+    "params": {
+      "type": "array",
+      "items": {
+        "$ref": "./rig.node.param.schema.json"
+      }
+    },
+    "nested": {
+      "$ref": "./rig.node.graph.schema.json"
+    },
+    "publishes": {
+      "type": "array",
+      "items": {
+        "$ref": "./rig.node.publish.schema.json"
+      }
+    }
+  }
+}

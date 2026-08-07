@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rig.works/schemas/rig.geometry.path.schema.json",
+  "title": "rig.geometry.path",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "commands": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "type"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "moveTo",
+              "lineTo",
+              "cubicTo",
+              "quadTo",
+              "close"
+            ]
+          },
+          "p": {
+            "$ref": "./_defs.schema.json#/$defs/vec2"
+          },
+          "c1": {
+            "$ref": "./_defs.schema.json#/$defs/vec2"
+          },
+          "c2": {
+            "$ref": "./_defs.schema.json#/$defs/vec2"
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "commands"
+  ]
+}

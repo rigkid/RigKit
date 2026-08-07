@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rig.works/schemas/rig.ui.panel.schema.json",
+  "title": "rig.ui.panel",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "role": {
+      "$ref": "./_defs.schema.json#/$defs/string"
+    },
+    "order": {
+      "$ref": "./_defs.schema.json#/$defs/int"
+    },
+    "visible": {
+      "$ref": "./_defs.schema.json#/$defs/bool"
+    },
+    "preferredWidth": {
+      "$ref": "./_defs.schema.json#/$defs/float"
+    },
+    "preferredHeight": {
+      "$ref": "./_defs.schema.json#/$defs/float"
+    }
+  },
+  "description": "Portable tool surface. role is a stable tool id; preferred sizes are advisory. Dock/chrome is fulfillment."
+}

@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rig.works/schemas/rig.layout.page.schema.json",
+  "title": "rig.layout.page",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "index": {
+      "$ref": "./_defs.schema.json#/$defs/int"
+    },
+    "width": {
+      "$ref": "./_defs.schema.json#/$defs/float"
+    },
+    "height": {
+      "$ref": "./_defs.schema.json#/$defs/float"
+    },
+    "unit": {
+      "$ref": "./_defs.schema.json#/$defs/string"
+    },
+    "margins": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      },
+      "minItems": 4,
+      "maxItems": 4
+    },
+    "bleed": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      },
+      "minItems": 4,
+      "maxItems": 4
+    },
+    "slug": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      },
+      "minItems": 4,
+      "maxItems": 4
+    }
+  },
+  "required": [
+    "width",
+    "height"
+  ]
+}

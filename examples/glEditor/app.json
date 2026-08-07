@@ -1,0 +1,13 @@
+{
+  "name": "glEditor",
+  "version": "0.1.0",
+  "license": "MIT",
+  "description": "Shadertoy-style GLES shader editor — CCode + live preview (gleditor workflow)",
+  "window": { "width": 1200, "height": 720, "title": "glEditor" },
+  "dependencies": [
+    { "name": "rigComponent", "url": "https://github.com/rigkid/rigComponent.git", "ref": "main" },
+    { "name": "rigSystems", "url": "https://github.com/rigkid/rigSystems.git", "ref": "main" },
+    { "name": "rigImGui", "url": "https://github.com/rigkid/rigImGui.git", "ref": "main" },
+    { "name": "rigCodeEditor", "url": "https://github.com/rigkid/rigCodeEditor.git", "ref": "main" }
+  ]
+}

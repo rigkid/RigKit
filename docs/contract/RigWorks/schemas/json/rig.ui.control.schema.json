@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rig.works/schemas/rig.ui.control.schema.json",
+  "title": "rig.ui.control",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "panel": {
+      "$ref": "./_defs.schema.json#/$defs/entity"
+    },
+    "group": {
+      "$ref": "./_defs.schema.json#/$defs/entity"
+    },
+    "order": {
+      "$ref": "./_defs.schema.json#/$defs/int"
+    },
+    "target": {
+      "$ref": "./_defs.schema.json#/$defs/entity"
+    },
+    "propertyKey": {
+      "$ref": "./_defs.schema.json#/$defs/string"
+    },
+    "type": {
+      "$ref": "./_defs.schema.json#/$defs/propertyType"
+    },
+    "min": {
+      "$ref": "./_defs.schema.json#/$defs/float"
+    },
+    "max": {
+      "$ref": "./_defs.schema.json#/$defs/float"
+    },
+    "step": {
+      "$ref": "./_defs.schema.json#/$defs/float"
+    },
+    "enabled": {
+      "$ref": "./_defs.schema.json#/$defs/bool"
+    },
+    "readOnly": {
+      "$ref": "./_defs.schema.json#/$defs/bool"
+    },
+    "options": {
+      "type": "array",
+      "items": {
+        "$ref": "./_defs.schema.json#/$defs/string"
+      }
+    },
+    "widget": {
+      "type": "string",
+      "enum": [
+        "auto",
+        "slider",
+        "knob",
+        "toggle",
+        "field",
+        "dropdown",
+        "color",
+        "xy"
+      ]
+    }
+  },
+  "required": [
+    "panel",
+    "order",
+    "target",
+    "propertyKey",
+    "type"
+  ],
+  "description": "View over one POD field — never a second store. group is optional; widget is an advisory hint a host may ignore."
+}

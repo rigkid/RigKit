@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rig.works/schemas/rig.input.buttons.schema.json",
+  "title": "rig.input.buttons",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "player": {
+      "$ref": "./_defs.schema.json#/$defs/int"
+    },
+    "left": {
+      "$ref": "./_defs.schema.json#/$defs/bool"
+    },
+    "right": {
+      "$ref": "./_defs.schema.json#/$defs/bool"
+    },
+    "up": {
+      "$ref": "./_defs.schema.json#/$defs/bool"
+    },
+    "down": {
+      "$ref": "./_defs.schema.json#/$defs/bool"
+    },
+    "o": {
+      "$ref": "./_defs.schema.json#/$defs/bool"
+    },
+    "x": {
+      "$ref": "./_defs.schema.json#/$defs/bool"
+    }
+  }
+}

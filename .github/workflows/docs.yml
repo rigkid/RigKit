@@ -1,0 +1,63 @@
+name: Docs
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+# Aggregate host + packs API HTML → https://rigkid.github.io/rigkit/
+# One-time: repo Settings → Pages → Source: GitHub Actions.
+# Private Pages need an org plan that allows them (or public remotes).
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages-rigkit
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout host
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Fetch optional pack remotes for aggregate docs
+        env:
+          RIGKIT_CI_TOKEN: ${{ secrets.RIGKIT_CI_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          chmod +x tools/fetch-packs-for-docs.sh
+          ./tools/fetch-packs-for-docs.sh
+
+      - name: Install Doxygen
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y doxygen graphviz
+
+      - name: Configure and generate docs
+        run: |
+          cmake -S . -B build
+          cmake --build build --target docs
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/docs/api/html
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

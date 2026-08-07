@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rig.works/schemas/rig.geometry.ellipse.schema.json",
+  "title": "rig.geometry.ellipse",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "cx": {
+      "$ref": "./_defs.schema.json#/$defs/float"
+    },
+    "cy": {
+      "$ref": "./_defs.schema.json#/$defs/float"
+    },
+    "rx": {
+      "$ref": "./_defs.schema.json#/$defs/float"
+    },
+    "ry": {
+      "$ref": "./_defs.schema.json#/$defs/float"
+    }
+  },
+  "required": [
+    "cx",
+    "cy",
+    "rx",
+    "ry"
+  ]
+}

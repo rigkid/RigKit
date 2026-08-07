@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rig.works/schemas/rig.meta.tags.schema.json",
+  "title": "rig.meta.tags",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "tags": {
+      "type": "array",
+      "items": {
+        "$ref": "./_defs.schema.json#/$defs/string"
+      }
+    }
+  },
+  "required": [
+    "tags"
+  ]
+}

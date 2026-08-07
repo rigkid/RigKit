@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rig.works/schemas/rig.paint.stroke.schema.json",
+  "title": "rig.paint.stroke",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "paint": {
+      "$ref": "./_defs.schema.json#/$defs/entity"
+    },
+    "width": {
+      "$ref": "./_defs.schema.json#/$defs/float"
+    }
+  },
+  "required": [
+    "paint"
+  ]
+}

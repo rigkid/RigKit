@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rig.works/schemas/rig.pixel.tile_map.schema.json",
+  "title": "rig.pixel.tile_map",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "tileSet": {
+      "$ref": "./_defs.schema.json#/$defs/entity"
+    },
+    "width": {
+      "$ref": "./_defs.schema.json#/$defs/int"
+    },
+    "height": {
+      "$ref": "./_defs.schema.json#/$defs/int"
+    },
+    "originX": {
+      "$ref": "./_defs.schema.json#/$defs/int"
+    },
+    "originY": {
+      "$ref": "./_defs.schema.json#/$defs/int"
+    },
+    "tiles": {
+      "type": "array",
+      "items": {
+        "$ref": "./_defs.schema.json#/$defs/int"
+      }
+    }
+  },
+  "required": [
+    "tileSet",
+    "width",
+    "height",
+    "tiles"
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rig.works/schemas/rig.geometry.arc.schema.json",
+  "title": "rig.geometry.arc",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "cx": {
+      "$ref": "./_defs.schema.json#/$defs/float"
+    },
+    "cy": {
+      "$ref": "./_defs.schema.json#/$defs/float"
+    },
+    "radius": {
+      "$ref": "./_defs.schema.json#/$defs/float"
+    },
+    "startAngleDegrees": {
+      "$ref": "./_defs.schema.json#/$defs/float"
+    },
+    "endAngleDegrees": {
+      "$ref": "./_defs.schema.json#/$defs/float"
+    },
+    "pie": {
+      "$ref": "./_defs.schema.json#/$defs/bool"
+    }
+  },
+  "required": [
+    "cx",
+    "cy",
+    "radius",
+    "startAngleDegrees",
+    "endAngleDegrees"
+  ]
+}

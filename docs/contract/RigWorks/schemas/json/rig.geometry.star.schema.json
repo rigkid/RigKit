@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rig.works/schemas/rig.geometry.star.schema.json",
+  "title": "rig.geometry.star",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "cx": {
+      "$ref": "./_defs.schema.json#/$defs/float"
+    },
+    "cy": {
+      "$ref": "./_defs.schema.json#/$defs/float"
+    },
+    "radius": {
+      "$ref": "./_defs.schema.json#/$defs/float"
+    },
+    "innerRadius": {
+      "$ref": "./_defs.schema.json#/$defs/float"
+    },
+    "points": {
+      "type": "integer",
+      "minimum": 3
+    },
+    "rotationDegrees": {
+      "$ref": "./_defs.schema.json#/$defs/float"
+    }
+  },
+  "required": [
+    "cx",
+    "cy",
+    "radius",
+    "innerRadius",
+    "points"
+  ]
+}

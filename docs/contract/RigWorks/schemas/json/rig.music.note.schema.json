@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rig.works/schemas/rig.music.note.schema.json",
+  "title": "rig.music.note",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "pitch": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 127
+    },
+    "velocity": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 127
+    },
+    "channel": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 15
+    },
+    "start": {
+      "$ref": "./_defs.schema.json#/$defs/float"
+    },
+    "duration": {
+      "$ref": "./_defs.schema.json#/$defs/float"
+    },
+    "clip": {
+      "$ref": "./_defs.schema.json#/$defs/entity"
+    }
+  },
+  "required": [
+    "pitch",
+    "start",
+    "duration"
+  ]
+}

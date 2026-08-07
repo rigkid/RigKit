@@ -1,0 +1,8 @@
+{
+  "name": "demo",
+  "version": "0.1.0",
+  "license": "MIT",
+  "description": "rigTemplate hero scaffold — rename with the pack",
+  "window": { "width": 800, "height": 600, "title": "rigTemplate — demo" },
+  "dependencies": []
+}

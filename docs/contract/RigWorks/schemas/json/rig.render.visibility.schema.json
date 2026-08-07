@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rig.works/schemas/rig.render.visibility.schema.json",
+  "title": "rig.render.visibility",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "visible": {
+      "$ref": "./_defs.schema.json#/$defs/bool"
+    }
+  },
+  "required": [
+    "visible"
+  ]
+}

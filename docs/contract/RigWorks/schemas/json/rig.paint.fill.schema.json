@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rig.works/schemas/rig.paint.fill.schema.json",
+  "title": "rig.paint.fill",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "paint": {
+      "$ref": "./_defs.schema.json#/$defs/entity"
+    }
+  },
+  "required": [
+    "paint"
+  ]
+}

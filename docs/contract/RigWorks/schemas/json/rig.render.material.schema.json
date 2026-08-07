@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rig.works/schemas/rig.render.material.schema.json",
+  "title": "rig.render.material",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "albedoRgb": {
+      "$ref": "./_defs.schema.json#/$defs/rgb"
+    },
+    "albedoMap": {
+      "$ref": "./_defs.schema.json#/$defs/entity"
+    },
+    "metallic": {
+      "$ref": "./_defs.schema.json#/$defs/float"
+    },
+    "roughness": {
+      "$ref": "./_defs.schema.json#/$defs/float"
+    },
+    "emissive": {
+      "$ref": "./_defs.schema.json#/$defs/rgb"
+    }
+  }
+}

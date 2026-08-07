@@ -1,0 +1,39 @@
+# RigWorks (Rig)
+
+> A no-code creative application framework — a shared data vocabulary for creative applications, **not character rigging**. Apps and packs that speak the same schema ids interoperate. Not another editor: the vocabulary editors and agents could share.
+
+Rig defines SUDE + ECS rules and POD schemas (prose + JSON Schema). Emit JSON documents; validate with rig-validate. Nothing to link into an app.
+
+## AI entry
+
+- [skills/generating-rig-documents/SKILL.md](skills/generating-rig-documents/SKILL.md): condensed agent skill (load before generating)
+- [AGENTS.md](AGENTS.md): agent onboarding (points at the skill + validator)
+- [docs/ai-collaboration.md](docs/ai-collaboration.md): why the repo is shaped for model authoring
+
+## Docs
+
+- [README.md](README.md): pitch, worked example, reference host
+- [docs/why-no-code.md](docs/why-no-code.md): why a framework that ships no code
+- [docs/terms.md](docs/terms.md): Contract, fulfillment, host, pack, POD
+- [docs/sude.md](docs/sude.md): Setup / Update / Draw / Exit
+- [docs/ecs.md](docs/ecs.md): ECS / POD conventions
+- [docs/ui.md](docs/ui.md): optional UI layer over the same data
+- [docs/interchange.md](docs/interchange.md): JSON wire format + RigKit aliases
+- [docs/properties.md](docs/properties.md): portable datatype ids
+- [docs/honors.md](docs/honors.md): what counts as Rig
+- [docs/gaps.md](docs/gaps.md): where the Contract is silent, ambiguous, or wrong
+- [docs/versioning.md](docs/versioning.md): version ranges and stability
+
+## Schemas and examples
+
+- [schemas/json/](schemas/json/): machine-readable JSON Schema catalog
+- [schemas/](schemas/): prose field layouts
+- [schemas/document.md](schemas/document.md): document envelope
+- [examples/](examples/): canonical valid documents
+
+## Tools
+
+- [tools/rig-validate/README.md](tools/rig-validate/README.md): validate CLI (`node tools/rig-validate/cli.js <file.json>`)
+- [https://github.com/rigkid/rigPico8](https://github.com/rigkid/rigPico8): PICO-8 fulfillment (converters + carts)
+- [tools/check-schema-parity/check.mjs](tools/check-schema-parity/check.mjs): prose ↔ JSON Schema parity
+- [tools/gen-schemas.mjs](tools/gen-schemas.mjs): regenerate `schemas/json/` (`--check` to detect drift)

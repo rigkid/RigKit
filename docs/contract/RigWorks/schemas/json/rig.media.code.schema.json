@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rig.works/schemas/rig.media.code.schema.json",
+  "title": "rig.media.code",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "text": {
+      "$ref": "./_defs.schema.json#/$defs/string"
+    },
+    "language": {
+      "$ref": "./_defs.schema.json#/$defs/string"
+    },
+    "readOnly": {
+      "$ref": "./_defs.schema.json#/$defs/bool"
+    }
+  },
+  "required": [
+    "text"
+  ]
+}
