@@ -36,10 +36,13 @@ jobs:
           chmod +x tools/fetch-packs-for-docs.sh
           ./tools/fetch-packs-for-docs.sh
 
-      - name: Install Doxygen
+      - name: Install Doxygen and configure dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y doxygen graphviz
+          sudo apt-get install -y doxygen graphviz pkg-config \
+            libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev \
+            libgl1-mesa-dev \
+            libwayland-dev libwayland-bin libxkbcommon-dev
 
       - name: Configure and generate docs
         run: |

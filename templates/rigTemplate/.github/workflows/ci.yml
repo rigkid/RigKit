@@ -16,13 +16,12 @@ jobs:
   example:
     runs-on: ubuntu-latest
     steps:
-      - name: Require private-repo CI token
+      - name: Check private-repo CI token
         env:
           RIGKIT_CI_TOKEN: ${{ secrets.RIGKIT_CI_TOKEN }}
         run: |
           if [ -z "$RIGKIT_CI_TOKEN" ]; then
-            echo "::error::Missing secret RIGKIT_CI_TOKEN. Create a fine-grained PAT with Contents:read on rigkid/RigKit and the in-org pack remotes, then set it as an org or repo Actions secret named RIGKIT_CI_TOKEN."
-            exit 1
+            echo "::warning::No RIGKIT_CI_TOKEN. Public remotes still clone; jobs that reach a private in-org pack will fail later. Fine-grained PAT with Contents:read on rigkid/RigKit and the in-org packs, set as an org secret (visibility: all repositories) or a repo secret. On GitHub Free, private repos never receive org secrets - they need a repo secret."
           fi
 
       - name: Checkout pack
@@ -36,7 +35,7 @@ jobs:
           repository: rigkid/RigKit
           path: host
           submodules: recursive
-          token: ${{ secrets.RIGKIT_CI_TOKEN }}
+          token: ${{ secrets.RIGKIT_CI_TOKEN || github.token }}
 
       - name: Overlay pack under test
         run: |
@@ -47,9 +46,10 @@ jobs:
       - name: Install build dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential cmake ninja-build \
+          sudo apt-get install -y build-essential cmake ninja-build pkg-config \
             libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev \
-            libgl1-mesa-dev
+            libgl1-mesa-dev \
+            libwayland-dev libwayland-bin libxkbcommon-dev
 
       - name: Configure hero
         working-directory: host

@@ -74,15 +74,17 @@ Details: [tools/contract_smoke/README.md](../tools/contract_smoke/README.md).
 5. Document public APIs with Doxygen tags (`@brief`, …) — see [rigkit-comments](../skills/rigkit-comments/SKILL.md). Generate HTML with `cmake --build build --target docs` ([build_instructions.md](build_instructions.md)). Published: [https://rigkid.github.io/rigkit/](https://rigkid.github.io/rigkit/) (host) and `https://rigkid.github.io/<pack>/` (each pack). See [packs/README.md](../packs/README.md#api-docs--github-pages).
 6. Open a PR against `main` (agents: [`skills/rigkit-build`](../skills/rigkit-build/SKILL.md#pull-requests) — `gh pr create`, fill the PR template, return the URL).
 
-## GitHub Actions (private remotes)
+## GitHub Actions (private pack remotes)
 
-Host, packs, and third-party deps are private. Default `GITHUB_TOKEN` cannot clone sibling private repos, so `headless` / `examples` (and pack hero CI) need an Actions secret:
+The host and the basics (`rigComponent`, `rigSystems`, `rigProject`, `rigImGui`) are public; most optional packs are private. Default `GITHUB_TOKEN` cannot clone a sibling private repo, so any job that pulls one — `examples/oscHost`, `examples/glEditor`, `angle-gles`, `plot-family`, pack hero CI — needs an Actions secret:
 
 1. Create a fine-grained PAT with **Contents: Read** on `rigkid/RigKit` and the in-org pack remotes (basics + any packs CI builds via CPM).
-2. Set org secret (preferred) or per-repo secret: `RIGKIT_CI_TOKEN`.
+2. Set `RIGKIT_CI_TOKEN` as an org secret with visibility **All repositories**, or as a per-repo secret.
 3. Workflows pass that token to `actions/checkout` for basic submodules, and rewrite `github.com` URLs so CPM can clone optional packs.
 
-Without the secret, those jobs fail at checkout with `Repository not found` (or the explicit missing-secret error).
+Two visibility traps. `gh secret set --org` defaults to *private repositories only*, which skips public repos such as `rigkid/RigKit` — pass `--visibility all`. And on **GitHub Free**, [org secrets are never delivered to private repos](https://docs.github.com/actions/security-guides/using-secrets-in-github-actions); they arrive as an empty string with no warning, so each private pack repo needs its own repo secret until the org is on Team.
+
+Without the secret, workflows warn and continue. Jobs that only touch public remotes still pass; jobs that reach a private pack fail at clone with `Repository not found`.
 
 ## AI collaboration
 
