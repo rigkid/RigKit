@@ -78,7 +78,7 @@ Receive `MEcs*` from the engine (or via your pack’s setup). Prefer the pack sp
 
 - **rigComponent** — data-only PODs + `ecs->registerComponent<T>(...)` in `setup()`
 - **rigSystems** — `ecs->registerSystem(name, Update|Draw, fn)`
-- **rigProject** — document/page records + load/save systems
+- **rigProject** — host project envelope (`CProject`/`CPage`) + `.rig` document IO
 
 See [packs_using.md](packs_using.md). Prefer POD for anything portable ([docs/contract/rigkit.md](contract/rigkit.md)).
 

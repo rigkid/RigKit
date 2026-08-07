@@ -11,9 +11,9 @@ TEST_CASE("rigSystems registers Update/Draw systems without replacing data catal
 
 	// Data catalog still owned by rigComponent registrations.
 	REQUIRE(f.findType("Transform") != nullptr);
-	REQUIRE(f.findType("Shape") != nullptr);
+	REQUIRE(f.findType("Rectangle") != nullptr);
 	CHECK(f.findType("Transform")->portable);
-	CHECK(f.findType("Shape")->portable);
+	CHECK(f.findType("Rectangle")->portable);
 
 	REQUIRE(ecs.hasSystem("SHierarchy"));
 	REQUIRE(ecs.hasSystem("SCanvasUpdate"));
@@ -22,7 +22,7 @@ TEST_CASE("rigSystems registers Update/Draw systems without replacing data catal
 
 	// Systems pack must not register component type names as systems.
 	CHECK_FALSE(ecs.hasSystem("Transform"));
-	CHECK_FALSE(ecs.hasSystem("Shape"));
+	CHECK_FALSE(ecs.hasSystem("Rectangle"));
 
 	bool sawUpdate = false;
 	bool sawDraw = false;

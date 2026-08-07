@@ -16,7 +16,7 @@ In-org packs are separate remotes in the [rigkid](https://github.com/rigkid) org
 |------|--------|------|
 | **rigComponent** | [rigkid/rigComponent](https://github.com/rigkid/rigComponent) | Data-only ECS components — no systems (includes general `CPath` / `rig.geometry.path`) |
 | **rigSystems** | [rigkid/rigSystems](https://github.com/rigkid/rigSystems) | Update/Draw systems over that data |
-| **rigProject** | [rigkid/rigProject](https://github.com/rigkid/rigProject) | Project/page data + JSON load/save (`.rig` default) |
+| **rigProject** | [rigkid/rigProject](https://github.com/rigkid/rigProject) | Host project envelope (`CProject`/`CPage`) + `.rig` document IO (document = portable `.rig`) |
 | **rigImGui** | [rigkid/rigImGui](https://github.com/rigkid/rigImGui) | UI fulfillment (`IMui`); host shell; Properties catalog; themes/fonts |
 
 ### 3D / mesh
@@ -64,8 +64,15 @@ Integration app: `packs/rigPlotter/examples/plot`. SVG IO pack hero: `packs/rigS
 |------|--------|------|
 | **rigPixelPlotComponent** | [rigkid/rigPixelPlotComponent](https://github.com/rigkid/rigPixelPlotComponent) | PixelPlotter PODs (source, canvas, effect chain, rasters). DATA ONLY |
 | **rigPixelPlotter** | [rigkid/rigPixelPlotter](https://github.com/rigkid/rigPixelPlotter) | PixelDoc pipeline (IMAGE/DRAW, GPU, layers, PNG) |
+| **rigPixelPlotterUi** | [rigkid/rigPixelPlotterUi](https://github.com/rigkid/rigPixelPlotterUi) | Kit UI panels (Main View, Canvas, Resources, Layers) |
 
-Product app **PixelPlotter** lives out of tree (e.g. next to RigKit), not under `examples/`. See [apps.md](apps.md).
+Product app **PixelPlotter** lives out of tree (e.g. next to RigKit), not under `examples/`. See [apps.md](apps.md). Thin host — packs own pipeline + UI.
+
+### Document hosts (Viewer / Player)
+
+| Pack | Remote | Role |
+|------|--------|------|
+| **rigDocumentShell** | [rigkid/rigDocumentShell](https://github.com/rigkid/rigDocumentShell) (local `packs/` until published) | Document-host chrome (Viewer/Player): File Open `.rig`, skipped keys, Edit Mode defaults. Not rigProject load; not present/play. |
 
 ### Install / show
 

@@ -14,7 +14,7 @@
 | **rigMeshEdit** | ImGuizmo TRS edit for selected `CTransform` |
 | **rigNodeComponent** | Generic node-graph PODs (`CNodeGraph`) — DATA + catalog/eval helpers. Artist guide: [nodes.md](nodes.md) |
 | **rigNodeEditor** | ImGui editor over `CNodeGraph` ([nodes.md](nodes.md)) |
-| **rigProject** | Document/page data + JSON load/save (default `.rig`) |
+| **rigProject** | Host project envelope + `.rig` document IO (document = portable `.rig`; project = host session) |
 | **rigImGui** | Properties/Debug read the **component catalog** |
 
 Core (`MEcs`) only provides thin `registerComponent` / `registerSystem` glue.

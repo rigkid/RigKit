@@ -1,7 +1,8 @@
 #include <doctest.h>
 
 #include "CDrawStyle.h"
-#include "CShape.h"
+#include "CRectangle.h"
+#include "CStar.h"
 #include "CTransform.h"
 #include "fixture.h"
 
@@ -35,7 +36,14 @@ TEST_CASE("rigComponent registers portable spine types") {
 	SpineFixture f;
 	requireType(f, "Transform", true);
 	requireType(f, "Relationship", true);
-	requireType(f, "Shape", true);
+	requireType(f, "Rectangle", true);
+	requireType(f, "Ellipse", true);
+	requireType(f, "Line", true);
+	requireType(f, "Polygon", true);
+	requireType(f, "RegularPolygon", true);
+	requireType(f, "Star", true);
+	requireType(f, "Arc", true);
+	requireType(f, "Ring", true);
 	requireType(f, "Mesh", true);
 	requireType(f, "DrawStyle", true);
 	requireType(f, "Selection", true);
@@ -52,8 +60,13 @@ TEST_CASE("rigComponent GetProperties pointers land in component storage") {
 	const auto* transform = requireType(f, "Transform", true);
 	checkPropertiesPointIntoMember<ecs::CTransform>(ecs, *transform);
 
-	const auto* shape = requireType(f, "Shape", true);
-	checkPropertiesPointIntoMember<ecs::CShape>(ecs, *shape);
+	// One box-shaped and one radial primitive, since they lay their fields out
+	// differently and a reflection slip would only show on one of them.
+	const auto* rectangle = requireType(f, "Rectangle", true);
+	checkPropertiesPointIntoMember<ecs::CRectangle>(ecs, *rectangle);
+
+	const auto* star = requireType(f, "Star", true);
+	checkPropertiesPointIntoMember<ecs::CStar>(ecs, *star);
 
 	const auto* drawStyle = requireType(f, "DrawStyle", true);
 	checkPropertiesPointIntoMember<ecs::CDrawStyle>(ecs, *drawStyle);

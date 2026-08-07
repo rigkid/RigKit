@@ -12,7 +12,7 @@ Say and write the same camelCase token (e.g. **rigImGui** → `packs/rigImGui/`)
 |---------|------|----------|
 | `*Component` | **Data pack** — domain POD components | `rigComponent`, `rigPlotComponent`, `rigNodeComponent`, `rigPixelPlotComponent`, `rigColorspace` |
 | `*Editor` / `*Edit` | Edit **capability** (ops and/or editor window) over existing data | `rigNodeEditor`, `rigVectorEditor`, `rigMeshEdit` |
-| `*Ui` | ImGui **Kit / shell panels** over an engine (not the data) | `rigPlotterUi` |
+| `*Ui` | ImGui **Kit / shell panels** over an engine (not the data) | `rigPlotterUi`, `rigPixelPlotterUi` |
 | Short / verb name | Single-purpose code, I/O, present, or transport | `rigSvg`, `rigObj`, `rigSystems`, `rigRender3D`, `rigGrbl`, `rigOsc`, `rigCompositor` |
 | Product engine name | Orchestration that mutates domain PODs | `rigPlotter`, `rigPixelPlotter` |
 
@@ -34,7 +34,7 @@ A **data pack** owns portable entity meaning. It is **not** “only `.h` structs
 | Document codecs that serialize those PODs | GPU / window / socket handles in components |
 | Pure helpers over POD (catalog tables, eval, flatten) | Second scene graph or manager trees |
 
-Examples: **rigComponent**, **rigPlotComponent**, **rigNodeComponent** (PODs + catalog/eval helpers + `.rig` codecs), **rigPixelPlotComponent**. **rigProject** is the document envelope + serialize path (data + codecs). Engines that *run* pipelines (`rigPlotter`, `rigPixelPlotter`) and editors/UI (`rigNodeEditor`, `rigPlotterUi`) are **code packs**.
+Examples: **rigComponent**, **rigPlotComponent**, **rigNodeComponent** (PODs + catalog/eval helpers + `.rig` codecs), **rigPixelPlotComponent**. **rigProject** is the host project envelope + `.rig` document IO (data + codecs; document = portable `.rig`). Engines that *run* pipelines (`rigPlotter`, `rigPixelPlotter`) and editors/UI (`rigNodeEditor`, `rigPlotterUi`) are **code packs**.
 
 See [docs/packs_using.md](../docs/packs_using.md) and [rigkit-data](../skills/rigkit-data/SKILL.md).
 
@@ -64,7 +64,7 @@ Each dependency uses a git **`ref`** (tag, branch, or commit SHA):
 |------|------|
 | **rigComponent** | Generic POD data |
 | **rigSystems** | Update/Draw systems |
-| **rigProject** | Document envelope + `.rig` |
+| **rigProject** | Host project envelope + `.rig` document IO |
 | **rigImGui** | Default **Rig + UI** fulfillment |
 
 Everything else under `packs/` is optional: local clone or CPM at `app.json` `url` + `ref`. Survey [docs/packs_catalog.md](../docs/packs_catalog.md) before scaffolding a new pack.

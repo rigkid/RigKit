@@ -67,6 +67,13 @@ add_library(rigkit STATIC ${RIGKIT_SOURCES})
 # Packs (rigComponent, rigSystems, rigImGui, ...) stay separate STATIC
 # targets via RigKitPacks.cmake - do not fold them into librigkit.
 
+# MinGW PE objects default to a ~32k section limit. EnTT-heavy TUs exceed it
+# and the linker then reports nonsense undefined refs into libstdc++/tuple.
+# MSYS2 UCRT64 often leaves the MINGW CMake var unset — key off GNU-on-Windows.
+if(WIN32 AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+	target_compile_options(rigkit PUBLIC -Wa,-mbig-obj)
+endif()
+
 if(RIGKIT_GLES)
 	target_sources(rigkit PRIVATE ${RIGKIT_ROOT}/third_party/glad/src/gles2.c)
 	target_compile_definitions(rigkit PUBLIC RIGKIT_GLES=1)

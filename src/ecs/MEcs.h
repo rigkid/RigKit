@@ -17,6 +17,10 @@
 namespace rigkit {
 class MRendering;
 
+/// Logged once per data type whose fields never reach the inspector. Out of
+/// line so no header pulls a logger in behind it.
+void warnComponentHasNoProperties(const std::string& name);
+
 /**
  * @brief Host ECS wrapper: entities, component catalog, system registry.
  * @details Packs register data types and Update/Draw systems. Present uses a
@@ -142,6 +146,9 @@ template <typename T> void MEcs::registerComponent(const std::string& name, bool
 		if (existing.name == name) {
 			return;
 		}
+	}
+	if constexpr (!has_get_properties<T>::value && !declares_no_properties<T>::value) {
+		warnComponentHasNoProperties(name);
 	}
 	ComponentTypeInfo info;
 	info.name = name;

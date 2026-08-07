@@ -22,6 +22,7 @@ rigObj	https://github.com/rigkid/rigObj.git	main
 rigOsc	https://github.com/rigkid/rigOsc.git	main
 rigPixelPlotComponent	https://github.com/rigkid/rigPixelPlotComponent.git	main
 rigPixelPlotter	https://github.com/rigkid/rigPixelPlotter.git	main
+rigPixelPlotterUi	https://github.com/rigkid/rigPixelPlotterUi.git	main
 rigPlotComponent	https://github.com/rigkid/rigPlotComponent.git	main
 rigPlotFinders	https://github.com/rigkid/rigPlotFinders.git	main
 rigPlotGenerators	https://github.com/rigkid/rigPlotGenerators.git	main

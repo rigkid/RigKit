@@ -3,6 +3,10 @@
 # Everything else: local clone or CPM at app.json url+ref.
 packs/*
 !packs/README.md
+!packs/rigComponent
+!packs/rigImGui
+!packs/rigProject
+!packs/rigSystems
 
 # Host examples not ready for the first private land (keep local; do not stage).
 examples/svgEditor/

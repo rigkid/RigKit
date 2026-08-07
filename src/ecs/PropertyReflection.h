@@ -1,8 +1,8 @@
 #pragma once
-#include <spdlog/spdlog.h>
+#include <cstdint>
 #include <string>
 #include <type_traits>
-#include <typeinfo>
+#include <utility>
 #include <vector>
 
 // Property type enumeration for editor reflection.
@@ -54,6 +54,18 @@ template <typename T> class has_get_properties {
 	static constexpr bool value = decltype(test<T>(0))::value;
 };
 
+/// SFINAE: Checks for `static constexpr bool kNoProperties = true;` — the
+/// opt-out for derived or otherwise non-editable components. Such a component
+/// shows no fields and draws no warning.
+template <typename T> class declares_no_properties {
+  private:
+	template <typename U> static auto test(int) -> decltype(U::kNoProperties, std::true_type{});
+	template <typename> static std::false_type test(...);
+
+  public:
+	static constexpr bool value = decltype(test<T>(0))::value;
+};
+
 // If T has GetProperties(), call it
 template <typename T>
 typename std::enable_if<has_get_properties<T>::value, std::vector<sProp>>::type TryGetProperties(
@@ -61,11 +73,11 @@ typename std::enable_if<has_get_properties<T>::value, std::vector<sProp>>::type 
 	return component.GetProperties();
 }
 
-// If T does not have GetProperties(), return empty and log warning
+// If T does not have GetProperties(), it contributes no editor fields. Silent
+// by design: inspectors call this every frame, and MEcs::registerComponent
+// raises the one-time nudge where the component's catalog name is known.
 template <typename T>
 typename std::enable_if<!has_get_properties<T>::value, std::vector<sProp>>::type TryGetProperties(
 	T&) {
-	spdlog::warn("[Property Inspector] WARNING: Component '{}' missing GetProperties()",
-				 typeid(T).name());
 	return {};
 }

@@ -24,6 +24,26 @@ In this folder, local copies of the loop / ECS / UI rules stay for RigKit contri
 
 **Freedom** = license + leverage · **Own** = artist-made tools · **Ship** = installations and studio apps on Pi-class hardware
 
+## Viewer vs Player
+
+**Viewer presents; Player plays.** Same Rig documents, different hosts:
+
+| Product | Job | Runs `rig.media.code`? |
+|---------|-----|-------------------------|
+| [RigViewer](https://github.com/rigkid/RigViewer) | Present POD (scene / GLSL sketch) | No (GLSL preview only on web) |
+| [RigPlayer](https://github.com/rigkid/RigPlayer) | Play documents with a game loop (SUDE + Lua) | Yes (sandboxed Lua runtime) |
+
+Shared desktop chrome (open document, skipped keys) belongs in a pack (`rigDocumentShell`), not in RigKit `src/`.
+
+## Document vs Project (lingo)
+
+| Word | Means | Owner |
+|------|-------|-------|
+| **Document** | The portable `.rig` file — Contract JSON (`entities[].components` with `rig.*` ids). What Viewer presents and Player plays. | RigWorks schemas |
+| **Project** | The host-side working envelope (`CProject` / `CPage` PODs) inside a RigKit host session. | **rigProject** pack |
+
+One file word (**document**, `.rig`), one host word (**project**). The rigProject pack implements document IO for hosts. Known gap: its PascalCase `.rig` writer predates Contract shape — Contract JSON is the canonical dialect; `tools/contract_smoke` "save is readable by Contract import" guards the bridge until the writer emits Contract natively.
+
 ## Documents in this folder
 
 | Doc | Purpose |

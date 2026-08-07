@@ -18,7 +18,7 @@ Schemas were cross-pollinated toward this reference host (v0.1). Data packs hold
 | `rig.spatial.camera` | **rigComponent** — `CCamera` (present **rigRender3D**) | Matches projection set (`active`, `projection`, clips, FOV, aspect). |
 | `rig.spatial.layer` | **rigComponent** — `CLayer` | `order` / `visible` / `locked` / tint (`rgba` ↔ channels). |
 | `rig.paint.fill_stroke` | **rigComponent** — `CDrawStyle` | Core fill/stroke; caps/joins/dash are host extensions. |
-| `rig.geometry.mesh` | **rigComponent** — `CMesh` | positions / indices / texcoords / mode / optional face colours. |
+| `rig.geometry.mesh` | **rigComponent** — `CMesh` | positions / optional normals / indices / texcoords / mode / optional face colours. |
 | `rig.geometry.path` | **rigComponent** — `CPath` | AoS `commands` including `quadTo`. Plot layer bags stay on **rigPlotComponent** `CPaths`. |
 | `rig.layout.page` | **rigProject** — `CPage` | `index` / `width` / `height` / `unit`; margins/bleed/slug as scalar channels. `name` until `rig.meta.named`. |
 | `rig.pixel.palette` | **rigComponent** — `CPalette` | `colors` (16 rgba). `shadeNext` is a host extension. |
