@@ -185,6 +185,10 @@ std::string getExecutableDir() {
 	return pathStr(g_exeDir);
 }
 
+std::string joinPath(const std::string& base, const std::string& relative) {
+	return pathStr(join(std::filesystem::path(base), relative));
+}
+
 std::string getDataDir() {
 	ensureInit();
 	return pathStr(join(g_exeDir, "data"));
@@ -255,7 +259,7 @@ bool saveUserDataDirOverride() {
 }
 
 std::string getFontsDir() {
-	return pathStr(join(std::filesystem::path(getDataDir()), "fonts"));
+	return joinPath(getDataDir(), "fonts");
 }
 
 std::string getAssetsDir() {
@@ -263,19 +267,19 @@ std::string getAssetsDir() {
 }
 
 std::string getWorkspacesDir() {
-	return pathStr(join(std::filesystem::path(getUserDataDir()), "user/workspaces"));
+	return joinPath(getUserDataDir(), "user/workspaces");
 }
 
 std::string getThemesDir() {
-	return pathStr(join(std::filesystem::path(getUserDataDir()), "user/themes"));
+	return joinPath(getUserDataDir(), "user/themes");
 }
 
 std::string getUserSettingsFile() {
-	return pathStr(join(std::filesystem::path(getUserDataDir()), "user/rigkit_settings.json"));
+	return joinPath(getUserDataDir(), "user/rigkit_settings.json");
 }
 
 std::string getUiIniPath() {
-	return pathStr(join(std::filesystem::path(getWorkspacesDir()), "imgui.ini"));
+	return joinPath(getWorkspacesDir(), "imgui.ini");
 }
 
 std::string getManifestPath() {

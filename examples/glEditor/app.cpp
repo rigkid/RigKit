@@ -54,7 +54,7 @@ bool GlEditorApp::seedShader(const std::string& name, const std::string& relativ
 	if (!ecs) {
 		return false;
 	}
-	const std::string path = AppPaths::getDataDir() + "/" + relativePath;
+	const std::string path = AppPaths::joinPath(AppPaths::getDataDir(), relativePath);
 	std::string text = readFileOrEmpty(path);
 	if (text.empty()) {
 		spdlog::warn("glEditor — missing {}", path);

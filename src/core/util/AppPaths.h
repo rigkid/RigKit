@@ -10,6 +10,10 @@ void init(int argc, char* argv[]);
 /// Directory containing the running executable (never depends on cwd).
 std::string getExecutableDir();
 
+/// Join @p base and @p relative with native separators (lexically normal string).
+/// Prefer this over string concat with "/" so Windows logs stay consistent.
+std::string joinPath(const std::string& base, const std::string& relative);
+
 /// Shipped runtime data next to the app: `<exeDir>/data` (fonts, samples).
 /// Never cwd-relative. Not affected by Data Path override.
 std::string getDataDir();
