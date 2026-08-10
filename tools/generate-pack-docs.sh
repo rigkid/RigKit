@@ -65,7 +65,7 @@ cat >"$RIGKIT_DOXY_OUT/mainpage.md" <<EOF
 
 Pack-scoped Doxygen from public headers (\`@brief\`, \`@param\`, \`@return\`, …).
 
-Host aggregate (all packs + core): [https://rigkid.github.io/rigkit/](https://rigkid.github.io/rigkit/)
+Host aggregate (all packs + core): [https://rigkid.github.io/rigkit/api/](https://rigkid.github.io/rigkit/api/)
 
 Narrative docs stay in the RigKit repo (\`docs/\`, \`AGENTS.md\`).
 EOF

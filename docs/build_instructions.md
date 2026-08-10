@@ -98,7 +98,8 @@ Published sites (GitHub Actions → Pages on push to `main`):
 
 | Site | URL |
 |------|-----|
-| Host aggregate | [https://rigkid.github.io/rigkit/](https://rigkid.github.io/rigkit/) |
+| Host landing | [https://rigkid.github.io/rigkit/](https://rigkid.github.io/rigkit/) |
+| Host API (Doxygen) | [https://rigkid.github.io/rigkit/api/](https://rigkid.github.io/rigkit/api/) |
 | One pack | `https://rigkid.github.io/<packName>/` |
 
 Pack-scoped local generate: `./tools/generate-pack-docs.sh <packName>` ([`PackDoxyfile.in`](api/PackDoxyfile.in)). Host CI fetches optional remotes via [`tools/fetch-packs-for-docs.sh`](../tools/fetch-packs-for-docs.sh) and [`docs/api/pack-remotes.txt`](api/pack-remotes.txt). See [packs/README.md](../packs/README.md#api-docs--github-pages).

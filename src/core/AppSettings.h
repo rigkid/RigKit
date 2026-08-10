@@ -18,7 +18,11 @@ struct GraphicsSettings {
 
 struct AppSettings : public ISettings {
 	std::string appName = "RigKit App";
-	float version = 0.1f;
+	/// Semver / display string from `app.json` `"version"` (e.g. `"0.1.0"`).
+	std::string version = "0.1.0";
+	std::string description;
+	/// SPDX id from `app.json` `"license"` (required by CI / check-invariants).
+	std::string license;
 
 	WindowSettings window; // default constructed (800x600, etc.)
 	GraphicsSettings graphics;
@@ -40,11 +44,48 @@ struct AppSettings : public ISettings {
 		};
 	}
 
+	/**
+	 * @brief Apply identity fields from a deployed `app.json` (next to the exe).
+	 * @details Reads `name`, `version`, `description`, `license`, and optional
+	 * `window`. Does not touch graphics / debug / dataPath.
+	 */
+	void applyFromManifest(const json& j) {
+		if (j.contains("name") && j["name"].is_string()) {
+			appName = j["name"].get<std::string>();
+		}
+		if (j.contains("version")) {
+			if (j["version"].is_string()) {
+				version = j["version"].get<std::string>();
+			} else if (j["version"].is_number()) {
+				version = std::to_string(j["version"].get<double>());
+			}
+		}
+		if (j.contains("description") && j["description"].is_string()) {
+			description = j["description"].get<std::string>();
+		}
+		if (j.contains("license") && j["license"].is_string()) {
+			license = j["license"].get<std::string>();
+		}
+		if (j.contains("window") && j["window"].is_object()) {
+			const auto& w = j["window"];
+			if (w.contains("width"))
+				window.width = w["width"].get<int>();
+			if (w.contains("height"))
+				window.height = w["height"].get<int>();
+			if (w.contains("title") && w["title"].is_string())
+				window.title = w["title"].get<std::string>();
+			if (w.contains("fullscreen"))
+				window.fullscreen = w["fullscreen"].get<bool>();
+		}
+	}
+
 	// ISettings implementation (JSON serialisation)
 	json getSettings() const override {
 		json j;
 		j["appName"] = appName;
 		j["version"] = version;
+		j["description"] = description;
+		j["license"] = license;
 		j["debugMode"] = debugMode;
 		// Window
 		j["window"]["width"] = window.width;
@@ -62,8 +103,16 @@ struct AppSettings : public ISettings {
 	void setSettings(const json& j) override {
 		if (j.contains("appName"))
 			appName = j["appName"].get<std::string>();
-		if (j.contains("version"))
-			version = j["version"].get<float>();
+		if (j.contains("version")) {
+			if (j["version"].is_string())
+				version = j["version"].get<std::string>();
+			else if (j["version"].is_number())
+				version = std::to_string(j["version"].get<double>());
+		}
+		if (j.contains("description") && j["description"].is_string())
+			description = j["description"].get<std::string>();
+		if (j.contains("license") && j["license"].is_string())
+			license = j["license"].get<std::string>();
 		if (j.contains("debugMode"))
 			debugMode = j["debugMode"].get<bool>();
 

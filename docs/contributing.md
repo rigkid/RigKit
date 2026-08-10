@@ -71,7 +71,7 @@ Details: [tools/contract_smoke/README.md](../tools/contract_smoke/README.md).
 2. Format with `tools/format.*` or rely on format-on-save + pre-commit.
 3. **Run CI locally before commit / push** — `tools/check-invariants`, style dry-run, `contract_smoke`, and the examples (or pack hero) you touched. See [rigkit-build](../skills/rigkit-build/SKILL.md#local-ci-before-commit-required). Do not rely on GitHub CI to catch build breaks.
 4. Use the PR template checklist (Ten Commandments + Pi / rebuild-cost callouts).
-5. Document public APIs with Doxygen tags (`@brief`, …) — see [rigkit-comments](../skills/rigkit-comments/SKILL.md). Generate HTML with `cmake --build build --target docs` ([build_instructions.md](build_instructions.md)). Published: [https://rigkid.github.io/rigkit/](https://rigkid.github.io/rigkit/) (host) and `https://rigkid.github.io/<pack>/` (each pack). See [packs/README.md](../packs/README.md#api-docs--github-pages).
+5. Document public APIs with Doxygen tags (`@brief`, …) — see [rigkit-comments](../skills/rigkit-comments/SKILL.md). Generate HTML with `cmake --build build --target docs` ([build_instructions.md](build_instructions.md)). Published: [https://rigkid.github.io/rigkit/api/](https://rigkid.github.io/rigkit/api/) (host API), [https://rigkid.github.io/rigkit/](https://rigkid.github.io/rigkit/) (landing), and `https://rigkid.github.io/<pack>/` (each pack). See [packs/README.md](../packs/README.md#api-docs--github-pages).
 6. Open a PR against `main` (agents: [`skills/rigkit-build`](../skills/rigkit-build/SKILL.md#pull-requests) — `gh pr create`, fill the PR template, return the URL).
 
 ## GitHub Actions (private pack remotes)

@@ -108,7 +108,7 @@ cmake --build build --target docs
 ./tools/generate-pack-docs.sh rigComponent
 ```
 
-Published: [https://rigkid.github.io/rigkit/](https://rigkid.github.io/rigkit/) (host aggregate CI) and `https://rigkid.github.io/<pack>/` (pack `docs.yml`). Config: [docs/api/Doxyfile.in](../../docs/api/Doxyfile.in), [PackDoxyfile.in](../../docs/api/PackDoxyfile.in). Rollout / Pages: [packs/README.md](../../packs/README.md#api-docs--github-pages). Comment tags: [rigkit-comments](../rigkit-comments/SKILL.md).
+Published: [https://rigkid.github.io/rigkit/](https://rigkid.github.io/rigkit/) (landing), [https://rigkid.github.io/rigkit/api/](https://rigkid.github.io/rigkit/api/) (host Doxygen), and `https://rigkid.github.io/<pack>/` (pack `docs.yml`). Config: [docs/api/Doxyfile.in](../../docs/api/Doxyfile.in), [PackDoxyfile.in](../../docs/api/PackDoxyfile.in). Site source: [`site/`](../../site/). Rollout / Pages: [packs/README.md](../../packs/README.md#api-docs--github-pages). Comment tags: [rigkit-comments](../rigkit-comments/SKILL.md).
 
 ## API change sweep
 

@@ -22,6 +22,7 @@ class OscHost : public rigkit::IApp {
 	float masterLevel() const { return m_masterLevel; }
 	bool& blackout() { return m_blackout; }
 	bool blackout() const { return m_blackout; }
+	float* color() { return m_color; }
 
 	void setShowStatus(const std::string& status) { m_showStatus = status; }
 	const std::string& showStatus() const { return m_showStatus; }
@@ -43,11 +44,10 @@ class OscHost : public rigkit::IApp {
 
 	bool m_showMode = false;
 	bool m_smokeOsc = false;
-	float m_time = 0.f;
-	float m_hue = 0.35f;
 
 	float m_masterLevel = 1.0f;
 	bool m_blackout = false;
+	float m_color[3] = {0.35f, 0.55f, 0.95f};
 	std::string m_showStatus = "idle";
 	int m_showHeartbeat = 0;
 	float m_heartbeatAccum = 0.f;

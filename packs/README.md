@@ -112,11 +112,12 @@ Private host/pack remotes need org (or per-repo) secret **`RIGKIT_CI_TOKEN`** â€
 
 ## API docs / GitHub Pages
 
-Doxygen HTML publishes automatically on push to `main`:
+Pages publish automatically on push to `main`:
 
 | Who | Workflow | URL |
 |-----|----------|-----|
-| Host | [`.github/workflows/docs.yml`](../.github/workflows/docs.yml) | [https://rigkid.github.io/rigkit/](https://rigkid.github.io/rigkit/) |
+| Host landing | [`.github/workflows/docs.yml`](../.github/workflows/docs.yml) | [https://rigkid.github.io/rigkit/](https://rigkid.github.io/rigkit/) ([`site/`](../site/)) |
+| Host API | same workflow | [https://rigkid.github.io/rigkit/api/](https://rigkid.github.io/rigkit/api/) |
 | Each pack | `.github/workflows/docs.yml` â†’ reusable [`pack-docs.yml`](../.github/workflows/pack-docs.yml) | `https://rigkid.github.io/<packName>/` |
 
 Local:

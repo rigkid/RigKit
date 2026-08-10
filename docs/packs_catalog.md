@@ -55,6 +55,7 @@ Artist guide: [nodes.md](nodes.md).
 | **rigPlotProcessors** | [rigkid/rigPlotProcessors](https://github.com/rigkid/rigPlotProcessors) | Prepare pipeline (merge / sort / simplify) |
 | **rigPlotGenerators** | [rigkid/rigPlotGenerators](https://github.com/rigkid/rigPlotGenerators) | Path generators (cropmarks / border) |
 | **rigVectorEditor** | [rigkid/rigVectorEditor](https://github.com/rigkid/rigVectorEditor) | Edit `CPaths` (translate / delete / nudge) |
+| **rigArtboards** | [rigkid/rigArtboards](https://github.com/rigkid/rigArtboards) | Shared mm editing surface — pan/zoom under cursor, selection gizmo, numeric transform (shells keep content draw + undo) |
 
 Integration app: `packs/rigPlotter/examples/plot`. SVG IO pack hero: `packs/rigSvg/examples/svg`.
 

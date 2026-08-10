@@ -34,6 +34,7 @@ void ToolControlWindow::renderContents() {
 
 	ImGui::SliderFloat("Master", &m_app->masterLevel(), 0.f, 1.f);
 	ImGui::Checkbox("Blackout", &m_app->blackout());
+	ImGui::ColorEdit3("Color", m_app->color(), ImGuiColorEditFlags_Float);
 
 	ImGui::Separator();
 	ImGui::Text("Show status: %s", m_app->showStatus().c_str());
@@ -83,7 +84,8 @@ void ToolControlWindow::renderContents() {
 		ImGui::EndPopup();
 	}
 
-	ImGui::TextWrapped("Addresses: %s/<id>/master|blackout|status|heartbeat  "
-					   "(also %s/… without id = broadcast). Real UDP.",
+	ImGui::TextWrapped("Addresses: %s/<id>/master|blackout|color|status|heartbeat  "
+					   "(also %s/… without id = broadcast). Color is three floats. "
+					   "Peer follows on the heartbeat tick (~1s).",
 					   ep.addressPrefix.c_str(), ep.addressPrefix.c_str());
 }

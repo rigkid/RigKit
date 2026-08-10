@@ -23,6 +23,8 @@
 #include "rendering/OpenGLRenderer.h"
 #include "rendering/U_rendering.h"
 
+#include <fstream>
+
 namespace rigkit {
 
 // Initialize static member
@@ -63,6 +65,19 @@ RigKitEngine::RigKitEngine(std::unique_ptr<IApp> app, const json& settings, int 
 
 	if (m_app) {
 		m_app->setEngine(this);
+		// Deployed app.json next to the exe — identity + default window before CLI/prefs.
+		{
+			std::ifstream in(AppPaths::getManifestPath());
+			if (in) {
+				try {
+					json manifest;
+					in >> manifest;
+					m_app->settings().applyFromManifest(manifest);
+				} catch (const std::exception& e) {
+					spdlog::warn("[RigKitEngine] Failed to read app.json: {}", e.what());
+				}
+			}
+		}
 		if (argc > 0 && argv != nullptr) {
 			CommandLineArgs args(argc, argv);
 			m_app->parseCommandLineArgs(args);
