@@ -31,6 +31,7 @@ Schemas were cross-pollinated toward this reference host (v0.1). Data packs hold
 | `rig.interact.selectable` | **rigComponent** — `CSelectable` | Exact `enabled`. Selection *state* stays on `CSelection` (host). Pick honors flag when present; absence = legacy selectable. |
 | `rig.media.asset_ref` | **rigComponent** — `CAssetRef` | `kind` / `path` / `loop`. Other schemas take an entity ref or compose this type on the same entity. |
 | `rig.media.code` | **rigComponent** — `CCode` | `text` / `language` / `readOnly`. Compose `CAssetRef` on the same entity for disk origin. `name` / `order` until `rig.meta.named`. `dirty` / `epoch` are editor cache — do not serialize. No `.rig` serializer: buffers are derived data. |
+| `rig.anim.curve` | **rigComponent** — `CCurve` | `points` / `interp` / `preset`. |
 | `rig.media.text` | **rigComponent** — `CText` (present **rigVarFont**) | `text` / `font` (`CAssetRef` kind font) / `fontSize` / `rgba` / `axes` / `features` / `useKerning`. Plot bake-to-path stays on `CTexts` (`TextItem` keeps `fontPath`; `sizeMm` / `baselineMm` plot-local). |
 
 ## Partial
@@ -52,7 +53,8 @@ Schemas were cross-pollinated toward this reference host (v0.1). Data packs hold
 | Schema family | Planned pack |
 |---------------|--------------|
 | `rig.music.*` | **rigMusicComponent** (sequencer → pattern → steps) |
-| `rig.anim.*` / `rig.mod.*` | **rigAnimComponent** or grow **rigComponent** |
+| `rig.anim.curve` | **rigComponent** — `CCurve` | Close for curve POD + presets; tween/LFO still planned. |
+| `rig.anim.*` / `rig.mod.*` (remaining) | **rigAnimComponent** or grow **rigComponent** |
 | `rig.led.*` | **rigLedComponent** |
 | `rig.io.serial` / `rig.sensor.*` | **rigInstallIoComponent** (or split) |
 
