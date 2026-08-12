@@ -82,6 +82,7 @@ JSON shape:
 ```
 
 `recentFiles` is a top-level blob value (not a Preferences section) written by `IMui::noteRecentFile` / File → Open Recent. `workspace` is the active named dock layout (View → Workspace in `rigImGui`); the layout files themselves live under `data/user/workspaces/<name>.ini` (dock tree plus `[RigVisibility]`). On startup, rigImGui loads that named file when present, otherwise `Standard.ini`.
+
 Built-in section: `host.app` (`AppSettings` — debug, vsync, FPS, clear color, window size/fullscreen, Data Path). Window size, fullscreen, vsync, clear color, debug, and Data Path all apply **immediately** when changed.
 
 `rigImGui.ui` also includes chrome prefs: **Show Status Bar**, **FPS Display** (Status Bar / Menu Bar / Off), progress placement, theme, fonts, rulers.
