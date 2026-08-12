@@ -5,6 +5,7 @@
 #include "rendering/U_gladGlfw.h"
 #include <imgui.h>
 #include <imgui_internal.h>
+#include <spdlog/spdlog.h>
 #include "core/RigKitEngine.h"
 #include "core/pack/MPack.h"
 #include "core/util/AppPaths.h"

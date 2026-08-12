@@ -25,4 +25,4 @@ See [docs/contract/commandments.md](docs/contract/commandments.md).
 
 - [ ] `./tools/check-invariants.sh` (or `tools\check-invariants.bat`)
 - [ ] Format + `contract_smoke` (see `skills/rigkit-build`)
-- [ ] Built example(s) / pack hero(s) touched
+- [ ] Built example(s) / pack example(s) touched

@@ -118,7 +118,7 @@ for /d %%D in (packs\*) do (
 if exist packs\rigPlotFinders\examples\finders\app.json (
   findstr /C:"GPL-2.0-or-later" packs\rigPlotFinders\examples\finders\app.json >nul
   if errorlevel 1 (
-    echo FAIL: rigPlotFinders hero app.json must declare GPL-2.0-or-later
+    echo FAIL: rigPlotFinders example app.json must declare GPL-2.0-or-later
     set FAIL=1
   )
 )
@@ -141,15 +141,15 @@ for /d %%D in (packs\*) do (
   )
 )
 
-REM --- Every pack: at least one hero with img\preview.png + README embed ---
+REM --- Every pack: at least one example with img\preview.png + README embed ---
 for /d %%D in (packs\*) do (
   if exist "%%D\pack.json" (
-    set "HERO_OK="
+    set "example_ok="
     for /d %%H in ("%%D\examples\*") do (
-      if exist "%%H\CMakeLists.txt" if exist "%%H\img\preview.png" set "HERO_OK=1"
+      if exist "%%H\CMakeLists.txt" if exist "%%H\img\preview.png" set "example_ok=1"
     )
-    if not defined HERO_OK (
-      echo FAIL: pack %%~nxD needs examples\^<hero^>\ with CMakeLists.txt and img\preview.png
+    if not defined example_ok (
+      echo FAIL: pack %%~nxD needs examples\^<name^>\ with CMakeLists.txt and img\preview.png
       set FAIL=1
     )
     if exist "%%D\README.md" (

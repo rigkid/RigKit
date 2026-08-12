@@ -69,14 +69,14 @@ Details: [tools/contract_smoke/README.md](../tools/contract_smoke/README.md).
 
 1. Fork / branch, keep changes focused.
 2. Format with `tools/format.*` or rely on format-on-save + pre-commit.
-3. **Run CI locally before commit / push** — `tools/check-invariants`, style dry-run, `contract_smoke`, and the examples (or pack hero) you touched. See [rigkit-build](../skills/rigkit-build/SKILL.md#local-ci-before-commit-required). Do not rely on GitHub CI to catch build breaks.
+3. **Run CI locally before commit / push** — `tools/check-invariants`, style dry-run, `contract_smoke`, and the examples (or pack example) you touched. See [rigkit-build](../skills/rigkit-build/SKILL.md#local-ci-before-commit-required). Do not rely on GitHub CI to catch build breaks.
 4. Use the PR template checklist (Ten Commandments + Pi / rebuild-cost callouts).
 5. Document public APIs with Doxygen tags (`@brief`, …) — see [rigkit-comments](../skills/rigkit-comments/SKILL.md). Generate HTML with `cmake --build build --target docs` ([build_instructions.md](build_instructions.md)). Published: [https://rigkid.github.io/rigkit/api/](https://rigkid.github.io/rigkit/api/) (host API), [https://rigkid.github.io/rigkit/](https://rigkid.github.io/rigkit/) (landing), and `https://rigkid.github.io/<pack>/` (each pack). See [packs/README.md](../packs/README.md#api-docs--github-pages).
 6. Open a PR against `main` (agents: [`skills/rigkit-build`](../skills/rigkit-build/SKILL.md#pull-requests) — `gh pr create`, fill the PR template, return the URL).
 
 ## GitHub Actions (private pack remotes)
 
-The host and the basics (`rigComponent`, `rigSystems`, `rigProject`, `rigImGui`) are public; most optional packs are private. Default `GITHUB_TOKEN` cannot clone a sibling private repo, so any job that pulls one — `examples/oscHost`, `examples/glEditor`, `angle-gles`, `plot-family`, pack hero CI — needs an Actions secret:
+The host and the basics (`rigComponent`, `rigSystems`, `rigProject`, `rigImGui`) are public; most optional packs are private. Default `GITHUB_TOKEN` cannot clone a sibling private repo, so any job that pulls one — `examples/oscHost`, `examples/glEditor`, `angle-gles`, pack example CI — needs an Actions secret:
 
 1. Create a fine-grained PAT with **Contents: Read** on `rigkid/RigKit` and the in-org pack remotes (basics + any packs CI builds via CPM).
 2. Set `RIGKIT_CI_TOKEN` as an org secret with visibility **All repositories**, or as a per-repo secret.

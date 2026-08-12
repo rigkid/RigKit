@@ -34,7 +34,7 @@ Portable Rig rules (with RigKit notes). Full intro: [contract/README.md](contrac
 | [packs_catalog.md](packs_catalog.md) | Known and planned packs |
 | [packs.md](packs.md) | What a pack is; layout and naming |
 | [packs_using.md](packs_using.md) | Using ECS packs from apps and other packs |
-| [../packs/README.md](../packs/README.md) | Pinning, heroes, CI, scaffold |
+| [../packs/README.md](../packs/README.md) | pinning, examples, CI, scaffold |
 
 ## Apps and examples
 

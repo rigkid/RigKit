@@ -69,7 +69,7 @@ Each dependency uses a git **`ref`** (tag, branch, or commit SHA):
 
 Everything else under `packs/` is optional: local clone or CPM at `app.json` `url` + `ref`. Survey [docs/packs_catalog.md](../docs/packs_catalog.md) before scaffolding a new pack.
 
-**Plot family:** `packs/rigPlotter/examples/plot` remains the **integration** app (full Kit) when that pack is checked out. Every plot pack also ships its own thin hero under `examples/<hero>/` plus `img/preview.png`. Headless `tools/*_smoke` stay as unit gates.
+**Plot family:** `packs/rigPlotter/examples/plot` remains the **integration** app (full Kit) when that pack is checked out. Every plot pack also ships its own thin example under `examples/<name>/` plus `img/preview.png`. Headless `tools/*_smoke` stay as unit gates.
 
 Pin basics = submodule SHA in the host. Pin optional packs = `ref` in `app.json` (CPM) or a local checkout.
 
@@ -80,16 +80,16 @@ Refresh checkouts:
 ./tools/update-packs.sh --app examples/oscHost/app.json
 ```
 
-## Hero example (README screenshot)
+## Pack example (README screenshot)
 
-**Every** in-org pack ships **one** hero under `examples/<hero>/` — a tiny RigKit app that teaches how to use the pack. The window is the pack README screenshot (`examples/<hero>/img/preview.png`). Lead the pack README with `![preview](examples/<hero>/img/preview.png)`. End the pack README with the Pages link for that pack id:
+**Every** in-org pack ships **one** example under `examples/<name>/` — a tiny RigKit app that teaches how to use the pack. The window is the pack README screenshot (`examples/<name>/img/preview.png`). Lead the pack README with `![preview](examples/<name>/img/preview.png)`. End the pack README with the Pages link for that pack id:
 
 ```md
 [API/docs](https://rigkid.github.io/<packName>/)
 ```
 
 ```
-packs/<pack>/examples/<hero>/
+packs/<pack>/examples/<name>/
   CMakeLists.txt   # RIGKIT_DIR → host root; add_rigkit_application
   app.json
   app.h / app.cpp / main.cpp
@@ -98,15 +98,15 @@ packs/<pack>/examples/<hero>/
 ```
 
 ```bash
-cmake -S packs/<pack>/examples/<hero> -B packs/<pack>/examples/<hero>/build
-cmake --build packs/<pack>/examples/<hero>/build --target <hero>
+cmake -S packs/<pack>/examples/<name> -B packs/<pack>/examples/<name>/build
+cmake --build packs/<pack>/examples/<name>/build --target <name>
 ```
 
-Screenshot workflow: build and run the hero, capture the main window, save as `examples/<hero>/img/preview.png` (no emoji chrome), commit with the hero. Host `examples/` stay Contract/product apps; they do **not** replace a pack’s hero.
+Screenshot workflow: build and run the example, capture the main window, save as `examples/<name>/img/preview.png` (no emoji chrome), commit with the example. Host `examples/` stay Contract/product apps; they do **not** replace a pack example.
 
 ## Pack CI
 
-Each in-org pack remote runs its own GitHub Actions workflow (`.github/workflows/ci.yml` in the pack repo): checkout the pack under test, clone the RigKit host + submodules, overlay the pack into `packs/<name>/`, then compile the hero example. Commit and push CI changes from the pack submodule (not only the host).
+Each in-org pack remote runs its own GitHub Actions workflow (`.github/workflows/ci.yml` in the pack repo): checkout the pack under test, clone the RigKit host + submodules, overlay the pack into `packs/<name>/`, then compile the pack example. Commit and push CI changes from the pack submodule (not only the host).
 
 Private host/pack remotes need org (or per-repo) secret **`RIGKIT_CI_TOKEN`** — a fine-grained PAT with Contents:read on `rigkid/RigKit` and the in-org packs. Default `GITHUB_TOKEN` cannot clone sibling private repos. See [docs/contributing.md](../docs/contributing.md).
 
@@ -137,8 +137,8 @@ Then start from **[rigTemplate](../templates/rigTemplate/)** (`https://github.co
 
 1. Lock the spoken name (one camelCase id). Copy `templates/rigTemplate` → `packs/<id>/` (or clone the template remote).
 2. Rename `pack.json`, sources, class, and `PackRegistry` factory string to that same id. Set `license` in `pack.json` to `MIT Rigkid Contributors` (or `GPL-2.0-or-later Rigkid Contributors`; required by CI / `check-invariants`). Keep `description`, `url`, and `dependencies` accurate there — that file owns About / `IPack` identity and runtime init order ([docs/packs.md](../docs/packs.md)). The pack constructor is only `IPack("<id>")` — no `setDescription` / `addDependency`.
-3. Add `url` + `ref` to the app `app.json` dependencies (`"name"` must match the id). Set SPDX `license` on the hero `app.json` too (`MIT` is fine for apps).
-4. Fill `examples/demo/` (hero + `img/preview.png` for the README).
+3. Add `url` + `ref` to the app `app.json` dependencies (`"name"` must match the id). Set SPDX `license` on the example `app.json` too (`MIT` is fine for apps).
+4. Fill `examples/demo/` (example + `img/preview.png` for the README).
 5. Publish the pack remote when ready (own repo push, or `./tools/publish-template.sh` for the template itself).
 
 ## Optional / external packs

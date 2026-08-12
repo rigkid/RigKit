@@ -1,8 +1,8 @@
 param(
-	# Capture only these packs (by pack name). Default: every hero below.
+	# Capture only these packs (by pack name). Default: every example below.
 	[string[]]$Only = @(),
-	# Leave the window at its native size and scale the shot down to the hero
-	# width afterwards. Needed on HiDPI: forcing the window to hero pixels
+	# Leave the window at its native size and scale the shot down to the example
+	# width afterwards. Needed on HiDPI: forcing the window to example pixels
 	# leaves PrintWindow with the pre-resize surface.
 	[switch]$Native
 )
@@ -151,7 +151,7 @@ function Capture-Window {
 	}
 }
 
-$heroes = @(
+$examples = @(
 	@{
 		Exe = 'D:\repos\rigkit\packs\rigComponent\examples\creators\build\bin\creators\creators.exe'
 		Title = 'rigComponent'
@@ -188,15 +188,15 @@ $heroes = @(
 )
 
 if ($Only.Count -gt 0) {
-	$heroes = @($heroes | Where-Object { $Only -contains $_.Title })
-	if ($heroes.Count -eq 0) { throw "No hero matched -Only $($Only -join ',')" }
+	$examples = @($examples | Where-Object { $Only -contains $_.Title })
+	if ($examples.Count -eq 0) { throw "No example matched -Only $($Only -join ',')" }
 }
 
 Get-Process creators, present, document, host_shell -ErrorAction SilentlyContinue |
 	Stop-Process -Force -ErrorAction SilentlyContinue
 Start-Sleep -Milliseconds 500
 
-foreach ($h in $heroes) {
+foreach ($h in $examples) {
 	Write-Host "`n=== $($h.Title) ==="
 	if (-not (Test-Path $h.Exe)) { throw "Missing $($h.Exe)" }
 	$work = Split-Path -Parent $h.Exe
