@@ -63,6 +63,8 @@ cmake --build examples/oscHost/build --config Release --target oscHost
 
 Clean rebuild: delete `examples/<name>/build/` (wipes objects, the exe, and deployed `data/user`, including saved UI layout `imgui.ini`), then reconfigure.
 
+`add_rigkit_application` deploys each processed pack’s `pack.json` to `<exeDir>/data/packs/<name>/` so `MPack` can fill `IPack` identity (description / license / url) at register — [docs/packs.md](../../docs/packs.md).
+
 Root tree (docs / optional tools only):
 
 ```bash
@@ -108,7 +110,7 @@ cmake --build build --target docs
 ./tools/generate-pack-docs.sh rigComponent
 ```
 
-Published: [https://rigkid.github.io/rigkit/](https://rigkid.github.io/rigkit/) (host aggregate CI) and `https://rigkid.github.io/<pack>/` (pack `docs.yml`). Config: [docs/api/Doxyfile.in](../../docs/api/Doxyfile.in), [PackDoxyfile.in](../../docs/api/PackDoxyfile.in). Rollout / Pages: [packs/README.md](../../packs/README.md#api-docs--github-pages). Comment tags: [rigkit-comments](../rigkit-comments/SKILL.md).
+Published: [https://rigkid.github.io/rigkit/](https://rigkid.github.io/rigkit/) (landing), [https://rigkid.github.io/rigkit/api/](https://rigkid.github.io/rigkit/api/) (host Doxygen), and `https://rigkid.github.io/<pack>/` (pack `docs.yml`). Config: [docs/api/Doxyfile.in](../../docs/api/Doxyfile.in), [PackDoxyfile.in](../../docs/api/PackDoxyfile.in). Site source: [`site/`](../../site/). Rollout / Pages: [packs/README.md](../../packs/README.md#api-docs--github-pages). Comment tags: [rigkit-comments](../rigkit-comments/SKILL.md).
 
 ## API change sweep
 

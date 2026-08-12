@@ -41,7 +41,7 @@ std::cout << rigkit::rigOsc::commandLineHelp();
 ./oscHost --show --network-id=box-b --listen-port=8001 --send-host=127.0.0.1 --send-port=8000
 ```
 
-Move Master on A; within about a second B’s clear color follows (heartbeat tick pushes bus). Addresses: `/rigkit/<networkId>/master|…`; bare `/rigkit/…` is broadcast.
+Move Master or Color on A; within about a second B’s clear color follows (heartbeat tick pushes bus). Addresses: `/rigkit/<networkId>/master|blackout|color|…`; bare `/rigkit/…` is broadcast. `color` is three floats.
 
 ## Dependencies
 

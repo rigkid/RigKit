@@ -2,7 +2,8 @@
 
 Generated from Doxygen tags on public headers (`@brief`, `@param`, `@return`, …).
 
-Published host aggregate: [https://rigkid.github.io/rigkit/](https://rigkid.github.io/rigkit/).  
+Published host aggregate: [https://rigkid.github.io/rigkit/api/](https://rigkid.github.io/rigkit/api/).  
+Site landing: [https://rigkid.github.io/rigkit/](https://rigkid.github.io/rigkit/).  
 Per-pack sites: `https://rigkid.github.io/<packName>/` (same Doxygen tags, pack headers only).
 
 This is **not** the Contract or authoring guide — those stay in Markdown in the repo:

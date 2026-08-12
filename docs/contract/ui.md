@@ -26,7 +26,7 @@ Author/tool surfaces share portable entity data. Skip ECS and you fork Propertie
 ## When it applies
 
 - Host offers author/tool surfaces through a seam.
-- Host honors Rig (SUDE + ECS).
+- Host honors RigKit’s floor (SUDE + ECS) and speaks Rig POD.
 - Show / headless / light embedded hosts omit UI → **Rig** only.
 
 ## Contract rules

@@ -190,6 +190,21 @@ class IMui {
 		(void)action;
 	}
 
+	/**
+	 * @brief Register an Edit menu row after Undo/Redo (e.g. Delete).
+	 * @param label Menu label (e.g. "Delete").
+	 * @param shortcut Optional chord shown in the menu (display only unless also bound).
+	 * @param isEnabled Optional; when set, disables the item when false.
+	 * @param action Invoked when the item is chosen.
+	 */
+	virtual void registerEditAction(const std::string& label, const std::string& shortcut,
+									std::function<bool()> isEnabled, std::function<void()> action) {
+		(void)label;
+		(void)shortcut;
+		(void)isEnabled;
+		(void)action;
+	}
+
 	/** @brief Gizmo / tool op for Tools menu (Select V, Move W, Rotate E, Scale R). */
 	enum class GizmoOp { Select, Translate, Rotate, Scale };
 	virtual void setGizmoOp(GizmoOp op) { (void)op; }
@@ -201,6 +216,17 @@ class IMui {
 	 * used. Pass nullptr to clear. Multiple packs may register; order is FIFO.
 	 */
 	virtual void registerFontAtlasHook(std::function<void(ImFontAtlas& atlas)> hook) { (void)hook; }
+
+	/**
+	 * @brief Optional About dialog intro (Help → About). Empty = default from app.json.
+	 * @details Default layout: "{name} built with RigKit", version, description, license.
+	 * Pass a non-empty string to replace that block entirely.
+	 */
+	virtual void setAboutIntro(std::string text) { (void)text; }
+	virtual const std::string& aboutIntro() const {
+		static const std::string empty;
+		return empty;
+	}
 
 	/**
 	 * @brief Progress chrome (status bar or floating). Null when UI is detached.

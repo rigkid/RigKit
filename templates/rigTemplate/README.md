@@ -11,11 +11,12 @@ Host copy lives at `templates/rigTemplate/` in the RigKit repo (not loaded as an
 
 1. Lock that id. Copy this tree to `packs/<id>/` (or clone the `rigTemplate` remote and rename).
 2. Rename everywhere to the same id:
-   - folder, `pack.json` `name` / `url` / `description`
+   - folder, `pack.json` `name` / `url` / `description` / `dependencies`
    - `src/rigTemplate.*` → `src/<id>.*`
    - class `rigTemplate` and `PackRegistry` factory string
    - `CMakeLists.txt` source list
    - README footer `[API/docs](https://rigkid.github.io/<id>/)`
+   - Leave the constructor as `IPack("<id>")` only — identity and deps come from `pack.json`
 3. Fill `setup()`: **data** → `registerComponent`; **code** → `registerSystem`. Keep portable fields POD (NO CODE JUST DATA).
 4. Add to your app `app.json`:
 

@@ -113,6 +113,8 @@ A **setter** on an interface forces every implementer to keep a copy, and the ow
 
 Smell: the same default literal written in more than one layer (engine field + impl field + interface `virtual` return). Three defaults = three sources of truth that drift apart silently.
 
+**Pack identity:** `pack.json` owns description / license / url. `MPack` fills `IPack` at register; UI (About) reads `IPack`. Do not keep a parallel authoring copy in the pack constructor — [rigkit-contract Packs](../rigkit-contract/SKILL.md#packs).
+
 Split state by lifetime, then give each half exactly one home:
 
 - **Capability** — declared once in `setup()`, never toggles → engine / app settings.

@@ -200,7 +200,7 @@ function(add_rigkit_application)
 		endif()
 	endforeach()
 
-	# Deploy runtime data next to the binary: <exeDir>/data/ (AppPaths, OF bin/data habit).
+	# Deploy runtime data next to the binary: <exeDir>/data/ (AppPaths).
 	# Host assets first, then optional app-local data/ (overlays / extras like .obj).
 	set(_rigkit_assets_src "${RIGKIT_ROOT}/assets")
 	set(_app_data_src "${APP_DIR}/data")
@@ -230,6 +230,24 @@ function(add_rigkit_application)
 			COMMENT "Deploy app.json next to ${_sanitized_name}"
 		)
 	endif()
+
+	# Ship each linked pack's pack.json for About / IPack identity at runtime.
+	get_property(_rigkit_processed_packs GLOBAL PROPERTY RIGKIT_PROCESSED_PACKS)
+	if(NOT _rigkit_processed_packs)
+		set(_rigkit_processed_packs "${APP_PACK_LIBS}")
+	endif()
+	foreach(pack_lib ${_rigkit_processed_packs})
+		set(_pack_json "${RIGKIT_ROOT}/packs/${pack_lib}/pack.json")
+		if(EXISTS "${_pack_json}")
+			add_custom_command(TARGET ${_sanitized_name} POST_BUILD
+				COMMAND ${CMAKE_COMMAND} -E make_directory
+						"$<TARGET_FILE_DIR:${_sanitized_name}>/data/packs/${pack_lib}"
+				COMMAND ${CMAKE_COMMAND} -E copy_if_different "${_pack_json}"
+						"$<TARGET_FILE_DIR:${_sanitized_name}>/data/packs/${pack_lib}/pack.json"
+				COMMENT "Deploy ${pack_lib}/pack.json next to ${_sanitized_name}"
+			)
+		endif()
+	endforeach()
 
 	# Packs can declare runtime files (DLLs, path shims) that must sit next to
 	# the exe — set the RIGKIT_RUNTIME_FILES property on the pack target.

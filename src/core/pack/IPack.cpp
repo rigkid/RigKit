@@ -7,13 +7,17 @@
 namespace rigkit {
 
 IPack::IPack(const std::string& name)
-	: m_name(name), m_description(""), m_license("MIT Rigkid Contributors"), m_enabled(true),
-	  m_initialized(false), m_time(0.0f) {}
+	: m_name(name), m_description(""), m_license("MIT Rigkid Contributors"), m_url(""),
+	  m_enabled(true), m_initialized(false), m_time(0.0f) {}
 
 // Destructor is defaulted in header
 
 void IPack::addDependency(const std::string& packName) {
 	m_dependencies.push_back(packName);
+}
+
+void IPack::setDependencies(std::vector<std::string> deps) {
+	m_dependencies = std::move(deps);
 }
 
 void IPack::addEventListener(const std::string& event, std::function<void()> callback) {
@@ -92,6 +96,7 @@ json IPack::getSettings() const {
 	settings["name"] = m_name;
 	settings["description"] = m_description;
 	settings["license"] = m_license;
+	settings["url"] = m_url;
 	settings["enabled"] = m_enabled;
 	settings["initialized"] = m_initialized;
 	settings["time"] = m_time;
@@ -109,6 +114,8 @@ void IPack::setSettings(const json& settings) {
 		m_description = settings["description"];
 	if (settings.contains("license"))
 		m_license = settings["license"];
+	if (settings.contains("url"))
+		m_url = settings["url"];
 	if (settings.contains("enabled"))
 		m_enabled = settings["enabled"];
 	if (settings.contains("time"))

@@ -8,6 +8,8 @@
 #include "packs/rigComponent/src/rigComponent.h"
 #include "packs/rigSystems/src/rigSystems.h"
 
+#include <spdlog/spdlog.h>
+
 void MinimalApp::setup() {
 	spdlog::info("minimal setup — creators + meshes");
 	m_engine->setClearColor(0.12f, 0.14f, 0.18f, 1.0f);

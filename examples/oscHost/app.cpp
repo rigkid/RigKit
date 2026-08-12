@@ -1,6 +1,5 @@
 #include "app.h"
 #include <GLFW/glfw3.h>
-#include <cmath>
 #include <iostream>
 #include <spdlog/spdlog.h>
 #include "core/RigKitEngine.h"
@@ -8,6 +7,7 @@
 #include "packs/rigComponent/src/rigComponent.h"
 #include "packs/rigImGui/src/Mui.h"
 #include "packs/rigImGui/src/rigImGui.h"
+#include "packs/rigOsc/src/CNetworkIdentity.h"
 #include "packs/rigOsc/src/COscShowBus.h"
 #include "packs/rigOsc/src/rigOsc.h"
 #include "packs/rigSystems/src/rigSystems.h"
@@ -77,6 +77,7 @@ void OscHost::setupAuthorUi() {
 
 	auto* mui = dynamic_cast<rigkit::Mui*>(ui);
 	if (mui) {
+		mui->setDockPassthroughCentral(true);
 		mui->addAllHostPanels();
 		mui->showNotification("Author mode — oscHost");
 	}
@@ -111,6 +112,16 @@ void OscHost::syncOscBus() {
 	} else {
 		bus.blackout = m_blackout;
 	}
+	if (bus.colorFromNet) {
+		m_color[0] = bus.colorR;
+		m_color[1] = bus.colorG;
+		m_color[2] = bus.colorB;
+		bus.colorFromNet = false;
+	} else {
+		bus.colorR = m_color[0];
+		bus.colorG = m_color[1];
+		bus.colorB = m_color[2];
+	}
 	if (bus.statusFromNet) {
 		m_showStatus = bus.status;
 		bus.statusFromNet = false;
@@ -136,6 +147,14 @@ void OscHost::setup() {
 	if (m_osc && !m_osc->applyCommandLine(m_cliArgs)) {
 		spdlog::error("oscHost: OSC bind failed — {}", m_osc->lastError());
 	}
+	if (m_osc) {
+		const std::string title =
+			std::string("RigKit — oscHost [") + m_osc->identity().networkId + "]";
+		window().title = title;
+		if (auto* win = getEngine()->getWindow()) {
+			glfwSetWindowTitle(win, title.c_str());
+		}
+	}
 
 	if (m_showMode) {
 		getEngine()->detachUiManager();
@@ -151,8 +170,7 @@ void OscHost::setup() {
 	if (m_smokeOsc) {
 		const bool ok = runOscSmoke();
 		if (!ok) {
-			spdlog::error("oscHost --smoke-osc failed: {}",
-						  m_osc ? m_osc->lastError() : "no pack");
+			spdlog::error("oscHost --smoke-osc failed: {}", m_osc ? m_osc->lastError() : "no pack");
 		} else {
 			spdlog::info("oscHost --smoke-osc OK");
 		}
@@ -166,9 +184,6 @@ void OscHost::setup() {
 }
 
 void OscHost::update(float dt) {
-	m_time += dt;
-	m_hue = 0.5f + 0.5f * std::sin(m_time * 0.4f);
-
 	m_heartbeatAccum += dt;
 	if (m_heartbeatAccum >= 1.f) {
 		m_heartbeatAccum -= 1.f;
@@ -179,21 +194,8 @@ void OscHost::update(float dt) {
 }
 
 void OscHost::draw() {
-	float level = m_masterLevel;
-	float r = 0.05f + 0.25f * m_hue;
-	float g = 0.08f + 0.15f * (1.f - m_hue);
-	float b = 0.12f + 0.35f * std::sin(m_time * 0.7f) * 0.5f + 0.35f;
-
-	if (m_blackout) {
-		r = g = b = 0.f;
-		level = 0.f;
-	}
-
-	r *= level;
-	g *= level;
-	b *= level;
-
-	getEngine()->setClearColor(r, g, b, 1.f);
+	float level = m_blackout ? 0.f : m_masterLevel;
+	getEngine()->setClearColor(m_color[0] * level, m_color[1] * level, m_color[2] * level, 1.f);
 }
 
 void OscHost::exit() {

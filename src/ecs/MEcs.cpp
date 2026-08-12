@@ -1,6 +1,6 @@
 #include "ecs/MEcs.h"
-#include <spdlog/spdlog.h>
 #include <algorithm>
+#include <spdlog/spdlog.h>
 
 namespace rigkit {
 

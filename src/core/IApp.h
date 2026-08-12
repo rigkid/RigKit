@@ -73,7 +73,9 @@ class IApp {
 	}
 
 	const std::string& getAppName() const { return m_settings.appName; }
-	float getAppVersion() const { return m_settings.version; }
+	const std::string& getAppVersion() const { return m_settings.version; }
+	const std::string& getAppDescription() const { return m_settings.description; }
+	const std::string& getAppLicense() const { return m_settings.license; }
 
 	void setWindowVisibility(const std::string& windowName, bool visible);
 	void setWindowVisibilityAll(bool visible);

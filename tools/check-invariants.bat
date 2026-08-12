@@ -123,6 +123,24 @@ if exist packs\rigPlotFinders\examples\finders\app.json (
   )
 )
 
+REM --- Pack ctors must not re-author pack.json identity / deps ---
+if exist templates\rigTemplate\src (
+  findstr /S /M /R /C:"setDescription[ ]*(" /C:"setLicense[ ]*(" /C:"setUrl[ ]*(" /C:"addDependency[ ]*(" templates\rigTemplate\src\*.cpp >nul 2>nul
+  if not errorlevel 1 (
+    echo FAIL: pack ctor must not set identity/deps ^(use pack.json^): templates\rigTemplate\src
+    set FAIL=1
+  )
+)
+for /d %%D in (packs\*) do (
+  if exist "%%D\src" if exist "%%D\pack.json" (
+    findstr /S /M /R /C:"setDescription[ ]*(" /C:"setLicense[ ]*(" /C:"setUrl[ ]*(" /C:"addDependency[ ]*(" "%%D\src\*.cpp" >nul 2>nul
+    if not errorlevel 1 (
+      echo FAIL: pack ctor must not set identity/deps ^(use pack.json^): %%D\src
+      set FAIL=1
+    )
+  )
+)
+
 REM --- Every pack: at least one hero with img\preview.png + README embed ---
 for /d %%D in (packs\*) do (
   if exist "%%D\pack.json" (

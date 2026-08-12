@@ -7,7 +7,7 @@ Constitution for humans and agents. **AI collaboration is invited** — same rul
 3. **Rebuilds stay cheap.** Thin core, pack weight, narrow includes. A coffee-break compile is a design bug.
 4. **rigComponent = data. rigSystems = code.** Never blur that for convenience. Behavior packs read data; they do not become the data.
 5. **Creators teach; managers serve packs.** Artists get `makeRect` / `setup`–`update`–`draw`. `M*` stays for internals.
-6. **One vocabulary.** Pack ≠ addon. **RigWorks** (**Rig** in running text) = zero-code framework (SUDE+ECS + schemas). **RigKit** = coded Rig host (this repo). Contract/framework ≠ fulfillment. Host ≠ distribution. Same words everywhere — kill synonyms.
+6. **One vocabulary.** Pack ≠ addon. **RigWorks** (**Rig** in running text) = zero-code framework (grammar + entity/component POD + schemas). **RigKit** = coded Rig host — **floor is SUDE + ECS**. Contract/framework ≠ fulfillment. Host ≠ distribution. Same words everywhere — kill synonyms.
 7. **Stand on shoulders.** Prefer an existing library over writing our own — only when it shares our spirit (Pi-cheap, data-friendly, rebuild-cheap, artist-warm), does what we need, and we can change it. Do not reinvent the wheel. Do not invent Mars (a wrong-spirit megastack or a parallel planet just to own every line).
 8. **Seams stay small.** Extend through packs, `IApp`, `IMui`, POD + register. No second scene graph. No ceremony trees.
 9. **No UI toolkit in `src/`.** UI through `IMui`; **rigImGui** is a fulfillment, not Rig.

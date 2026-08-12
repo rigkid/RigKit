@@ -13,6 +13,7 @@
 
 #include "core/AppSettings.h"
 #include "core/IApp.h"
+#include "core/TypeJson.h"
 #include "core/canvas/MCanvas.h"
 #include "core/pack/MPack.h"
 #include "core/util/AppPaths.h"
@@ -22,6 +23,8 @@
 #include "rendering/MRendering.h"
 #include "rendering/OpenGLRenderer.h"
 #include "rendering/U_rendering.h"
+
+#include <fstream>
 
 namespace rigkit {
 
@@ -63,6 +66,19 @@ RigKitEngine::RigKitEngine(std::unique_ptr<IApp> app, const json& settings, int 
 
 	if (m_app) {
 		m_app->setEngine(this);
+		// Deployed app.json next to the exe — identity + default window before CLI/prefs.
+		{
+			std::ifstream in(AppPaths::getManifestPath());
+			if (in) {
+				try {
+					json manifest;
+					in >> manifest;
+					m_app->settings().applyFromManifest(manifest);
+				} catch (const std::exception& e) {
+					spdlog::warn("[RigKitEngine] Failed to read app.json: {}", e.what());
+				}
+			}
+		}
 		if (argc > 0 && argv != nullptr) {
 			CommandLineArgs args(argc, argv);
 			m_app->parseCommandLineArgs(args);
@@ -491,8 +507,7 @@ json RigKitEngine::getSettings() const {
 	// Graphics settings
 	j["graphics"]["vsync"] = getVerticalSync();
 	j["graphics"]["targetFps"] = getTargetFrameRate();
-	j["graphics"]["clearColor"] = {getClearColor().r, getClearColor().g, getClearColor().b,
-								   getClearColor().a};
+	j["graphics"]["clearColor"] = colorToJson(getClearColor());
 
 	// Window settings — logical / design pixels (not scale-multiplied GLFW size).
 	int designW = 0, designH = 0, fbW = 0, fbH = 0;
@@ -519,11 +534,8 @@ void RigKitEngine::setSettings(const json& settings) {
 			setTargetFrameRate(g["targetFps"].get<int>());
 		}
 		if (g.contains("clearColor")) {
-			auto c = g["clearColor"];
-			if (c.is_array() && c.size() == 4) {
-				setClearColor(c[0].get<float>(), c[1].get<float>(), c[2].get<float>(),
-							  c[3].get<float>());
-			}
+			const glm::vec4 c = colorFromJson(g["clearColor"], getClearColor());
+			setClearColor(c.r, c.g, c.b, c.a);
 		}
 	}
 

@@ -112,11 +112,12 @@ Private host/pack remotes need org (or per-repo) secret **`RIGKIT_CI_TOKEN`** �
 
 ## API docs / GitHub Pages
 
-Doxygen HTML publishes automatically on push to `main`:
+Pages publish automatically on push to `main`:
 
 | Who | Workflow | URL |
 |-----|----------|-----|
-| Host | [`.github/workflows/docs.yml`](../.github/workflows/docs.yml) | [https://rigkid.github.io/rigkit/](https://rigkid.github.io/rigkit/) |
+| Host landing | [`.github/workflows/docs.yml`](../.github/workflows/docs.yml) | [https://rigkid.github.io/rigkit/](https://rigkid.github.io/rigkit/) ([`site/`](../site/)) |
+| Host API | same workflow | [https://rigkid.github.io/rigkit/api/](https://rigkid.github.io/rigkit/api/) |
 | Each pack | `.github/workflows/docs.yml` → reusable [`pack-docs.yml`](../.github/workflows/pack-docs.yml) | `https://rigkid.github.io/<packName>/` |
 
 Local:
@@ -135,7 +136,7 @@ cmake -S . -B build && cmake --build build --target docs
 Then start from **[rigTemplate](../templates/rigTemplate/)** (`https://github.com/rigkid/rigTemplate.git`):
 
 1. Lock the spoken name (one camelCase id). Copy `templates/rigTemplate` → `packs/<id>/` (or clone the template remote).
-2. Rename `pack.json`, sources, class, and `PackRegistry` factory string to that same id. Set `license` in `pack.json` to `MIT Rigkid Contributors` (or `GPL-2.0-or-later Rigkid Contributors`; required by CI / `check-invariants`).
+2. Rename `pack.json`, sources, class, and `PackRegistry` factory string to that same id. Set `license` in `pack.json` to `MIT Rigkid Contributors` (or `GPL-2.0-or-later Rigkid Contributors`; required by CI / `check-invariants`). Keep `description`, `url`, and `dependencies` accurate there — that file owns About / `IPack` identity and runtime init order ([docs/packs.md](../docs/packs.md)). The pack constructor is only `IPack("<id>")` — no `setDescription` / `addDependency`.
 3. Add `url` + `ref` to the app `app.json` dependencies (`"name"` must match the id). Set SPDX `license` on the hero `app.json` too (`MIT` is fine for apps).
 4. Fill `examples/demo/` (hero + `img/preview.png` for the README).
 5. Publish the pack remote when ready (own repo push, or `./tools/publish-template.sh` for the template itself).

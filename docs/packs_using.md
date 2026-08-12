@@ -74,7 +74,7 @@ The name is the entry's identity: same name + phase replaces, so a pack that run
 
 ## Bootstrap order
 
-Register **rigComponent** before **rigSystems** before **rigImGui**. 3D present: register **rigRender3D** after **rigSystems**. `initAll` topo-sorts packs that declared `addDependency`; it does not create missing deps.
+Register **rigComponent** before **rigSystems** before **rigImGui**. 3D present: register **rigRender3D** after **rigSystems**. `initAll` topo-sorts from each pack's `pack.json` `dependencies` (applied onto `IPack` at register); it does not create missing deps.
 
 **Register then get.** `MPack` owns the `shared_ptr`. Apps that need a typed handle after bootstrap look it up by pack class:
 

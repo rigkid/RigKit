@@ -5,7 +5,7 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
-# Aggregate host + packs API HTML → https://rigkid.github.io/rigkit/
+# Site root + API HTML → https://rigkid.github.io/rigkit/ (+ /api/)
 # One-time: repo Settings → Pages → Source: GitHub Actions.
 # Private Pages need an org plan that allows them (or public remotes).
 
@@ -49,10 +49,17 @@ jobs:
           cmake -S . -B build
           cmake --build build --target docs
 
+      - name: Assemble Pages site
+        run: |
+          mkdir -p _site/api
+          cp site/index.html site/styles.css site/field.js _site/
+          cp -a build/docs/api/html/. _site/api/
+          touch _site/.nojekyll
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: build/docs/api/html
+          path: _site
 
   deploy:
     needs: build
