@@ -1,10 +1,10 @@
 # ECS conventions
 
-ECS rules for **Rig** (SUDE + ECS). RigKit implements them in this host.
+**RigKit floor:** SUDE + ECS. Document composition (entity/component POD) is also the RigWorks Contract floor; runtime registry and systems are required here because RigKit is always a live host.
 
-Portable source of truth: [Rig ECS](https://github.com/rigkid/RigWorks/blob/main/docs/ecs.md). Shared schemas: [Rig schemas](https://github.com/rigkid/RigWorks/tree/main/schemas). This file is the RigKit working copy (includes the ESP32 profile).
+Portable source of truth: [Rig ECS](https://github.com/rigkid/RigWorks/blob/main/docs/ecs.md). Shared schemas: [Rig schemas](https://github.com/rigkid/RigWorks/tree/main/schemas). RigWorks honors (grammar floor): [Rig honors](https://github.com/rigkid/RigWorks/blob/main/docs/honors.md). This file is the RigKit working copy (includes the ESP32 profile).
 
-Builds on [sude-loop.md](sude-loop.md). [UI](ui.md) is an optional companion (**Rig + UI**), not required to be Rig.
+Builds on [sude-loop.md](sude-loop.md). [UI](ui.md) is an optional companion (**Rig + UI**), not required to be Rig or RigKit.
 
 Code-free rules: no particular registry library, no GPU types inside Contract-facing components.
 
@@ -60,7 +60,7 @@ Firmware builds that omit the desktop `main` harness define **`RIGKIT_MCU`** (ch
 | State / modulator floats | Document pagination |
 | LED / GPIO / sensor POD | rigImGui / any UI pack |
 
-A device that **is Rig** via SUDE + **RigKit-esp32-core** shares vocabulary with the desktop host without shipping the editor. An embedded host that runs author UI over the same ECS POD data may be **Rig + UI**. That is a heavier stack than `RigKit-esp32-core`.
+A device that **is Rig** via entity/component POD under **RigKit-esp32-core** (and SUDE as a live host) shares vocabulary with the desktop host without shipping the editor. An embedded host that runs author UI over the same ECS POD data may be **Rig + UI**. That is a heavier stack than `RigKit-esp32-core`.
 
 ### What travels / what does not
 

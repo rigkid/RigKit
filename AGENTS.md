@@ -11,7 +11,7 @@ Hard rules. Details below. Full tablet: [docs/contract/commandments.md](docs/con
 3. **Rebuilds stay cheap.** Thin core, pack weight, narrow includes. A coffee-break compile is a design bug.
 4. **rigComponent = data. rigSystems = code.** Never blur that for convenience. Behavior packs read data; they do not become the data.
 5. **Creators teach; managers serve packs.** Artists get `makeRect` / `setup`–`update`–`draw`. `M*` stays for internals.
-6. **One vocabulary.** Pack ≠ addon. **RigWorks** (**Rig** in running text) = zero-code framework (SUDE+ECS + schemas). **RigKit** = coded Rig host (this repo). Contract/framework ≠ fulfillment. Host ≠ distribution. Same words everywhere — kill synonyms. Product hosts: **Viewer presents** ([RigViewer](https://github.com/rigkid/RigViewer)); **Player plays** ([RigPlayer](https://github.com/rigkid/RigPlayer)). "Cart" is PicoForge vocabulary — here it is just a **document** (`.rig`). Do not blur look vs play.
+6. **One vocabulary.** Pack ≠ addon. **RigWorks** (**Rig** in running text) = zero-code framework (grammar + entity/component POD + schemas). **RigKit** = coded Rig host (this repo) — **floor is SUDE + ECS**. Contract/framework ≠ fulfillment. Host ≠ distribution. Same words everywhere — kill synonyms. Product hosts: **Viewer presents** ([RigViewer](https://github.com/rigkid/RigViewer)); **Player plays** ([RigPlayer](https://github.com/rigkid/RigPlayer)). "Cart" is PicoForge vocabulary — here it is just a **document** (`.rig`). Do not blur look vs play.
 7. **Stand on shoulders.** Prefer an existing library over writing our own — only when it shares our spirit (Pi-cheap, data-friendly, rebuild-cheap, artist-warm), does what we need, and we can change it. Do not reinvent the wheel. Do not invent Mars (a wrong-spirit megastack or a parallel planet just to own every line).
 8. **Seams stay small.** Extend through packs, `IApp`, `IMui`, POD + register. No second scene graph. No ceremony trees.
 9. **No UI toolkit in `src/`.** UI through `IMui`; **rigImGui** is a fulfillment, not Rig.
@@ -125,7 +125,7 @@ Never put systems in data packs (`rigComponent`, `rigPlotComponent`, …).
 ## Read order
 
 1. [docs/contract/commandments.md](docs/contract/commandments.md) — Ten Commandments
-2. [RigWorks](https://github.com/rigkid/RigWorks) — [honors](https://github.com/rigkid/RigWorks/blob/main/docs/honors.md) (SUDE + ECS); then [docs/contract/README.md](docs/contract/README.md) → [sude-loop.md](docs/contract/sude-loop.md) → [rigkit.md](docs/contract/rigkit.md) → [ui.md](docs/contract/ui.md) → [port-map.md](docs/contract/port-map.md) → [pi-host.md](docs/contract/pi-host.md)
+2. [RigWorks](https://github.com/rigkid/RigWorks) — [honors](https://github.com/rigkid/RigWorks/blob/main/docs/honors.md) (grammar floor); then [docs/contract/README.md](docs/contract/README.md) (RigKit floor = SUDE + ECS) → [sude-loop.md](docs/contract/sude-loop.md) → [rigkit.md](docs/contract/rigkit.md) → [ui.md](docs/contract/ui.md) → [port-map.md](docs/contract/port-map.md) → [pi-host.md](docs/contract/pi-host.md)
 3. [docs/authoring.md](docs/authoring.md) — user coding surface
 4. [docs/nodes.md](docs/nodes.md) — node graphs for artists (catalog + editor)
 5. [docs/contributing.md](docs/contributing.md)
@@ -148,7 +148,7 @@ If you are an agent whose tool needs its own project-level rule or skill folder 
 
 ## Other hard invariants
 
-- **No UI toolkit in `src/`** — UI via `IMui`; **rigImGui** is the default UI pack ([docs/contract/ui.md](docs/contract/ui.md)). **Rig** = SUDE+ECS (schemas when present); **Rig + UI** when author chrome is attached. Rig = rules; RigKit packs = fulfillments.
+- **No UI toolkit in `src/`** — UI via `IMui`; **rigImGui** is the default UI pack ([docs/contract/ui.md](docs/contract/ui.md)). **Rig** (RigWorks) = entity/component POD + schemas you support; **RigKit** = SUDE + ECS (this host’s floor); **Rig + UI** when author chrome is attached. Rig = rules; RigKit packs = fulfillments.
 - **Format:** tabs, clang-format; exactly one blank line at EOF; `tools/format.*` on first-party code only — never `third_party/` (including pack vendored trees).
 - **In-org packs:** Basics as submodules — `rigComponent`, `rigSystems`, `rigProject`, `rigImGui`. Optional packs: local clone or CPM at `app.json` **`ref`**. New pack scaffold: [`templates/rigTemplate`](templates/rigTemplate/). No runtime git update in the host — `tools/update-packs` / `tools/publish-template` ([packs/README.md](packs/README.md)).
 - **Naming:** interfaces `I*`, managers often `M*`; files match type names. Capability unit = **pack** (`packs/`, `pack.json`, `IPack` / `MPack`) — never “addon”. **One id:** spoken name = folder = `pack.json` `"name"` = `app.json` `"name"` = CMake target. Survey [docs/packs_catalog.md](docs/packs_catalog.md) before scaffolding a new pack. Suffixes: `*Component` = data, `*Editor`/`*Edit` = edit capability, `*Ui` = UI shell pack — [packs/README.md](packs/README.md#naming). **Host** = runtime pillar; **Canvas** = render surface / FBO type.

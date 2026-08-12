@@ -2,21 +2,22 @@
 
 Freedom first: artists own the tools they create.
 
-**[RigWorks](https://github.com/rigkid/RigWorks)** (**Rig** for short) is a portable **shared vocabulary** (zero code): SUDE + ECS rules and POD schemas. Grab Rig without this repo. It is not a finished product by itself — hosts deliver fulfillment.
+**[RigWorks](https://github.com/rigkid/RigWorks)** (**Rig** for short) is a portable **shared vocabulary** (zero code): schema grammar and entity/component POD documents. Grab Rig without this repo. It is not a finished product by itself — hosts deliver fulfillment. [Honors](https://github.com/rigkid/RigWorks/blob/main/docs/honors.md): being Rig does **not** require SUDE.
 
 **RigKit** is a coded **Rig** host (runtime + packs) for **media installations** and **artist tool apps**. Product name stays RigKit. Author path is **Rig + UI**; show path stays Rig without UI.
 
 | Piece | Role |
 |-------|------|
-| **RigWorks** / **Rig** | Framework playbook — [honors](https://github.com/rigkid/RigWorks/blob/main/docs/honors.md), [SUDE](https://github.com/rigkid/RigWorks/blob/main/docs/sude.md), [ECS](https://github.com/rigkid/RigWorks/blob/main/docs/ecs.md), [schemas](https://github.com/rigkid/RigWorks/tree/main/schemas). Rig in running text. |
-| **SUDE** | Setup / Update / Draw / Exit — required for Rig |
-| **ECS** | Portable entity data — required for Rig |
+| **RigWorks** / **Rig** | Framework playbook — [honors](https://github.com/rigkid/RigWorks/blob/main/docs/honors.md) (grammar floor), [schemas](https://github.com/rigkid/RigWorks/tree/main/schemas). Rig in running text. |
+| **Grammar / composition** | Schema ids + entity/component POD — floor for **being Rig** (RigWorks) |
+| **SUDE** | Setup / Update / Draw / Exit — **RigKit floor** (every RigKit host) |
+| **ECS** | Document POD + runtime registry/systems — **RigKit floor** |
 | **Schemas** | Agreed POD layouts — ship what you support (not all required) |
 | **UI** | Optional companion ([Rig + UI](https://github.com/rigkid/RigWorks/blob/main/docs/ui.md)); author path usually **rigImGui** |
 | **Host** | Runtime fulfillment (`src/`) |
 | **Distribution** | Default ship set (includes `rigImGui` as UI fulfillment) |
 
-A project **is Rig** when it honors SUDE + ECS. UI is not required. Schemas are formats when present.
+A project **is Rig** when it speaks entity/component POD against schemas it supports ([honors](https://github.com/rigkid/RigWorks/blob/main/docs/honors.md)). A host **is RigKit** when it also honors **SUDE + ECS** — that is this repo’s floor, not the Contract’s. UI is not required. Schemas are formats when present.
 
 In this folder, local copies of the loop / ECS / UI rules stay for RigKit contributors; **Rig is the source of truth** for portable rules.
 
@@ -63,11 +64,11 @@ One file word (**document**, `.rig`), one host word (**project**). The rigProjec
 
 | Host kind | Speaks |
 |-----------|--------|
-| Foreign / other runtime | **Rig** (SUDE+ECS) without RigKit; schemas as supported |
-| ESP32 light (`RigKit-esp32-core`) | Rig (SUDE + ECS POD profile); not UI |
+| Foreign / other runtime | **Rig** (entity/component POD + schemas as supported); may omit SUDE if not a live host |
+| ESP32 light (`RigKit-esp32-core`) | **RigKit** subset (SUDE + ECS POD profile); not UI |
 | ESP32 with author UI over ECS | **Rig + UI** |
-| Pi/desktop show (no panels) | Rig |
-| Author / tool app (this distribution) | Rig + UI |
+| Pi/desktop show (no panels) | **RigKit** (SUDE + ECS); Rig without UI |
+| Author / tool app (this distribution) | **RigKit** + UI |
 
 ## Schema map (RigKit → Rig)
 
@@ -119,4 +120,4 @@ Parallel hosts are **not** the owner of Rig. Map SUDE to that runtime’s setup/
 
 ## One sentence
 
-**RigKit** is a **Rig fulfillment** artists open: Rig is SUDE+ECS (schemas when present), and the default distribution ships **rigImGui** so they can build **media installations** and **tool apps** they own — on Pi as the floor, with ESP32 as a Rig subset (or Rig + UI when author UI edits ECS).
+**RigKit** is a **Rig fulfillment** artists open: RigWorks’ floor is entity/component POD + schemas you support; **RigKit’s floor is SUDE + ECS**, and the default distribution ships **rigImGui** so they can build **media installations** and **tool apps** they own — on Pi as the floor, with ESP32 as a Rig subset (or Rig + UI when author UI edits ECS).

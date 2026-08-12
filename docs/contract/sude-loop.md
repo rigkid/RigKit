@@ -1,6 +1,6 @@
 # SUDE loop
 
-**SUDE** = Setup / Update / Draw / Exit. Code-free rules every Rig host must honor.
+**SUDE** = Setup / Update / Draw / Exit. **RigKit floor** — every RigKit host must honor it. Portable live-host convention in RigWorks; not required to “be Rig” ([Rig honors](https://github.com/rigkid/RigWorks/blob/main/docs/honors.md) is grammar + entity/component POD).
 
 Portable source of truth: [Rig SUDE](https://github.com/rigkid/RigWorks/blob/main/docs/sude.md). This file is the RigKit working copy.
 
@@ -42,7 +42,7 @@ The SUDE loop does **not** require:
 
 - A UI pack
 - A GPU present path or particular renderer
-- ECS (see [rigkit.md](rigkit.md) — ECS conventions)
+- ECS runtime (see [rigkit.md](rigkit.md) — document composition is still the Contract floor)
 - Filesystem, networking, or audio
 - A window
 
@@ -57,10 +57,12 @@ The SUDE loop does **not** require:
 
 ## Compliance
 
-A project **is SUDE** (and, with ECS, **is Rig**) when:
+A project **is SUDE** when:
 
 1. It implements or is driven by the four hooks (Exit optional but recommended).
 2. The host calls `Draw()` every tick after `Update` — empty body is valid; skipping the call is not.
 3. No SUDE requirement forces a UI or GPU dependency.
 
-Checklist: [Rig honors](https://github.com/rigkid/RigWorks/blob/main/docs/honors.md). See also: [rigkit.md](rigkit.md) (ECS), [ui.md](ui.md) (optional UI), [distribution.md](distribution.md), [README.md](README.md).
+**RigKit** requires SUDE + ECS ([rigkit.md](rigkit.md)) — that is this host’s floor. **Being Rig** (RigWorks) is grammar + entity/component POD and does not require SUDE — [Rig honors](https://github.com/rigkid/RigWorks/blob/main/docs/honors.md).
+
+See also: [rigkit.md](rigkit.md) (ECS), [ui.md](ui.md) (optional UI), [distribution.md](distribution.md), [README.md](README.md).
