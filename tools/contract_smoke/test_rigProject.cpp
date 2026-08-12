@@ -72,6 +72,7 @@ void buildRoundTripScene(MEcs& ecs, const std::string& docPath) {
 	pageB.index = 1;
 	pageB.width = 1280.f;
 	pageB.height = 720.f;
+	pageB.originAnchor = 4;
 	ecs.addComponent<ecs::CPage>(ecs.createEntity("page-Look"), pageB);
 
 	auto parent = rig::makeRect(ecs, 100.f, 200.f, 220.f, 280.f, rig::fill(0.30f, 0.55f, 0.90f),
@@ -105,8 +106,9 @@ void expectRoundTripScene(MEcs& ecs, const std::string& docPath) {
 	REQUIRE(lookPage != entt::null);
 	REQUIRE(ecs.hasComponent<ecs::CPage>(openPage));
 	REQUIRE(ecs.hasComponent<ecs::CPage>(lookPage));
-	CHECK(ecs.getComponent<ecs::CPage>(openPage).name == "Open");
+	CHECK(ecs.entityName(openPage) == "page-Open");
 	CHECK(ecs.getComponent<ecs::CPage>(lookPage).width == doctest::Approx(1280.f));
+	CHECK(ecs.getComponent<ecs::CPage>(lookPage).originAnchor == 4);
 
 	auto parent = ecs.findEntity("card-Open");
 	auto child = ecs.findEntity("card-child");
@@ -183,6 +185,64 @@ TEST_CASE("rigProject pack requestSave/requestLoad round-trips via Update") {
 	expectRoundTripScene(ecs, path);
 
 	std::filesystem::remove(path);
+}
+
+TEST_CASE("rigProject Contract import maps rig.spatial.anchor onto the page") {
+	SpineFixture f;
+	auto& ecs = f.ecs();
+	const char* jsonText = R"({
+		"rig": "0.13.0",
+		"document": { "title": "anchor-smoke" },
+		"entities": [
+			{
+				"id": "sheet",
+				"components": {
+					"rig.layout.page": { "width": 210, "height": 297 },
+					"rig.spatial.anchor": { "point": "bottomLeft" }
+				}
+			}
+		]
+	})";
+	auto result = project::importContractJson(ecs, jsonText, "smoke");
+	REQUIRE(result.ok);
+	CHECK(result.skipped.empty());
+	auto view = ecs.view<ecs::CPage>();
+	REQUIRE(view.begin() != view.end());
+	CHECK(view.get<ecs::CPage>(*view.begin()).originAnchor == 2);
+}
+
+/// Pages written before the anchor became its own component name it inline.
+TEST_CASE("rigProject Contract import maps rig.layout.page originAnchor") {
+	SpineFixture f;
+	auto& ecs = f.ecs();
+	const char* jsonText = R"({
+		"rig": "0.12.0",
+		"document": { "title": "page-smoke" },
+		"entities": [
+			{
+				"id": "sheet",
+				"components": {
+					"rig.meta.named": { "name": "A4" },
+					"rig.layout.page": {
+						"width": 210,
+						"height": 297,
+						"unit": "mm",
+						"originAnchor": "center"
+					}
+				}
+			}
+		]
+	})";
+	auto result = project::importContractJson(ecs, jsonText, "smoke");
+	REQUIRE(result.ok);
+	CHECK(result.skipped.empty());
+	auto view = ecs.view<ecs::CPage>();
+	REQUIRE(view.begin() != view.end());
+	const auto& page = view.get<ecs::CPage>(*view.begin());
+	CHECK(page.width == doctest::Approx(210.f));
+	CHECK(page.height == doctest::Approx(297.f));
+	CHECK(page.unit == "mm");
+	CHECK(page.originAnchor == 4);
 }
 
 TEST_CASE("rigProject Contract import maps rig.media.code to CCode") {
