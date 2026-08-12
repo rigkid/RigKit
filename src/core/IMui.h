@@ -123,6 +123,29 @@ class IMui {
 	}
 
 	/**
+	 * @brief Register an app-menu row (product actions; Preferences / Quit stay host-owned).
+	 * @param label Menu label (e.g. "Import Options…").
+	 * @param action Invoked when the item is chosen.
+	 * @param shortcut Optional chord shown in the menu (display only unless also bound).
+	 */
+	virtual void registerAppAction(const std::string& label, std::function<void()> action,
+								   const std::string& shortcut = {}) {
+		(void)label;
+		(void)action;
+		(void)shortcut;
+	}
+
+	/**
+	 * @brief Register an app-menu submenu (e.g. Import → Resource…).
+	 * @details @p drawContents runs inside an open `BeginMenu` — emit `MenuItem`s /
+	 * nested menus. Drawn each frame the parent app menu is open so lists can be live.
+	 */
+	virtual void registerAppSubmenu(const std::string& label, std::function<void()> drawContents) {
+		(void)label;
+		(void)drawContents;
+	}
+
+	/**
 	 * @brief Record a successfully opened/saved document path for File → Open Recent.
 	 * @details Newest first; duplicates move to the front. No-op when path is empty.
 	 */
