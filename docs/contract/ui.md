@@ -52,7 +52,8 @@ No particular UI pack. No particular dock model. No GPU editor on light hosts.
 | `IMui::dockPassthroughCentral` | Central node shows GL bed vs solid fill |
 | File / export / undo / gizmo hooks | Author chrome |
 | File → Open Recent | `IMui::noteRecentFile` + `setRecentFileOpenHandler`; persisted in `rigkit_settings.json` |
-| View → Workspace | Named dock layouts (`rigImGui`): save/load/delete `data/user/workspaces/<name>.ini` (docks + window visibility); active name in `rigkit_settings.json`; startup loads last used or `Standard` || [`IMui::progress()`](../../src/core/util/Progress.h) | Progress chrome (status bar or floating); null when UI detached |
+| View → Workspace | Named dock layouts (`rigImGui`): save/load/delete `data/user/workspaces/<name>.ini` (docks + window visibility); active name in `rigkit_settings.json`; startup loads last used or `Standard` |
+| [`IMui::progress()`](../../src/core/util/Progress.h) | Progress chrome (status bar or floating); null when UI detached |
 
 ### Progress
 
