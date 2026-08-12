@@ -5,16 +5,16 @@
 #include <memory>
 #include <sstream>
 
-#include "CProject.h"
-#include "CPage.h"
 #include "CCamera.h"
 #include "CCode.h"
 #include "CDrawStyle.h"
 #include "CLight.h"
 #include "CMesh.h"
+#include "CPage.h"
+#include "CProject.h"
+#include "CRectangle.h"
 #include "CRelationship.h"
 #include "CSelection.h"
-#include "CRectangle.h"
 #include "CTransform.h"
 #include "ContractImport.h"
 #include "ProjectSerializer.h"
@@ -75,10 +75,10 @@ void buildRoundTripScene(MEcs& ecs, const std::string& docPath) {
 	pageB.originAnchor = 4;
 	ecs.addComponent<ecs::CPage>(ecs.createEntity("page-Look"), pageB);
 
-	auto parent = rig::makeRect(ecs, 100.f, 200.f, 220.f, 280.f, rig::fill(0.30f, 0.55f, 0.90f),
-								"card-Open");
-	auto child = rig::makeRect(ecs, 40.f, 30.f, 70.f, 50.f, rig::fill(0.95f, 0.55f, 0.25f),
-							   "card-child");
+	auto parent =
+		rig::makeRect(ecs, 100.f, 200.f, 220.f, 280.f, rig::fill(0.30f, 0.55f, 0.90f), "card-Open");
+	auto child =
+		rig::makeRect(ecs, 40.f, 30.f, 70.f, 50.f, rig::fill(0.95f, 0.55f, 0.25f), "card-child");
 	ecs::CRelationship rel;
 	rel.parent = parent;
 	ecs.addComponent<ecs::CRelationship>(child, rel);
