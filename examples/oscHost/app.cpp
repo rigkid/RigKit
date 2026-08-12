@@ -7,6 +7,7 @@
 #include "packs/rigComponent/src/rigComponent.h"
 #include "packs/rigImGui/src/Mui.h"
 #include "packs/rigImGui/src/rigImGui.h"
+#include "packs/rigOsc/src/CNetworkIdentity.h"
 #include "packs/rigOsc/src/COscShowBus.h"
 #include "packs/rigOsc/src/rigOsc.h"
 #include "packs/rigSystems/src/rigSystems.h"
@@ -76,6 +77,7 @@ void OscHost::setupAuthorUi() {
 
 	auto* mui = dynamic_cast<rigkit::Mui*>(ui);
 	if (mui) {
+		mui->setDockPassthroughCentral(true);
 		mui->addAllHostPanels();
 		mui->showNotification("Author mode — oscHost");
 	}
@@ -145,6 +147,14 @@ void OscHost::setup() {
 	if (m_osc && !m_osc->applyCommandLine(m_cliArgs)) {
 		spdlog::error("oscHost: OSC bind failed — {}", m_osc->lastError());
 	}
+	if (m_osc) {
+		const std::string title =
+			std::string("RigKit — oscHost [") + m_osc->identity().networkId + "]";
+		window().title = title;
+		if (auto* win = getEngine()->getWindow()) {
+			glfwSetWindowTitle(win, title.c_str());
+		}
+	}
 
 	if (m_showMode) {
 		getEngine()->detachUiManager();
@@ -160,8 +170,7 @@ void OscHost::setup() {
 	if (m_smokeOsc) {
 		const bool ok = runOscSmoke();
 		if (!ok) {
-			spdlog::error("oscHost --smoke-osc failed: {}",
-						  m_osc ? m_osc->lastError() : "no pack");
+			spdlog::error("oscHost --smoke-osc failed: {}", m_osc ? m_osc->lastError() : "no pack");
 		} else {
 			spdlog::info("oscHost --smoke-osc OK");
 		}

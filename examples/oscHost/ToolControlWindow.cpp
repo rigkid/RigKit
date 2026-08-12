@@ -84,8 +84,8 @@ void ToolControlWindow::renderContents() {
 		ImGui::EndPopup();
 	}
 
-	ImGui::TextWrapped("Addresses: %s/<id>/master|blackout|color|status|heartbeat  "
-					   "(also %s/… without id = broadcast). Color is three floats. "
+	ImGui::TextWrapped("Directed: %s/<id>/master|blackout|color|…  "
+					   "Broadcast: %s/… (no id). Bus sends append sender id. "
 					   "Peer follows on the heartbeat tick (~1s).",
 					   ep.addressPrefix.c_str(), ep.addressPrefix.c_str());
 }

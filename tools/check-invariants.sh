@@ -151,6 +151,29 @@ if [[ -f packs/rigPlotFinders/examples/finders/app.json ]]; then
 	fi
 fi
 
+# --- Pack constructors must not re-author pack.json identity --------------------
+# description / license / url / dependencies live in pack.json; MPack applies them.
+# Flag ctor-era setters so scaffolds and local packs cannot reintroduce a second copy.
+check_pack_ctor_identity() {
+	local dir="$1"
+	[[ -d "$dir" ]] || return 0
+	local hits
+	hits="$(grep -RInE --include='*.cpp' \
+		'setDescription\s*\(|setLicense\s*\(|setUrl\s*\(|addDependency\s*\(' \
+		"$dir" 2>/dev/null | grep -vE '/(build|third_party|\.git|examples)/' || true)"
+	if [[ -n "$hits" ]]; then
+		hit "pack ctor must not set identity/deps (use pack.json): $dir"
+		echo "$hits" >&2
+	fi
+}
+check_pack_ctor_identity "templates/rigTemplate/src"
+if [[ -d packs ]]; then
+	for pj in packs/*/pack.json; do
+		[[ -f "$pj" ]] || continue
+		check_pack_ctor_identity "$(dirname "$pj")/src"
+	done
+fi
+
 # --- Every pack: hero example + README screenshot ------------------------------
 # packs/<name>/examples/<hero>/CMakeLists.txt and examples/<hero>/img/preview.png
 # Pack README must embed preview.png. Host examples/ do not count.

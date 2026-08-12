@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include "core/ISettings.h"
+#include "core/TypeJson.h"
 #include "core/WindowSettings.h"
 #include "core/json.h"
 #include "ecs/PropertyReflection.h"
@@ -95,8 +96,7 @@ struct AppSettings : public ISettings {
 		// Graphics
 		j["graphics"]["vsync"] = graphics.vsync;
 		j["graphics"]["targetFps"] = graphics.targetFps;
-		j["graphics"]["clearColor"] = {graphics.clearColor.r, graphics.clearColor.g,
-									   graphics.clearColor.b, graphics.clearColor.a};
+		j["graphics"]["clearColor"] = colorToJson(graphics.clearColor);
 		return j;
 	}
 
@@ -135,11 +135,7 @@ struct AppSettings : public ISettings {
 			if (g.contains("targetFps"))
 				graphics.targetFps = g["targetFps"].get<int>();
 			if (g.contains("clearColor")) {
-				auto c = g["clearColor"];
-				if (c.is_array() && c.size() == 4) {
-					graphics.clearColor = glm::vec4(c[0].get<float>(), c[1].get<float>(),
-													c[2].get<float>(), c[3].get<float>());
-				}
+				graphics.clearColor = colorFromJson(g["clearColor"], graphics.clearColor);
 			}
 		}
 	}

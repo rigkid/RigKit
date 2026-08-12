@@ -30,19 +30,22 @@ class IPack : public ISettings {
 	const std::string& getName() const { return m_name; }
 	const std::string& getDescription() const { return m_description; }
 	const std::string& getLicense() const { return m_license; }
+	const std::string& getUrl() const { return m_url; }
 
 	// Pack state
 	bool isEnabled() const { return m_enabled; }
 	void setEnabled(bool enabled) { m_enabled = enabled; }
 	bool isInitialized() const { return m_initialized; }
 
-	// Dependencies
+	// Dependencies (prefer pack.json; applied by MPack::registerPack)
 	void addDependency(const std::string& packName);
+	void setDependencies(std::vector<std::string> deps);
 	const std::vector<std::string>& getDependencies() const { return m_dependencies; }
 
-	// Configuration
+	// Configuration (prefer pack.json; applied by MPack::registerPack)
 	void setDescription(const std::string& description) { m_description = description; }
 	void setLicense(const std::string& license) { m_license = license; }
+	void setUrl(const std::string& url) { m_url = url; }
 
 	// Engine access
 	RigKitEngine* getEngine() const;
@@ -85,6 +88,7 @@ class IPack : public ISettings {
 	std::string m_name;
 	std::string m_description;
 	std::string m_license;
+	std::string m_url;
 	bool m_enabled;
 	bool m_initialized;
 

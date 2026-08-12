@@ -68,6 +68,8 @@ Data layer is mandatory before Contract work that touches entities — see [rigk
 
 Prefer POD for portable meaning. Receive `MEcs*` from the engine; define pack-local components as plain structs. [docs/packs.md](../../docs/packs.md).
 
+**Pack identity — one owner.** `pack.json` owns `name`, `description`, `license`, `url`, and `dependencies`. `MPack::registerPack` applies those onto `IPack` (deployed `<exeDir>/data/packs/<name>/pack.json`, or a source-tree walk in smoke/dev). About / init-order readers pull from `IPack` — do not author a second truth in the constructor (`setDescription` / `setLicense` / `setUrl` / `addDependency` are host-side APIs for applying the manifest, not pack authoring). Same spirit as [one owner](../rigkit-minimal/SKILL.md#one-owner-expose-a-reader-not-a-setter).
+
 ## Parallel hosts
 
 Other runtimes may fulfill the same Contract rules. They do not own Contract — POD/schemas travel; library types do not. RigKit remains the reference coded host in this repo — see [docs/contract/README.md](../../docs/contract/README.md).

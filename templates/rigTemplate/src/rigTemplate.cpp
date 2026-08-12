@@ -6,10 +6,7 @@
 
 namespace rigkit {
 
-rigTemplate::rigTemplate() : IPack("rigTemplate") {
-	setDescription("Scaffold RigKit pack — rename me");
-	setLicense("MIT Rigkid Contributors");
-}
+rigTemplate::rigTemplate() : IPack("rigTemplate") {}
 
 bool rigTemplate::init() {
 	spdlog::info("[rigTemplate] init");

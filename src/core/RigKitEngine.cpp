@@ -13,6 +13,7 @@
 
 #include "core/AppSettings.h"
 #include "core/IApp.h"
+#include "core/TypeJson.h"
 #include "core/canvas/MCanvas.h"
 #include "core/pack/MPack.h"
 #include "core/util/AppPaths.h"
@@ -506,8 +507,7 @@ json RigKitEngine::getSettings() const {
 	// Graphics settings
 	j["graphics"]["vsync"] = getVerticalSync();
 	j["graphics"]["targetFps"] = getTargetFrameRate();
-	j["graphics"]["clearColor"] = {getClearColor().r, getClearColor().g, getClearColor().b,
-								   getClearColor().a};
+	j["graphics"]["clearColor"] = colorToJson(getClearColor());
 
 	// Window settings — logical / design pixels (not scale-multiplied GLFW size).
 	int designW = 0, designH = 0, fbW = 0, fbH = 0;
@@ -534,11 +534,8 @@ void RigKitEngine::setSettings(const json& settings) {
 			setTargetFrameRate(g["targetFps"].get<int>());
 		}
 		if (g.contains("clearColor")) {
-			auto c = g["clearColor"];
-			if (c.is_array() && c.size() == 4) {
-				setClearColor(c[0].get<float>(), c[1].get<float>(), c[2].get<float>(),
-							  c[3].get<float>());
-			}
+			const glm::vec4 c = colorFromJson(g["clearColor"], getClearColor());
+			setClearColor(c.r, c.g, c.b, c.a);
 		}
 	}
 

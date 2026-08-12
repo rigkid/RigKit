@@ -45,7 +45,7 @@ Artist guide: [nodes.md](nodes.md).
 | **rigColorspace** | [rigkid/rigColorspace](https://github.com/rigkid/rigColorspace) | RGB + CMYK color POD, swatch library, conversion helpers |
 | **rigCompositor** | [rigkid/rigCompositor](https://github.com/rigkid/rigCompositor) | FBO layer compositor — SVG blend modes + path masks |
 | **rigSvg** | [rigkid/rigSvg](https://github.com/rigkid/rigSvg) | SVG import/export ↔ `ParsedPathDoc` / paints |
-| **rigDxf** | [rigkid/rigDxf](https://github.com/rigkid/rigDxf) | DXF LINE to `ParsedPathDoc` / `CPaths` |
+| **rigDxf** | [rigkid/rigDxf](https://github.com/rigkid/rigDxf) | DXF ↔ typed POD (`CPath` / `CArc` / `CEllipse` / `CSpline`) + `ParsedPathDoc` flatten. **GPL-2.0-or-later** (dxflib) |
 | **rigGCode** | [rigkid/rigGCode](https://github.com/rigkid/rigGCode) | `CPaths` ↔ G-code text emit/import (no serial) |
 | **rigGrbl** | [rigkid/rigGrbl](https://github.com/rigkid/rigGrbl) | GRBL serial send |
 | **rigPlotter** | [rigkid/rigPlotter](https://github.com/rigkid/rigPlotter) | PlotDoc orchestration |
@@ -80,6 +80,7 @@ Product app **PixelPlotter** lives out of tree (e.g. next to RigKit), not under 
 | Pack | Remote | Role |
 |------|--------|------|
 | **rigOsc** | [rigkid/rigOsc](https://github.com/rigkid/rigOsc) | UDP OSC + network identity / show bus — `oscHost --smoke-osc` |
+| **rigAbletonLink** | [rigkid/rigAbletonLink](https://github.com/rigkid/rigAbletonLink) (local `packs/` until published) | Ableton Link → `CMusicClock` / `CMusicTransport`. **Leaf.** **GPL-2.0-or-later** (Link SDK). |
 
 ### Scripting / CAD
 
@@ -120,7 +121,7 @@ Not remotes yet. Scaffold only when the seam is real — survey Known first; pre
 | **Web UI fulfillment** | Alternate `IMui` over the same JSON / ECS map (browser panels) — Contract allows it; no pack yet |
 | **Node anim / channels** | Broader timeline/channel products — grow **rigNodeComponent** / **rigNodeEditor** (or a thin companion) when product need is clear |
 | **rigMusicComponent** | Transport / clock / sequencer / pattern / step PODs — [Rig music schemas](https://github.com/rigkid/RigWorks/tree/main/schemas/music); data only |
-| **rigAnimComponent** | Tween / LFO / binding PODs — Rig `rig.anim.*` / `rig.mod.*` |
+| **rigAnimComponent** | *(folded into `rigComponent` + `rigSystems` for now — `CTween`/`CModLfo`/`CModBinding` + `STweens`/`SModulators`)* |
 | **rigLedComponent** | UV map / LED sample PODs — Pi install path |
 | **rigInstallIoComponent** | Serial / GPIO / network device PODs (sACN later) — or split when product needs clear |
 | **Blend2D demos** | Examples / heroes beyond the **rigBlend2D** pack itself — not a new pack id |

@@ -1,15 +1,14 @@
 # Node graphs (artist guide)
 
-Patch numbers, vectors, and colors with a node editor — same spirit as Pixile maths /
-modulators. The graph is plain data (`CNodeGraph`). The **Node Editor** window is how
-you build and tune it. Eval runs live while the window is open.
+Patch floats, vec2, colors, or any [standard datatype](contract/RigWorks/docs/properties.md) in the Node Editor.
+The graph is plain data (`CNodeGraph`). Eval runs live while the window is open.
 
-Proof app: [`packs/rigNodeEditor/examples/nodes`](../packs/rigNodeEditor/examples/nodes/).
+Example: [`packs/rigNodeEditor/examples/nodes`](../packs/rigNodeEditor/examples/nodes/).
 
 ```bash
 cmake -S packs/rigNodeEditor/examples/nodes -B packs/rigNodeEditor/examples/nodes/build
 cmake --build packs/rigNodeEditor/examples/nodes/build --target nodes
-./packs/rigNodeEditor/examples/nodes/build/bin/nodes/nodes
+./packs/rigNodeEditor/examples/nodes/build/bin/nodes
 ```
 
 Packs: **rigNodeComponent** (data + catalog + eval + `.rig` codecs) + **rigNodeEditor**
@@ -34,22 +33,24 @@ in the params row. Entities that receive graph values can carry `CDriveHint`
 
 | Action | How |
 |--------|-----|
-| Add a node | **Add node** — pick a category, or type in Search |
+| Add a node | **File > Add node** - pick a category, or type in Search |
 | Move a node | Drag the node body |
-| Link | Click an **output** pin, then an **input** pin |
-| Cancel a link | Esc, or click empty canvas |
+| Link | Click an **output** pin, then an **input** pin - or drag Out to In |
+| Cancel a link | Esc, or click empty canvas (after a drag miss) |
 | Select | Click a node (yellow outline) |
-| Edit params | Select a node — params appear in **Properties** |
-| Scene → Ref | Drag an entity from **Scene** onto the Node Editor canvas |
-| Property → Ref | Drag a property row from **Properties** onto the canvas (binds entity + prop) |
-| Delete | Select + **Delete node**, or Del |
+| Edit params | Select a node - params appear in **Properties** |
+| Scene to Ref | Drag an entity from **Scene** onto the Node Editor canvas |
+| Property to Ref | Drag a property row from **Properties** onto the canvas (binds entity + prop) |
+| Property to Modulate | **Alt**-drop a float property, or **Drive with LFO** on a Float Ref, or **Modulate** in Properties |
+| Delete | Select + **File > Delete node**, or Del |
 | Pan | Middle-mouse drag, or Alt + left-drag |
 | Zoom | Mouse wheel over the canvas |
-| Demo graph | **Seed demo** — Value(1) + Value(2) -> Add -> Float Out (= 3) |
-| Save / load | **Save Scene...** / **Open Scene...** (needs `rigProject`) |
+| Demo graph | App startup: color wash (LFO to Map to Brightness to Color Out / Ref). **File > Seed demo** - Value(1) + Value(2) to Add to Float Out (= 3) |
+| Save / load | **File > Save Scene...** / **Open Scene...** (needs `rigProject`) |
+| Groups | **File > Empty group** / **Group selection** / **Ungroup** / **Publish pin** / **Up** |
 
-Live values show on output pins while the graph runs. The toolbar shows `t=` (seconds),
-**Float Out** results, and Ref bindings.
+Live values show on output pins while the graph runs. The Node Editor status bar shows
+`t=` (seconds), **Float Out** results, and Ref bindings.
 
 ## Pin colors (types)
 
@@ -69,12 +70,12 @@ A **group** is a node with a `nested` graph and `publishes` (outer pin → inner
 
 | Editor | How |
 |--------|-----|
-| Empty group | **Empty group** |
-| Group selection | Ctrl+click nodes → **Group selection** (crossing links become publishes) |
-| Ungroup | Select a group → **Ungroup** (rewires via publishes) |
-| Dive | Double-click a group, or **Dive into group** |
-| Surface | **Up** |
-| Publish | Inside a group, select a pin → **Publish pin** |
+| Empty group | **File > Empty group** |
+| Group selection | Ctrl+click nodes → **File > Group selection** (crossing links become publishes) |
+| Ungroup | Select a group → **File > Ungroup** (rewires via publishes) |
+| Dive | Double-click a group, or **Dive into group** in Properties |
+| Surface | **File > Up** |
+| Publish | Inside a group, select a pin → **File > Publish pin** |
 
 Eval runs nested graphs recursively. While diving, live preview injects published inputs from the parent canvas.
 
@@ -151,7 +152,14 @@ Search in **Add node**. `typeId` is what `.rig` stores.
 | Vec2 Ref | `ref.vec2` | Writes one vec2, or two floats (`prop` + `propY`) |
 | Color Ref | `ref.color` | Writes Color R/G/B (optional name prefix) |
 
-Call `applyRefWrites(ecs, evalResult)` after eval (each Update).
+Call `applyRefWrites` is no longer required in app `update` — `SGraphEval`
+(registered by **rigNodeComponent**) evaluates every `CNodeGraph` and applies Ref
+writes each Update. Ref `entity` + `prop` is the same addressing as `rig.mod.binding`
+(`target` + `propertyKey`). Contract modulators / tweens use `CModLfo` /
+`CModBinding` / `CTween` + `SModulators` / `STweens`. Orbit framing uses
+`COrbitDrive` + `SOrbitDrive`.
+
+Editor dive preview still uses `evaluateAlongDive` in the Node Editor (no apply).
 
 Unknown `typeId`s in a `.rig` are skipped at eval (no crash). Domain packs may add
 more catalogs later; the built-in table above is what ships today.
@@ -160,13 +168,13 @@ more catalogs later; the built-in table above is what ships today.
 
 ### 1. Seed demo (sanity)
 
-**Seed demo** -> toolbar should show Float Out `3`.
+**File > Seed demo** - status bar should show Float Out `3`.
 
 ### 2. Breathing value (LFO)
 
 1. Add **LFO** (Modulators). Frequency `0.5`, Amplitude `1`, Offset `0`.
 2. Link LFO `out` -> **Float Out** `in` (or a **Float Ref** to a scene property).
-3. Watch the toolbar / pin value oscillate.
+3. Watch the status bar / pin value oscillate.
 
 Example binding: LFO → Float Ref → `camera` / `Speed` — tweak the LFO
 in the Node Editor and drive orbit from Update.

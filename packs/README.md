@@ -136,7 +136,7 @@ cmake -S . -B build && cmake --build build --target docs
 Then start from **[rigTemplate](../templates/rigTemplate/)** (`https://github.com/rigkid/rigTemplate.git`):
 
 1. Lock the spoken name (one camelCase id). Copy `templates/rigTemplate` → `packs/<id>/` (or clone the template remote).
-2. Rename `pack.json`, sources, class, and `PackRegistry` factory string to that same id. Set `license` in `pack.json` to `MIT Rigkid Contributors` (or `GPL-2.0-or-later Rigkid Contributors`; required by CI / `check-invariants`).
+2. Rename `pack.json`, sources, class, and `PackRegistry` factory string to that same id. Set `license` in `pack.json` to `MIT Rigkid Contributors` (or `GPL-2.0-or-later Rigkid Contributors`; required by CI / `check-invariants`). Keep `description`, `url`, and `dependencies` accurate there — that file owns About / `IPack` identity and runtime init order ([docs/packs.md](../docs/packs.md)). The pack constructor is only `IPack("<id>")` — no `setDescription` / `addDependency`.
 3. Add `url` + `ref` to the app `app.json` dependencies (`"name"` must match the id). Set SPDX `license` on the hero `app.json` too (`MIT` is fine for apps).
 4. Fill `examples/demo/` (hero + `img/preview.png` for the README).
 5. Publish the pack remote when ready (own repo push, or `./tools/publish-template.sh` for the template itself).

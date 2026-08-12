@@ -63,6 +63,8 @@ cmake --build examples/oscHost/build --config Release --target oscHost
 
 Clean rebuild: delete `examples/<name>/build/` (wipes objects, the exe, and deployed `data/user`, including saved UI layout `imgui.ini`), then reconfigure.
 
+`add_rigkit_application` deploys each processed pack’s `pack.json` to `<exeDir>/data/packs/<name>/` so `MPack` can fill `IPack` identity (description / license / url) at register — [docs/packs.md](../../docs/packs.md).
+
 Root tree (docs / optional tools only):
 
 ```bash

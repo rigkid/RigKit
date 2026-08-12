@@ -6,11 +6,92 @@
 #include <spdlog/spdlog.h>
 #include <sstream>
 #include <unordered_set>
+#include <vector>
 // Removed direct rigImGui include; packs are now registered by applications.
+#include "core/util/AppPaths.h"
 #include "IPack.h"
 #include "ISettings.h"
 #include "PackRegistry.h"
 #include "json.h"
+
+namespace {
+
+using rigkit::json;
+
+void applyPackManifestFields(rigkit::IPack& pack, const json& manifest) {
+	if (manifest.contains("description") && manifest["description"].is_string()) {
+		pack.setDescription(manifest["description"].get<std::string>());
+	}
+	if (manifest.contains("license") && manifest["license"].is_string()) {
+		pack.setLicense(manifest["license"].get<std::string>());
+	}
+	if (manifest.contains("url") && manifest["url"].is_string()) {
+		pack.setUrl(manifest["url"].get<std::string>());
+	}
+	// Runtime init order — same names as CMake/CPM (string or { "name": ... }).
+	if (manifest.contains("dependencies") && manifest["dependencies"].is_array()) {
+		std::vector<std::string> deps;
+		deps.reserve(manifest["dependencies"].size());
+		for (const auto& d : manifest["dependencies"]) {
+			if (d.is_string()) {
+				deps.push_back(d.get<std::string>());
+			} else if (d.is_object() && d.contains("name") && d["name"].is_string()) {
+				deps.push_back(d["name"].get<std::string>());
+			}
+		}
+		pack.setDependencies(std::move(deps));
+	}
+}
+
+/** @return First existing pack.json for @p name, or empty. */
+std::string findPackManifestPath(const std::string& name) {
+	namespace fs = std::filesystem;
+	if (name.empty()) {
+		return {};
+	}
+
+	// Shipped next to the exe: <exeDir>/data/packs/<name>/pack.json
+	const fs::path deployed = fs::path(AppPaths::getDataDir()) / "packs" / name / "pack.json";
+	std::error_code ec;
+	if (fs::is_regular_file(deployed, ec)) {
+		return deployed.lexically_normal().string();
+	}
+
+	// Dev / smoke: walk up from the exe looking for packs/<name>/pack.json
+	fs::path dir = fs::path(AppPaths::getExecutableDir());
+	for (int i = 0; i < 8 && !dir.empty(); ++i) {
+		const fs::path candidate = dir / "packs" / name / "pack.json";
+		if (fs::is_regular_file(candidate, ec)) {
+			return candidate.lexically_normal().string();
+		}
+		const fs::path parent = dir.parent_path();
+		if (parent == dir) {
+			break;
+		}
+		dir = parent;
+	}
+	return {};
+}
+
+void applyPackManifestFile(rigkit::IPack& pack) {
+	const std::string path = findPackManifestPath(pack.getName());
+	if (path.empty()) {
+		return;
+	}
+	try {
+		std::ifstream f(path);
+		if (!f.is_open()) {
+			return;
+		}
+		json manifest;
+		f >> manifest;
+		applyPackManifestFields(pack, manifest);
+	} catch (const std::exception& e) {
+		spdlog::warn("Pack '{}': failed to read {}: {}", pack.getName(), path, e.what());
+	}
+}
+
+} // namespace
 
 rigkit::MPack::MPack(rigkit::RigKitEngine* engine) : m_engine(engine), m_packDirectory("packs") {}
 
@@ -223,6 +304,7 @@ bool rigkit::MPack::loadFromManifest(const std::string& path) {
 		// Try to create the pack using the registry
 		auto pack = PackRegistry::instance().create(packName);
 		if (pack) {
+			applyPackManifestFields(*pack, manifest);
 			registerPack(pack);
 			return true;
 		} else {
@@ -502,6 +584,9 @@ void rigkit::MPack::registerPack(std::shared_ptr<rigkit::IPack> pack) {
 		spdlog::error("Attempted to register null pack");
 		return;
 	}
+
+	// pack.json owns About identity + runtime dependency names.
+	applyPackManifestFile(*pack);
 
 	std::string name = pack->getName();
 	if (m_packs.find(name) != m_packs.end()) {

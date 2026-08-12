@@ -98,7 +98,8 @@ Prefer creators when the piece should be inspectable / serializable data.
 
 ## Node graphs
 
-Patch floats, vec2, and colors with the Node Editor (Pixile-style maths / modulators). Artist guide: [nodes.md](nodes.md). Hero: `packs/rigNodeEditor/examples/nodes`.
+Patch floats, vec2, colors, or any [standard datatype](contract/RigWorks/docs/properties.md) in the Node Editor.
+Artist guide: [nodes.md](nodes.md). Hero: `packs/rigNodeEditor/examples/nodes`.
 
 ## Layers (mental model)
 
