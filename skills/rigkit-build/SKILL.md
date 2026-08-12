@@ -152,18 +152,18 @@ On Windows, omit `-G Ninja` if Ninja is not installed (default generator is fine
 
 When changing an in-org pack, also build that pack’s examples (same as the pack’s `.github/workflows/ci.yml`):
 
-| Pack | Hero | Configure / build from host root |
+| Pack | Example | Configure / build from host root |
 |------|------|----------------------------------|
 | rigComponent | `creators` | `packs/rigComponent/examples/creators` |
 | rigSystems | `present` | `packs/rigSystems/examples/present` |
 | rigProject | `document` | `packs/rigProject/examples/document` |
 | rigImGui | `host_shell` | `packs/rigImGui/examples/host_shell` |
 | rigPlotter (integration) | `plot` + `*_smoke` | `packs/rigPlotter/examples/plot` |
-| Every other pack | its `examples/<hero>/` | see pack README (`img/preview.png` required) |
+| Every other pack | its `examples/<name>/` | see pack README (`img/preview.png` required) |
 
 ```bash
-cmake -S packs/<pack>/examples/<hero> -B packs/<pack>/examples/<hero>/build -G Ninja -DCMAKE_BUILD_TYPE=Release
-cmake --build packs/<pack>/examples/<hero>/build
+cmake -S packs/<pack>/examples/<name> -B packs/<pack>/examples/<name>/build -G Ninja -DCMAKE_BUILD_TYPE=Release
+cmake --build packs/<pack>/examples/<name>/build
 # plot integration + unit smokes:
 cmake --build packs/rigPlotter/examples/plot/build --target plot plot_unit_smokes
 ```
@@ -177,7 +177,7 @@ Host + in-org pack remotes are private. Jobs that `checkout` with `submodules: r
 
 ## Git commits
 
-- **Run [Local CI before commit](#local-ci-before-commit-required) first.** Do not create the commit while style, `contract_smoke`, required examples, or touched pack heroes are red.
+- **Run [Local CI before commit](#local-ci-before-commit-required) first.** Do not create the commit while style, `contract_smoke`, required examples, or touched pack examples are red.
 - Don't trail in git commits. No `Made-with: Cursor`, `Co-authored-by: Cursor`, or other AI / tool attribution trailers unless the user explicitly asks.
 - Commit only when asked. Message = why (1–2 sentences); match recent `git log` style.
 - Never `--no-verify`, force-push main/master, or amend unless the user’s commit rules allow it.
@@ -197,7 +197,7 @@ Contribute does not end at commit. [docs/contributing.md](../../docs/contributin
 
 1. Local CI green; commit(s) on a feature branch (not directly on `main` unless the user said so).
 2. `git push -u origin HEAD` if the branch is not on the remote yet.
-3. `gh pr create` against `main`. Body follows [`.github/pull_request_template.md`](../../.github/pull_request_template.md): Summary (why, 1–3 bullets), Ten Commandments checklist, Pi / rebuild-cost callouts when relevant, Test plan (`check-invariants`, format + `contract_smoke`, examples / pack heroes touched).
+3. `gh pr create` against `main`. Body follows [`.github/pull_request_template.md`](../../.github/pull_request_template.md): Summary (why, 1–3 bullets), Ten Commandments checklist, Pi / rebuild-cost callouts when relevant, Test plan (`check-invariants`, format + `contract_smoke`, examples / pack examples touched).
 4. Return the PR URL when done.
 
 **Packs:** if the change lives in an in-org pack checkout (`packs/<name>/` with its own remote), open the PR on **that** pack repo (or commit+push `main` only when the user explicitly wants a direct pack land). Host submodule SHA bumps are a separate host PR when basics are pinned that way.

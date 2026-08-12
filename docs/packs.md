@@ -51,7 +51,7 @@ target_include_directories(${PACK_NAME} PUBLIC
 
 5. Optional: declare further packs via CPM inside the pack’s CMake so consumers only pull one package. Put pack demos in that pack’s `examples/` (not in this repo).
 
-6. Ship **one hero** under `examples/<hero>/` (nest host + `add_rigkit_application`, same shape as `examples/minimal`). Link `examples/<hero>/img/preview.png` from the pack README. See [packs/README.md](../packs/README.md).
+6. Ship **one example** under `examples/<name>/` (nest host + `add_rigkit_application`, same shape as `examples/minimal`). Link `examples/<name>/img/preview.png` from the pack README. See [packs/README.md](../packs/README.md).
 
 ## Using a pack from an example
 

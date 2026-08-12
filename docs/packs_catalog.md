@@ -1,6 +1,6 @@
 # Packs catalog
 
-Known and planned RigKit packs. Operational detail (naming, pinning, heroes, CI, scaffold): [`packs/README.md`](../packs/README.md). How to create/use a pack: [packs.md](packs.md), [packs_using.md](packs_using.md).
+Known and planned RigKit packs. Operational detail (naming, pinning, examples, CI, scaffold): [`packs/README.md`](../packs/README.md). How to create/use a pack: [packs.md](packs.md), [packs_using.md](packs_using.md).
 
 **One id.** Spoken name = folder under `packs/` = `pack.json` `"name"` = `app.json` dependency `"name"` = CMake target.
 
@@ -57,7 +57,7 @@ Artist guide: [nodes.md](nodes.md).
 | **rigVectorEditor** | [rigkid/rigVectorEditor](https://github.com/rigkid/rigVectorEditor) | Edit `CPaths` (translate / delete / nudge) |
 | **rigArtboards** | [rigkid/rigArtboards](https://github.com/rigkid/rigArtboards) | Shared mm editing surface — pan/zoom under cursor, selection gizmo, numeric transform (shells keep content draw + undo) |
 
-Integration app: `packs/rigPlotter/examples/plot`. SVG IO pack hero: `packs/rigSvg/examples/svg`.
+Integration app: `packs/rigPlotter/examples/plot`. SVG IO pack example: `packs/rigSvg/examples/svg`.
 
 ### Pixel plotter
 
@@ -124,7 +124,7 @@ Not remotes yet. Scaffold only when the seam is real — survey Known first; pre
 | **rigAnimComponent** | *(folded into `rigComponent` + `rigSystems` for now — `CTween`/`CModLfo`/`CModBinding` + `STweens`/`SModulators`)* |
 | **rigLedComponent** | UV map / LED sample PODs — Pi install path |
 | **rigInstallIoComponent** | Serial / GPIO / network device PODs (sACN later) — or split when product needs clear |
-| **Blend2D demos** | Examples / heroes beyond the **rigBlend2D** pack itself — not a new pack id |
+| **Blend2D demos** | Examples beyond the **rigBlend2D** pack itself — not a new pack id |
 
 RigWorks schema catalog: [rigkid/RigWorks](https://github.com/rigkid/RigWorks). Pack map: [docs/contract/port-map.md](contract/port-map.md).
 

@@ -133,7 +133,7 @@ if [[ -f packs/rigPlotFinders/pack.json ]]; then
 		hit "rigPlotFinders must declare GPL-2.0-or-later (vendors Potrace)"
 	fi
 fi
-# app.json — host examples, templates, contract smoke, and pack hero apps.
+# app.json — host examples, templates, contract smoke, and pack example apps.
 # Cap depth so example build/ trees are not walked.
 while IFS= read -r -d '' aj; do
 	check_manifest_license "$aj" "app.json"
@@ -147,7 +147,7 @@ done < <(
 if [[ -f packs/rigPlotFinders/examples/finders/app.json ]]; then
 	if ! grep -qE '"license"[[:space:]]*:[[:space:]]*"GPL-2\.0-or-later"' \
 		packs/rigPlotFinders/examples/finders/app.json; then
-		hit "rigPlotFinders hero app.json must declare GPL-2.0-or-later"
+		hit "rigPlotFinders example app.json must declare GPL-2.0-or-later"
 	fi
 fi
 
@@ -174,28 +174,28 @@ if [[ -d packs ]]; then
 	done
 fi
 
-# --- Every pack: hero example + README screenshot ------------------------------
-# packs/<name>/examples/<hero>/CMakeLists.txt and examples/<hero>/img/preview.png
+# --- Every pack: Pack example + README screenshot ------------------------------
+# packs/<name>/examples/<name>/CMakeLists.txt and examples/<name>/img/preview.png
 # Pack README must embed preview.png. Host examples/ do not count.
 if [[ -d packs ]]; then
 	for pj in packs/*/pack.json; do
 		[[ -f "$pj" ]] || continue
 		pack_dir="$(dirname "$pj")"
 		pack_name="$(basename "$pack_dir")"
-		hero_ok=
-		while IFS= read -r -d '' hero_cmake; do
-			hero_dir="$(dirname "$hero_cmake")"
-			if [[ -f "$hero_dir/img/preview.png" ]]; then
-				hero_ok=1
+		example_ok=
+		while IFS= read -r -d '' example_cmake; do
+			example_dir="$(dirname "$example_cmake")"
+			if [[ -f "$example_dir/img/preview.png" ]]; then
+				example_ok=1
 				break
 			fi
 		done < <(find "$pack_dir/examples" -mindepth 2 -maxdepth 2 -name CMakeLists.txt -print0 2>/dev/null)
-		if [[ -z "$hero_ok" ]]; then
-			hit "pack $pack_name needs examples/<hero>/ with CMakeLists.txt and img/preview.png"
+		if [[ -z "$example_ok" ]]; then
+			hit "pack $pack_name needs examples/<name>/ with CMakeLists.txt and img/preview.png"
 		fi
 		readme="$pack_dir/README.md"
 		if [[ -f "$readme" ]] && ! grep -q 'preview\.png' "$readme"; then
-			hit "pack $pack_name README.md must embed examples/<hero>/img/preview.png"
+			hit "pack $pack_name README.md must embed examples/<name>/img/preview.png"
 		fi
 	done
 fi

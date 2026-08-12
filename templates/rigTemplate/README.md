@@ -37,7 +37,7 @@ Host copy lives at `templates/rigTemplate/` in the RigKit repo (not loaded as an
 
 ## CI
 
-`.github/workflows/ci.yml` builds `examples/demo` against a RigKit host checkout. After renaming this scaffold, set `PACK` / `HERO` in that workflow to match your pack.
+`.github/workflows/ci.yml` builds `examples/demo` against a RigKit host checkout. After renaming this scaffold, set `PACK` / `EXAMPLE` in that workflow to match your pack.
 
 `.github/workflows/docs.yml` publishes pack API docs to `https://rigkid.github.io/<pack>/` (host reusable `pack-docs.yml`). Rename the `pack:` input to your id. Enable Pages (GitHub Actions) once on the pack remote after host `pack-docs.yml` is on `main`.
 

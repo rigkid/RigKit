@@ -28,7 +28,7 @@ Until hardware is available, desktop build of `examples/oscHost` is the integrat
 
 ### Plot pack family (optional product path)
 
-Integration app: `packs/rigPlotter/examples/plot`. Each plot pack also has its own thin hero under `packs/<pack>/examples/<hero>/` (README screenshot). Headless unit smokes live under each pack’s `tools/*_smoke.cpp` and build with the plot tree (`plot_unit_smokes` target).
+Integration app: `packs/rigPlotter/examples/plot`. Each plot pack also has its own thin example under `packs/<pack>/examples/<name>/` (README screenshot). Headless unit smokes live under each pack’s `tools/*_smoke.cpp` and build with the plot tree (`plot_unit_smokes` target).
 
 ```bash
 cmake -S packs/rigPlotter/examples/plot -B packs/rigPlotter/examples/plot/build -DCMAKE_BUILD_TYPE=Release
@@ -36,7 +36,7 @@ cmake --build packs/rigPlotter/examples/plot/build -j$(nproc) --target plot plot
 # Run smokes (paths next to the build tree; names are paths_smoke, svg_smoke, …):
 find packs/rigPlotter/examples/plot/build -type f -name '*_smoke' -executable -print -exec {} \;
 ./packs/rigPlotter/examples/plot/build/bin/plot
-# Per-pack hero (example):
+# Per-pack example (example):
 cmake -S packs/rigSvg/examples/svg -B packs/rigSvg/examples/svg/build
 cmake --build packs/rigSvg/examples/svg/build --target svg
 ```
