@@ -79,6 +79,7 @@ void OscHost::setupAuthorUi() {
 	if (mui) {
 		mui->setDockPassthroughCentral(true);
 		mui->addAllHostPanels();
+		mui->setWindowVisibility("Debug", true);
 		mui->showNotification("Author mode — oscHost");
 	}
 

@@ -65,7 +65,7 @@ Each dependency uses a git **`ref`** (tag, branch, or commit SHA):
 | **rigComponent** | Generic POD data |
 | **rigSystems** | Update/Draw systems |
 | **rigProject** | Host project envelope + `.rig` document IO |
-| **rigImGui** | Default **Rig + UI** fulfillment |
+| **rigImGui** | Default **Rig + UI** fulfillment. Dear ImGui is a nested submodule ([GitBruno/imgui](https://github.com/GitBruno/imgui) until [ocornut/imgui#9516](https://github.com/ocornut/imgui/pull/9516) merges); init with `--recursive`. |
 
 Everything else under `packs/` is optional: local clone or CPM at `app.json` `url` + `ref`. Survey [docs/packs_catalog.md](../docs/packs_catalog.md) before scaffolding a new pack.
 
@@ -157,6 +157,6 @@ git -C packs/rigBlend2D submodule update --init --recursive
 
 ## Bootstrap order
 
-Register **rigComponent** → **rigSystems** → **rigImGui** (see `examples/oscHost` and `examples/minimal`). For 3D meshes: **rigComponent** → **rigSystems** → **rigRender3D** (+ **rigObj** / **rigMeshEdit** as needed; see `examples/example-lowpoly`). For node graphs: **rigComponent** → **rigNodeComponent** → **rigImGui** → **rigNodeEditor** (see `packs/rigNodeEditor/examples/nodes`). Artist guide: [docs/nodes.md](../docs/nodes.md).
+Register **rigComponent** → **rigSystems** → **rigImGui** (see `examples/oscHost` and `examples/minimal`). For 3D meshes: **rigComponent** → **rigSystems** → **rigRender3D** (+ **rigObj** / **rigMeshEdit** as needed; see `examples/lowpoly`). For node graphs: **rigComponent** → **rigNodeComponent** → **rigImGui** → **rigNodeEditor** (see `packs/rigNodeEditor/examples/nodes`). Artist guide: [docs/nodes.md](../docs/nodes.md).
 
 There is **no** runtime git updater in the host — only configure-time CPM and the tools above.

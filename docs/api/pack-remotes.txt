@@ -11,6 +11,7 @@ rigColorspace	https://github.com/rigkid/rigColorspace.git	main
 rigComponent	https://github.com/rigkid/rigComponent.git	main
 rigCompositor	https://github.com/rigkid/rigCompositor.git	main
 rigDxf	https://github.com/rigkid/rigDxf.git	main
+rigEthereum	https://github.com/rigkid/rigEthereum.git	main
 rigGCode	https://github.com/rigkid/rigGCode.git	main
 rigGrbl	https://github.com/rigkid/rigGrbl.git	main
 rigImGui	https://github.com/rigkid/rigImGui.git	main
@@ -20,6 +21,7 @@ rigNodeComponent	https://github.com/rigkid/rigNodeComponent.git	main
 rigNodeEditor	https://github.com/rigkid/rigNodeEditor.git	main
 rigObj	https://github.com/rigkid/rigObj.git	main
 rigOsc	https://github.com/rigkid/rigOsc.git	main
+rigPdf	https://github.com/rigkid/rigPdf.git	main
 rigPixelPlotComponent	https://github.com/rigkid/rigPixelPlotComponent.git	main
 rigPixelPlotter	https://github.com/rigkid/rigPixelPlotter.git	main
 rigPixelPlotterUi	https://github.com/rigkid/rigPixelPlotterUi.git	main
@@ -32,6 +34,7 @@ rigPlotterUi	https://github.com/rigkid/rigPlotterUi.git	main
 rigProject	https://github.com/rigkid/rigProject.git	main
 rigPython	https://github.com/rigkid/rigPython.git	main
 rigRender3D	https://github.com/rigkid/rigRender3D.git	main
+rigScreenCast	https://github.com/rigkid/rigScreenCast.git	main
 rigSvg	https://github.com/rigkid/rigSvg.git	main
 rigSvgEditorUi	https://github.com/rigkid/rigSvgEditorUi.git	main
 rigSystems	https://github.com/rigkid/rigSystems.git	main

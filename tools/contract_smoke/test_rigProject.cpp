@@ -5,16 +5,21 @@
 #include <memory>
 #include <sstream>
 
+#include "CAssetRef.h"
 #include "CCamera.h"
 #include "CCode.h"
+#include "CCurve.h"
 #include "CDrawStyle.h"
+#include "CLayer.h"
 #include "CLight.h"
 #include "CMesh.h"
 #include "CPage.h"
+#include "CPath.h"
 #include "CProject.h"
 #include "CRectangle.h"
 #include "CRelationship.h"
 #include "CSelection.h"
+#include "CText.h"
 #include "CTransform.h"
 #include "ContractImport.h"
 #include "ProjectSerializer.h"
@@ -126,6 +131,15 @@ void expectRoundTripScene(MEcs& ecs, const std::string& docPath) {
 	CHECK_FALSE(ecs.hasComponent<ecs::CSelection>(parent));
 }
 
+project::ContractImportResult importWithPackCodecs(SpineFixture& f, const char* jsonText,
+												   const char* label) {
+	auto* packs = f.engine->getPackManager();
+	REQUIRE(packs != nullptr);
+	auto docPack = packs->getPack<rigProject>();
+	REQUIRE(docPack != nullptr);
+	return project::importContractJson(f.ecs(), jsonText, label, docPack->serializer().registry());
+}
+
 } // namespace
 
 TEST_CASE("rigProject registers Project/Page and ProjectLoadSave system") {
@@ -149,16 +163,20 @@ TEST_CASE("rigProject registers Project/Page and ProjectLoadSave system") {
 TEST_CASE("rigProject .rig serializer round-trips core components") {
 	SpineFixture f;
 	auto& ecs = f.ecs();
+	auto* packs = f.engine->getPackManager();
+	REQUIRE(packs != nullptr);
+	auto docPack = packs->getPack<rigProject>();
+	REQUIRE(docPack != nullptr);
+
 	const auto path = tempRigPath("rigkit_contract_smoke_roundtrip.rig").string();
 	std::filesystem::remove(path);
 
 	buildRoundTripScene(ecs, path);
 
-	project::ProjectSerializer serializer;
-	REQUIRE(serializer.save(ecs, path));
+	REQUIRE(docPack->serializer().save(ecs, path));
 	REQUIRE(std::filesystem::exists(path));
 
-	REQUIRE(serializer.load(ecs, path));
+	REQUIRE(docPack->serializer().load(ecs, path));
 	expectRoundTripScene(ecs, path);
 
 	std::filesystem::remove(path);
@@ -203,12 +221,12 @@ TEST_CASE("rigProject Contract import maps rig.spatial.anchor onto the page") {
 			}
 		]
 	})";
-	auto result = project::importContractJson(ecs, jsonText, "smoke");
+	auto result = importWithPackCodecs(f, jsonText, "smoke");
 	REQUIRE(result.ok);
 	CHECK(result.skipped.empty());
 	auto view = ecs.view<ecs::CPage>();
 	REQUIRE(view.begin() != view.end());
-	CHECK(view.get<ecs::CPage>(*view.begin()).originAnchor == 2);
+	CHECK(view.get<ecs::CPage>(*view.begin()).originAnchor == 6);
 }
 
 /// Pages written before the anchor became its own component name it inline.
@@ -233,7 +251,7 @@ TEST_CASE("rigProject Contract import maps rig.layout.page originAnchor") {
 			}
 		]
 	})";
-	auto result = project::importContractJson(ecs, jsonText, "smoke");
+	auto result = importWithPackCodecs(f, jsonText, "smoke");
 	REQUIRE(result.ok);
 	CHECK(result.skipped.empty());
 	auto view = ecs.view<ecs::CPage>();
@@ -264,7 +282,7 @@ TEST_CASE("rigProject Contract import maps rig.media.code to CCode") {
 			}
 		]
 	})";
-	auto result = project::importContractJson(ecs, jsonText, "smoke");
+	auto result = importWithPackCodecs(f, jsonText, "smoke");
 	REQUIRE(result.ok);
 	CHECK(result.skipped.empty());
 	auto view = ecs.view<ecs::CCode>();
@@ -317,7 +335,7 @@ TEST_CASE("rigProject Contract import maps rig.* geometry light material") {
 		]
 	})";
 
-	auto result = project::importContractJson(ecs, jsonText, "smoke");
+	auto result = importWithPackCodecs(f, jsonText, "smoke");
 	REQUIRE(result.ok);
 	CHECK(result.title == "smoke-contract");
 	CHECK(result.skipped.empty());
@@ -350,9 +368,12 @@ TEST_CASE("rigProject .rig save is readable by Contract import") {
 
 	{
 		SpineFixture writer;
+		auto* packs = writer.engine->getPackManager();
+		REQUIRE(packs != nullptr);
+		auto docPack = packs->getPack<rigProject>();
+		REQUIRE(docPack != nullptr);
 		buildRoundTripScene(writer.ecs(), path);
-		project::ProjectSerializer serializer;
-		REQUIRE(serializer.save(writer.ecs(), path));
+		REQUIRE(docPack->serializer().save(writer.ecs(), path));
 	}
 
 	const std::string text = readFileText(path);
@@ -360,7 +381,7 @@ TEST_CASE("rigProject .rig save is readable by Contract import") {
 
 	SpineFixture reader;
 	auto& ecs = reader.ecs();
-	auto result = project::importContractJson(ecs, text, path);
+	auto result = importWithPackCodecs(reader, text.c_str(), path.c_str());
 
 	// Without this the failure reads as a bare REQUIRE(false) and hides which
 	// side broke — a parse error, a missing envelope, or an unreadable key.
@@ -385,6 +406,107 @@ TEST_CASE("rigProject .rig save is readable by Contract import") {
 		}
 	}
 	CHECK(reparented);
+
+	std::filesystem::remove(path);
+}
+
+TEST_CASE("rigProject round-trips path layer asset text curve via pack codecs") {
+	SpineFixture f;
+	auto& ecs = f.ecs();
+	auto* packs = f.engine->getPackManager();
+	REQUIRE(packs != nullptr);
+	auto docPack = packs->getPack<rigProject>();
+	REQUIRE(docPack != nullptr);
+
+	const auto path = tempRigPath("rigkit_contract_smoke_close_codecs.rig").string();
+	std::filesystem::remove(path);
+
+	auto docEntity = ecs.createEntity("doc");
+	ecs::CProject doc;
+	doc.title = "Close Codecs";
+	doc.path = path;
+	ecs.addComponent<ecs::CProject>(docEntity, doc);
+
+	auto font = ecs.createEntity("face");
+	ecs::CAssetRef asset;
+	asset.kind = ecs::CAssetRef::Kind::Font;
+	asset.path = "fonts/Inter.ttf";
+	ecs.addComponent<ecs::CAssetRef>(font, asset);
+
+	auto label = ecs.createEntity("label");
+	ecs::CText text;
+	text.text = "Hello";
+	text.font = font;
+	text.fontSize = 18.f;
+	text.useKerning = false;
+	ecs.addComponent<ecs::CText>(label, text);
+
+	auto layer = ecs.createEntity("plate");
+	ecs::CLayer lay;
+	lay.order = 3;
+	lay.locked = true;
+	lay.visible = false;
+	lay.colorR = 0.2f;
+	lay.colorG = 0.4f;
+	lay.colorB = 0.6f;
+	lay.colorA = 1.f;
+	ecs.addComponent<ecs::CLayer>(layer, lay);
+
+	auto stroke = ecs.createEntity("stroke");
+	ecs::CPath pathPod;
+	ecs::CPath::Command move;
+	move.type = ecs::CPath::Cmd::MoveTo;
+	move.p = {0.f, 0.f};
+	ecs::CPath::Command line;
+	line.type = ecs::CPath::Cmd::LineTo;
+	line.p = {10.f, 20.f};
+	pathPod.commands = {move, line};
+	ecs.addComponent<ecs::CPath>(stroke, pathPod);
+
+	auto ramp = ecs.createEntity("ramp");
+	ecs::CCurve curve;
+	curve.preset = ecs::CCurve::Preset::EaseInOut;
+	curve::applyPreset(curve, curve.preset);
+	curve.interp = ecs::CCurve::Interp::Smooth;
+	ecs.addComponent<ecs::CCurve>(ramp, curve);
+
+	REQUIRE(docPack->serializer().save(ecs, path));
+	REQUIRE(docPack->serializer().load(ecs, path));
+
+	auto face = ecs.findEntity("face");
+	auto textE = ecs.findEntity("label");
+	auto plate = ecs.findEntity("plate");
+	auto strokeE = ecs.findEntity("stroke");
+	auto rampE = ecs.findEntity("ramp");
+	REQUIRE(face != entt::null);
+	REQUIRE(textE != entt::null);
+	REQUIRE(plate != entt::null);
+	REQUIRE(strokeE != entt::null);
+	REQUIRE(rampE != entt::null);
+
+	REQUIRE(ecs.hasComponent<ecs::CAssetRef>(face));
+	CHECK(ecs.getComponent<ecs::CAssetRef>(face).kind == ecs::CAssetRef::Kind::Font);
+	CHECK(ecs.getComponent<ecs::CAssetRef>(face).path == "fonts/Inter.ttf");
+
+	REQUIRE(ecs.hasComponent<ecs::CText>(textE));
+	CHECK(ecs.getComponent<ecs::CText>(textE).text == "Hello");
+	CHECK(ecs.getComponent<ecs::CText>(textE).font == face);
+	CHECK(ecs.getComponent<ecs::CText>(textE).fontSize == doctest::Approx(18.f));
+	CHECK_FALSE(ecs.getComponent<ecs::CText>(textE).useKerning);
+
+	REQUIRE(ecs.hasComponent<ecs::CLayer>(plate));
+	CHECK(ecs.getComponent<ecs::CLayer>(plate).order == 3);
+	CHECK(ecs.getComponent<ecs::CLayer>(plate).locked);
+	CHECK_FALSE(ecs.getComponent<ecs::CLayer>(plate).visible);
+	CHECK(ecs.getComponent<ecs::CLayer>(plate).colorG == doctest::Approx(0.4f));
+
+	REQUIRE(ecs.hasComponent<ecs::CPath>(strokeE));
+	REQUIRE(ecs.getComponent<ecs::CPath>(strokeE).commands.size() == 2);
+	CHECK(ecs.getComponent<ecs::CPath>(strokeE).commands[1].p.y == doctest::Approx(20.f));
+
+	REQUIRE(ecs.hasComponent<ecs::CCurve>(rampE));
+	CHECK(ecs.getComponent<ecs::CCurve>(rampE).preset == ecs::CCurve::Preset::EaseInOut);
+	CHECK(ecs.getComponent<ecs::CCurve>(rampE).interp == ecs::CCurve::Interp::Smooth);
 
 	std::filesystem::remove(path);
 }

@@ -25,6 +25,11 @@
       "ref": "main"
     },
     {
+      "name": "rigProject",
+      "url": "https://github.com/rigkid/rigProject.git",
+      "ref": "main"
+    },
+    {
       "name": "rigOsc",
       "url": "https://github.com/rigkid/rigOsc.git",
       "ref": "main"
