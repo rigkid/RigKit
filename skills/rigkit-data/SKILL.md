@@ -48,7 +48,7 @@ Also:
 
 - **Survey before a new pack** — read the pack table + Naming rules; grow an existing pack when the role already exists. Lock one camelCase spoken name for folder / manifests / CMake.
 - Keep **`rigComponent` thin** — domain weight goes in domain data packs, not a kitchen-sink core.
-- Domain types serialize by registering codecs on **`rigProject`** (or root extensions), not by stuffing plot/MIDI/… types into `rigComponent`. RigKit's `.rig` writer still uses a PascalCase alias layer today ([docs/interchange.md](../../docs/interchange.md)); once it moves to Contract JSON, a host component with no Rig schema id should travel as `x.rigkit.<name>` — see [extension components](../../docs/contract/RigWorks/schemas/document.md#extension-components) — not as a reason to invent a fake `rig.*` id.
+- Domain types serialize by registering codecs on **`rigProject`** (or root extensions) from the **owning** pack — not by stuffing plot/MIDI/… types into `rigComponent`, and not by growing a kitchen-sink list inside **rigProject**. RigKit's `.rig` writer keys components by schema id; once it moves to Contract JSON fully, a host component with no Rig schema id should travel as `x.rigkit.<name>` — see [extension components](../../docs/contract/RigWorks/schemas/document.md#extension-components) — not as a reason to invent a fake `rig.*` id.
 - Naming: `C*` structs; files match type names; `GetProperties()` + `registerComponent` in the **owning** pack's `setup()`.
 - Engines (e.g. PlotDoc) are **code**, not components — they live in code packs and mutate domain PODs.
 
@@ -88,7 +88,7 @@ ecs->registerComponent<MyComponent>("MyComponent", true);
 
 ## Known gap
 
-`CEvent`'s payload is a type-erased `std::any` (needed for an in-process event bus) — it does not travel and is not meant to serialize. New work must not widen that gap by adding host types (window pointers, GPU handles, callbacks) to other components. Project serialize lives in rigProject (JSON registry + core codecs; default `.rig`).
+`CEvent`'s payload is a type-erased `std::any` (needed for an in-process event bus) — it does not travel and is not meant to serialize. New work must not widen that gap by adding host types (window pointers, GPU handles, callbacks) to other components. Project serialize lives in **rigProject** (JSON registry walk + envelope; default `.rig`). Owning packs register their codecs onto that registry.
 
 ## Sources
 

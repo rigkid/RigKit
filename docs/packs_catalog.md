@@ -14,10 +14,10 @@ In-org packs are separate remotes in the [rigkid](https://github.com/rigkid) org
 
 | Pack | Remote | Role |
 |------|--------|------|
-| **rigComponent** | [rigkid/rigComponent](https://github.com/rigkid/rigComponent) | Data-only ECS components — no systems (includes general `CPath` / `rig.geometry.path`) |
+| **rigComponent** | [rigkid/rigComponent](https://github.com/rigkid/rigComponent) | Data-only ECS components — no systems (includes general `CPath` / `rig.geometry.path`; `CScreenCast` / `CScreenCastReceive` / `CCastReceiver` for cast send/receive + discovery) |
 | **rigSystems** | [rigkid/rigSystems](https://github.com/rigkid/rigSystems) | Update/Draw systems over that data |
 | **rigProject** | [rigkid/rigProject](https://github.com/rigkid/rigProject) | Host project envelope (`CProject`/`CPage`) + `.rig` document IO (document = portable `.rig`) |
-| **rigImGui** | [rigkid/rigImGui](https://github.com/rigkid/rigImGui) | UI fulfillment (`IMui`); host shell; Properties catalog; themes/fonts |
+| **rigImGui** | [rigkid/rigImGui](https://github.com/rigkid/rigImGui) | UI fulfillment (`IMui`); host shell; Properties catalog; themes/fonts. Chrome labels apply TTF `kern` pairs (GPOS via `IMui::setChromeKernFn` / VarFont). |
 
 ### 3D / mesh
 
@@ -42,9 +42,10 @@ Artist guide: [nodes.md](nodes.md).
 | Pack | Remote | Role |
 |------|--------|------|
 | **rigPlotComponent** | [rigkid/rigPlotComponent](https://github.com/rigkid/rigPlotComponent) | Plotter PODs (`CPaths` bags, layers, zones, pen, path-edit selection; commands are `CPath` from **rigComponent**) |
-| **rigColorspace** | [rigkid/rigColorspace](https://github.com/rigkid/rigColorspace) | RGB + CMYK color POD, swatch library, conversion helpers |
+| **rigColorspace** | [rigkid/rigColorspace](https://github.com/rigkid/rigColorspace) | RGB + CMYK color POD, optional `ink`, paint fill/stroke refs, swatch library |
 | **rigCompositor** | [rigkid/rigCompositor](https://github.com/rigkid/rigCompositor) | FBO layer compositor — SVG blend modes + path masks |
 | **rigSvg** | [rigkid/rigSvg](https://github.com/rigkid/rigSvg) | SVG import/export ↔ `ParsedPathDoc` / paints |
+| **rigPdf** | [rigkid/rigPdf](https://github.com/rigkid/rigPdf) (local `packs/` until published) | PDF emit from `CPage` / paths / text; Separation / overprint / PDF/X. Shapes `CText` via ImVarFont `varfont_core` (+ optional system HarfBuzz). **Leaf.** |
 | **rigDxf** | [rigkid/rigDxf](https://github.com/rigkid/rigDxf) | DXF ↔ typed POD (`CPath` / `CArc` / `CEllipse` / `CSpline`) + `ParsedPathDoc` flatten. **GPL-2.0-or-later** (dxflib) |
 | **rigGCode** | [rigkid/rigGCode](https://github.com/rigkid/rigGCode) | `CPaths` ↔ G-code text emit/import (no serial) |
 | **rigGrbl** | [rigkid/rigGrbl](https://github.com/rigkid/rigGrbl) | GRBL serial send |
@@ -80,7 +81,10 @@ Product app **PixelPlotter** lives out of tree (e.g. next to RigKit), not under 
 | Pack | Remote | Role |
 |------|--------|------|
 | **rigOsc** | [rigkid/rigOsc](https://github.com/rigkid/rigOsc) | UDP OSC + network identity / show bus — `oscHost --smoke-osc` |
+| **rigNetScan** | [rigkid/rigNetScan](https://github.com/rigkid/rigNetScan) (local `packs/` until published) | LAN TCP connect scan — `CNetScan` / `CNetHost` + `IpScannerWindow`. Example `netscan --smoke-netscan` |
 | **rigAbletonLink** | [rigkid/rigAbletonLink](https://github.com/rigkid/rigAbletonLink) (local `packs/` until published) | Ableton Link → `CMusicClock` / `CMusicTransport`. **Leaf.** **GPL-2.0-or-later** (Link SDK). |
+| **rigScreenCast** | [rigkid/rigScreenCast](https://github.com/rigkid/rigScreenCast) (local `packs/` until published) | Host-window cast **send** + **receive** (RigKit peer; AirPlay RX via hard-linked UxPlay). POD in **rigComponent**. **Leaf / GPLv3** while UxPlay is linked. Never desktop capture. Google Cast RX still follow-on. |
+| **rigEthereum** | [rigkid/rigEthereum](https://github.com/rigkid/rigEthereum) (local `packs/` until published) | On-chain art record (`COnChainArt`) + keccak256 / wallet submit intent (existing wallet). **Leaf.** No keys / no broadcast. |
 
 ### Scripting / CAD
 
@@ -90,7 +94,7 @@ Product app **PixelPlotter** lives out of tree (e.g. next to RigKit), not under 
 | **rigAcp** | [rigkid/rigAcp](https://github.com/rigkid/rigAcp) | [ACP](https://agentclientprotocol.com) client — stdio JSON-RPC + `CCode` fs bridge (opt-in; no UI) |
 | **rigAgentty** | [rigkid/rigAgentty](https://github.com/rigkid/rigAgentty) | [agentty](https://agentty.org/docs/) over **rigAcp** — ImGui panel + Code Editor sync (opt-in; submodule ExternalProject or PATH binary) |
 | **rigPython** | [rigkid/rigPython](https://github.com/rigkid/rigPython) | Embedded Python host for artist sketches (`eval` when CPython embed found) |
-| **rigManifold** | [rigkid/rigManifold](https://github.com/rigkid/rigManifold) | Manifold CSG → `CMesh` (FetchContent kernel; opt-in / desktop-first) |
+| **rigManifold** | [rigkid/rigManifold](https://github.com/rigkid/rigManifold) | Manifold CSG → `CMesh` (FetchContent kernel; Pi floor — bake in Setup) |
 | **rigCad** | [rigkid/rigCad](https://github.com/rigkid/rigCad) | Live-scripted 3D CAD (`rigcad` sketch module when Python + Manifold available) |
 
 ### Optional renderer
@@ -107,9 +111,9 @@ git clone --recurse-submodules https://github.com/rigkid/rigBlend2D.git packs/ri
 
 | Pack | Remote | Role |
 |------|--------|------|
-| **rigVarFont** | [rigkid/rigVarFont](https://github.com/rigkid/rigVarFont) | Optional VF / FreeType fulfillment of `CText` + `IRenderer` filled text (ImVarFont `varfont_core` + `varfont_gl`). Axis values on POD; Face/atlas in the pack. GLES2 → CPU FreeType fallback. |
+| **rigVarFont** | [rigkid/rigVarFont](https://github.com/rigkid/rigVarFont) | Optional VF / FreeType fulfillment of `CText` + `IRenderer` filled text (ImVarFont `varfont_core` + `varfont_gl`). Axis values on POD; Face/atlas in the pack. GLES2 → CPU FreeType fallback. **HarfBuzz** = optional system lib behind ImVarFont (GPOS / OT features), not a pack. |
 
-`CText` lives in **rigComponent** and speaks `rig.media.text` (`font` → `CAssetRef` kind font; `axes` / `features` / `useKerning` on the schema).
+`CText` lives in **rigComponent** and speaks `rig.media.text` (`font` → `CAssetRef` kind font; `axes` / `features` / `useKerning` on the schema). Screen present (**rigVarFont**) and PDF emit (**rigPdf**) both shape through ImVarFont `varfont_core` — same Face / features / kerning path; PDF does not link `varfont_gl` / OpenGL. Chrome labels are a separate present: **rigImGui** applies TTF `kern` pairs on ImGui `RenderText` (atlas = glyph cache). GPOS / live UFO pairs plug in through `IMui::setChromeKernFn` (VarFont `GetGposPairExtraPx`). Editable UFO source is `rig.font.*` (planned **rigFontComponent**), not `CText`.
 
 ## Planned
 
@@ -120,6 +124,10 @@ Not remotes yet. Scaffold only when the seam is real — survey Known first; pre
 | **JSON UI sections** | Portable panel map (layout + widget ids + bindings to ECS / `sProp` paths) consumed by `IMui` fulfillments. Host windows stay in **rigImGui**; domain chrome in `*Ui` / `*Editor`. No per-window `rigWin*` packs. Share a tool = ship data (entity meaning + UI JSON), not C++ panels. |
 | **Web UI fulfillment** | Alternate `IMui` over the same JSON / ECS map (browser panels) — Contract allows it; no pack yet |
 | **Node anim / channels** | Broader timeline/channel products — grow **rigNodeComponent** / **rigNodeEditor** (or a thin companion) when product need is clear |
+| **rigFontComponent** | UFO source PODs — [Rig font schemas](https://github.com/rigkid/RigWorks/tree/main/schemas/font) (`rig.font.face` / `glyph` / `kern` / …). Data only. Session chrome bind is host `x.rigkit.ui_face`. |
+| **rigUfo** | `.ufo` / `.ufoz` read/write into those PODs (code / IO) |
+| **rigFont** | Chrome shaper + dirty glyph raster over `rig.font.*` (code) |
+| **rigFontUi** | Font view / glyph edit / text view on **rigImGui** |
 | **rigMusicComponent** | Transport / clock / sequencer / pattern / step PODs — [Rig music schemas](https://github.com/rigkid/RigWorks/tree/main/schemas/music); data only |
 | **rigAnimComponent** | *(folded into `rigComponent` + `rigSystems` for now — `CTween`/`CModLfo`/`CModBinding` + `STweens`/`SModulators`)* |
 | **rigLedComponent** | UV map / LED sample PODs — Pi install path |

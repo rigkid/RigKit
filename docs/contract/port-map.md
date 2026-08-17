@@ -16,9 +16,12 @@ Schemas were cross-pollinated toward this reference host (v0.1). Data packs hold
 | `rig.spatial.transform` | **rigComponent** — `CTransform` | Serialize `position` / `rotation` (quat) / `scale`. `euler` is editor cache only — sync both ways; `localMatrix` uses quat. Do not serialize `euler` or `world`. |
 | `rig.spatial.group` | **rigComponent** — `CGroup` | Marker only (empty). Children use `CRelationship::parent`. |
 | `rig.spatial.camera` | **rigComponent** — `CCamera` (present **rigRender3D**) | Matches projection set (`active`, `projection`, clips, FOV, aspect). |
-| `rig.spatial.layer` | **rigComponent** — `CLayer` | `order` / `visible` / `locked` / tint (`rgba` ↔ channels). |
+| `rig.spatial.layer` | **rigComponent** — `CLayer` | `order` / `locked` / tint (`rgba`). `visible` travels as `x.rigkit.layer_visible` (Contract schema has no visible yet). |
 | `rig.paint.fill_stroke` | **rigComponent** — `CDrawStyle` | Core fill/stroke; caps/joins/dash are host extensions. |
-| `rig.geometry.mesh` | **rigComponent** — `CMesh` | positions / optional normals / indices / texcoords / mode / optional face colours. |
+| `rig.geometry.mesh` | **rigComponent** — `CMesh` | positions / optional normals / indices / optional n-gon `loops`+`loopSizes` / texcoords / mode / optional face colours. Edges are consecutive loop pairs (no parallel edge table). |
+| `rig.geometry.spline` | **rigComponent** — `CSpline` | NURBS curve in the plane. |
+| `rig.geometry.spline3d` | **rigComponent** — `CSpline3d` | NURBS curve in 3-space. |
+| `rig.geometry.nurbs_surface` | **rigComponent** — `CNurbsSurface` | Control net; tessellation is fulfillment. |
 | `rig.geometry.path` | **rigComponent** — `CPath` | AoS `commands` including `quadTo`. Plot layer bags stay on **rigPlotComponent** `CPaths`. |
 | `rig.layout.page` | **rigProject** — `CPage` | `index` / `width` / `height` / `unit`; margins/bleed/slug as scalar channels. Entity title via `rig.meta.named`. |
 | `rig.spatial.anchor` | **rigProject** — `CPage::originAnchor` | Which cell of the trim is page-local (0,0), as the Contract string enum. Absent = `topLeft`, so a top-left page writes no component. A page anchors to a corner or `center`; an imported edge cell keeps its side and falls to the nearer corner. |
@@ -42,22 +45,29 @@ Schemas were cross-pollinated toward this reference host (v0.1). Data packs hold
 | `rig.geometry.rectangle` / `ellipse` / … | **rigComponent** — `CShape` | Host still uses a union POD (`type` / `sides` / `innerRadius`); Rig split primitives in 0.5.0 — do not advertise a single schema id yet. |
 | `rig.pixel.canvas` / `source` / `layer` / `raster` | **rigPixelPlotComponent** | Intent only — not a finished field map. Compositor `kind=group` + parent exist on `CPixelLayer`. |
 | `rig.meta.named` | *(none)* | No `CName`; names on domain PODs. Grow **rigComponent**. |
-| `rig.paint.solid` | **rigColorspace** — `CColor` | `rgba` + optional `cmyk`. `model` / `space` are host authoring lanes. |
+| `rig.paint.solid` | **rigColorspace** — `CColor` | `rgba` + optional `cmyk` + optional `ink` + optional overprint flags. `model` / `space` are host authoring lanes. |
+| `rig.paint.fill` / `stroke` | **rigColorspace** — `CPaintFill` / `CPaintStroke` | Entity paint refs; stroke `width` on the stroke POD. |
 | `rig.paint.gradient` | **rigPlotComponent** — `CGradient` | Wire `kind` / stops `t`/`rgba`. `interp` / `spread` / `intensity` / `angle`/`center`/radii are host stand-ins for `p0`/`p1`. |
 | `rig.paint.library` | **rigPlotComponent** — `CPaintLibrary` / **rigColorspace** — `CSwatchLibrary` | Still index-based gradients/swatches — not entity paint lists yet. |
 | `rig.render.material` | — | Grow **rigComponent** + **rigRender3D**. |
 | `rig.media.*` (remaining) | — | Settings-only; decode in code packs. |
 | `rig.node.pin` / `link` / `param` | nested in `CNodeGraph` | Nested PODs; pin/param `type` = property datatype table. |
+| `rig.cad.box` / `cylinder` / `sphere` | **rigComponent** PODs; bake **rigManifold** | Fields match. `bakeToMesh` evaluates when the kernel is linked. Mesh on the same entity is a bake. Pi: bake in Setup. |
+| `rig.cad.boolean` | **rigComponent** — `CCadBoolean`; bake **rigManifold** | `op` + entity-name `operands`. Nested booleans recurse. Operand local TRS applies before the op. |
+| `rig.cad.fillet` / `chamfer` | **rigComponent** — `CCadFillet` / `CCadChamfer` | Authored intent (`radius`/`distance`, `{a,b}` edges or `allEdges`). Manifold is a triangle kernel — not evaluated as B-rep rounds. |
+| `rig.cad.extrude` / `revolve` | **rigComponent** PODs | Fields match. Profile entity + sweep; no kernel eval yet. |
 
 ## Planned
 
 | Schema family | Planned pack |
 |---------------|--------------|
+| `rig.font.*` | **rigFontComponent** (UFO source PODs). Chrome bind is host `x.rigkit.ui_face`, not a `rig.*` id. IO in **rigUfo**. |
 | `rig.music.*` | **rigMusicComponent** (sequencer → pattern → steps) |
 | `rig.anim.curve` | **rigComponent** — `CCurve` | Close for curve POD + presets; tween/LFO still planned. |
 | `rig.anim.*` / `rig.mod.*` (remaining) | **rigAnimComponent** or grow **rigComponent** |
 | `rig.led.*` | **rigLedComponent** |
 | `rig.io.serial` / `rig.sensor.*` | **rigInstallIoComponent** (or split) |
+| LAN host / TCP scan (no `rig.*` id yet) | **rigNetScan** — `CNetScan` / `CNetHost` as `x.rigkit.net_scan` / `x.rigkit.net_host` |
 
 ## UI
 

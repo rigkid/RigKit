@@ -10,12 +10,15 @@
 | **rigSystems** | Update/Draw systems that register on `MEcs` |
 | **rigRender3D** | GLES mesh present when an active `CCamera` exists |
 | **rigObj** | Wavefront OBJ load/save for `CMesh` (tinyobjloader) |
+| **rigPdf** | PDF emit from `CPage` / paths / shaped `CText` (PDF-Writer + ImVarFont core; leaf) |
+| **rigEthereum** | On-chain art record POD + keccak256 / wallet submit intent (leaf; existing wallet; no keys) |
 | **rigAssimp** | Optional Assimp multi-format → `CMesh` (leaf; app opt-in only) |
 | **rigMeshEdit** | ImGuizmo TRS edit for selected `CTransform` |
 | **rigNodeComponent** | Generic node-graph PODs (`CNodeGraph`) — DATA + catalog/eval helpers. Artist guide: [nodes.md](nodes.md) |
 | **rigNodeEditor** | ImGui editor over `CNodeGraph` ([nodes.md](nodes.md)) |
 | **rigProject** | Host project envelope + `.rig` document IO (document = portable `.rig`; project = host session) |
 | **rigImGui** | Properties/Debug read the **component catalog** |
+| **rigNetScan** | LAN TCP connect scan over `CNetScan` / `CNetHost`; `IpScannerWindow` on rigImGui |
 
 Core (`MEcs`) only provides thin `registerComponent` / `registerSystem` glue.
 
@@ -28,14 +31,29 @@ Pick a home before writing systems or UI. Agents: [rigkit-data](../skills/rigkit
 | Home | Owns | Examples |
 |------|------|----------|
 | Host `src/ecs/components/` | Host-bound leftovers only — do not grow for new portable meaning | `CEvent` (menu/UI action data; `std::any` payload keeps it host-only) |
-| **rigComponent** | Generic reusable PODs — grow here; keep thin | `CTransform`, `CCanvas`, `CCamera`, `CLight`, `CPalette`, `CIndexedAtlas`, `CFaceSelection`, `CShape`, `CMesh`, `CDrawStyle`, `CSelection` |
+| **rigComponent** | Generic reusable PODs — grow here; keep thin | `CTransform`, `CCanvas`, `CCamera`, `CLight`, `CPalette`, `CIndexedAtlas`, `CFaceSelection`, `CEdgeSelection`, `CShape`, `CMesh`, `CSpline3d`, `CNurbsSurface`, `CCadBox`, `CDrawStyle`, `CSelection`, `CScreenCast`, `CScreenCastReceive`, `CCastReceiver` |
 | Domain data pack | Product-specific PODs (+ codecs / pure helpers over that POD) | `rigProject` (`CProject`, `CPage`); `rigPlotComponent` (`CPaths`, …); `rigNodeComponent` (`CNodeGraph`) |
-| Code pack | Systems / I/O / UI — not portable component homes | `rigSystems`, `rigRender3D`, `rigObj`, `rigAssimp` (leaf), `rigMeshEdit`, `rigNodeEditor`, `rigPlotter`, `rigPlotFinders`, `rigSvg`, `rigImGui` |
+| Code pack | Systems / I/O / UI — not portable component homes | `rigSystems`, `rigRender3D`, `rigObj`, `rigAssimp` (leaf), `rigPdf` (leaf), `rigEthereum` (leaf), `rigScreenCast` (leaf), `rigMeshEdit`, `rigNodeEditor`, `rigPlotter`, `rigPlotFinders`, `rigSvg`, `rigImGui` |
 | App | Prototypes until promotion to `rigComponent` or a domain data pack | one-off app structs |
 
 A data pack is **components-first**, not “literally only `struct` files.” Allowed: `C*` PODs, `GetProperties`, `registerComponent`, document codecs for those types, pure helpers (catalog, eval, flatten). Forbidden: Update/Draw systems, ImGui panels, GPU/window handles in components. Engines (e.g. PlotDoc) and editors stay in **code** packs.
 
-Serialize domain types via **rigProject** codecs / root extensions.
+Serialize domain types via **rigProject** codecs / root extensions — the **owning** pack (or app) calls `project::addSerializer<T>(...)` / `rigProject::registerSerializer` in `setup()`. **rigProject** only walks the registry and owns the document envelope (`CProject` / `CPage`). Do not grow a kitchen-sink serializer list inside **rigProject**.
+
+```cpp
+#include "AddSerializer.h"
+#include "rigProject.h"
+
+// In the owning pack's setup(), after getPack succeeds:
+if (auto* doc = getPack<rigkit::rigProject>("rigProject")) {
+	rigkit::project::addSerializer<MyComponent>(
+		doc->serializer().registry(), "MyComponent", "x.rigkit.my_component",
+		serializeMyComponent, deserializeMyComponent);
+	// Trivial cases:
+	// addBoolMemberSerializer<CSelectable, &CSelectable::enabled>(..., "enabled");
+	// addMarkerSerializer<CGroup>(..., "rig.spatial.group");
+}
+```
 
 ## Define a data component
 
@@ -94,4 +112,4 @@ Fire-and-forget packs stay as `registerPack<T>()` with no member. Plotter/SVG UI
 
 `registerPack<T>(args...)` constructs and owns the instance; the `shared_ptr` overload remains for data-driven registration (PackLoader / manifests). `getPack<T>()` keys on the pack class, so the id lives in one place and a wrong type is a compile error. The name overload `getPack("rigProject")` returns `IPack` and stays for enable/disable, settings, and dependency lookups.
 
-> SUDE bootstrap: `examples/oscHost`. Creators + meshes: `examples/minimal`.
+> SUDE bootstrap: `examples/oscHost`. Creators + meshes: `examples/minimal`. CAD CSG: `packs/rigManifold/examples/cad`. Sprite sheet: `packs/rigComponent/examples/pixel`.

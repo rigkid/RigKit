@@ -63,6 +63,20 @@ class IMui {
 	virtual bool dockPassthroughCentral() const { return false; }
 
 	/**
+	 * @brief Window-client rect of the empty central dock (GL bed) when valid.
+	 * @details Origin is the window client top-left (same space as GLFW cursor).
+	 * One-frame lag is normal: dock layout updates during UI render after Draw.
+	 * @return false if unavailable (caller falls back to full window).
+	 */
+	virtual bool centralViewRect(float& outX, float& outY, float& outW, float& outH) const {
+		(void)outX;
+		(void)outY;
+		(void)outW;
+		(void)outH;
+		return false;
+	}
+
+	/**
 	 * @brief Bind app/document undo history for Edit menu and shortcuts.
 	 * @details Stack lives outside UI (app or pack). Null clears the bind.
 	 */
@@ -216,6 +230,23 @@ class IMui {
 	 * used. Pass nullptr to clear. Multiple packs may register; order is FIFO.
 	 */
 	virtual void registerFontAtlasHook(std::function<void(ImFontAtlas& atlas)> hook) { (void)hook; }
+
+	/**
+	 * @brief Extra advance (pixels at `sizePx`) for a chrome label pair.
+	 * @details 0 = no kern. Bind VarFont `GetKernTablePairPx` /
+	 * `GetGposPairExtraPx` here. Absent = TTF `kern` table when present.
+	 */
+	using ChromeKernFn = float (*)(unsigned left, unsigned right, float sizePx, void* user);
+
+	/** @brief When true, chrome labels apply pair kerning (default on). */
+	virtual void setChromeKerning(bool enabled) { (void)enabled; }
+	virtual bool chromeKerning() const { return false; }
+	virtual void setChromeKernFn(ChromeKernFn fn, void* user) {
+		(void)fn;
+		(void)user;
+	}
+	/** @brief Loaded `kern` pairs, or 0 when using a custom fn / none. */
+	virtual int chromeKernPairCount() const { return 0; }
 
 	/**
 	 * @brief Optional About dialog intro (Help → About). Empty = default from app.json.
