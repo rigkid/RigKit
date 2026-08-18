@@ -128,6 +128,27 @@ class IRenderer {
 	virtual int getWidth() const = 0;
 	virtual int getHeight() const = 0;
 	virtual uint8_t* getPixelBuffer() = 0;
+
+	/**
+	 * @brief Independent triangles, 3 vertices each, document order.
+	 * @details Default walks drawTriangle. OpenGL batches as GL_TRIANGLES.
+	 */
+	virtual void drawTriangles(const std::vector<glm::vec2>& pts, const Paint& paint) {
+		for (size_t i = 0; i + 2 < pts.size(); i += 3) {
+			drawTriangle(pts[i].x, pts[i].y, pts[i + 1].x, pts[i + 1].y, pts[i + 2].x, pts[i + 2].y,
+						 paint);
+		}
+	}
+
+	/**
+	 * @brief Independent segments, 2 vertices each.
+	 * @details Default walks drawLine. OpenGL batches as GL_LINES.
+	 */
+	virtual void drawLines(const std::vector<glm::vec2>& pts, const Paint& paint) {
+		for (size_t i = 0; i + 1 < pts.size(); i += 2) {
+			drawLine(pts[i].x, pts[i].y, pts[i + 1].x, pts[i + 1].y, paint);
+		}
+	}
 };
 
 /**

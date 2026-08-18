@@ -1,7 +1,9 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include <cstdint>
 #include <memory>
+#include <span>
 #include <string>
 #include <vector>
 
@@ -14,8 +16,11 @@ namespace rigkit {
  * @brief Default host Draw fulfillment — immediate GL primitives.
  * @details Draws to the current framebuffer (typically the window). Origin is
  * top-left, y grows down. Each primitive fills or strokes according to the
- * Paint it is given. Does not create a window or swap buffers. Gradients and
- * saveTo* are no-ops until a richer pack implements them.
+ * Paint it is given. Consecutive triangles merge into one draw regardless of
+ * colour, and the batch is issued at the next topology change, transform, or
+ * endFrame; call order still decides what paints on top. Does not create a
+ * window or swap buffers. Gradients and saveTo* are no-ops until a richer pack
+ * implements them.
  * @see IRenderer, Paint, MEcs::setPresentRenderer, Graphics
  */
 class OpenGLRenderer : public IRenderer {
@@ -39,6 +44,8 @@ class OpenGLRenderer : public IRenderer {
 	void drawTriangle(float x1, float y1, float x2, float y2, float x3, float y3,
 					  const Paint& paint) override;
 	void drawPolygon(const std::vector<glm::vec2>& points, const Paint& paint) override;
+	void drawTriangles(const std::vector<glm::vec2>& pts, const Paint& paint) override;
+	void drawLines(const std::vector<glm::vec2>& pts, const Paint& paint) override;
 
 	void beginPath() override;
 	void moveTo(float x, float y) override;
@@ -82,15 +89,27 @@ class OpenGLRenderer : public IRenderer {
 	uint8_t* getPixelBuffer() override { return nullptr; }
 
   private:
+	// Position plus packed RGBA8. Colour travels per vertex so shapes of
+	// different colours still share one draw call.
+	struct Vertex {
+		glm::vec2 pos;
+		uint32_t color = 0;
+	};
+
 	void updateProjection();
-	void drawArrays(unsigned mode, const std::vector<glm::vec2>& pts, const glm::vec4& color);
-	void drawFilledPoly(const std::vector<glm::vec2>& pts, const glm::vec4& color);
-	void drawStrokedPoly(const std::vector<glm::vec2>& pts, bool closed, const glm::vec4& color,
-						 float width);
+	// Keep the open batch when topology and line width match, else flush and
+	// start a new one. Vertices append after this, so call order stays paint
+	// order. Fills pass 0 for lineWidth — it has no meaning for triangles.
+	void openBatch(unsigned mode, float lineWidth);
+	void enqueue(unsigned mode, std::span<const glm::vec2> pts, uint32_t color, float lineWidth);
+	void flush();
+	void drawFilledPoly(std::span<const glm::vec2> pts, uint32_t color);
+	void drawStrokedPoly(std::span<const glm::vec2> pts, bool closed, uint32_t color, float width);
 	/** @brief Fill or stroke a closed outline according to @p paint. */
-	void drawOutline(const std::vector<glm::vec2>& pts, const Paint& paint);
-	std::vector<glm::vec2> ellipsePoints(float cx, float cy, float rx, float ry,
-										 int segments) const;
+	void drawOutline(std::span<const glm::vec2> pts, const Paint& paint);
+	// Fills and returns the reusable scratch ring, so circles cost no
+	// allocation per frame. Valid until the next call.
+	const std::vector<glm::vec2>& ellipsePoints(float cx, float cy, float rx, float ry);
 
 	bool m_initialized = false;
 	int m_width = 0;
@@ -109,7 +128,12 @@ class OpenGLRenderer : public IRenderer {
 	unsigned m_vbo = 0;
 	int m_uModel = -1;
 	int m_uProjection = -1;
-	int m_uColor = -1;
+	size_t m_vboBytes = 0;
+
+	std::vector<Vertex> m_batch;
+	unsigned m_batchMode = 0;
+	float m_batchLineWidth = 0.f;
+	std::vector<glm::vec2> m_ellipseScratch;
 
 	ITextBackend* m_textBackend = nullptr;
 };

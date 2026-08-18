@@ -7,7 +7,10 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include <algorithm>
+#include <array>
 #include <cmath>
+#include <cstddef>
 #include <spdlog/spdlog.h>
 
 #ifndef M_PI
@@ -26,6 +29,28 @@ struct OpenGLRendererRegistrar {
 };
 static OpenGLRendererRegistrar g_openglRendererRegistrar;
 
+// Byte order matches a normalized GL_UNSIGNED_BYTE RGBA attribute.
+uint32_t packColor(const glm::vec4& c) {
+	auto channel = [](float v) {
+		return static_cast<uint32_t>(std::clamp(v, 0.f, 1.f) * 255.f + 0.5f);
+	};
+	return channel(c.r) | (channel(c.g) << 8) | (channel(c.b) << 16) | (channel(c.a) << 24);
+}
+
+// Segment count that keeps the chord within kTolerance of the true arc, so
+// small circles stay cheap and large ones stay round.
+int arcSegments(float radius) {
+	constexpr float kTolerance = 0.3f; // design pixels
+	if (radius <= kTolerance) {
+		return 8;
+	}
+	const float step = 2.f * std::acos(std::clamp(1.f - kTolerance / radius, -1.f, 1.f));
+	if (step <= 0.f) {
+		return 256;
+	}
+	return std::clamp(static_cast<int>(std::ceil(2.0 * M_PI / step)), 8, 256);
+}
+
 } // namespace
 
 OpenGLRenderer::OpenGLRenderer() = default;
@@ -42,34 +67,40 @@ bool OpenGLRenderer::initialize(int width, int height) {
 
 #if defined(RIGKIT_GLES)
 	const char* vsSrc = R"(#version 100
-attribute vec3 aPos;
+attribute vec2 aPos;
+attribute vec4 aColor;
 uniform mat4 model;
 uniform mat4 projection;
+varying vec4 vColor;
 void main() {
-	gl_Position = projection * model * vec4(aPos, 1.0);
+	vColor = aColor;
+	gl_Position = projection * model * vec4(aPos, 0.0, 1.0);
 }
 )";
 	const char* fsSrc = R"(#version 100
 precision mediump float;
-uniform vec4 uColor;
+varying vec4 vColor;
 void main() {
-	gl_FragColor = uColor;
+	gl_FragColor = vColor;
 }
 )";
 #else
 	const char* vsSrc = R"(#version 330 core
-layout (location = 0) in vec3 aPos;
+layout (location = 0) in vec2 aPos;
+layout (location = 1) in vec4 aColor;
 uniform mat4 model;
 uniform mat4 projection;
+out vec4 vColor;
 void main() {
-	gl_Position = projection * model * vec4(aPos, 1.0);
+	vColor = aColor;
+	gl_Position = projection * model * vec4(aPos, 0.0, 1.0);
 }
 )";
 	const char* fsSrc = R"(#version 330 core
+in vec4 vColor;
 out vec4 FragColor;
-uniform vec4 uColor;
 void main() {
-	FragColor = uColor;
+	FragColor = vColor;
 }
 )";
 #endif
@@ -105,6 +136,7 @@ void main() {
 	glAttachShader(m_program, fs);
 #if defined(RIGKIT_GLES)
 	glBindAttribLocation(m_program, 0, "aPos");
+	glBindAttribLocation(m_program, 1, "aColor");
 #endif
 	glLinkProgram(m_program);
 	glDeleteShader(vs);
@@ -121,15 +153,19 @@ void main() {
 
 	m_uModel = glGetUniformLocation(m_program, "model");
 	m_uProjection = glGetUniformLocation(m_program, "projection");
-	m_uColor = glGetUniformLocation(m_program, "uColor");
 
 	glGenVertexArrays(1, &m_vao);
 	glGenBuffers(1, &m_vbo);
 	glBindVertexArray(m_vao);
 	glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 3 * 2048, nullptr, GL_DYNAMIC_DRAW);
+	m_vboBytes = 2048 * sizeof(Vertex);
+	glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(m_vboBytes), nullptr, GL_DYNAMIC_DRAW);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), reinterpret_cast<void*>(0));
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+						  reinterpret_cast<void*>(offsetof(Vertex, pos)));
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(Vertex),
+						  reinterpret_cast<void*>(offsetof(Vertex, color)));
 	glBindVertexArray(0);
 
 	m_model = glm::mat4(1.f);
@@ -143,6 +179,7 @@ void OpenGLRenderer::shutdown() {
 	if (!m_initialized) {
 		return;
 	}
+	flush();
 	if (m_vbo) {
 		glDeleteBuffers(1, &m_vbo);
 		m_vbo = 0;
@@ -156,6 +193,7 @@ void OpenGLRenderer::shutdown() {
 		m_program = 0;
 	}
 	m_initialized = false;
+	m_vboBytes = 0;
 }
 
 void OpenGLRenderer::resize(int width, int height) {
@@ -185,6 +223,7 @@ void OpenGLRenderer::beginFrame() {
 	if (!m_initialized) {
 		return;
 	}
+	flush();
 	const int vpW = m_fbWidth > 0 ? m_fbWidth : m_width;
 	const int vpH = m_fbHeight > 0 ? m_fbHeight : m_height;
 	glViewport(0, 0, vpW, vpH);
@@ -197,78 +236,125 @@ void OpenGLRenderer::beginFrame() {
 	updateProjection();
 }
 
-void OpenGLRenderer::endFrame() {}
+void OpenGLRenderer::endFrame() {
+	flush();
+}
 
 void OpenGLRenderer::clear(const glm::vec4& color) {
+	flush();
 	glClearColor(color.r, color.g, color.b, color.a);
 	glClear(GL_COLOR_BUFFER_BIT);
 }
 
-void OpenGLRenderer::drawArrays(unsigned mode, const std::vector<glm::vec2>& pts,
-								const glm::vec4& color) {
+void OpenGLRenderer::openBatch(unsigned mode, float lineWidth) {
+	if (!m_batch.empty() && m_batchMode == mode && m_batchLineWidth == lineWidth) {
+		return;
+	}
+	flush();
+	m_batchMode = mode;
+	m_batchLineWidth = lineWidth;
+}
+
+void OpenGLRenderer::enqueue(unsigned mode, std::span<const glm::vec2> pts, uint32_t color,
+							 float lineWidth) {
 	if (!m_initialized || pts.empty()) {
 		return;
 	}
-	std::vector<float> verts;
-	verts.reserve(pts.size() * 3);
-	for (const auto& p : pts) {
-		verts.push_back(p.x);
-		verts.push_back(p.y);
-		verts.push_back(0.f);
+	openBatch(mode, lineWidth);
+	m_batch.reserve(m_batch.size() + pts.size());
+	for (const glm::vec2& p : pts) {
+		m_batch.push_back({p, color});
+	}
+}
+
+void OpenGLRenderer::flush() {
+	if (!m_initialized || m_batch.empty()) {
+		return;
 	}
 	updateProjection();
-	glUniform4fv(m_uColor, 1, glm::value_ptr(color));
+#if !defined(RIGKIT_GLES)
+	if (m_batchMode == GL_LINES) {
+		glLineWidth(std::max(1.f, m_batchLineWidth));
+	}
+#endif
 	glBindVertexArray(m_vao);
 	glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, static_cast<GLsizeiptr>(verts.size() * sizeof(float)),
-					verts.data());
-	glDrawArrays(static_cast<GLenum>(mode), 0, static_cast<GLsizei>(pts.size()));
+	const size_t bytes = m_batch.size() * sizeof(Vertex);
+	if (bytes > m_vboBytes) {
+		m_vboBytes = bytes;
+		glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(m_vboBytes), nullptr,
+					 GL_DYNAMIC_DRAW);
+	}
+	glBufferSubData(GL_ARRAY_BUFFER, 0, static_cast<GLsizeiptr>(bytes), m_batch.data());
+	glDrawArrays(static_cast<GLenum>(m_batchMode), 0, static_cast<GLsizei>(m_batch.size()));
 	glBindVertexArray(0);
+	m_batch.clear();
 }
 
-void OpenGLRenderer::drawFilledPoly(const std::vector<glm::vec2>& pts, const glm::vec4& color) {
-	if (pts.size() < 3) {
+void OpenGLRenderer::drawFilledPoly(std::span<const glm::vec2> pts, uint32_t color) {
+	if (!m_initialized || pts.size() < 3) {
 		return;
 	}
-	drawArrays(GL_TRIANGLE_FAN, pts, color);
+	// Convex fan as independent triangles, so consecutive fills merge into one
+	// batch. Concave outlines and holes need a real tessellator (Blend2D pack).
+	openBatch(GL_TRIANGLES, 0.f);
+	m_batch.reserve(m_batch.size() + (pts.size() - 2) * 3);
+	for (size_t i = 1; i + 1 < pts.size(); ++i) {
+		m_batch.push_back({pts[0], color});
+		m_batch.push_back({pts[i], color});
+		m_batch.push_back({pts[i + 1], color});
+	}
 }
 
-void OpenGLRenderer::drawStrokedPoly(const std::vector<glm::vec2>& pts, bool closed,
-									 const glm::vec4& color, float width) {
-	if (pts.size() < 2) {
+void OpenGLRenderer::drawStrokedPoly(std::span<const glm::vec2> pts, bool closed, uint32_t color,
+									 float width) {
+	if (!m_initialized || pts.size() < 2) {
 		return;
 	}
-#if !defined(RIGKIT_GLES)
-	glLineWidth(std::max(1.f, width));
-#endif
-	drawArrays(closed ? GL_LINE_LOOP : GL_LINE_STRIP, pts, color);
+	// Strip or loop as independent segments, so consecutive strokes of the same
+	// width merge. Two points are already the whole loop — wrapping redraws it.
+	const bool wrap = closed && pts.size() > 2;
+	openBatch(GL_LINES, width);
+	m_batch.reserve(m_batch.size() + (pts.size() - 1 + (wrap ? 1u : 0u)) * 2);
+	for (size_t i = 0; i + 1 < pts.size(); ++i) {
+		m_batch.push_back({pts[i], color});
+		m_batch.push_back({pts[i + 1], color});
+	}
+	if (wrap) {
+		m_batch.push_back({pts.back(), color});
+		m_batch.push_back({pts.front(), color});
+	}
 }
 
-void OpenGLRenderer::drawOutline(const std::vector<glm::vec2>& pts, const Paint& paint) {
+void OpenGLRenderer::drawOutline(std::span<const glm::vec2> pts, const Paint& paint) {
 	if (paint.mode == Paint::Mode::Fill) {
-		drawFilledPoly(pts, paint.color);
+		drawFilledPoly(pts, packColor(paint.color));
 	} else {
-		drawStrokedPoly(pts, true, paint.color, paint.strokeWidth);
+		drawStrokedPoly(pts, true, packColor(paint.color), paint.strokeWidth);
 	}
 }
 
-std::vector<glm::vec2> OpenGLRenderer::ellipsePoints(float cx, float cy, float rx, float ry,
-													 int segments) const {
-	std::vector<glm::vec2> pts;
-	pts.reserve(static_cast<size_t>(segments));
+const std::vector<glm::vec2>& OpenGLRenderer::ellipsePoints(float cx, float cy, float rx,
+															float ry) {
+	const int segments = arcSegments(std::max(std::abs(rx), std::abs(ry)));
+	m_ellipseScratch.clear();
+	m_ellipseScratch.reserve(static_cast<size_t>(segments));
 	for (int i = 0; i < segments; ++i) {
 		const float t = static_cast<float>(2.0 * M_PI * i / segments);
-		pts.emplace_back(cx + rx * std::cos(t), cy + ry * std::sin(t));
+		m_ellipseScratch.emplace_back(cx + rx * std::cos(t), cy + ry * std::sin(t));
 	}
-	return pts;
+	return m_ellipseScratch;
 }
 
 void OpenGLRenderer::drawLine(float x1, float y1, float x2, float y2, const Paint& paint) {
-	drawStrokedPoly({{x1, y1}, {x2, y2}}, false, paint.color, paint.strokeWidth);
+	const std::array<glm::vec2, 2> pts{{{x1, y1}, {x2, y2}}};
+	drawStrokedPoly(pts, false, packColor(paint.color), paint.strokeWidth);
 }
 
 void OpenGLRenderer::drawRect(float x, float y, float width, float height, const Paint& paint) {
-	drawOutline({{x, y}, {x + width, y}, {x + width, y + height}, {x, y + height}}, paint);
+	const std::array<glm::vec2, 4> pts{
+		{{x, y}, {x + width, y}, {x + width, y + height}, {x, y + height}}};
+	drawOutline(pts, paint);
 }
 
 void OpenGLRenderer::drawCircle(float x, float y, float radius, const Paint& paint) {
@@ -277,16 +363,31 @@ void OpenGLRenderer::drawCircle(float x, float y, float radius, const Paint& pai
 
 void OpenGLRenderer::drawEllipse(float x, float y, float width, float height, const Paint& paint) {
 	// Center + full width/height (same convention as Blend2DRenderer).
-	drawOutline(ellipsePoints(x, y, width * 0.5f, height * 0.5f, 48), paint);
+	drawOutline(ellipsePoints(x, y, width * 0.5f, height * 0.5f), paint);
 }
 
 void OpenGLRenderer::drawTriangle(float x1, float y1, float x2, float y2, float x3, float y3,
 								  const Paint& paint) {
-	drawOutline({{x1, y1}, {x2, y2}, {x3, y3}}, paint);
+	const std::array<glm::vec2, 3> pts{{{x1, y1}, {x2, y2}, {x3, y3}}};
+	drawOutline(pts, paint);
 }
 
 void OpenGLRenderer::drawPolygon(const std::vector<glm::vec2>& points, const Paint& paint) {
 	drawOutline(points, paint);
+}
+
+void OpenGLRenderer::drawTriangles(const std::vector<glm::vec2>& pts, const Paint& paint) {
+	if (pts.size() < 3) {
+		return;
+	}
+	enqueue(GL_TRIANGLES, pts, packColor(paint.color), 0.f);
+}
+
+void OpenGLRenderer::drawLines(const std::vector<glm::vec2>& pts, const Paint& paint) {
+	if (pts.size() < 2) {
+		return;
+	}
+	enqueue(GL_LINES, pts, packColor(paint.color), paint.strokeWidth);
 }
 
 void OpenGLRenderer::beginPath() {
@@ -315,11 +416,11 @@ void OpenGLRenderer::closePath() {
 }
 
 void OpenGLRenderer::fill(const glm::vec4& color) {
-	drawFilledPoly(m_path, color);
+	drawFilledPoly(m_path, packColor(color));
 }
 
 void OpenGLRenderer::stroke(const glm::vec4& color, float width) {
-	drawStrokedPoly(m_path, true, color, width);
+	drawStrokedPoly(m_path, true, packColor(color), width);
 }
 
 void OpenGLRenderer::setFont(const std::string& fontPath, float size) {
@@ -334,7 +435,8 @@ void OpenGLRenderer::drawText(const std::string& text, float x, float y, const g
 		m_textBackend->drawText(text, x, y, color);
 		return;
 	}
-	// Placeholder bar until a font pack lands — keeps Draw honest without silent no-op.
+	// Placeholder bar until a font pack lands, so text occupies space instead
+	// of vanishing.
 	drawRect(x, y, static_cast<float>(text.size()) * 8.f, 12.f, Paint::fill(color));
 }
 
@@ -346,10 +448,12 @@ glm::vec2 OpenGLRenderer::getTextBounds(const std::string& text) {
 }
 
 void OpenGLRenderer::pushMatrix() {
+	flush();
 	m_matrixStack.push_back(m_model);
 }
 
 void OpenGLRenderer::popMatrix() {
+	flush();
 	if (!m_matrixStack.empty()) {
 		m_model = m_matrixStack.back();
 		m_matrixStack.pop_back();
@@ -357,18 +461,22 @@ void OpenGLRenderer::popMatrix() {
 }
 
 void OpenGLRenderer::translate(float x, float y) {
+	flush();
 	m_model = glm::translate(m_model, glm::vec3(x, y, 0.f));
 }
 
 void OpenGLRenderer::rotate(float angle) {
+	flush();
 	m_model = glm::rotate(m_model, angle, glm::vec3(0.f, 0.f, 1.f));
 }
 
 void OpenGLRenderer::scale(float sx, float sy) {
+	flush();
 	m_model = glm::scale(m_model, glm::vec3(sx, sy, 1.f));
 }
 
 void OpenGLRenderer::resetMatrix() {
+	flush();
 	m_model = glm::mat4(1.f);
 	m_matrixStack.clear();
 }
