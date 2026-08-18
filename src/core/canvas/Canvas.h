@@ -20,13 +20,15 @@ class RigKitEngine;
 class Graphics;
 
 /**
- * @brief Size and clear-color defaults for Canvas construction.
+ * @brief Size, clear color, and FBO MSAA for Canvas construction.
+ * @details `samples` of -1 inherits `window().samples`. 0 is off.
  */
 struct CanvasSettings {
 	int width = 800;
 	int height = 600;
 	float r = 1.0f, g = 1.0f, b = 1.0f, a = 1.0f;
-	int samples = 0;
+	/// FBO MSAA. -1 inherits `window().samples`. 0 is off. >0 is that count.
+	int samples = -1;
 };
 
 /**
@@ -91,7 +93,10 @@ class Canvas : public ISettings {
 	void setSettings(const json& settings) override;
 
   private:
+	void destroyFramebuffer();
 	void initFramebuffer();
+	void resolveIfNeeded() const;
+	int requestedSamples() const;
 	void initShaders();
 
 	int m_width;

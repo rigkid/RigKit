@@ -16,6 +16,7 @@ The `examples/` directory holds in-repo **example apps** built on RigKit. Produc
 | `minimal` | Creator + mesh + hierarchy proof |
 | `oscHost` | Contract / host reference (`--author` / `--show`; OSC via `rigOsc`, `--smoke-osc`) |
 | `glEditor` | GLSL shader preview shell |
+| `calendar` | Content scheduler — `CContentItem` month view persisted with **rigSQLite** (needs local `packs/rigSQLite/` until the pack remote exists; not in host CI yet) |
 
 Product apps (out of tree) live next to RigKit (e.g. `../myApp`), not under `examples/`.
 
@@ -47,6 +48,7 @@ public:
         window().title = "My Sketch"; // GLFW OS title = app name (not document name)
         window().width = 800;
         window().height = 600;
+        window().samples = 4; // MSAA at window create; Canvas FBOs inherit unless CanvasSettings.samples is set
     }
 
     void setup()  override {

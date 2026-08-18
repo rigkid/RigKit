@@ -191,6 +191,9 @@ void OpenGLRenderer::beginFrame() {
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glDisable(GL_DEPTH_TEST);
+#if !defined(RIGKIT_GLES)
+	glEnable(GL_MULTISAMPLE);
+#endif
 	updateProjection();
 }
 

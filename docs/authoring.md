@@ -13,6 +13,7 @@ public:
 		window().width = 800;
 		window().height = 600;
 		window().title = "My piece"; // GLFW OS title = app name (never overwrite with document name)
+		window().samples = 4; // default-framebuffer MSAA (create-time). Canvas and compositor bake FBOs inherit this.
 	}
 	void setup() override {
 		// Bootstrap data + systems packs, then create entities:
@@ -60,12 +61,41 @@ rig::makeMeshTriangle(*ecs, a, b, c, rig::fill(0.95f, 0.8f, 0.2f));
 rig::makeMeshQuad(*ecs, x, y, w, h, rig::fill(0.3f, 0.9f, 0.5f));
 
 // 3D (needs rigRender3D Draw present):
-rig::makeCamera(*ecs, {0.f, 1.5f, 4.f}, true);
+rig::makeOrbitCamera(*ecs, {0.f, 0.f, 0.f}, 5.6f, 0.36f, true, "camera");
 rig::makeLight(*ecs, {0.f, 0.f, 0.f});
 rig::makePalette(*ecs);
+rig::makeMeshGrid(*ecs);
+
+// CAD solids (bake via rigManifold::bakeToMesh):
+rig::makeCadBox(*ecs, 2.f, 1.5f, 1.2f, true, "stock");
+rig::makeCadCylinder(*ecs, 0.4f, 2.f, true, "cutter");
+rig::makeCadBoolean(*ecs, rigkit::ecs::CCadBoolean::Op::Difference, {"stock", "cutter"},
+					rig::fill(0.95f, 0.55f, 0.25f), "part");
 ```
 
-These helpers only write `CTransform` + `CShape`/`CMesh` + `CDrawStyle`.
+These helpers only write POD (`CTransform` + shape / `CMesh` / `CCad*` / `COrbitDrive` + `CDrawStyle`). `makeOrbitCamera` poses the eye; turn `COrbitDrive::enabled` on for a show-mode spin (`SOrbitDrive` yaws from `pitch`).
+
+## Orbit nav (code) — `rigSystems`
+
+Mouse orbit / pan / dolly is `rig::orbitNavigate` (`OrbitNav.h`). Bindings stay in the app. The helper writes `COrbitDrive`. Drag last-xy lives on `OrbitNavState` (not on the component). `orbitFrameMeshes` is F-to-frame. `orbitFromView` is for a view cube.
+
+```cpp
+#include "OrbitNav.h"
+
+rig::OrbitNavState nav; // app member
+
+void update(float) {
+	rig::OrbitNavFrame frame;
+	frame.mouseX = mx;
+	frame.mouseY = my;
+	frame.orbit = mmb || (alt && lmb);
+	frame.pan = (mmb && shift) || (alt && mmb); // truck + pedestal
+	frame.dolly = alt && rmb;
+	frame.wheel = wheel;
+	frame.blocked = uiBlocks || !overBed;
+	rig::orbitNavigate(*ecs, cam, frame, nav);
+}
+```
 
 **Hierarchy:** local TRS lives on `CTransform`. Optional `CRelationship::parent` links a child to another entity. `SHierarchy` (Update + before present) fills `CTransform::world`; Draw uses that. Absent `CRelationship` ⇒ root.
 

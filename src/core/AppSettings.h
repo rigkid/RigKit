@@ -77,6 +77,8 @@ struct AppSettings : public ISettings {
 				window.title = w["title"].get<std::string>();
 			if (w.contains("fullscreen"))
 				window.fullscreen = w["fullscreen"].get<bool>();
+			if (w.contains("samples"))
+				window.samples = w["samples"].get<int>();
 		}
 	}
 
@@ -93,6 +95,7 @@ struct AppSettings : public ISettings {
 		j["window"]["height"] = window.height;
 		j["window"]["title"] = window.title;
 		j["window"]["fullscreen"] = window.fullscreen;
+		j["window"]["samples"] = window.samples;
 		// Graphics
 		j["graphics"]["vsync"] = graphics.vsync;
 		j["graphics"]["targetFps"] = graphics.targetFps;
@@ -126,6 +129,8 @@ struct AppSettings : public ISettings {
 				window.title = w["title"].get<std::string>();
 			if (w.contains("fullscreen"))
 				window.fullscreen = w["fullscreen"].get<bool>();
+			if (w.contains("samples"))
+				window.samples = w["samples"].get<int>();
 		}
 
 		if (j.contains("graphics")) {

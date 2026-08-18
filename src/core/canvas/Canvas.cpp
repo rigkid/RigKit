@@ -5,21 +5,53 @@
 #include <filesystem>
 #include <spdlog/spdlog.h>
 
+#include "core/IApp.h"
 #include "core/ISettings.h"
+#include "core/RigKitEngine.h"
 #include "core/json.h"
 #include "rendering/Graphics.h"
 #include "rendering/IRenderer.h"
+#include "rendering/MsaaSupport.h"
 
 namespace rigkit {
 
 struct Canvas::Impl {
 	GLuint framebuffer = 0;
+	GLuint resolveFramebuffer = 0;
 	GLuint colorTexture = 0;
+	GLuint colorRenderbuffer = 0;
 	GLuint depthRenderbuffer = 0;
 	GLuint shaderProgram = 0;
 	GLuint VAO = 0;
 	GLuint VBO = 0;
+	int appliedSamples = 1;
+	mutable bool resolveDirty = false;
 };
+
+namespace {
+
+void deleteTexture(GLuint& id) {
+	if (id) {
+		glDeleteTextures(1, &id);
+		id = 0;
+	}
+}
+
+void deleteRenderbuffer(GLuint& id) {
+	if (id) {
+		glDeleteRenderbuffers(1, &id);
+		id = 0;
+	}
+}
+
+void deleteFramebuffer(GLuint& id) {
+	if (id) {
+		glDeleteFramebuffers(1, &id);
+		id = 0;
+	}
+}
+
+} // namespace
 
 Canvas::Canvas(const CanvasSettings& settings, RigKitEngine* engine)
 	: m_width(settings.width), m_height(settings.height), m_settings(settings),
@@ -31,15 +63,7 @@ Canvas::Canvas(const CanvasSettings& settings, RigKitEngine* engine)
 }
 
 Canvas::~Canvas() {
-	if (m_impl->framebuffer) {
-		glDeleteFramebuffers(1, &m_impl->framebuffer);
-	}
-	if (m_impl->colorTexture) {
-		glDeleteTextures(1, &m_impl->colorTexture);
-	}
-	if (m_impl->depthRenderbuffer) {
-		glDeleteRenderbuffers(1, &m_impl->depthRenderbuffer);
-	}
+	destroyFramebuffer();
 	if (m_impl->shaderProgram) {
 		glDeleteProgram(m_impl->shaderProgram);
 	}
@@ -68,6 +92,7 @@ void Canvas::clear(float r, float g, float b, float a) {
 	glBindFramebuffer(GL_FRAMEBUFFER, m_impl->framebuffer);
 	glClearColor(r, g, b, a);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	m_impl->resolveDirty = m_impl->appliedSamples > 1;
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
@@ -164,43 +189,137 @@ void Canvas::beginOffscreen() {
 	if (m_impl && m_impl->framebuffer) {
 		glBindFramebuffer(GL_FRAMEBUFFER, m_impl->framebuffer);
 		glViewport(0, 0, m_width, m_height);
+		m_impl->resolveDirty = m_impl->appliedSamples > 1;
 	}
 }
 
 void Canvas::endOffscreen() {
+	resolveIfNeeded();
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 unsigned int Canvas::getColorTexture() const {
+	resolveIfNeeded();
 	return m_impl->colorTexture;
 }
 
+int Canvas::requestedSamples() const {
+	int n = m_settings.samples;
+	if (n < 0) {
+		if (m_engine && m_engine->getApp()) {
+			n = m_engine->getApp()->window().samples;
+		} else {
+			n = 0;
+		}
+	}
+	return n < 0 ? 0 : n;
+}
+
+void Canvas::destroyFramebuffer() {
+	if (!m_impl) {
+		return;
+	}
+	deleteFramebuffer(m_impl->framebuffer);
+	deleteFramebuffer(m_impl->resolveFramebuffer);
+	deleteTexture(m_impl->colorTexture);
+	deleteRenderbuffer(m_impl->colorRenderbuffer);
+	deleteRenderbuffer(m_impl->depthRenderbuffer);
+	m_impl->appliedSamples = 1;
+	m_impl->resolveDirty = false;
+}
+
+void Canvas::resolveIfNeeded() const {
+	if (!m_impl || !m_impl->resolveDirty || m_impl->appliedSamples <= 1) {
+		return;
+	}
+	if (m_impl->resolveFramebuffer) {
+		GLint prev = 0;
+		glGetIntegerv(GL_FRAMEBUFFER_BINDING, &prev);
+		msaa::blitResolve(m_impl->framebuffer, m_impl->resolveFramebuffer, m_width, m_height);
+		glBindFramebuffer(GL_FRAMEBUFFER, static_cast<GLuint>(prev));
+	}
+	m_impl->resolveDirty = false;
+}
+
 void Canvas::initFramebuffer() {
-	// Create framebuffer for off-screen rendering
-	glGenFramebuffers(1, &m_impl->framebuffer);
-	glBindFramebuffer(GL_FRAMEBUFFER, m_impl->framebuffer);
+	destroyFramebuffer();
 
-	// Create color texture
-	glGenTextures(1, &m_impl->colorTexture);
-	glBindTexture(GL_TEXTURE_2D, m_impl->colorTexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
-						   m_impl->colorTexture, 0);
+	GLint prevFbo = 0;
+	glGetIntegerv(GL_FRAMEBUFFER_BINDING, &prevFbo);
 
-	// Create depth renderbuffer
-	glGenRenderbuffers(1, &m_impl->depthRenderbuffer);
-	glBindRenderbuffer(GL_RENDERBUFFER, m_impl->depthRenderbuffer);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, m_width, m_height);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER,
-							  m_impl->depthRenderbuffer);
-
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-		// Handle framebuffer error
+	const int want = requestedSamples();
+	int samples = msaa::clampSamples(want);
+	if (want > 1 && samples <= 1) {
+		spdlog::warn("Canvas MSAA {} requested; no GLES multisample+resolve, using 1", want);
 	}
 
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	auto buildSimple = [&]() {
+		destroyFramebuffer();
+		glGenFramebuffers(1, &m_impl->framebuffer);
+		glBindFramebuffer(GL_FRAMEBUFFER, m_impl->framebuffer);
+		msaa::makeColorTexture(m_impl->colorTexture, m_width, m_height);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
+							   m_impl->colorTexture, 0);
+		glGenRenderbuffers(1, &m_impl->depthRenderbuffer);
+		glBindRenderbuffer(GL_RENDERBUFFER, m_impl->depthRenderbuffer);
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, m_width, m_height);
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER,
+								  m_impl->depthRenderbuffer);
+		m_impl->appliedSamples = 1;
+		return msaa::fboComplete();
+	};
+
+	bool ok = false;
+	if (samples > 1 && msaa::canBlit()) {
+		glGenFramebuffers(1, &m_impl->framebuffer);
+		glBindFramebuffer(GL_FRAMEBUFFER, m_impl->framebuffer);
+		glGenRenderbuffers(1, &m_impl->colorRenderbuffer);
+		glBindRenderbuffer(GL_RENDERBUFFER, m_impl->colorRenderbuffer);
+		msaa::storeColor(samples, m_width, m_height);
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER,
+								  m_impl->colorRenderbuffer);
+		glGenRenderbuffers(1, &m_impl->depthRenderbuffer);
+		glBindRenderbuffer(GL_RENDERBUFFER, m_impl->depthRenderbuffer);
+		msaa::storeDepth(samples, m_width, m_height);
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER,
+								  m_impl->depthRenderbuffer);
+		ok = msaa::fboComplete();
+		if (ok) {
+			glGenFramebuffers(1, &m_impl->resolveFramebuffer);
+			glBindFramebuffer(GL_FRAMEBUFFER, m_impl->resolveFramebuffer);
+			msaa::makeColorTexture(m_impl->colorTexture, m_width, m_height);
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
+								   m_impl->colorTexture, 0);
+			ok = msaa::fboComplete();
+		}
+		if (ok) {
+			m_impl->appliedSamples = samples;
+		}
+	} else if (samples > 1 && msaa::canExtToTexture()) {
+#if defined(RIGKIT_GLES)
+		glGenFramebuffers(1, &m_impl->framebuffer);
+		glBindFramebuffer(GL_FRAMEBUFFER, m_impl->framebuffer);
+		msaa::makeColorTexture(m_impl->colorTexture, m_width, m_height);
+		msaa::attachColorExt(m_impl->colorTexture, samples);
+		glGenRenderbuffers(1, &m_impl->depthRenderbuffer);
+		glBindRenderbuffer(GL_RENDERBUFFER, m_impl->depthRenderbuffer);
+		msaa::storeDepth(samples, m_width, m_height);
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER,
+								  m_impl->depthRenderbuffer);
+		ok = msaa::fboComplete();
+		if (ok) {
+			m_impl->appliedSamples = samples;
+		}
+#endif
+	}
+
+	if (!ok && !buildSimple()) {
+		spdlog::error("Canvas FBO incomplete ({}x{})", m_width, m_height);
+	} else if (!ok && samples > 1) {
+		spdlog::warn("Canvas MSAA {} failed completeness; using 1", samples);
+	}
+
+	glBindFramebuffer(GL_FRAMEBUFFER, static_cast<GLuint>(prevFbo));
 }
 
 void Canvas::initShaders() {

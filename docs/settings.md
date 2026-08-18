@@ -120,7 +120,7 @@ out << canvasJson.dump(4);
 |------|------------|----------|
 | `MSettings` / prefs sections | User preferences on disk | Scene / document |
 | `AppSettings` | Window / graphics POD for the app | Renderer GPU state |
-| `Canvas` | Surface size / clear / samples | Engine pointer |
+| `Canvas` | Surface size / clear / samples (`-1` inherits `window.samples`) | Engine pointer |
 | `MRendering` | Entity→renderer type and canvas settings metadata | Main window renderer (engine-owned); `Graphics` wrappers; ECS scene (use **rigProject**) |
 | `MEcs` | Entity id/name list only | Components — scene IO is **rigProject** |
 | `Mui` | Theme / workspace hints | Live UI prefs (`rigImGui.ui` via `MSettings`) |

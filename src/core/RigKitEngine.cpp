@@ -154,6 +154,9 @@ RigKitEngine::RigKitEngine(std::unique_ptr<IApp> app, const json& settings, int 
 	// Keep window size coherent when dragged across mixed-DPI monitors (4K + 1080p).
 	glfwWindowHint(GLFW_SCALE_TO_MONITOR, GLFW_TRUE);
 #endif
+	if (ws.samples > 0) {
+		glfwWindowHint(GLFW_SAMPLES, ws.samples);
+	}
 
 	GLFWmonitor* primary = glfwGetPrimaryMonitor();
 	GLFWmonitor* monitor = ws.fullscreen ? primary : nullptr;
