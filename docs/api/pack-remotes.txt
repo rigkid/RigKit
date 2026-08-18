@@ -35,6 +35,7 @@ rigProject	https://github.com/rigkid/rigProject.git	main
 rigPython	https://github.com/rigkid/rigPython.git	main
 rigRender3D	https://github.com/rigkid/rigRender3D.git	main
 rigScreenCast	https://github.com/rigkid/rigScreenCast.git	main
+rigSQLite	https://github.com/rigkid/rigSQLite.git	main
 rigSvg	https://github.com/rigkid/rigSvg.git	main
 rigSvgEditorUi	https://github.com/rigkid/rigSvgEditorUi.git	main
 rigSystems	https://github.com/rigkid/rigSystems.git	main

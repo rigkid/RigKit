@@ -11,6 +11,7 @@ packs/*
 # Host examples not ready for the first private land (keep local; do not stage).
 examples/svgEditor/
 examples/example-lowpoly/
+examples/calendar/
 
 # Build trees (root optional docs/tools; examples use examples/<name>/build/)
 build/

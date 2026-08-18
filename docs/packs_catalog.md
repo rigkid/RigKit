@@ -86,10 +86,23 @@ Product app **PixelPlotter** lives out of tree (e.g. next to RigKit), not under 
 | **rigScreenCast** | [rigkid/rigScreenCast](https://github.com/rigkid/rigScreenCast) (local `packs/` until published) | Host-window cast **send** + **receive** (RigKit peer; AirPlay RX via hard-linked UxPlay). POD in **rigComponent**. **Leaf / GPLv3** while UxPlay is linked. Never desktop capture. Google Cast RX still follow-on. |
 | **rigEthereum** | [rigkid/rigEthereum](https://github.com/rigkid/rigEthereum) (local `packs/` until published) | On-chain art record (`COnChainArt`) + keccak256 / wallet submit intent (existing wallet). **Leaf.** No keys / no broadcast. |
 
+### Persistence
+
+| Pack | Remote | Role |
+|------|--------|------|
+| **rigSQLite** | [rigkid/rigSQLite](https://github.com/rigkid/rigSQLite) (local `packs/` until published) | SQLite file I/O — amalgamation + `rig::sqlite::Db`. No ORM. Example `sqlite --smoke-sqlite`. Host usage: `examples/calendar`. |
+
+### Raster
+
+| Pack | Remote | Role |
+|------|--------|------|
+| **rigImage** | [rigkid/rigImage](https://github.com/rigkid/rigImage) (local `packs/` until published) | Raster decode + GLES upload (stb_image). CPU buffer is `rig::pixel::Raster` (`rig.pixel.raster`). Path POD stays `CAssetRef` in **rigComponent**. Example `image --smoke-image`. |
+
 ### Scripting / CAD
 
 | Pack | Remote | Role |
 |------|--------|------|
+| **rigMarkdown** | [rigkid/rigMarkdown](https://github.com/rigkid/rigMarkdown) (local `packs/` until published) | ImGui markdown present — MD4C + imgui_md. Rasters via **rigImage**. Example `markdown --smoke-markdown`. |
 | **rigCodeEditor** | [rigkid/rigCodeEditor](https://github.com/rigkid/rigCodeEditor) | Shared ImGui code editor — TextEditorPanel chrome + JetBrains Mono (opt-in for author tools; not for lean Pi installs) |
 | **rigAcp** | [rigkid/rigAcp](https://github.com/rigkid/rigAcp) | [ACP](https://agentclientprotocol.com) client — stdio JSON-RPC + `CCode` fs bridge (opt-in; no UI) |
 | **rigAgentty** | [rigkid/rigAgentty](https://github.com/rigkid/rigAgentty) | [agentty](https://agentty.org/docs/) over **rigAcp** — ImGui panel + Code Editor sync (opt-in; submodule ExternalProject or PATH binary) |
