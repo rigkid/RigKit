@@ -1,7 +1,6 @@
 #pragma once
 
 #include "rendering/U_gladGlfw.h"
-
 namespace rigkit {
 namespace msaa {
 

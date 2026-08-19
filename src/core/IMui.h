@@ -3,6 +3,7 @@
 #include <functional>
 #include <string>
 #include <vector>
+
 #include "core/json.h"
 #include "ecs/MEcs.h"
 
@@ -40,6 +41,13 @@ class IMui {
 	virtual void handleInput() = 0;
 	virtual void render() = 0;
 	virtual void setRigKitEngine(RigKitEngine* engine) = 0;
+
+	/**
+	 * @brief Present / chrome id for this fulfillment (e.g. "imgui", "tui").
+	 * @details Host may swap fulfillments via RigKitEngine::requestUiChrome.
+	 * Not an ImGuiStyle theme — a compositor / toolkit choice.
+	 */
+	virtual const char* chromeId() const { return "imgui"; }
 
 	// Engine access
 	virtual RigKitEngine* getRigKitEngine() const = 0;
@@ -219,6 +227,23 @@ class IMui {
 		(void)action;
 	}
 
+	/**
+	 * @brief Register a View menu submenu (e.g. Camera → Top / Left).
+	 * @details @p drawContents runs inside an open `BeginMenu`.
+	 */
+	virtual void registerViewSubmenu(const std::string& label, std::function<void()> drawContents) {
+		(void)label;
+		(void)drawContents;
+	}
+
+	/** @brief Register a View menu row (e.g. Pages). */
+	virtual void registerViewAction(const std::string& label, std::function<void()> action,
+									const std::string& shortcut = {}) {
+		(void)label;
+		(void)action;
+		(void)shortcut;
+	}
+
 	/** @brief Gizmo / tool op for Tools menu (Select V, Move W, Rotate E, Scale R). */
 	enum class GizmoOp { Select, Translate, Rotate, Scale };
 	virtual void setGizmoOp(GizmoOp op) { (void)op; }
@@ -249,9 +274,10 @@ class IMui {
 	virtual int chromeKernPairCount() const { return 0; }
 
 	/**
-	 * @brief Optional About dialog intro (Help → About). Empty = default from app.json.
-	 * @details Default layout: "{name} built with RigKit", version, description, license.
-	 * Pass a non-empty string to replace that block entirely.
+	 * @brief Optional About dialog intro (Help → About). Empty = default blurb + app.json.
+	 * @details Header is always "RigKit" plus `rigkit::version()`. Empty intro keeps the
+	 * host blurb, then app name / version / description / license. Pass a non-empty
+	 * string to replace the intro block (not the RigKit header).
 	 */
 	virtual void setAboutIntro(std::string text) { (void)text; }
 	virtual const std::string& aboutIntro() const {

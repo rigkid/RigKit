@@ -14,12 +14,10 @@
  */
 
 #include <cstdint>
-#include <string>
-
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <nlohmann/json.hpp>
-
+#include <string>
 #include "ecs/PropertyReflection.h"
 
 namespace rigkit {

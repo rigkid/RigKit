@@ -1,4 +1,5 @@
 #include "SEvent.h"
+
 #include <iostream>
 
 namespace rigkit {

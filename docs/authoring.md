@@ -40,7 +40,7 @@ Depends on packs: `rigComponent` + `rigSystems` in `app.json`, then register the
 With pack include paths from the manifest, prefer:
 
 ```cpp
-#include "rig.h"       // umbrella → rig/create.h
+#include "rig.h"       // umbrella for rig/create.h
 // or: #include "rig/create.h"
 ```
 
@@ -71,6 +71,10 @@ rig::makeCadBox(*ecs, 2.f, 1.5f, 1.2f, true, "stock");
 rig::makeCadCylinder(*ecs, 0.4f, 2.f, true, "cutter");
 rig::makeCadBoolean(*ecs, rigkit::ecs::CCadBoolean::Op::Difference, {"stock", "cutter"},
 					rig::fill(0.95f, 0.55f, 0.25f), "part");
+
+// Driving datum (apply via rigSolveSpace::solve — on edit, not every frame):
+rig::makeCadDimension(*ecs, rigkit::ecs::CCadDimension::Kind::Horizontal, "stock", "cutter",
+					  4.f, false, "span");
 ```
 
 These helpers only write POD (`CTransform` + shape / `CMesh` / `CCad*` / `COrbitDrive` + `CDrawStyle`). `makeOrbitCamera` poses the eye; turn `COrbitDrive::enabled` on for a show-mode spin (`SOrbitDrive` yaws from `pitch`).
@@ -97,7 +101,7 @@ void update(float) {
 }
 ```
 
-**Hierarchy:** local TRS lives on `CTransform`. Optional `CRelationship::parent` links a child to another entity. `SHierarchy` (Update + before present) fills `CTransform::world`; Draw uses that. Absent `CRelationship` ⇒ root.
+**Hierarchy:** local TRS lives on `CTransform`. Optional `CRelationship::parent` links a child to another entity. `SHierarchy` (Update + before present) fills `CTransform::world`; Draw uses that. Absent `CRelationship` means root.
 
 ```cpp
 auto parent = rig::makeRect(*ecs, 200.f, 320.f, 120.f, 80.f, rig::fill(0.5f, 0.3f, 0.9f));

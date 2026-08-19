@@ -10,7 +10,7 @@ Packs extend the host with UI, renderers, and tools. They live in separate repos
 - Ships `pack.json` (name, `description`, `license` with holder, `url`, include paths, optional deps) and `CMakeLists.txt`
 - Registers with `MPack` / `registerPack` at runtime when the app boots packs
 
-**Identity owns one file.** `pack.json` is the source for description, license, url, and runtime dependency names. `add_rigkit_application` deploys it to `<exeDir>/data/packs/<name>/pack.json`; `MPack::registerPack` applies those fields onto `IPack` (About and settings readers pull from there; `initAll` topo-sorts from the dependency list). Do not call `setDescription` / `setLicense` / `setUrl` / `addDependency` in the pack constructor — that is a second authoring copy and CI rejects it.
+**Identity owns one file.** `pack.json` is the source for description, license, url, version, and runtime dependency names. `add_rigkit_application` deploys it to `<exeDir>/data/packs/<name>/pack.json`; `MPack::registerPack` applies those fields onto `IPack` (About and settings readers pull from there; `initAll` topo-sorts from the dependency list). Do not call `setDescription` / `setLicense` / `setUrl` / `setVersion` / `addDependency` in the pack constructor — that is a second authoring copy and CI rejects it.
 
 ## Creating a pack
 

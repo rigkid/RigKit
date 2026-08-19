@@ -29,15 +29,18 @@ IncludeCategories:
     Priority: 0
   - Regex: '^<glm/'
     Priority: 1
-  - Regex: '^<'
+  # imgui.h before imfilebrowser.h (the latter requires ImGui types first).
+  - Regex: '^[<"]imgui\.h[>"]'
     Priority: 2
-  # Host before packs/ (see docs/includes.md). Short pack names ("rig.h") stay Priority 5.
-  - Regex: '^"(core|ecs|rendering)/'
+  - Regex: '^<'
     Priority: 3
-  - Regex: '^"packs/'
+  # Host before packs/ (see docs/includes.md). Short pack names ("rig.h") stay Priority 6.
+  - Regex: '^"(core|ecs|rendering)/'
     Priority: 4
-  - Regex: '^"'
+  - Regex: '^"packs/'
     Priority: 5
+  - Regex: '^"'
+    Priority: 6
 
 SpaceAfterCStyleCast: false
 SpaceBeforeCpp11BracedList: false

@@ -1,17 +1,16 @@
 #include "core/canvas/Canvas.h"
 
+#include "core/IApp.h"
+#include "core/ISettings.h"
+#include "core/json.h"
+#include "core/RigKitEngine.h"
+#include "rendering/Graphics.h"
+#include "rendering/IRenderer.h"
+#include "rendering/MsaaSupport.h"
 #include "rendering/U_gladGlfw.h"
 
 #include <filesystem>
 #include <spdlog/spdlog.h>
-
-#include "core/IApp.h"
-#include "core/ISettings.h"
-#include "core/RigKitEngine.h"
-#include "core/json.h"
-#include "rendering/Graphics.h"
-#include "rendering/IRenderer.h"
-#include "rendering/MsaaSupport.h"
 
 namespace rigkit {
 

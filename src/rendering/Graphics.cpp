@@ -1,5 +1,4 @@
 #include "rendering/Graphics.h"
-
 #include "rendering/U_gladGlfw.h"
 
 namespace rigkit {

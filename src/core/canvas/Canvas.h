@@ -1,15 +1,12 @@
 #pragma once
 
 // Standard library
+#include <glm/glm.hpp>
 #include <memory>
 #include <string>
 #include <variant>
 #include <vector>
 
-// Third-party
-#include <glm/glm.hpp>
-
-// Project headers
 #include "core/ISettings.h"
 #include "rendering/IRenderer.h"
 

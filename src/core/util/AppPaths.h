@@ -4,6 +4,7 @@
 namespace AppPaths {
 
 /// Call once at process start (from main argv) so all paths are exe-relative.
+/// On Windows also sets the console to UTF-8 so log lines keep their punctuation.
 /// Safe to call again; later calls are ignored once initialized.
 void init(int argc, char* argv[]);
 
@@ -21,6 +22,10 @@ std::string getDataDir();
 /// User data root for settings / workspaces / themes.
 /// Override via setUserDataDir / Preferences Data Path; empty override = getDataDir().
 std::string getUserDataDir();
+
+/// OS user-config dir for this executable (`%APPDATA%/RigKit/<exe>`, etc.).
+/// Survives wiping `<exeDir>/data` on a clean rebuild.
+std::string getOsConfigDir();
 
 /// Set user-data override (empty clears). Relative paths resolve against getExecutableDir().
 void setUserDataDir(const std::string& path);
@@ -40,14 +45,10 @@ std::string getAssetsDir();
 
 std::string getUserSettingsFile();
 std::string getWorkspacesDir();
-/// Custom ImGui theme JSON files: `<userData>/user/themes`
+/// User color-scheme JSON: `<userData>/user/themes` (shipped catalog is `data/themes`).
 std::string getThemesDir();
 /// UI layout persistence path (rigImGui may write imgui.ini here).
 std::string getUiIniPath();
-/// @deprecated Prefer getUiIniPath()
-inline std::string getImGuiIniPath() {
-	return getUiIniPath();
-}
 std::string getManifestPath();
 
 } // namespace AppPaths

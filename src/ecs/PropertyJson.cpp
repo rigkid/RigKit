@@ -1,5 +1,4 @@
 #include "ecs/PropertyJson.h"
-
 #include "core/TypeJson.h"
 
 namespace rigkit {

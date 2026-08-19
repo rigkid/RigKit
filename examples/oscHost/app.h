@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <string>
+
 #include "core/IApp.h"
 #include "core/util/CommandLineArgs.h"
 

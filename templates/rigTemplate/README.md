@@ -12,12 +12,12 @@ Host copy lives at `templates/rigTemplate/` in the RigKit repo (not loaded as an
 1. Lock that id. Copy this tree to `packs/<id>/` (or clone the `rigTemplate` remote and rename).
 2. Rename everywhere to the same id:
    - folder, `pack.json` `name` / `url` / `description` / `dependencies`
-   - `src/rigTemplate.*` → `src/<id>.*`
+   - `src/rigTemplate.*` to `src/<id>.*`
    - class `rigTemplate` and `PackRegistry` factory string
    - `CMakeLists.txt` source list
    - README footer `[API/docs](https://rigkid.github.io/<id>/)`
    - Leave the constructor as `IPack("<id>")` only — identity and deps come from `pack.json`
-3. Fill `setup()`: **data** → `registerComponent`; **code** → `registerSystem`. Keep portable fields POD (NO CODE JUST DATA).
+3. Fill `setup()`: **data** to `registerComponent`; **code** to `registerSystem`. Keep portable fields POD (NO CODE JUST DATA).
 4. Add to your app `app.json`:
 
 ```json
@@ -28,11 +28,13 @@ Host copy lives at `templates/rigTemplate/` in the RigKit repo (not loaded as an
 }
 ```
 
-5. Bootstrap order: register data pack before systems packs before UI (`rigComponent` → `rigSystems` → `rigImGui`).
+5. Bootstrap order: register data pack before systems packs before UI (`rigComponent`, then `rigSystems`, then `rigImGui`).
 
 ## Style
 
-- `.clang-format` / `.editorconfig` match RigKit (tabs, C++20).
+- `.clang-format` / `.editorconfig` match RigKit (tabs, C++20, `SortIncludes`).
+- Format first-party `src/` + `examples/`: `./tools/format.sh` or `tools\format.bat`. Never `third_party/`.
+- Pre-commit (once per clone): `./tools/install-hooks.sh` or `tools\install-hooks.bat`. From a RigKit host checkout, `./tools/install-hooks.sh` also wires every `packs/<name>` git repo.
 - Public headers: Doxygen `@brief` ([rigkit-comments](../../skills/rigkit-comments/SKILL.md)).
 
 ## CI

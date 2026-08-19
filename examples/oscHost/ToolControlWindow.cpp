@@ -1,10 +1,12 @@
 #include "ToolControlWindow.h"
-#include <cstring>
-#include <imgui.h>
+
 #include "packs/rigOsc/src/CNetworkIdentity.h"
 #include "packs/rigOsc/src/COscEndpoint.h"
 #include "packs/rigOsc/src/rigOsc.h"
 #include "app.h"
+
+#include <cstring>
+#include <imgui.h>
 
 namespace {
 

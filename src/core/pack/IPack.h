@@ -31,6 +31,7 @@ class IPack : public ISettings {
 	const std::string& getDescription() const { return m_description; }
 	const std::string& getLicense() const { return m_license; }
 	const std::string& getUrl() const { return m_url; }
+	const std::string& getVersion() const { return m_version; }
 
 	// Pack state
 	bool isEnabled() const { return m_enabled; }
@@ -46,6 +47,7 @@ class IPack : public ISettings {
 	void setDescription(const std::string& description) { m_description = description; }
 	void setLicense(const std::string& license) { m_license = license; }
 	void setUrl(const std::string& url) { m_url = url; }
+	void setVersion(const std::string& version) { m_version = version; }
 
 	// Engine access
 	RigKitEngine* getEngine() const;
@@ -83,12 +85,19 @@ class IPack : public ISettings {
 	virtual void draw() {}
 	virtual void cleanup() {}
 
+	/**
+	 * @brief Called after a host `IMui` attach or chrome swap.
+	 * @details Re-register File/Edit/Export actions on the live UI manager.
+	 */
+	virtual void onUiAttached() {}
+
   protected:
 	// Pack state
 	std::string m_name;
 	std::string m_description;
 	std::string m_license;
 	std::string m_url;
+	std::string m_version;
 	bool m_enabled;
 	bool m_initialized;
 

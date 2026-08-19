@@ -298,11 +298,18 @@ void OpenGLRenderer::drawFilledPoly(std::span<const glm::vec2> pts, uint32_t col
 	// Convex fan as independent triangles, so consecutive fills merge into one
 	// batch. Concave outlines and holes need a real tessellator (Blend2D pack).
 	openBatch(GL_TRIANGLES, 0.f);
-	m_batch.reserve(m_batch.size() + (pts.size() - 2) * 3);
+	reserveBatch((pts.size() - 2) * 3);
 	for (size_t i = 1; i + 1 < pts.size(); ++i) {
 		m_batch.push_back({pts[0], color});
 		m_batch.push_back({pts[i], color});
 		m_batch.push_back({pts[i + 1], color});
+	}
+}
+
+void OpenGLRenderer::reserveBatch(size_t add) {
+	const size_t need = m_batch.size() + add;
+	if (need > m_batch.capacity()) {
+		m_batch.reserve(std::max(need, m_batch.capacity() * 2));
 	}
 }
 
@@ -315,7 +322,7 @@ void OpenGLRenderer::drawStrokedPoly(std::span<const glm::vec2> pts, bool closed
 	// width merge. Two points are already the whole loop — wrapping redraws it.
 	const bool wrap = closed && pts.size() > 2;
 	openBatch(GL_LINES, width);
-	m_batch.reserve(m_batch.size() + (pts.size() - 1 + (wrap ? 1u : 0u)) * 2);
+	reserveBatch((pts.size() - 1 + (wrap ? 1u : 0u)) * 2);
 	for (size_t i = 0; i + 1 < pts.size(); ++i) {
 		m_batch.push_back({pts[i], color});
 		m_batch.push_back({pts[i + 1], color});

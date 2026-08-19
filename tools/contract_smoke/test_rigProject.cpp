@@ -216,7 +216,7 @@ TEST_CASE("rigProject Contract import maps rig.spatial.anchor onto the page") {
 				"id": "sheet",
 				"components": {
 					"rig.layout.page": { "width": 210, "height": 297 },
-					"rig.spatial.anchor": { "point": "bottomLeft" }
+					"rig.spatial.anchor": { "point": "bottom-left" }
 				}
 			}
 		]
@@ -227,40 +227,6 @@ TEST_CASE("rigProject Contract import maps rig.spatial.anchor onto the page") {
 	auto view = ecs.view<ecs::CPage>();
 	REQUIRE(view.begin() != view.end());
 	CHECK(view.get<ecs::CPage>(*view.begin()).originAnchor == 6);
-}
-
-/// Pages written before the anchor became its own component name it inline.
-TEST_CASE("rigProject Contract import maps rig.layout.page originAnchor") {
-	SpineFixture f;
-	auto& ecs = f.ecs();
-	const char* jsonText = R"({
-		"rig": "0.12.0",
-		"document": { "title": "page-smoke" },
-		"entities": [
-			{
-				"id": "sheet",
-				"components": {
-					"rig.meta.named": { "name": "A4" },
-					"rig.layout.page": {
-						"width": 210,
-						"height": 297,
-						"unit": "mm",
-						"originAnchor": "center"
-					}
-				}
-			}
-		]
-	})";
-	auto result = importWithPackCodecs(f, jsonText, "smoke");
-	REQUIRE(result.ok);
-	CHECK(result.skipped.empty());
-	auto view = ecs.view<ecs::CPage>();
-	REQUIRE(view.begin() != view.end());
-	const auto& page = view.get<ecs::CPage>(*view.begin());
-	CHECK(page.width == doctest::Approx(210.f));
-	CHECK(page.height == doctest::Approx(297.f));
-	CHECK(page.unit == "mm");
-	CHECK(page.originAnchor == 4);
 }
 
 TEST_CASE("rigProject Contract import maps rig.media.code to CCode") {

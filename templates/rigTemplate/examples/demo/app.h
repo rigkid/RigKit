@@ -1,6 +1,5 @@
 #pragma once
 #include "core/U_core.h"
-
 class DemoApp : public rigkit::IApp {
   public:
 	DemoApp() {

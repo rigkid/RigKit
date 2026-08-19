@@ -1,4 +1,5 @@
 #include "core/canvas/MCanvas.h"
+
 #include <algorithm>
 #include <iostream>
 #include <stdexcept>

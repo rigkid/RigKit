@@ -1,30 +1,28 @@
 #include "core/RigKitEngine.h"
 
-#include "rendering/U_gladGlfw.h"
-
-#include <glm/glm.hpp>
-
-#include <algorithm>
-#include <chrono>
-#include <cmath>
-#include <iostream>
-#include <spdlog/spdlog.h>
-#include <thread>
-
 #include "core/AppSettings.h"
-#include "core/IApp.h"
-#include "core/TypeJson.h"
 #include "core/canvas/MCanvas.h"
+#include "core/IApp.h"
+#include "core/pack/IPack.h"
 #include "core/pack/MPack.h"
+#include "core/TypeJson.h"
 #include "core/util/AppPaths.h"
 #include "core/util/CommandLineArgs.h"
 #include "core/util/MSettings.h"
 #include "ecs/MEcs.h"
 #include "rendering/MRendering.h"
 #include "rendering/OpenGLRenderer.h"
+#include "rendering/U_gladGlfw.h"
 #include "rendering/U_rendering.h"
 
+#include <algorithm>
+#include <chrono>
+#include <cmath>
 #include <fstream>
+#include <glm/glm.hpp>
+#include <iostream>
+#include <spdlog/spdlog.h>
+#include <thread>
 
 namespace rigkit {
 
@@ -63,6 +61,15 @@ RigKitEngine::RigKitEngine(std::unique_ptr<IApp> app, const json& settings, int 
 
 	// Load preference blob early; sections apply when packs/apps register.
 	m_settingsManager->loadFromDisk();
+	{
+		const json chrome = m_settingsManager->getValue("ui.chrome");
+		if (chrome.is_string()) {
+			const std::string id = chrome.get<std::string>();
+			if (!id.empty()) {
+				m_uiChrome = id;
+			}
+		}
+	}
 
 	if (m_app) {
 		m_app->setEngine(this);
@@ -82,6 +89,12 @@ RigKitEngine::RigKitEngine(std::unique_ptr<IApp> app, const json& settings, int 
 		if (argc > 0 && argv != nullptr) {
 			CommandLineArgs args(argc, argv);
 			m_app->parseCommandLineArgs(args);
+			if (args.hasFlag("tui")) {
+				m_uiChrome = "tui";
+			}
+			if (args.hasFlag("imgui")) {
+				m_uiChrome = "imgui";
+			}
 		}
 		// Mirror OS datapath pointer into the prefs field before register (JSON
 		// missing "Data Path" must not clear a surviving clean-build override).
@@ -266,6 +279,7 @@ void RigKitEngine::run() {
 		lastTime = frameStart;
 
 		++m_frameCount;
+		glfwPollEvents();
 		m_app->rigUpdate(m_deltaTime);
 
 		// Clear window with user-defined clear colour before custom drawing
@@ -275,6 +289,7 @@ void RigKitEngine::run() {
 
 		m_app->rigDraw();
 		glfwSwapBuffers(m_window);
+		flushPendingUiChrome();
 		glfwPollEvents();
 
 		// Frame rate limiting (if VSync disabled or monitor faster than target)
@@ -336,6 +351,92 @@ void RigKitEngine::attachUiManager(std::unique_ptr<IMui> ui) {
 
 void RigKitEngine::detachUiManager() {
 	m_uiManager.reset();
+	m_uiInitialised = false;
+}
+
+void RigKitEngine::registerUiChrome(const std::string& id, UiChromeFactory factory) {
+	if (id.empty() || !factory) {
+		return;
+	}
+	m_uiChromeFactories[id] = std::move(factory);
+}
+
+std::vector<std::string> RigKitEngine::uiChromes() const {
+	std::vector<std::string> ids;
+	ids.reserve(m_uiChromeFactories.size());
+	for (const auto& kv : m_uiChromeFactories) {
+		ids.push_back(kv.first);
+	}
+	return ids;
+}
+
+void RigKitEngine::requestUiChrome(const std::string& id) {
+	if (id.empty()) {
+		return;
+	}
+	if (id == m_uiChrome && m_pendingUiChrome.empty()) {
+		return;
+	}
+	m_pendingUiChrome = id;
+}
+
+void RigKitEngine::persistUiChrome() const {
+	if (!m_settingsManager) {
+		return;
+	}
+	m_settingsManager->setValue("ui.chrome", json(m_uiChrome));
+}
+
+void RigKitEngine::notifyUiAttachedHooks() {
+	if (m_app) {
+		m_app->notifyUiAttached();
+	}
+	if (m_packManager) {
+		for (const auto& pack : m_packManager->getAllPacks()) {
+			if (pack) {
+				pack->onUiAttached();
+			}
+		}
+	}
+}
+
+void RigKitEngine::applyUiChrome(const std::string& id) {
+	auto it = m_uiChromeFactories.find(id);
+	if (it == m_uiChromeFactories.end() || !it->second) {
+		spdlog::warn("[RigKitEngine] Unknown UI chrome '{}'", id);
+		return;
+	}
+
+	if (m_uiManager) {
+		m_uiManager->shutdown();
+		detachUiManager();
+	}
+
+	auto ui = it->second();
+	if (!ui) {
+		spdlog::error("[RigKitEngine] UI chrome '{}' factory returned null", id);
+		return;
+	}
+
+	m_uiChrome = id;
+	attachUiManager(std::move(ui));
+	m_uiManager->init();
+	m_uiInitialised = true;
+	persistUiChrome();
+	notifyUiAttachedHooks();
+	spdlog::info("[RigKitEngine] UI chrome → {}", m_uiChrome);
+}
+
+void RigKitEngine::flushPendingUiChrome() {
+	if (m_pendingUiChrome.empty()) {
+		return;
+	}
+	const std::string id = m_pendingUiChrome;
+	m_pendingUiChrome.clear();
+	if (id == m_uiChrome && m_uiManager) {
+		return;
+	}
+	applyUiChrome(id);
 }
 
 void RigKitEngine::enableEditMode(bool enabled) {

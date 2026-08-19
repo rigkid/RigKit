@@ -62,20 +62,20 @@ Pin `type` uses Rig property datatypes:
 | Blue | `vec2` | XY |
 | Pink | `vec4` | Often colour (RGBA); domain in pin/catalog name |
 
-Pins connect on exact match, or host coercion (`float` ↔ `vec2` ↔ `vec4`). Empty `type` = wildcard.
+Pins connect on exact match, or host coercion (`float` / `vec2` / `vec4`). Empty `type` = wildcard.
 
 ## Nestable groups
 
-A **group** is a node with a `nested` graph and `publishes` (outer pin → inner pin). It links like any node on the parent canvas.
+A **group** is a node with a `nested` graph and `publishes` (outer pin to inner pin). It links like any node on the parent canvas.
 
 | Editor | How |
 |--------|-----|
 | Empty group | **File > Empty group** |
-| Group selection | Ctrl+click nodes → **File > Group selection** (crossing links become publishes) |
-| Ungroup | Select a group → **File > Ungroup** (rewires via publishes) |
+| Group selection | Ctrl+click nodes, then **File > Group selection** (crossing links become publishes) |
+| Ungroup | Select a group, then **File > Ungroup** (rewires via publishes) |
 | Dive | Double-click a group, or **Dive into group** in Properties |
 | Surface | **File > Up** |
-| Publish | Inside a group, select a pin → **File > Publish pin** |
+| Publish | Inside a group, select a pin, then **File > Publish pin** |
 
 Eval runs nested graphs recursively. While diving, live preview injects published inputs from the parent canvas.
 
@@ -173,28 +173,28 @@ more catalogs later; the built-in table above is what ships today.
 ### 2. Breathing value (LFO)
 
 1. Add **LFO** (Modulators). Frequency `0.5`, Amplitude `1`, Offset `0`.
-2. Link LFO `out` -> **Float Out** `in` (or a **Float Ref** to a scene property).
+2. Link LFO `out` to **Float Out** `in` (or a **Float Ref** to a scene property).
 3. Watch the status bar / pin value oscillate.
 
-Example binding: LFO → Float Ref → `camera` / `Speed` — tweak the LFO
+Example binding: LFO, then Float Ref, then `camera` / `Speed` — tweak the LFO
 in the Node Editor and drive orbit from Update.
 
 ### 3. Mapped pulse
 
-1. **LFO** -> **Map** (`inMin`/`inMax` −1..1, `outMin`/`outMax` 0..1) -> **Float Out**.
+1. **LFO** into **Map** (`inMin`/`inMax` −1..1, `outMin`/`outMax` 0..1), then **Float Out**.
 2. Optional: **SmoothStep** after Map for softer edges.
 
 ### 4. Color wash (key light)
 
-1. **Color** (base tint) -> **Brightness** `in`.
-2. **LFO** -> **Brightness** `gain`.
-3. **Brightness** `out` -> **Color Out**.
+1. **Color** (base tint) into **Brightness** `in`.
+2. **LFO** into **Brightness** `gain`.
+3. **Brightness** `out` into **Color Out**.
 
 Example binding: Color Ref / Color Out tints a key light.
 
 ### 5. Vec2 orbit path (orbit camera)
 
-1. Two **LFO**s (slow) -> **Join Vec2** (`x` / `y`) -> **Vec2 Out**.
+1. Two **LFO**s (slow) into **Join Vec2** (`x` / `y`), then **Vec2 Out**.
 2. Or a **Vec2** node with X/Y params.
 
 Example binding: Vec2 Out sets orbit radius (x) and height (y).

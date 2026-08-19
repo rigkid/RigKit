@@ -24,9 +24,6 @@ enum propTypes {
 	/// says "hosts may add prefixed ids"); this is that extension for rigImGui's
 	/// colour picker.
 	EPT_COLOR,
-	// Legacy ImGui-named aliases (same values)
-	EPT_IMVEC4 = EPT_VEC4,
-	EPT_IMVEC2 = EPT_VEC2,
 	EPT_COUNT
 };
 

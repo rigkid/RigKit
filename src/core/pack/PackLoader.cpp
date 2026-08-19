@@ -1,7 +1,9 @@
 #include "PackLoader.h"
-#include <spdlog/spdlog.h>
+
 #include "MPack.h"
 #include "PackRegistry.h"
+
+#include <spdlog/spdlog.h>
 
 void rigkit::PackLoader::registerAvailablePacks(MPack* packManager,
 												const std::vector<std::string>& packNames) {
@@ -42,8 +44,8 @@ bool rigkit::PackLoader::registerPack(MPack* packManager, const std::string& pac
 }
 
 std::vector<std::string> rigkit::PackLoader::getAvailablePackNames() {
-	// rigImGui = rigImGui (default UI pack). Not required by SUDE.
-	return {"rigImGui",	 "rigBlend2D",	"rigRender3D",		"rigObj",
-			"rigAssimp", "rigMeshEdit", "rigNodeComponent", "rigNodeEditor",
-			"rigOsc",	 "rigMarkdown", "rigTemplate"};
+	// rigImGui = default UI pack. rigImTui = character-grid compositor. Not required by SUDE.
+	return {"rigImGui",		 "rigImTui",  "rigBlend2D",	 "rigRender3D",
+			"rigObj",		 "rigAssimp", "rigMeshEdit", "rigNodeComponent",
+			"rigNodeEditor", "rigOsc",	  "rigMarkdown", "rigTemplate"};
 }

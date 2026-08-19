@@ -37,7 +37,7 @@ Slow full-tree rebuilds are a failure mode. Prefer:
 
 - Build the **one example** under edit in its own tree: `cmake -S examples/oscHost -B examples/oscHost/build`
 - Keep changes in **pack** STATIC libs when possible so `rigkit` does not recompile.
-- Avoid widening widely included headers in `src/` (forces cascade). New weight → pack `.cpp`.
+- Avoid widening widely included headers in `src/` (forces cascade). New weight goes in a pack `.cpp`.
 - **Header vs implementation:** keep method bodies in `.cpp`, not in headers. Declarations (and trivial `= default` / pure virtual) stay in `.h`; constructors, getters with logic, `render()`, and anything that pulls heavy includes belong in `.cpp`. Empty `Foo.cpp` with “methods are inline in the header” is a rebuild-cost bug — fix it before commit. Templates / header-only third_party are the exception.
 - Do not add heavy deps to core "for convenience."
 - **Tidy trees:** examples use `examples/<name>/build/` only; root `build/` is optional (docs / ESP32). Never leave `build-*` scratch dirs — reconfigure in place or delete.
@@ -209,8 +209,8 @@ Contribute does not end at commit. [docs/contributing.md](../../docs/contributin
 - Canonical: `.clang-format` (LLVM base, **tabs**, C++20, 100-col).
 - Include sort: `.clang-format` `IncludeCategories` put host (`core/` / `ecs/` / `rendering/`) before `packs/`. Policy: [docs/includes.md](../../docs/includes.md).
 - Run `tools/format.sh` or `tools/format.bat` on first-party trees: `src/`, `examples/`, `tools/`.
-- **Never** format `third_party/` or `packs/`.
-- Pre-commit: `tools/install-hooks.sh`. CI `style` job runs `clang-format --dry-run --Werror` on changed first-party files.
+- **Never** format `third_party/` or `packs/` from the host. Packs format their own `src/` + `examples/` (`packs/<name>/tools/format.*`).
+- Pre-commit: `tools/install-hooks.sh` (Windows: `tools\install-hooks.bat`) installs the host hook **and** the pack hook into every `packs/<name>` git checkout. CI `style` job runs `clang-format --dry-run --Werror` on changed first-party files.
 
 ## Layout reminders
 

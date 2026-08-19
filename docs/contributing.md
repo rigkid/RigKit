@@ -6,8 +6,8 @@
 |-----------|----------------|
 | [`.clang-format`](../.clang-format) | Canonical C++ style (LLVM base, **tabs**, C++20, 100-col) |
 | [`.editorconfig`](../.editorconfig) | Tabs, UTF-8, LF, trim trailing whitespace, one blank line at EOF |
-| [`tools/format.bat`](../tools/format.bat) / [`tools/format.sh`](../tools/format.sh) | Format all of `src/`, `examples/`, `tools/` |
-| Pre-commit hook | Formats staged C/C++ before commit |
+| [`tools/format.bat`](../tools/format.bat) / [`tools/format.sh`](../tools/format.sh) | Format all of `src/`, `examples/`, `tools/` (never `packs/`) |
+| Pre-commit hook | Formats staged C/C++ before commit. Host hook skips `packs/`; each pack repo has its own hook |
 | CI (`style` job) | `clang-format --dry-run --Werror` on changed first-party files |
 
 **Requires:** `clang-format` on your PATH (LLVM / Visual Studio / MSYS).
@@ -18,10 +18,11 @@
 tools\format.bat           # Windows
 
 # Install pre-commit (once per clone)
-./tools/install-hooks.sh
+./tools/install-hooks.sh          # Unix — host + every packs/<name> git checkout
+tools\install-hooks.bat           # Windows
 ```
 
-Do **not** run the formatter on `third_party/` or pack `third_party/` trees (vendored). In-org packs under `packs/rigComponent|rigSystems|rigProject|rigImGui`: format only their first-party sources when you touch them.
+Do **not** run the host formatter on `third_party/` or `packs/`. Each pack formats its own `src/` + `examples/` (`packs/<name>/tools/format.*`, or the pack pre-commit hook). Never format pack `third_party/`.
 
 ## Editor setup
 
@@ -45,7 +46,7 @@ If you use VS Code, install `ms-vscode.cpptools`, `ms-vscode.cmake-tools`, and `
 - **Indentation:** tabs, width 4 (never spaces for indent).
 - **EOF:** exactly one blank line at the end of the file (trailing newline; no extra empty lines stacked after the last content).
 - **Language:** modern C++20; prefer clear code over cleverness.
-- **Includes:** std / third-party / project; keep unused includes out.
+- **Includes:** clang-format `SortIncludes` only ([includes.md](includes.md)). Do not auto-strip; a missing include is worse than an extra one.
 - **Casts:** prefer explicit casts for narrowing and enums.
 - **Naming:** interfaces `I*` (`IApp`, `IMui`); managers often `M*` (`MEcs`); files match type names.
 - **ECS:** core components live in `src/ecs/components/`; packs may define their own.
@@ -64,6 +65,10 @@ ctest --test-dir build --output-on-failure -R contract_smoke
 ```
 
 Details: [tools/contract_smoke/README.md](../tools/contract_smoke/README.md).
+
+## Versioning
+
+Host SemVer is [`cmake/VERSION`](../cmake/VERSION). Bump rules and History: [versioning.md](versioning.md). App and pack versions stay in `app.json` / `pack.json`. The Contract number is [`contract/RigWorks/VERSION`](contract/RigWorks/VERSION).
 
 ## Pull requests
 
@@ -93,6 +98,7 @@ Without the secret, workflows warn and continue. Jobs that only touch public rem
 - **[contract/commandments.md](contract/commandments.md)** — constitution (start here).
 - **[AGENTS.md](../AGENTS.md)** — commandments + commentary (**NO CODE JUST DATA**, **Pi floor**, **fast rebuilds**, **author friendliness**).
 - **[`tools/check-invariants`](../tools/check-invariants.sh)** — machine gates for ImGui-in-`src/`, data/code pack shape, banned vocabulary, archaeology phrasing.
+- **[`tools/check-docs`](../tools/check-docs.sh)** — the Doxygen warning log must be empty. Run it after `cmake --build build --target docs`; the Docs workflow fails on any warning. A warning means text is missing from the HTML, not merely untidy.
 - **`.cursor/rules/rigkit-core.mdc`** — Cursor's always-on hard-invariants reminder. Gitignored (local, not repo content) — see [AGENTS.md#tool-specific-folders-are-local-not-shared](../AGENTS.md#tool-specific-folders-are-local-not-shared).
 - **[authoring.md](authoring.md)** — how users should code (helpers / creators, not manager ceremony).
 - Iterate with `cmake -S examples/<name> -B examples/<name>/build` — see [build_instructions.md](build_instructions.md).

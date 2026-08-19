@@ -1,6 +1,7 @@
 #include "core/IApp.h"
-#include "core/RigKitEngine.h"
+
 #include "core/pack/MPack.h"
+#include "core/RigKitEngine.h"
 #include "core/util/AppPaths.h"
 #include "ecs/MEcs.h"
 #include "ecs/systems/SEvent.h"
@@ -81,6 +82,12 @@ void IApp::rigExit() {
 	exit();
 	if (auto ui = m_engine->getUiManager()) {
 		ui->shutdown();
+	}
+}
+
+void IApp::notifyUiAttached() {
+	if (m_engine && m_engine->getECSManager()) {
+		registerUIActions(m_engine->getECSManager()->getEventSystem());
 	}
 }
 

@@ -94,7 +94,7 @@ cmake --build build --target docs
 # open build/docs/api/html/index.html
 ```
 
-Published sites (GitHub Actions → Pages on push to `main`):
+Published sites (GitHub Actions / Pages on push to `main`):
 
 | Site | URL |
 |------|-----|

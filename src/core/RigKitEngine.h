@@ -1,7 +1,12 @@
 #pragma once
 
+#include <functional>
 #include <glm/glm.hpp>
 #include <memory>
+#include <string>
+#include <unordered_map>
+#include <vector>
+
 #include "core/AppSettings.h"
 #include "core/IApp.h"
 #include "core/IMui.h"
@@ -51,8 +56,6 @@ class RigKitEngine : public ISettings {
 	MRendering* getRenderingManager() { return m_renderingManager.get(); }
 	MCanvas* getCanvasManager() { return m_canvasManager.get(); }
 	MSettings* getSettingsManager() { return m_settingsManager.get(); }
-	/** @deprecated Prefer getSettingsManager() — name clashes with ISettings::getSettings(). */
-	MSettings* getSettings() { return getSettingsManager(); }
 
 	// Graphics settings control (engine tracks frame rate)
 	void setTargetFrameRate(int fps);
@@ -89,6 +92,27 @@ class RigKitEngine : public ISettings {
 	void attachUiManager(std::unique_ptr<IMui> ui);
 	void detachUiManager();
 
+	/** @brief Factory for an `IMui` chrome id (packs register in init). */
+	using UiChromeFactory = std::function<std::unique_ptr<IMui>()>;
+
+	/**
+	 * @brief Register a chrome factory (e.g. "imgui", "tui").
+	 * @details First registration for an id wins until replaced.
+	 */
+	void registerUiChrome(const std::string& id, UiChromeFactory factory);
+
+	/**
+	 * @brief Request a chrome swap; applied at end of frame (not mid-render).
+	 * @param id Factory id ("imgui", "tui"). Empty or unknown is ignored.
+	 */
+	void requestUiChrome(const std::string& id);
+
+	/** @brief Active chrome id (persisted as `ui.chrome` in settings). */
+	const std::string& uiChrome() const { return m_uiChrome; }
+
+	/** @brief Registered chrome factory ids (imgui, tui, …). */
+	std::vector<std::string> uiChromes() const;
+
 	/**
 	 * @brief Opt into the Edit Mode feature (default off). Sole source of truth.
 	 * @details The UI manager reads this rather than keeping a copy, so it is
@@ -123,9 +147,16 @@ class RigKitEngine : public ISettings {
 	/** @brief Apply AppSettings.window to the live GLFW window (size / fullscreen). */
 	void applyWindowSettingsFromApp();
 
+	/** @brief Apply a pending chrome request (end of frame). */
+	void flushPendingUiChrome();
+
   private:
 	/** @brief Clamp design width/height to primary monitor workarea (windowed). */
 	static void clampWindowedSize(int& w, int& h);
+
+	void applyUiChrome(const std::string& id);
+	void persistUiChrome() const;
+	void notifyUiAttachedHooks();
 
 	uint64_t m_frameCount = 0;
 	float m_deltaTime = 0.0f;
@@ -146,6 +177,10 @@ class RigKitEngine : public ISettings {
 	bool m_uiInitialised = false;
 
 	bool m_editModeEnabled = false;
+
+	std::string m_uiChrome = "imgui";
+	std::string m_pendingUiChrome;
+	std::unordered_map<std::string, UiChromeFactory> m_uiChromeFactories;
 
 	/// Windowed geometry restored when leaving fullscreen (prefs or toggle).
 	bool m_haveWindowedRestore = false;

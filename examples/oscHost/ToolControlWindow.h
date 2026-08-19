@@ -1,7 +1,6 @@
 #pragma once
 
 #include "packs/rigImGui/src/IWindow.h"
-
 class OscHost;
 
 class ToolControlWindow : public rigkit::IWindow {

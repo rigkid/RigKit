@@ -1,11 +1,11 @@
 #include "core/util/MSettings.h"
 
+#include "core/util/AppPaths.h"
+#include "ecs/PropertyJson.h"
+
 #include <filesystem>
 #include <fstream>
 #include <spdlog/spdlog.h>
-
-#include "core/util/AppPaths.h"
-#include "ecs/PropertyJson.h"
 
 namespace rigkit {
 

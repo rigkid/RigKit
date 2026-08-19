@@ -1,6 +1,20 @@
 cmake_minimum_required(VERSION 3.19)
 
-project(rigkit VERSION 1.0.0 LANGUAGES C CXX)
+# Host SemVer — one source of truth: cmake/VERSION (see docs/versioning.md).
+# Not repo-root VERSION: ${RIGKIT_ROOT} is a public include, and Windows would
+# treat that file as C++ <version>.
+file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/cmake/VERSION" RIGKIT_VERSION LIMIT_COUNT 1)
+string(STRIP "${RIGKIT_VERSION}" RIGKIT_VERSION)
+if(NOT RIGKIT_VERSION MATCHES "^[0-9]+\\.[0-9]+\\.[0-9]+$")
+	message(FATAL_ERROR "cmake/VERSION must be MAJOR.MINOR.PATCH (got '${RIGKIT_VERSION}')")
+endif()
+project(rigkit VERSION ${RIGKIT_VERSION} LANGUAGES C CXX)
+
+# Windows resource compiler for the app icon (add_rigkit_application embeds a
+# generated .rc). Must be enabled at file scope, not inside the function.
+if(WIN32)
+	enable_language(RC)
+endif()
 
 # RigKit source root (this directory). Use instead of CMAKE_SOURCE_DIR so
 # product apps can add_subdirectory(rigkit) without path breakage.
@@ -67,6 +81,31 @@ add_library(rigkit STATIC ${RIGKIT_SOURCES})
 # Packs (rigComponent, rigSystems, rigImGui, ...) stay separate STATIC
 # targets via RigKitPacks.cmake - do not fold them into librigkit.
 
+# Windows host tool: same AppIcon identicon as runtime, written to a `.ico`
+# so add_rigkit_application can embed GLFW_ICON when app.json has no "icon".
+if(WIN32 AND NOT TARGET gen-app-icon)
+	add_executable(gen-app-icon
+		"${RIGKIT_ROOT}/tools/gen-app-icon/main.cpp"
+		"${RIGKIT_ROOT}/src/core/util/AppIcon.cpp"
+	)
+	target_include_directories(gen-app-icon PRIVATE "${RIGKIT_ROOT}/src")
+	set_target_properties(gen-app-icon PROPERTIES
+		RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/tools"
+		RUNTIME_OUTPUT_DIRECTORY_DEBUG "${CMAKE_BINARY_DIR}/tools"
+		RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}/tools"
+		RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO "${CMAKE_BINARY_DIR}/tools"
+		RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL "${CMAKE_BINARY_DIR}/tools"
+	)
+endif()
+
+# Host version string — one generated TU so a VERSION bump does not cascade.
+configure_file(
+	${RIGKIT_ROOT}/cmake/RigKitVersion.cpp.in
+	${CMAKE_CURRENT_BINARY_DIR}/RigKitVersion.cpp
+	@ONLY
+)
+target_sources(rigkit PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/RigKitVersion.cpp)
+
 # MinGW PE objects default to a ~32k section limit. EnTT-heavy TUs exceed it
 # and the linker then reports nonsense undefined refs into libstdc++/tuple.
 # MSYS2 UCRT64 often leaves the MINGW CMake var unset — key off GNU-on-Windows.
@@ -127,9 +166,12 @@ function(add_rigkit_application)
 	get_filename_component(APP_FOLDER_NAME "${APP_DIR}" NAME)
 	set(APP_MANIFEST "${APP_DIR}/app.json")
 
+	# Seed for the default identicon (must match runtime AppSettings.appName).
+	set(_app_icon_seed "${APP_FOLDER_NAME}")
 	if(EXISTS ${APP_MANIFEST})
 		file(READ "${APP_MANIFEST}" _manifest)
 		string(JSON _project_name GET "${_manifest}" name)
+		set(_app_icon_seed "${_project_name}")
 
 		string(REGEX REPLACE "[^a-zA-Z0-9_]" "_" _sanitized_name "${_project_name}")
 		string(REGEX REPLACE "_+" "_" _sanitized_name "${_sanitized_name}")
@@ -158,7 +200,51 @@ function(add_rigkit_application)
 		"${APP_DIR}/*.c"
 	)
 
-	add_executable(${_sanitized_name} ${APP_SRC})
+	# Optional app icon from app.json: "icon": "<file>.ico" (path relative to
+	# the app folder). Windows always embeds a PE GLFW_ICON (custom file, or
+	# gen-app-icon identicon from the app name). All platforms: custom icons
+	# are deployed next to the exe for glfwSetWindowIcon at runtime.
+	set(_app_icon "")
+	if(EXISTS ${APP_MANIFEST})
+		rigkit_json_get_string("${_manifest}" _app_icon icon)
+	endif()
+	set(_app_icon_path "")
+	if(NOT _app_icon STREQUAL "")
+		set(_app_icon_path "${APP_DIR}/${_app_icon}")
+		if(NOT EXISTS "${_app_icon_path}")
+			message(WARNING "[RigKit] app.json 'icon' not found: ${_app_icon_path}")
+			set(_app_icon_path "")
+		endif()
+	endif()
+	# Windows PE icon (GLFW_ICON): custom app.json "icon", or the default
+	# identicon from gen-app-icon so Explorer keeps the mark when the app is closed.
+	set(_app_icon_rc "")
+	if(WIN32)
+		set(_app_icon_dir "${CMAKE_CURRENT_BINARY_DIR}/rigkit_app_icon")
+		file(MAKE_DIRECTORY "${_app_icon_dir}")
+		file(WRITE "${_app_icon_dir}/app_icon.rc" "GLFW_ICON ICON \"app.ico\"\n")
+		set(_app_icon_rc "${_app_icon_dir}/app_icon.rc")
+		if(NOT _app_icon_path STREQUAL "")
+			configure_file("${_app_icon_path}" "${_app_icon_dir}/app.ico" COPYONLY)
+		elseif(TARGET gen-app-icon)
+			add_custom_command(
+				OUTPUT "${_app_icon_dir}/app.ico"
+				COMMAND gen-app-icon "${_app_icon_seed}" "${_app_icon_dir}/app.ico"
+				DEPENDS gen-app-icon
+				COMMENT "Generate default PE icon for ${_sanitized_name}"
+				VERBATIM
+			)
+			set_source_files_properties("${_app_icon_rc}" PROPERTIES
+				OBJECT_DEPENDS "${_app_icon_dir}/app.ico"
+			)
+			add_custom_target(${_sanitized_name}_app_icon DEPENDS "${_app_icon_dir}/app.ico")
+		endif()
+	endif()
+
+	add_executable(${_sanitized_name} ${APP_SRC} ${_app_icon_rc})
+	if(TARGET ${_sanitized_name}_app_icon)
+		add_dependencies(${_sanitized_name} ${_sanitized_name}_app_icon)
+	endif()
 	target_link_libraries(${_sanitized_name} PRIVATE ${APP_PACK_LIBS} rigkit)
 	target_include_directories(${_sanitized_name} PRIVATE ${RIGKIT_ROOT} ${APP_DIR})
 
@@ -231,7 +317,21 @@ function(add_rigkit_application)
 		)
 	endif()
 
+	# Icon next to the exe at the app.json-relative path — the runtime resolves
+	# "icon" against the exe dir (window / taskbar icon on Linux and Windows).
+	if(NOT _app_icon_path STREQUAL "")
+		get_filename_component(_app_icon_reldir "${_app_icon}" DIRECTORY)
+		add_custom_command(TARGET ${_sanitized_name} POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E make_directory
+					"$<TARGET_FILE_DIR:${_sanitized_name}>/${_app_icon_reldir}"
+			COMMAND ${CMAKE_COMMAND} -E copy_if_different "${_app_icon_path}"
+					"$<TARGET_FILE_DIR:${_sanitized_name}>/${_app_icon}"
+			COMMENT "Deploy icon next to ${_sanitized_name}"
+		)
+	endif()
+
 	# Ship each linked pack's pack.json for About / IPack identity at runtime.
+	# Pack themes/ folders merge into <exeDir>/data/themes (color-scheme JSON).
 	get_property(_rigkit_processed_packs GLOBAL PROPERTY RIGKIT_PROCESSED_PACKS)
 	if(NOT _rigkit_processed_packs)
 		set(_rigkit_processed_packs "${APP_PACK_LIBS}")
@@ -245,6 +345,16 @@ function(add_rigkit_application)
 				COMMAND ${CMAKE_COMMAND} -E copy_if_different "${_pack_json}"
 						"$<TARGET_FILE_DIR:${_sanitized_name}>/data/packs/${pack_lib}/pack.json"
 				COMMENT "Deploy ${pack_lib}/pack.json next to ${_sanitized_name}"
+			)
+		endif()
+		set(_pack_themes "${RIGKIT_ROOT}/packs/${pack_lib}/themes")
+		if(EXISTS "${_pack_themes}")
+			add_custom_command(TARGET ${_sanitized_name} POST_BUILD
+				COMMAND ${CMAKE_COMMAND} -E make_directory
+						"$<TARGET_FILE_DIR:${_sanitized_name}>/data/themes"
+				COMMAND ${CMAKE_COMMAND} -E copy_directory "${_pack_themes}"
+						"$<TARGET_FILE_DIR:${_sanitized_name}>/data/themes"
+				COMMENT "Deploy ${pack_lib} themes next to ${_sanitized_name}"
 			)
 		endif()
 	endforeach()

@@ -1,14 +1,16 @@
 #include "IPack.h"
-#include <iostream>
-#include <spdlog/spdlog.h>
+
 #include "MPack.h"
 #include "RigKitEngine.h"
+
+#include <iostream>
+#include <spdlog/spdlog.h>
 
 namespace rigkit {
 
 IPack::IPack(const std::string& name)
 	: m_name(name), m_description(""), m_license("MIT Rigkid Contributors"), m_url(""),
-	  m_enabled(true), m_initialized(false), m_time(0.0f) {}
+	  m_version(""), m_enabled(true), m_initialized(false), m_time(0.0f) {}
 
 // Destructor is defaulted in header
 
@@ -97,6 +99,7 @@ json IPack::getSettings() const {
 	settings["description"] = m_description;
 	settings["license"] = m_license;
 	settings["url"] = m_url;
+	settings["version"] = m_version;
 	settings["enabled"] = m_enabled;
 	settings["initialized"] = m_initialized;
 	settings["time"] = m_time;
@@ -116,6 +119,12 @@ void IPack::setSettings(const json& settings) {
 		m_license = settings["license"];
 	if (settings.contains("url"))
 		m_url = settings["url"];
+	if (settings.contains("version")) {
+		if (settings["version"].is_string())
+			m_version = settings["version"].get<std::string>();
+		else if (settings["version"].is_number())
+			m_version = std::to_string(settings["version"].get<double>());
+	}
 	if (settings.contains("enabled"))
 		m_enabled = settings["enabled"];
 	if (settings.contains("time"))

@@ -24,7 +24,7 @@ Portable Rig rules (with RigKit notes). Full intro: [contract/README.md](contrac
 | [contract/rigkit.md](contract/rigkit.md) | ECS conventions + ESP32 subset |
 | [contract/ui.md](contract/ui.md) | UI companion + `IMui` |
 | [contract/distribution.md](contract/distribution.md) | Default ship set; Rig + UI on author path |
-| [contract/port-map.md](contract/port-map.md) | Rig schema ↔ RigKit pack map |
+| [contract/port-map.md](contract/port-map.md) | Rig schema / RigKit pack map |
 | [contract/pi-host.md](contract/pi-host.md) | Raspberry Pi as minimum full host |
 
 ## Packs

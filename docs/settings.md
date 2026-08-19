@@ -9,7 +9,7 @@ RigKit has two related seams:
 
 **Shipped data** (`AppPaths::getDataDir()` = `<exeDir>/data`) holds fonts and app samples redeployed on build.
 
-**User data** (`AppPaths::getUserDataDir()`) holds settings, workspaces, and themes under `user/`. Preferences → Application → **Data Path** overrides that root (empty = default `<exeDir>/data`).
+**User data** (`AppPaths::getUserDataDir()`) holds settings, workspaces, and themes under `user/`. Preferences > Application > **Data Path** overrides that root (empty = default `<exeDir>/data`).
 
 The override is also written to an OS config pointer so it survives a clean rebuild that wipes `<exeDir>/data`:
 
@@ -49,7 +49,7 @@ Flow:
 
 1. Engine loads the OS Data Path pointer (if any), then `rigkit_settings.json` (`MSettings::loadFromDisk`).
 2. On `registerPreferences`, stored values for that section id are applied onto the live POD.
-3. Preferences panel (`rigImGui`, File → Preferences…) lists categories on the left and edits the selected section’s live fields via `sProp` on the right.
+3. Preferences panel (`rigImGui`, File > Preferences…) lists categories on the left and edits the selected section’s live fields via `sProp` on the right.
 4. Save button or process exit writes registered sections (merged so unloaded packs keep their keys).
 
 JSON shape:
@@ -81,13 +81,13 @@ JSON shape:
 }
 ```
 
-`recentFiles` is a top-level blob value (not a Preferences section) written by `IMui::noteRecentFile` / File → Open Recent. `workspace` is the active named dock layout (View → Workspace in `rigImGui`); the layout files themselves live under `data/user/workspaces/<name>.ini` (dock tree plus `[RigVisibility]`). On startup, rigImGui loads that named file when present, otherwise `Standard.ini`.
+`recentFiles` is a top-level blob value (not a Preferences section) written by `IMui::noteRecentFile` / File > Open Recent. `workspace` is the active named dock layout (View > Workspace in `rigImGui`); the layout files themselves live under `data/user/workspaces/<name>.ini` (dock tree plus `[RigVisibility]`). On startup, rigImGui loads that named file when present, otherwise `Standard.ini`.
 
 Built-in section: `host.app` (`AppSettings` — debug, vsync, FPS, clear color, window size/fullscreen, Data Path). Window size, fullscreen, vsync, clear color, debug, and Data Path all apply **immediately** when changed.
 
 `rigImGui.ui` also includes chrome prefs: **Show Status Bar**, **FPS Display** (Status Bar / Menu Bar / Off), progress placement, theme, fonts, rulers.
 
-Access: `engine->getSettingsManager()` → `MSettings*`.
+Access: `engine->getSettingsManager()` returns `MSettings*`.
 
 Paths: `AppPaths::getUserSettingsFile()` under `getUserDataDir()`.
 
@@ -112,7 +112,7 @@ std::ofstream out("canvas.json");
 out << canvasJson.dump(4);
 ```
 
-`sProp` ↔ JSON helpers live in `src/ecs/PropertyJson.h` (`propsToJson` / `jsonToProps`) and power preference persistence.
+`sProp` / JSON helpers live in `src/ecs/PropertyJson.h` (`propsToJson` / `jsonToProps`) and power preference persistence.
 
 ### Manager blob scope
 
@@ -121,7 +121,7 @@ out << canvasJson.dump(4);
 | `MSettings` / prefs sections | User preferences on disk | Scene / document |
 | `AppSettings` | Window / graphics POD for the app | Renderer GPU state |
 | `Canvas` | Surface size / clear / samples (`-1` inherits `window.samples`) | Engine pointer |
-| `MRendering` | Entity→renderer type and canvas settings metadata | Main window renderer (engine-owned); `Graphics` wrappers; ECS scene (use **rigProject**) |
+| `MRendering` | Entity-to-renderer type and canvas settings metadata | Main window renderer (engine-owned); `Graphics` wrappers; ECS scene (use **rigProject**) |
 | `MEcs` | Entity id/name list only | Components — scene IO is **rigProject** |
 | `Mui` | Theme / workspace hints | Live UI prefs (`rigImGui.ui` via `MSettings`) |
 

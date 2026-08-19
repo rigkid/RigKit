@@ -13,6 +13,26 @@ env:
   EXAMPLE: demo
 
 jobs:
+  style:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install clang-format
+        run: sudo apt-get update && sudo apt-get install -y clang-format
+      - name: Check formatting
+        run: |
+          FILES=$(git ls-files '*.cpp' '*.h' '*.c' '*.hpp' | grep -vE '(^|/)third_party/' || true)
+          EXISTING=""
+          for file in $FILES; do
+            [ -f "$file" ] && EXISTING="$EXISTING $file"
+          done
+          if [ -n "$EXISTING" ]; then
+            echo "Checking clang-format on:$EXISTING"
+            clang-format --dry-run --Werror $EXISTING
+          else
+            echo "No source files to check."
+          fi
+
   example:
     runs-on: ubuntu-latest
     steps:

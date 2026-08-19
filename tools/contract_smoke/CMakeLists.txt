@@ -10,6 +10,7 @@ add_executable(contract_smoke
 	test_rigSystems.cpp
 	test_rigProject.cpp
 	test_purity.cpp
+	test_version.cpp
 )
 
 target_link_libraries(contract_smoke PRIVATE doctest::doctest rigkit ${CONTRACT_SMOKE_PACKS})

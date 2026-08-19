@@ -1,11 +1,11 @@
 #pragma once
 
-#include "IWindow.h"
-#include "ShaderPreview.h"
-
 #include <cstdint>
 #include <entt/entt.hpp>
 #include <string>
+
+#include "IWindow.h"
+#include "ShaderPreview.h"
 
 /**
  * @brief Live shader preview panel — compile / auto / pause / FPS / errors.

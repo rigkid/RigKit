@@ -45,14 +45,14 @@ When the row is ambiguous — a stub could be a wanted capability, not just left
 
 Examples of delete: legacy `MEcs` runners replaced by `registerSystem`; dead `Graphics` GL that never draws; unused converters.
 
-Examples of finish: selection overlay over `CSelection`; Canvas FBO present; OpenGL `switchRenderer`. Drawing preview → tool-session data in a tool pack (see TODO / authoring.md), not a core stub.
+Examples of finish: selection overlay over `CSelection`; Canvas FBO present; OpenGL `switchRenderer`. Drawing preview becomes tool-session data in a tool pack (see TODO / authoring.md), not a core stub.
 
 ## Workflow
 
 1. **Lock behavior** — name what must stay. Prefer smoke-build / run `minimal` or the touched example when unit tests are thin.
 2. **Plan before edit** — bound files; list smells; safest deletes first.
 3. **Classify** — duplication · dead code · needless abstraction · **state churn** · **pass-back args** · **set-then-use setters** · **write-only state** · **dead control** · boundary leak (ImGui in `src/`, systems in `rigComponent`) · docs overclaim · missing verify.
-4. **One smell pass at a time** — delete → consolidate → naming → verify. Re-build after each pass.
+4. **One smell pass at a time** — delete, then consolidate, then naming, then verify. Re-build after each pass.
 5. **Report** — changed files · simplifications · verification · remaining risks.
 
 ## State churn smell
@@ -61,7 +61,7 @@ Mutation bookkeeping where a read-time gate works. Delete the bookkeeping, keep 
 
 | Churn | Replace with |
 |-------|--------------|
-| Save visibility map → hide all → restore | Skip rendering behind a bool gate |
+| Save visibility map, hide all, restore | Skip rendering behind a bool gate |
 | `hideWindow("Log")` title lists after create | Declare visibility at create, or don’t create it |
 | N `m_last*` shadow fields for a rebuild check | One epoch / dirty counter |
 | `syncFromPrefs()` every frame into mirrors | Read prefs where they are used |
@@ -71,12 +71,12 @@ Mutation bookkeeping where a read-time gate works. Delete the bookkeeping, keep 
 | Setter on an interface that every impl copies | Reader on the dependent side (pull, don't push) |
 | Argument the callee already reaches (manager handed back, stored `m_*` passed in, second pointer to one owner) | Drop the parameter; read through the owner — [no pass-back](../rigkit-minimal/SKILL.md#no-pass-back-never-hand-over-what-the-callee-already-reaches) |
 | Lambda whose only job is forwarding args to one call | Register / call the function directly |
-| `setX()` pairs a hidden mode / intent flag reconciles (`setFillColor` + `setStrokeColor` → `m_intent`) | Pass the value with the call as a POD — [no set-then-use](../rigkit-minimal/SKILL.md#no-set-then-use-per-call-data-is-a-parameter-not-stored-state) |
+| `setX()` pairs a hidden mode / intent flag reconciles (`setFillColor` + `setStrokeColor` into `m_intent`) | Pass the value with the call as a POD — [no set-then-use](../rigkit-minimal/SKILL.md#no-set-then-use-per-call-data-is-a-parameter-not-stored-state) |
 | Member assigned but never read (`m_hasFill`, `m_fillOpacity`) | Delete it, or wire the reader — a setter with no reader is a dead control |
 
 **Finding write-only state:** grep each suspect member — if every hit is an assignment, nothing reads it. Cheap, and it catches the whole class; no compiler flag does, since an assignment counts as a use and `-Wunused-private-field` stays quiet.
 
-Keep genuine deferrals (ImGui font atlas rebuild, GLFW drop callback → next frame, GL state save/restore around foreign draws).
+Keep genuine deferrals (ImGui font atlas rebuild, GLFW drop callback deferred to the next frame, GL state save/restore around foreign draws).
 
 ## Posture
 

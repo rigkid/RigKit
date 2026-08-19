@@ -1,7 +1,6 @@
 #pragma once
 
 #include "core/pack/IPack.h"
-
 namespace rigkit {
 
 /**

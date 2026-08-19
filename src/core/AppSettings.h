@@ -3,10 +3,11 @@
 #include <glm/glm.hpp>
 #include <string>
 #include <vector>
+
 #include "core/ISettings.h"
+#include "core/json.h"
 #include "core/TypeJson.h"
 #include "core/WindowSettings.h"
-#include "core/json.h"
 #include "ecs/PropertyReflection.h"
 
 namespace rigkit {

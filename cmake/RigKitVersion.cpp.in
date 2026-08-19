@@ -1,0 +1,22 @@
+#include "core/RigKitVersion.h"
+
+namespace rigkit {
+
+const char* version() {
+	return "@PROJECT_VERSION@";
+}
+
+int versionMajor() {
+	return @PROJECT_VERSION_MAJOR@;
+}
+
+int versionMinor() {
+	return @PROJECT_VERSION_MINOR@;
+}
+
+int versionPatch() {
+	return @PROJECT_VERSION_PATCH@;
+}
+
+} // namespace rigkit
+

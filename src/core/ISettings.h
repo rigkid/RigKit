@@ -1,5 +1,5 @@
 #pragma once
-#include "core/json.h" // Or wherever your JSON type is defined
+#include "core/json.h"
 
 class ISettings {
   public:

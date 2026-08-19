@@ -26,12 +26,12 @@ Capability units are **packs** — never “addon”. Spoken name = folder id = 
 
 Stop at the first rung that holds:
 
-1. **Does this need to exist?** Speculative need → skip; say so in one line.
+1. **Does this need to exist?** Speculative need: skip; say so in one line.
 2. **Can it be data on an existing or new plain component / schema?** Prefer fields + `GetProperties()` + `registerComponent` in **rigComponent** (or app data) over a new system or panel. ([rigkit-data](../rigkit-data/SKILL.md))
 3. **Already in this codebase?** Reuse managers, components, pack patterns — look before writing. Survey the pack table before a new pack; grow an existing seam when the role fits.
 4. **C++20 / stdlib?** Use it.
 5. **Stand on shoulders?** Prefer an existing library over writing our own — only if same spirit (Pi-cheap, data-friendly, rebuild-cheap, artist-warm), does the job, and we can change it. Use deps already here (GLFW, EnTT, glm, nlohmann/json, spdlog) before adding new ones. Do not reinvent the wheel; do not invent Mars (wrong-spirit megastack). Do not add a dependency for a few lines.
-6. **Pack vs core?** UI → `IMui` / `rigImGui` (UI in SUDE–ECS–UI), not Dear ImGui in `src/`. Optional graphics → existing packs (e.g. Blend2D), not new core weight.
+6. **Pack vs core?** UI goes through `IMui` / `rigImGui` (UI in SUDE–ECS–UI), not Dear ImGui in `src/`. Optional graphics go to existing packs (e.g. Blend2D), not new core weight.
 7. **Pi-cheap?** Prefer the path that compiles on arm64/GLES and stays smooth on Raspberry Pi installs. Desktop-only convenience is not a rung.
 8. **Rebuild-cheap?** Prefer the change that does not force a full-universe rebuild (narrow includes, pack-local edits, **bodies in `.cpp` not headers**). Slow prototype loops are a design bug. See [rigkit-build](../rigkit-build/SKILL.md) Fast rebuilds + Local CI step 0.
 9. **Only then:** the minimum code that works — fewest files, boring over clever.
@@ -117,8 +117,8 @@ Smell: the same default literal written in more than one layer (engine field + i
 
 Split state by lifetime, then give each half exactly one home:
 
-- **Capability** — declared once in `setup()`, never toggles → engine / app settings.
-- **Transient state** — changes while running → the manager that renders it.
+- **Capability** — declared once in `setup()`, never toggles; lives in engine / app settings.
+- **Transient state** — changes while running; lives on the manager that renders it.
 
 Anti-example: `IMui::enableEditMode(bool)` made `RigKitEngine` push the flag into `Mui`, so both held a `bool` and `IMui` held a third default.
 

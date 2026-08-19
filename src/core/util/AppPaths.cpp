@@ -167,6 +167,12 @@ std::filesystem::path resolveUserDataPath(const std::string& path) {
 } // namespace
 
 void init(int argc, char* argv[]) {
+#if defined(_WIN32)
+	// spdlog writes UTF-8; the Windows console defaults to an OEM page (CP437),
+	// which turns em dashes into mojibake. Safe to call more than once.
+	SetConsoleOutputCP(CP_UTF8);
+	SetConsoleCP(CP_UTF8);
+#endif
 	if (g_ready) {
 		return;
 	}
@@ -200,6 +206,15 @@ std::string getUserDataDir() {
 		return pathStr(g_userDataOverride);
 	}
 	return getDataDir();
+}
+
+std::string getOsConfigDir() {
+	ensureInit();
+	const auto root = osConfigRoot();
+	if (root.empty()) {
+		return joinPath(getUserDataDir(), "user");
+	}
+	return pathStr(root / appId());
 }
 
 void setUserDataDir(const std::string& path) {

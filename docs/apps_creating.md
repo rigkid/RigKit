@@ -21,6 +21,25 @@ cmake --build examples/myNewApp/build --target myNewApp
 
 Pack deps are resolved from `app.json` by `cmake/RigKitPacks.cmake` (cloned into `packs/` under RigKit).
 
+## App icon
+
+Every app gets a window / taskbar icon so builds stop looking identical. Two paths:
+
+**No icon file (default):** the host draws a deterministic identicon from the `app.json` `name` — the name hash picks a curated colour palette (max 5 colours, lightest as background) and a small mirrored block pattern. Same name = same icon on every launch, different apps look different, nothing to author. On Windows the build also runs `gen-app-icon` and embeds that same image as the PE `GLFW_ICON` resource, so Explorer shows it on the exe when the app is closed.
+
+**Custom icon:** put an `.ico` file (multi-size: 16/32/48) in the app folder and name it in `app.json`:
+
+```json
+{
+  "name": "myNewApp",
+  "icon": "icon.ico"
+}
+```
+
+The path is relative to the app folder; the build deploys the file next to the exe and the runtime sets it via `glfwSetWindowIcon` (Windows and Linux/X11). On Windows the build also embeds it as the `GLFW_ICON` resource so Explorer shows it on the exe file itself. Use uncompressed `.ico` entries (the usual 16/32/48 sizes are); PNG-compressed entries (typically only the 256 px one) are skipped at runtime.
+
+Wayland and macOS take the icon from the `.desktop` entry / app bundle — a distribution concern, not `app.json`; Pi installs usually run fullscreen anyway.
+
 ## Product app (separate repository)
 
 Use the thin starter under [`templates/app`](../templates/app/) — not an in-repo example:

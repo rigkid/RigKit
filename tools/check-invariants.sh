@@ -11,12 +11,15 @@ hit() {
 	FAIL=1
 }
 
+# --no-ignore is load-bearing: .gitignore holds `packs/*` so all but the four
+# submodule packs are ignored, and without it rg would sweep a twentieth of
+# packs/ while the grep fallback swept all of it.
 search() {
 	# usage: search PATTERN PATH...
 	local pat="$1"
 	shift
 	if command -v rg >/dev/null 2>&1; then
-		rg -n --glob '!**/third_party/**' --glob '!**/build/**' \
+		rg -n --no-ignore --glob '!**/third_party/**' --glob '!**/build/**' \
 			--glob '!**/check-invariants.*' -e "$pat" "$@" 2>/dev/null || true
 	else
 		grep -RIn --exclude-dir=third_party --exclude-dir=build \
@@ -28,7 +31,7 @@ search_i() {
 	local pat="$1"
 	shift
 	if command -v rg >/dev/null 2>&1; then
-		rg -n -i --glob '!**/third_party/**' --glob '!**/build/**' \
+		rg -n -i --no-ignore --glob '!**/third_party/**' --glob '!**/build/**' \
 			--glob '!**/check-invariants.*' -e "$pat" "$@" 2>/dev/null || true
 	else
 		grep -RIn --exclude-dir=third_party --exclude-dir=build \
@@ -71,6 +74,44 @@ for pat in 'addons/' 'checkout_addon' '\bIAddon\b' '\bMAddon\b' '\bAddonRegistry
 		echo "$matches" >&2
 	fi
 done
+
+# --- Markdown: no unicode arrows (to / then / > instead) -----------------------
+# Pattern is ASCII \u{} so the script file's encoding cannot mangle the class.
+ARROW_PATHS=(AGENTS.md docs skills packs templates examples)
+ARROW_RE='\u{2190}|\u{2192}|\u{2194}|\u{21D0}|\u{21D2}|\u{21D4}'
+arrow_globs=(--glob '*.md' --glob '*.mdc' --glob '!**/third_party/**' --glob '!**/build/**')
+if command -v rg >/dev/null 2>&1; then
+	matches="$(rg -n --no-ignore "${arrow_globs[@]}" -e "$ARROW_RE" "${ARROW_PATHS[@]}" 2>/dev/null || true)"
+else
+	matches="$(python -c "
+import pathlib, re, sys
+root = pathlib.Path('.')
+pat = re.compile(r'[\u2190\u2192\u2194\u21d0\u21d2\u21d4]')
+skip = {'third_party', 'build'}
+paths = sys.argv[1:]
+hits = []
+for base in paths:
+	p = pathlib.Path(base)
+	files = p.rglob('*') if p.is_dir() else [p]
+	for f in files:
+		if f.suffix.lower() not in {'.md', '.mdc'}:
+			continue
+		if any(part in skip for part in f.parts):
+			continue
+		try:
+			text = f.read_text(encoding='utf-8')
+		except (OSError, UnicodeDecodeError):
+			continue
+		for i, line in enumerate(text.splitlines(), 1):
+			if pat.search(line):
+				hits.append(f'{f}:{i}:{line}')
+print('\n'.join(hits))
+" "${ARROW_PATHS[@]}")"
+fi
+if [[ -n "$matches" ]]; then
+	hit "unicode arrows in Markdown (write to / then / > for menus)"
+	echo "$matches" >&2
+fi
 
 # --- 10. Next-year: archaeology in living first-party sources -------------------
 matches="$(search_i '\bformerly\b|day-one|day one' src examples)"
@@ -151,15 +192,25 @@ if [[ -f packs/rigPlotFinders/examples/finders/app.json ]]; then
 	fi
 fi
 
+# --- Host VERSION SemVer -------------------------------------------------------
+if [[ ! -f cmake/VERSION ]]; then
+	hit "missing cmake/VERSION (host SemVer source of truth)"
+else
+	ver="$(tr -d '\r' < cmake/VERSION | head -n1 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
+	if [[ ! "$ver" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+		hit "cmake/VERSION must be MAJOR.MINOR.PATCH (got ${ver:-empty})"
+	fi
+fi
+
 # --- Pack constructors must not re-author pack.json identity --------------------
-# description / license / url / dependencies live in pack.json; MPack applies them.
+# description / license / url / version / dependencies live in pack.json; MPack applies them.
 # Flag ctor-era setters so scaffolds and local packs cannot reintroduce a second copy.
 check_pack_ctor_identity() {
 	local dir="$1"
 	[[ -d "$dir" ]] || return 0
 	local hits
 	hits="$(grep -RInE --include='*.cpp' \
-		'setDescription\s*\(|setLicense\s*\(|setUrl\s*\(|addDependency\s*\(' \
+		'setDescription\s*\(|setLicense\s*\(|setUrl\s*\(|setVersion\s*\(|addDependency\s*\(' \
 		"$dir" 2>/dev/null | grep -vE '/(build|third_party|\.git|examples)/' || true)"
 	if [[ -n "$hits" ]]; then
 		hit "pack ctor must not set identity/deps (use pack.json): $dir"

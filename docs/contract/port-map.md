@@ -1,8 +1,8 @@
-# Port map — Rig ↔ RigKit
+# Port map — Rig / RigKit
 
 How this host relates to [Rig](https://github.com/rigkid/RigWorks) schemas.
 
-**Close** = portable fields match (channel packing OK: `rgba` ↔ `colorR/G/B/A`).  
+**Close** = portable fields match (channel packing OK: `rgba` / `colorR/G/B/A`).  
 **Partial** = affinity only — do not advertise as speaking that schema id yet.  
 **Planned** = no meaningful POD map.
 
@@ -22,9 +22,21 @@ Schemas were cross-pollinated toward this reference host (v0.1). Data packs hold
 | `rig.geometry.spline` | **rigComponent** — `CSpline` | NURBS curve in the plane. |
 | `rig.geometry.spline3d` | **rigComponent** — `CSpline3d` | NURBS curve in 3-space. |
 | `rig.geometry.nurbs_surface` | **rigComponent** — `CNurbsSurface` | Control net; tessellation is fulfillment. |
-| `rig.geometry.path` | **rigComponent** — `CPath` | AoS `commands` including `quadTo`. Plot layer bags stay on **rigPlotComponent** `CPaths`. |
+| `rig.geometry.path` | **rigComponent** — `CPath` | AoS `commands` including `quad-to`. Plot layer bags stay on **rigPlotComponent** `CPaths`. |
+| `rig.geometry.path3d` | **rigComponent** — `CPath3d` | AoS `commands` (`vec3` points). No `ArcTo` — circular arcs stay on `rig.geometry.arc`. |
 | `rig.layout.page` | **rigProject** — `CPage` | `index` / `width` / `height` / `unit`; margins/bleed/slug as scalar channels. Entity title via `rig.meta.named`. |
-| `rig.spatial.anchor` | **rigProject** — `CPage::originAnchor` | Which cell of the trim is page-local (0,0), as the Contract string enum. Absent = `topLeft`, so a top-left page writes no component. A page anchors to a corner or `center`; an imported edge cell keeps its side and falls to the nearer corner. |
+| `rig.layout.master` | **rigLayoutComponent** — `CLayoutMaster` | Optional `side` `left` / `right` / `single`. |
+| `rig.layout.applied_master` | **rigLayoutComponent** — `CLayoutAppliedMaster` | `master` entity. |
+| `rig.layout.facing` | **rigLayoutComponent** — `CLayoutFacing` | `enabled` / `binding`. Absent = singles. |
+| `rig.layout.paragraph_style` | **rigLayoutComponent** — `CLayoutParagraphStyle` | Visual map for a story paragraph style (`storyStyle`, font, size, leading, …). |
+| `rig.layout.character_style` | **rigLayoutComponent** — `CLayoutCharacterStyle` | Visual map for a story character style. |
+| `rig.layout.frame_chain` | **rigLayoutComponent** — `CLayoutFrameChain` | `story` / `frames` / optional `master`. |
+| `rig.story.flow` | **rigStoryComponent** — `CStoryFlow` | Ordered `blocks` of paragraphs / tables. |
+| `rig.story.paragraph` | **rigStoryComponent** — `CStoryParagraph` | Style + runs (`text` + optional character style). |
+| `rig.story.paragraph_style` | **rigStoryComponent** — `CStoryParagraphStyle` | Identity only (`basedOn`, `listKind`). |
+| `rig.story.character_style` | **rigStoryComponent** — `CStoryCharacterStyle` | Identity only (`basedOn`). |
+| `rig.story.table` | **rigStoryComponent** — `CStoryTable` | `columnCount` / cells with spans + nested blocks. |
+| `rig.spatial.anchor` | **rigProject** — `CPage::originAnchor` | Which cell of the trim is page-local (0,0), as the Contract 3×3 string enum. Absent = `top-left`, so a top-left page writes no component. |
 | `rig.pixel.palette` | **rigComponent** — `CPalette` | `colors` (16 rgba). `shadeNext` travels separately as `x.rigkit.palette_shade`. |
 | `rig.render.light` | **rigComponent** — `CLight` | Dir/point + colour / intensity / banded shade. Spot not in v0.1. |
 | `rig.io.osc` | **rigOsc** — `COscEndpoint` | Listen/send ports + prefix. |
@@ -56,17 +68,20 @@ Schemas were cross-pollinated toward this reference host (v0.1). Data packs hold
 | `rig.cad.boolean` | **rigComponent** — `CCadBoolean`; bake **rigManifold** | `op` + entity-name `operands`. Nested booleans recurse. Operand local TRS applies before the op. |
 | `rig.cad.fillet` / `chamfer` | **rigComponent** — `CCadFillet` / `CCadChamfer` | Authored intent (`radius`/`distance`, `{a,b}` edges or `allEdges`). Manifold is a triangle kernel — not evaluated as B-rep rounds. |
 | `rig.cad.extrude` / `revolve` | **rigComponent** PODs | Fields match. Profile entity + sweep; no kernel eval yet. |
+| `rig.cad.dimension` | **rigComponent** — `CCadDimension`; drive **rigSolveSpace** | `kind` / `a` / `b` / `value` / `measurement` / `offset`. Driving (`measurement` false) moves `b`'s `CTransform`. Measurement is label-only. Diameter / angle stored, not solved. Solve on edit, not every frame. |
+| `rig.cad.reference_line` / `reference_plane` | **rigComponent** — `CCadReferenceLine` / `CCadReferencePlane`; draw **rigCad** | Datums, not solids — kept out of the CSG bake. Coordinates place them; `a` / `b` anchor to entity names and win. Presented as line-mode `CMesh`, so `OrbitNav` framing skips them. Rebuilt on edit, not every frame. |
 
 ## Planned
 
 | Schema family | Planned pack |
 |---------------|--------------|
 | `rig.font.*` | **rigFontComponent** (UFO source PODs). Chrome bind is host `x.rigkit.ui_face`, not a `rig.*` id. IO in **rigUfo**. |
-| `rig.music.*` | **rigMusicComponent** (sequencer → pattern → steps) |
+| `rig.music.*` | **rigMusicComponent** (sequencer, then pattern, then steps) |
 | `rig.anim.curve` | **rigComponent** — `CCurve` | Close for curve POD + presets; tween/LFO still planned. |
 | `rig.anim.*` / `rig.mod.*` (remaining) | **rigAnimComponent** or grow **rigComponent** |
 | `rig.led.*` | **rigLedComponent** |
 | `rig.io.serial` / `rig.sensor.*` | **rigInstallIoComponent** (or split) |
+| `rig.book.*` | Document metadata — not layout; no owning pack yet |
 | LAN host / TCP scan (no `rig.*` id yet) | **rigNetScan** — `CNetScan` / `CNetHost` as `x.rigkit.net_scan` / `x.rigkit.net_host` |
 
 ## UI

@@ -1,7 +1,7 @@
 #include "app.h"
 
-#include "core/RigKitEngine.h"
 #include "core/pack/MPack.h"
+#include "core/RigKitEngine.h"
 #include "packs/rigComponent/src/CRelationship.h"
 #include "packs/rigComponent/src/CSelection.h"
 #include "packs/rigComponent/src/rig.h"

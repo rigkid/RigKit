@@ -3,6 +3,7 @@
 #include <entt/entt.hpp>
 #include <memory>
 #include <unordered_map>
+
 #include "core/IManager.h"
 #include "core/ISettings.h"
 #include "rendering/Graphics.h"

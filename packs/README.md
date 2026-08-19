@@ -6,7 +6,7 @@ Packs are separate **STATIC** libraries loaded from app `app.json` manifests via
 
 **One id.** Spoken name = folder under `packs/` = `pack.json` `"name"` = `app.json` dependency `"name"` = CMake target.
 
-Say and write the same camelCase token (e.g. **rigImGui** → `packs/rigImGui/`). Do not invent a display title, snake_case folder, or a different class/repo name.
+Say and write the same camelCase token (e.g. **rigImGui** is `packs/rigImGui/`). Do not invent a display title, snake_case folder, or a different class/repo name.
 
 | Pattern | Role | Examples |
 |---------|------|----------|
@@ -66,6 +66,7 @@ Each dependency uses a git **`ref`** (tag, branch, or commit SHA):
 | **rigSystems** | Update/Draw systems |
 | **rigProject** | Host project envelope + `.rig` document IO |
 | **rigImGui** | Default **Rig + UI** fulfillment. Dear ImGui is a nested submodule ([GitBruno/imgui](https://github.com/GitBruno/imgui) until [ocornut/imgui#9516](https://github.com/ocornut/imgui/pull/9516) merges); init with `--recursive`. |
+| **rigImTui** | Alternate **Rig + UI** fulfillment — GPU character-grid compositor (local `packs/rigImTui` until published as its own remote). |
 
 Everything else under `packs/` is optional: local clone or CPM at `app.json` `url` + `ref`. Survey [docs/packs_catalog.md](../docs/packs_catalog.md) before scaffolding a new pack.
 
@@ -90,7 +91,7 @@ Refresh checkouts:
 
 ```
 packs/<pack>/examples/<name>/
-  CMakeLists.txt   # RIGKIT_DIR → host root; add_rigkit_application
+  CMakeLists.txt   # RIGKIT_DIR is the host root; add_rigkit_application
   app.json
   app.h / app.cpp / main.cpp
   img/preview.png
@@ -103,6 +104,19 @@ cmake --build packs/<pack>/examples/<name>/build --target <name>
 ```
 
 Screenshot workflow: build and run the example, capture the main window, save as `examples/<name>/img/preview.png` (no emoji chrome), commit with the example. Host `examples/` stay Contract/product apps; they do **not** replace a pack example.
+
+## Style
+
+Host `tools/format.*` never touches `packs/`. Each pack formats its own first-party `src/` + `examples/` with clang-format (`SortIncludes` — [docs/includes.md](../docs/includes.md)).
+
+From the host, once per clone:
+
+```bash
+./tools/install-hooks.sh          # Unix
+tools\install-hooks.bat           # Windows
+```
+
+That installs the host pre-commit hook and copies the pack hook into every `packs/<name>` that is its own git repo. New packs get `tools/format.*` + `tools/install-hooks.*` from [rigTemplate](../templates/rigTemplate/). Never format `third_party/`.
 
 ## Pack CI
 
@@ -118,7 +132,7 @@ Pages publish automatically on push to `main`:
 |-----|----------|-----|
 | Host landing | [`.github/workflows/docs.yml`](../.github/workflows/docs.yml) | [https://rigkid.github.io/rigkit/](https://rigkid.github.io/rigkit/) ([`site/`](../site/)) |
 | Host API | same workflow | [https://rigkid.github.io/rigkit/api/](https://rigkid.github.io/rigkit/api/) |
-| Each pack | `.github/workflows/docs.yml` → reusable [`pack-docs.yml`](../.github/workflows/pack-docs.yml) | `https://rigkid.github.io/<packName>/` |
+| Each pack | `.github/workflows/docs.yml` calls reusable [`pack-docs.yml`](../.github/workflows/pack-docs.yml) | `https://rigkid.github.io/<packName>/` |
 
 Local:
 
@@ -127,7 +141,7 @@ cmake -S . -B build && cmake --build build --target docs
 ./tools/generate-pack-docs.sh rigComponent
 ```
 
-**Rollout order:** land host `docs.yml` + `pack-docs.yml` on `rigkid/RigKit` `main` first (pack callers use `@main`). Then commit/push each pack’s `docs.yml` and end its README with `[API/docs](https://rigkid.github.io/<packName>/)`. **One-time per remote:** Settings → Pages → Source: **GitHub Actions**. Private Pages need an org plan that allows them (or public remotes). When adding a new in-org pack, append it to [`docs/api/pack-remotes.txt`](../docs/api/pack-remotes.txt) so the host aggregate can fetch it in CI.
+**Rollout order:** land host `docs.yml` + `pack-docs.yml` on `rigkid/RigKit` `main` first (pack callers use `@main`). Then commit/push each pack’s `docs.yml` and end its README with `[API/docs](https://rigkid.github.io/<packName>/)`. **One-time per remote:** Settings > Pages > Source: **GitHub Actions**. Private Pages need an org plan that allows them (or public remotes). When adding a new in-org pack, append it to [`docs/api/pack-remotes.txt`](../docs/api/pack-remotes.txt) so the host aggregate can fetch it in CI.
 
 ## New pack
 
@@ -135,7 +149,7 @@ cmake -S . -B build && cmake --build build --target docs
 
 Then start from **[rigTemplate](../templates/rigTemplate/)** (`https://github.com/rigkid/rigTemplate.git`):
 
-1. Lock the spoken name (one camelCase id). Copy `templates/rigTemplate` → `packs/<id>/` (or clone the template remote).
+1. Lock the spoken name (one camelCase id). Copy `templates/rigTemplate` to `packs/<id>/` (or clone the template remote).
 2. Rename `pack.json`, sources, class, and `PackRegistry` factory string to that same id. Set `license` in `pack.json` to `MIT Rigkid Contributors` (or `GPL-2.0-or-later Rigkid Contributors`; required by CI / `check-invariants`). Keep `description`, `url`, and `dependencies` accurate there — that file owns About / `IPack` identity and runtime init order ([docs/packs.md](../docs/packs.md)). The pack constructor is only `IPack("<id>")` — no `setDescription` / `addDependency`.
 3. Add `url` + `ref` to the app `app.json` dependencies (`"name"` must match the id). Set SPDX `license` on the example `app.json` too (`MIT` is fine for apps).
 4. Fill `examples/demo/` (example + `img/preview.png` for the README).
@@ -157,6 +171,6 @@ git -C packs/rigBlend2D submodule update --init --recursive
 
 ## Bootstrap order
 
-Register **rigComponent** → **rigSystems** → **rigImGui** (see `examples/oscHost` and `examples/minimal`). For 3D meshes: **rigComponent** → **rigSystems** → **rigRender3D** (+ **rigObj** / **rigMeshEdit** as needed; see `examples/lowpoly`). For node graphs: **rigComponent** → **rigNodeComponent** → **rigImGui** → **rigNodeEditor** (see `packs/rigNodeEditor/examples/nodes`). Artist guide: [docs/nodes.md](../docs/nodes.md).
+Register **rigComponent**, then **rigSystems**, then **rigImGui** (see `examples/oscHost` and `examples/minimal`). For 3D meshes: **rigComponent**, then **rigSystems**, then **rigRender3D** (+ **rigObj** / **rigMeshEdit** as needed; see `examples/lowpoly`). For node graphs: **rigComponent**, then **rigNodeComponent**, then **rigImGui**, then **rigNodeEditor** (see `packs/rigNodeEditor/examples/nodes`). Artist guide: [docs/nodes.md](../docs/nodes.md).
 
 There is **no** runtime git updater in the host — only configure-time CPM and the tools above.

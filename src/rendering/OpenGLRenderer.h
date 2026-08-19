@@ -1,7 +1,7 @@
 #pragma once
 
-#include <glm/glm.hpp>
 #include <cstdint>
+#include <glm/glm.hpp>
 #include <memory>
 #include <span>
 #include <string>
@@ -101,6 +101,11 @@ class OpenGLRenderer : public IRenderer {
 	// start a new one. Vertices append after this, so call order stays paint
 	// order. Fills pass 0 for lineWidth — it has no meaning for triangles.
 	void openBatch(unsigned mode, float lineWidth);
+	// Grow m_batch geometrically. reserve() allocates exactly what is asked,
+	// so per-primitive size()+n requests would reallocate on every call once
+	// past the initial capacity — quadratic when a big mesh streams thousands
+	// of two-point strokes.
+	void reserveBatch(size_t add);
 	void enqueue(unsigned mode, std::span<const glm::vec2> pts, uint32_t color, float lineWidth);
 	void flush();
 	void drawFilledPoly(std::span<const glm::vec2> pts, uint32_t color);

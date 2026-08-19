@@ -28,24 +28,31 @@ if exist packs\rigComponent\src (
 )
 
 REM --- 6. Positive vocabulary misuse ---
+REM --no-ignore is load-bearing: .gitignore holds packs/* so all but the four
+REM submodule packs are ignored, and without it rg sweeps a twentieth of packs/.
 where rg >nul 2>&1
 if errorlevel 1 (
   echo WARN: rg not on PATH — skipping vocabulary / archaeology sweeps on Windows.
   echo       Install ripgrep, or run tools\check-invariants.sh via Git Bash.
 ) else (
-  rg -n --glob "!**/third_party/**" --glob "!**/build/**" --glob "!**/check-invariants.*" -e "addons/" -e "checkout_addon" -e "\bIAddon\b" -e "\bMAddon\b" -e "\bAddonRegistry\b" AGENTS.md docs .cursor\rules .cursor\skills skills src examples tools cmake templates >nul 2>&1 && (
+  rg -n --no-ignore --glob "!**/third_party/**" --glob "!**/build/**" --glob "!**/check-invariants.*" -e "addons/" -e "checkout_addon" -e "\bIAddon\b" -e "\bMAddon\b" -e "\bAddonRegistry\b" AGENTS.md docs .cursor\rules .cursor\skills skills src examples tools cmake templates >nul 2>&1 && (
     echo FAIL: banned vocabulary ^(use pack / packs/^)
-    rg -n --glob "!**/third_party/**" --glob "!**/build/**" --glob "!**/check-invariants.*" -e "addons/" -e "checkout_addon" -e "\bIAddon\b" -e "\bMAddon\b" -e "\bAddonRegistry\b" AGENTS.md docs .cursor\rules .cursor\skills skills src examples tools cmake templates
+    rg -n --no-ignore --glob "!**/third_party/**" --glob "!**/build/**" --glob "!**/check-invariants.*" -e "addons/" -e "checkout_addon" -e "\bIAddon\b" -e "\bMAddon\b" -e "\bAddonRegistry\b" AGENTS.md docs .cursor\rules .cursor\skills skills src examples tools cmake templates
     set FAIL=1
   )
-  rg -n -i --glob "!**/third_party/**" --glob "!**/build/**" --glob "!**/check-invariants.*" -e "\bformerly\b" -e "day-one" -e "day one" src examples >nul 2>&1 && (
+  rg -n -i --no-ignore --glob "!**/third_party/**" --glob "!**/build/**" --glob "!**/check-invariants.*" -e "\bformerly\b" -e "day-one" -e "day one" src examples >nul 2>&1 && (
     echo FAIL: archaeology phrasing in src/ or examples/
-    rg -n -i --glob "!**/third_party/**" --glob "!**/build/**" --glob "!**/check-invariants.*" -e "\bformerly\b" -e "day-one" -e "day one" src examples
+    rg -n -i --no-ignore --glob "!**/third_party/**" --glob "!**/build/**" --glob "!**/check-invariants.*" -e "\bformerly\b" -e "day-one" -e "day one" src examples
     set FAIL=1
   )
-  rg -n -i --glob "!**/third_party/**" --glob "!**/build/**" --glob "!**/check-invariants.*" --glob "!**/commandments.md" --glob "!**/rigkit-deslop/**" -e "not implemented yet" -e "rigGCode scaffold" -e "\(scaffold\)" src examples packs >nul 2>&1 && (
+  rg -n -i --no-ignore --glob "!**/third_party/**" --glob "!**/build/**" --glob "!**/check-invariants.*" --glob "!**/commandments.md" --glob "!**/rigkit-deslop/**" -e "not implemented yet" -e "rigGCode scaffold" -e "\(scaffold\)" src examples packs >nul 2>&1 && (
     echo FAIL: fake-stub phrasing ^(finish or do not publish^)
-    rg -n -i --glob "!**/third_party/**" --glob "!**/build/**" --glob "!**/check-invariants.*" --glob "!**/commandments.md" --glob "!**/rigkit-deslop/**" -e "not implemented yet" -e "rigGCode scaffold" -e "\(scaffold\)" src examples packs
+    rg -n -i --no-ignore --glob "!**/third_party/**" --glob "!**/build/**" --glob "!**/check-invariants.*" --glob "!**/commandments.md" --glob "!**/rigkit-deslop/**" -e "not implemented yet" -e "rigGCode scaffold" -e "\(scaffold\)" src examples packs
+    set FAIL=1
+  )
+  rg -n --no-ignore --glob "*.md" --glob "*.mdc" --glob "!**/third_party/**" --glob "!**/build/**" -e "\u{2190}|\u{2192}|\u{2194}|\u{21D0}|\u{21D2}|\u{21D4}" AGENTS.md docs skills packs templates examples >nul 2>&1 && (
+    echo FAIL: unicode arrows in Markdown ^(write to / then / ^> for menus^)
+    rg -n --no-ignore --glob "*.md" --glob "*.mdc" --glob "!**/third_party/**" --glob "!**/build/**" -e "\u{2190}|\u{2192}|\u{2194}|\u{21D0}|\u{21D2}|\u{21D4}" AGENTS.md docs skills packs templates examples
     set FAIL=1
   )
 )
@@ -123,9 +130,21 @@ if exist packs\rigPlotFinders\examples\finders\app.json (
   )
 )
 
+REM --- Host VERSION SemVer ---
+if not exist cmake\VERSION (
+  echo FAIL: missing cmake\VERSION ^(host SemVer source of truth^)
+  set FAIL=1
+) else (
+  findstr /R /X /C:"[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*" cmake\VERSION >nul
+  if errorlevel 1 (
+    echo FAIL: cmake\VERSION must be MAJOR.MINOR.PATCH
+    set FAIL=1
+  )
+)
+
 REM --- Pack ctors must not re-author pack.json identity / deps ---
 if exist templates\rigTemplate\src (
-  findstr /S /M /R /C:"setDescription[ ]*(" /C:"setLicense[ ]*(" /C:"setUrl[ ]*(" /C:"addDependency[ ]*(" templates\rigTemplate\src\*.cpp >nul 2>nul
+  findstr /S /M /R /C:"setDescription[ ]*(" /C:"setLicense[ ]*(" /C:"setUrl[ ]*(" /C:"setVersion[ ]*(" /C:"addDependency[ ]*(" templates\rigTemplate\src\*.cpp >nul 2>nul
   if not errorlevel 1 (
     echo FAIL: pack ctor must not set identity/deps ^(use pack.json^): templates\rigTemplate\src
     set FAIL=1
@@ -133,7 +152,7 @@ if exist templates\rigTemplate\src (
 )
 for /d %%D in (packs\*) do (
   if exist "%%D\src" if exist "%%D\pack.json" (
-    findstr /S /M /R /C:"setDescription[ ]*(" /C:"setLicense[ ]*(" /C:"setUrl[ ]*(" /C:"addDependency[ ]*(" "%%D\src\*.cpp" >nul 2>nul
+    findstr /S /M /R /C:"setDescription[ ]*(" /C:"setLicense[ ]*(" /C:"setUrl[ ]*(" /C:"setVersion[ ]*(" /C:"addDependency[ ]*(" "%%D\src\*.cpp" >nul 2>nul
     if not errorlevel 1 (
       echo FAIL: pack ctor must not set identity/deps ^(use pack.json^): %%D\src
       set FAIL=1

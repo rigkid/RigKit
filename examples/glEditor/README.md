@@ -34,8 +34,8 @@ Repo TODO: *runtime hot-reload (DLL / shader)*. This example probes the **shader
 
 | Layer | Behavior here |
 |-------|----------------|
-| **Shader source** | Edit `CCode` → auto-compile (debounce) → swap GPU program; **keep last-good** on failure |
-| **Disk watch** | If `CAssetRef` is on the same entity, poll mtime → reload text, bump `epoch` (external editor) |
+| **Shader source** | Edit `CCode` then auto-compile (debounce), then swap GPU program; **keep last-good** on failure |
+| **Disk watch** | If `CAssetRef` is on the same entity, poll mtime, then reload text, bump `epoch` (external editor) |
 | **Pack DLL** | **Not implemented** — `MPack::reloadPack` still re-inits STATIC only; no `dlopen` |
 
 Structure stays open for a future pack SHARED path; this app does not add one.

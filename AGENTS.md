@@ -109,8 +109,10 @@ See [docs/authoring.md](docs/authoring.md).
 | Generic POD components | **rigComponent** — DATA ONLY |
 | Update/Draw systems over that data | **rigSystems** — CODE ONLY |
 | GLES mesh present (`CCamera` + `CMesh`) | **rigRender3D** — CODE ONLY |
-| Wavefront OBJ ↔ `CMesh` | **rigObj** — CODE / IO (tinyobjloader) |
-| Assimp multi-format → `CMesh` | **rigAssimp** — CODE / IO, **leaf** (nothing depends on it; app opt-in) |
+| Wavefront OBJ / `CMesh` | **rigObj** — CODE / IO (tinyobjloader) |
+| Assimp multi-format to `CMesh` | **rigAssimp** — CODE / IO, **leaf** (nothing depends on it; app opt-in) |
+| FGF print PODs | **rigPrintComponent** — DATA ONLY (`CPrint*`, `rig.print.*`) |
+| Ginger CLI + Z compression | **rigSlice** — CODE / IO, **leaf**, desktop FGF (**Pi risk**) |
 | Mesh edit TRS on selection | **rigMeshEdit** — CODE (needs **rigImGui**) |
 | Properties / themes / fonts | **rigImGui** (catalog-driven Properties; style kit) |
 | Host project envelope + `.rig` document IO | **rigProject** (document = portable `.rig`; project = host session) |
@@ -125,11 +127,12 @@ Never put systems in data packs (`rigComponent`, `rigPlotComponent`, …).
 ## Read order
 
 1. [docs/contract/commandments.md](docs/contract/commandments.md) — Ten Commandments
-2. [RigWorks](https://github.com/rigkid/RigWorks) — [honors](https://github.com/rigkid/RigWorks/blob/main/docs/honors.md) (grammar floor); then [docs/contract/README.md](docs/contract/README.md) (RigKit floor = SUDE + ECS) → [sude-loop.md](docs/contract/sude-loop.md) → [rigkit.md](docs/contract/rigkit.md) → [ui.md](docs/contract/ui.md) → [port-map.md](docs/contract/port-map.md) → [pi-host.md](docs/contract/pi-host.md)
+2. [RigWorks](https://github.com/rigkid/RigWorks) — [honors](https://github.com/rigkid/RigWorks/blob/main/docs/honors.md) (grammar floor); then [docs/contract/README.md](docs/contract/README.md) (RigKit floor = SUDE + ECS), then [sude-loop.md](docs/contract/sude-loop.md), [rigkit.md](docs/contract/rigkit.md), [ui.md](docs/contract/ui.md), [port-map.md](docs/contract/port-map.md), [pi-host.md](docs/contract/pi-host.md)
 3. [docs/authoring.md](docs/authoring.md) — user coding surface
 4. [docs/nodes.md](docs/nodes.md) — node graphs for artists (catalog + editor)
 5. [docs/contributing.md](docs/contributing.md)
-6. Task skill under [skills/](skills/)
+6. [docs/versioning.md](docs/versioning.md) — host SemVer (`cmake/VERSION`)
+7. Task skill under [skills/](skills/)
 
 ## Where AI-facing content lives
 
@@ -152,8 +155,8 @@ If you are an agent whose tool needs its own project-level rule or skill folder 
 - **Format:** tabs, clang-format; exactly one blank line at EOF; `tools/format.*` on first-party code only — never `third_party/` (including pack vendored trees).
 - **In-org packs:** Basics as submodules — `rigComponent`, `rigSystems`, `rigProject`, `rigImGui`. Optional packs: local clone or CPM at `app.json` **`ref`**. New pack scaffold: [`templates/rigTemplate`](templates/rigTemplate/). No runtime git update in the host — `tools/update-packs` / `tools/publish-template` ([packs/README.md](packs/README.md)).
 - **Naming:** interfaces `I*`, managers often `M*`; files match type names. Capability unit = **pack** (`packs/`, `pack.json`, `IPack` / `MPack`) — never “addon”. **One id:** spoken name = folder = `pack.json` `"name"` = `app.json` `"name"` = CMake target. Survey [docs/packs_catalog.md](docs/packs_catalog.md) before scaffolding a new pack. Suffixes: `*Component` = data, `*Editor`/`*Edit` = edit capability, `*Ui` = UI shell pack — [packs/README.md](packs/README.md#naming). **Host** = runtime pillar; **Canvas** = render surface / FBO type.
-- **UI text:** no emoji in UI or comments (IconFont ok in `rigImGui`).
-- **Public API docs:** Doxygen-compatible tags (`@brief`, `@param`, `@return`, …); voice stays plain / Weissflog ([rigkit-comments](skills/rigkit-comments/SKILL.md)). Generate HTML: `cmake --build build --target docs` → `build/docs/api/html/index.html`. **Next-year rule:** write as if someone reads this next year — never “day-one”, “honest”, formerly, or rename archaeology.
+- **UI text:** no emoji in UI or comments (IconFont ok in `rigImGui`). No unicode arrows in Markdown — write “to”, “then”, or “>” for menus ([rigkit-comments](skills/rigkit-comments/SKILL.md)).
+- **Public API docs:** Doxygen-compatible tags (`@brief`, `@param`, `@return`, …); voice stays plain / Weissflog ([rigkit-comments](skills/rigkit-comments/SKILL.md)). Generate HTML: `cmake --build build --target docs` writes `build/docs/api/html/index.html`. **Next-year rule:** write as if someone reads this next year — never “day-one”, “honest”, formerly, or rename archaeology.
 
 ## Project skills
 

@@ -10,8 +10,9 @@ This file adds **RigKit** fulfillment notes. UI packs are not Rig.
 |-------|------|
 | **Rig + UI** | Host seam; panels edit ECS/schemas; SUDE phases; no toolkit in Contract-facing components |
 | **rigImGui** | Default RigKit UI pack: dock layout, windows, Properties |
+| **rigImTui** | Alternate `IMui`: GPU character-grid compositor (cell chrome over the live GL bed). Same Player/Viewer habit — not a terminal / ggerganov backend. Switch via Preferences > Interface (Chrome row — offered only when the pack is linked) or `--tui` / `--imgui` (`ui.chrome` in settings). `IWindow` panels are **rigImGui**-only. |
 
-Portable UI description is **data** (sections bound to ECS / property paths). Toolkits (`rigImGui`, a future Web UI pack) are **fulfillments** of that map through `IMui` — not a second scene graph and not per-window packs.
+Portable UI description is **data** (sections bound to ECS / property paths). Toolkits (`rigImGui`, `rigImTui`, a future Web UI pack) are **fulfillments** of that map through `IMui` — not a second scene graph and not per-window packs.
 
 Another UI pack may honor the same Rig + UI rules. Dock chrome is layout, not entity meaning.
 
@@ -27,7 +28,7 @@ Author/tool surfaces share portable entity data. Skip ECS and you fork Propertie
 
 - Host offers author/tool surfaces through a seam.
 - Host honors RigKit’s floor (SUDE + ECS) and speaks Rig POD.
-- Show / headless / light embedded hosts omit UI → **Rig** only.
+- Show / headless / light embedded hosts omit UI: **Rig** only.
 
 ## Contract rules
 
@@ -45,14 +46,16 @@ No particular UI pack. No particular dock model. No GPU editor on light hosts.
 
 | Seam | Role |
 |------|------|
-| [`IMui`](../../src/core/IMui.h) | Host UI manager interface |
+| [`IMui`](../../src/core/IMui.h) | Host UI manager interface (`chromeId()`, attach / swap) |
 | `attachUiManager` / `detachUiManager` | Attach or omit UI |
+| `requestUiChrome` / `registerUiChrome` | Deferred ImGui / ImTui (or other) swap |
 | `IApp::setWindowVisibility*` | Show windows by name |
 | `IWindow` + `MWindow` | Pack/app panels in the dock layout |
 | `IMui::dockPassthroughCentral` | Central node shows GL bed vs solid fill |
 | File / export / undo / gizmo hooks | Author chrome |
-| File → Open Recent | `IMui::noteRecentFile` + `setRecentFileOpenHandler`; persisted in `rigkit_settings.json` |
-| View → Workspace | Named dock layouts (`rigImGui`): save/load/delete `data/user/workspaces/<name>.ini` (docks + window visibility); active name in `rigkit_settings.json`; startup loads last used or `Standard` |
+| `IMui::addViewportOverlay` | Multi-subscriber draw over the GL bed (ImGui screen space). Packs use this so they do not steal the app gizmo slot. |
+| File > Open Recent | `IMui::noteRecentFile` + `setRecentFileOpenHandler`; persisted in `rigkit_settings.json` |
+| View > Workspace | Named dock layouts (`rigImGui`): save/load/delete `data/user/workspaces/<name>.ini` (docks + window visibility); active name in `rigkit_settings.json`; startup loads last used or `Standard` |
 | [`IMui::progress()`](../../src/core/util/Progress.h) | Progress chrome (status bar or floating); null when UI detached |
 
 ### Progress
@@ -68,7 +71,7 @@ if (auto* p = ui->progress()) {
 }
 ```
 
-**rigImGui** draws the bar in the status strip by default, or a centered floating window when Preferences → Progress In Status Bar is off. Auto-hide after finish is configurable. Show mode detaches UI → `progress()` is null.
+**rigImGui** draws the bar in the status strip by default, or a centered floating window when Preferences > Progress In Status Bar is off. Auto-hide after finish is configurable. Show mode detaches UI so `progress()` is null.
 
 Layout persistence next to the exe is fulfillment. Core must not include a UI toolkit — only `IMui`.
 

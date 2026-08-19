@@ -1,6 +1,7 @@
 #include "rendering/MRendering.h"
-#include "core/ISettings.h"
+
 #include "core/canvas/Canvas.h"
+#include "core/ISettings.h"
 #include "rendering/RendererRegistry.h"
 
 namespace rigkit {

@@ -64,7 +64,9 @@ QUIET                  = YES
 WARNINGS               = YES
 WARN_IF_UNDOCUMENTED   = NO
 WARN_IF_DOC_ERROR      = YES
-WARN_IF_INCOMPLETE_DOC = YES
+# House style documents non-obvious parameters only (skills/rigkit-comments),
+# so a partial @param list is intended, not an omission to warn about.
+WARN_IF_INCOMPLETE_DOC = NO
 WARN_NO_PARAMDOC       = NO
 WARN_AS_ERROR          = NO
 WARN_LOGFILE           = "@RIGKIT_DOXY_OUT@/doxygen.warn"

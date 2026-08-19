@@ -1,9 +1,7 @@
 #include "app.h"
-#include <GLFW/glfw3.h>
-#include <iostream>
-#include <spdlog/spdlog.h>
-#include "core/RigKitEngine.h"
+
 #include "core/pack/MPack.h"
+#include "core/RigKitEngine.h"
 #include "packs/rigComponent/src/rigComponent.h"
 #include "packs/rigImGui/src/Mui.h"
 #include "packs/rigImGui/src/rigImGui.h"
@@ -12,6 +10,10 @@
 #include "packs/rigOsc/src/rigOsc.h"
 #include "packs/rigSystems/src/rigSystems.h"
 #include "ToolControlWindow.h"
+
+#include <GLFW/glfw3.h>
+#include <iostream>
+#include <spdlog/spdlog.h>
 
 OscHost::OscHost() {
 	// Compact default — two instances fit on one desktop.

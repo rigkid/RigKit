@@ -4,6 +4,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+
 #include "core/IManager.h"
 #include "core/ISettings.h"
 #include "Canvas.h"

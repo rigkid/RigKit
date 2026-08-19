@@ -43,7 +43,7 @@ Shared desktop chrome (open document, skipped keys) belongs in a pack (`rigDocum
 | **Document** | The portable `.rig` file — Contract JSON (`entities[].components` with `rig.*` ids). What Viewer presents and Player plays. | RigWorks schemas |
 | **Project** | The host-side working envelope (`CProject` / `CPage` PODs) inside a RigKit host session. | **rigProject** pack |
 
-One file word (**document**, `.rig`), one host word (**project**). The rigProject pack implements document IO for hosts. Known gap: its PascalCase `.rig` writer predates Contract shape — Contract JSON is the canonical dialect; `tools/contract_smoke` "save is readable by Contract import" guards the bridge until the writer emits Contract natively.
+One file word (**document**, `.rig`), one host word (**project**). The rigProject pack implements document IO for hosts and writes Contract JSON (`rig.*` component keys).
 
 ## Documents in this folder
 
@@ -54,7 +54,7 @@ One file word (**document**, `.rig`), one host word (**project**). The rigProjec
 | [rigkit.md](rigkit.md) | ECS conventions + ESP32 subset profile (RigKit copy; see Rig) |
 | [ui.md](ui.md) | UI companion + RigKit `IMui` fulfillment notes |
 | [distribution.md](distribution.md) | Default distribution; Rig + UI on author path |
-| [port-map.md](port-map.md) | Rig schema ↔ RigKit pack map |
+| [port-map.md](port-map.md) | Rig schema / RigKit pack map |
 | [pi-host.md](pi-host.md) | Raspberry Pi as minimum full host |
 | [../authoring.md](../authoring.md) | How artists code RigKit |
 | [../nodes.md](../nodes.md) | Node graphs — editor + catalog (artist guide) |
@@ -70,7 +70,7 @@ One file word (**document**, `.rig`), one host word (**project**). The rigProjec
 | Pi/desktop show (no panels) | **RigKit** (SUDE + ECS); Rig without UI |
 | Author / tool app (this distribution) | **RigKit** + UI |
 
-## Schema map (RigKit → Rig)
+## Schema map (RigKit to Rig)
 
 Full catalog: [Rig schemas](https://github.com/rigkid/RigWorks/tree/main/schemas).
 

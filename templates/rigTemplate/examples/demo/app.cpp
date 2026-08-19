@@ -1,5 +1,4 @@
 #include "app.h"
-
 #include "core/RigKitEngine.h"
 
 void DemoApp::setup() {

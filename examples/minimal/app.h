@@ -1,6 +1,5 @@
 #pragma once
 #include "core/U_core.h"
-
 class MinimalApp : public rigkit::IApp {
   public:
 	MinimalApp() {

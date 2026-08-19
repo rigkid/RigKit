@@ -7,6 +7,7 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
+
 #include "core/IManager.h"
 #include "core/ISettings.h"
 #include "ecs/ComponentCatalog.h"

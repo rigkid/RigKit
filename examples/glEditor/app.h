@@ -5,7 +5,6 @@
 #include <memory>
 #include <string>
 #include <unordered_map>
-
 #include "core/U_core.h"
 
 class ShaderPreviewWindow;

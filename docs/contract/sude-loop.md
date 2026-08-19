@@ -22,7 +22,7 @@ A host is **SUDE-compliant** if it calls application hooks in the order below an
 ## Ordering
 
 ```
-Setup → ( Update → Draw )* → Exit
+Setup, then (Update, Draw)*, then Exit
 ```
 
 - Host must not nest hooks (no Update inside Draw that re-enters Update).
@@ -50,9 +50,9 @@ The SUDE loop does **not** require:
 
 | Host | How it complies |
 |------|-----------------|
-| Desktop author | Setup → Update → Draw each tick; **rigImGui** is distribution, not SUDE |
+| Desktop author | Setup, Update, Draw each tick; **rigImGui** is distribution, not SUDE |
 | Pi kiosk / show mode | Same SUDE loop; Draw presents; UI pack unloaded or hidden |
-| Headless CI | Setup → Update → Draw (empty body) → … → Exit |
+| Headless CI | Setup, Update, Draw (empty body), then Exit |
 | ESP32 firmware | Setup once; Update then Draw each tick (e.g. LED / GPIO in Draw) |
 
 ## Compliance

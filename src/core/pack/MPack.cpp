@@ -1,4 +1,11 @@
 #include "MPack.h"
+
+#include "core/util/AppPaths.h"
+#include "IPack.h"
+#include "ISettings.h"
+#include "json.h"
+#include "PackRegistry.h"
+
 #include <algorithm>
 #include <filesystem>
 #include <fstream>
@@ -7,12 +14,6 @@
 #include <sstream>
 #include <unordered_set>
 #include <vector>
-// Removed direct rigImGui include; packs are now registered by applications.
-#include "core/util/AppPaths.h"
-#include "IPack.h"
-#include "ISettings.h"
-#include "PackRegistry.h"
-#include "json.h"
 
 namespace {
 
@@ -27,6 +28,13 @@ void applyPackManifestFields(rigkit::IPack& pack, const json& manifest) {
 	}
 	if (manifest.contains("url") && manifest["url"].is_string()) {
 		pack.setUrl(manifest["url"].get<std::string>());
+	}
+	if (manifest.contains("version")) {
+		if (manifest["version"].is_string()) {
+			pack.setVersion(manifest["version"].get<std::string>());
+		} else if (manifest["version"].is_number()) {
+			pack.setVersion(std::to_string(manifest["version"].get<double>()));
+		}
 	}
 	// Runtime init order — same names as CMake/CPM (string or { "name": ... }).
 	if (manifest.contains("dependencies") && manifest["dependencies"].is_array()) {

@@ -18,14 +18,16 @@ In-org packs are separate remotes in the [rigkid](https://github.com/rigkid) org
 | **rigSystems** | [rigkid/rigSystems](https://github.com/rigkid/rigSystems) | Update/Draw systems over that data |
 | **rigProject** | [rigkid/rigProject](https://github.com/rigkid/rigProject) | Host project envelope (`CProject`/`CPage`) + `.rig` document IO (document = portable `.rig`) |
 | **rigImGui** | [rigkid/rigImGui](https://github.com/rigkid/rigImGui) | UI fulfillment (`IMui`); host shell; Properties catalog; themes/fonts. Chrome labels apply TTF `kern` pairs (GPOS via `IMui::setChromeKernFn` / VarFont). |
+| **rigImTui** | [rigkid/rigImTui](https://github.com/rigkid/rigImTui) (local `packs/` until published) | GPU character-grid compositor `IMui` — cell chrome over a live GL present (Player/Viewer ImTui habit). Swap with **rigImGui** via Preferences > Interface (Chrome row) / `--tui` / `--imgui`. Not ggerganov/imtui. |
 
 ### 3D / mesh
 
 | Pack | Remote | Role |
 |------|--------|------|
 | **rigRender3D** | [rigkid/rigRender3D](https://github.com/rigkid/rigRender3D) | GLES mesh present over `CCamera` + `CMesh` |
-| **rigObj** | [rigkid/rigObj](https://github.com/rigkid/rigObj) | Wavefront OBJ ↔ `CMesh` (tinyobjloader) |
-| **rigAssimp** | [rigkid/rigAssimp](https://github.com/rigkid/rigAssimp) | Optional Assimp multi-format → `CMesh` (**leaf** — nothing depends on it; not Pi-default) |
+| **rigVaseRenderer** | [rigkid/rigVaseRenderer](https://github.com/rigkid/rigVaseRenderer) (local `packs/` until published) | VaseR GPU SDF strokes after [VASEr](https://tyt2y3.github.io/vaser-web/) — one quad per segment; GLES2 floor |
+| **rigObj** | [rigkid/rigObj](https://github.com/rigkid/rigObj) | Wavefront OBJ / `CMesh` (tinyobjloader) |
+| **rigAssimp** | [rigkid/rigAssimp](https://github.com/rigkid/rigAssimp) | Optional Assimp multi-format to `CMesh` (**leaf** — nothing depends on it; not Pi-default) |
 | **rigMeshEdit** | [rigkid/rigMeshEdit](https://github.com/rigkid/rigMeshEdit) | ImGuizmo TRS, face pick/paint, extrude; OBJ + `.rig` scene |
 
 ### Nodes
@@ -44,16 +46,19 @@ Artist guide: [nodes.md](nodes.md).
 | **rigPlotComponent** | [rigkid/rigPlotComponent](https://github.com/rigkid/rigPlotComponent) | Plotter PODs (`CPaths` bags, layers, zones, pen, path-edit selection; commands are `CPath` from **rigComponent**) |
 | **rigColorspace** | [rigkid/rigColorspace](https://github.com/rigkid/rigColorspace) | RGB + CMYK color POD, optional `ink`, paint fill/stroke refs, swatch library |
 | **rigCompositor** | [rigkid/rigCompositor](https://github.com/rigkid/rigCompositor) | FBO layer compositor — SVG blend modes + path masks |
-| **rigSvg** | [rigkid/rigSvg](https://github.com/rigkid/rigSvg) | SVG import/export ↔ `ParsedPathDoc` / paints |
+| **rigSvg** | [rigkid/rigSvg](https://github.com/rigkid/rigSvg) | SVG import/export / `ParsedPathDoc` / paints |
 | **rigPdf** | [rigkid/rigPdf](https://github.com/rigkid/rigPdf) (local `packs/` until published) | PDF emit from `CPage` / paths / text; Separation / overprint / PDF/X. Shapes `CText` via ImVarFont `varfont_core` (+ optional system HarfBuzz). **Leaf.** |
-| **rigDxf** | [rigkid/rigDxf](https://github.com/rigkid/rigDxf) | DXF ↔ typed POD (`CPath` / `CArc` / `CEllipse` / `CSpline`) + `ParsedPathDoc` flatten. **GPL-2.0-or-later** (dxflib) |
-| **rigGCode** | [rigkid/rigGCode](https://github.com/rigkid/rigGCode) | `CPaths` ↔ G-code text emit/import (no serial) |
+| **rigStoryComponent** | [rigkid/rigStoryComponent](https://github.com/rigkid/rigStoryComponent) (local `packs/` until published) | Story PODs — `rig.story.flow` / paragraph / table / named styles. DATA ONLY |
+| **rigLayoutComponent** | [rigkid/rigLayoutComponent](https://github.com/rigkid/rigLayoutComponent) (local `packs/` until published) | Layout PODs — master / facing / visual paragraph+character styles / frame chain. DATA ONLY |
+| **rigLayout** | [rigkid/rigLayout](https://github.com/rigkid/rigLayout) (local `packs/` until published) | Paginate story onto `CPage` + `CText` (Setup bake). Product host **RigLayout** lives out of tree |
+| **rigDxf** | [rigkid/rigDxf](https://github.com/rigkid/rigDxf) | DXF / typed POD (`CPath` / `CArc` / `CEllipse` / `CSpline`) + `ParsedPathDoc` flatten. **GPL-2.0-or-later** (dxflib) |
+| **rigGCode** | [rigkid/rigGCode](https://github.com/rigkid/rigGCode) | `CPaths` / G-code text emit/import (no serial) |
 | **rigGrbl** | [rigkid/rigGrbl](https://github.com/rigkid/rigGrbl) | GRBL serial send |
 | **rigPlotter** | [rigkid/rigPlotter](https://github.com/rigkid/rigPlotter) | PlotDoc orchestration |
 | **rigPlotterUi** | [rigkid/rigPlotterUi](https://github.com/rigkid/rigPlotterUi) | Plotter Kit panels on rigImGui |
 | **rigSvgEditorUi** | [rigkid/rigSvgEditorUi](https://github.com/rigkid/rigSvgEditorUi) | SVG editor shell (toolbar / artboard / layers) |
-| **rigPlotFinders** | [rigkid/rigPlotFinders](https://github.com/rigkid/rigPlotFinders) | Image → stroke finders (hatch / grid / Potrace; more finder types reserved in POD). **GPL-2.0-or-later** — vendors Potrace |
-| **rigPlotProcessors** | [rigkid/rigPlotProcessors](https://github.com/rigkid/rigPlotProcessors) | Prepare pipeline (merge / sort / simplify) |
+| **rigPlotFinders** | [rigkid/rigPlotFinders](https://github.com/rigkid/rigPlotFinders) | Image to stroke finders (hatch / grid / Potrace; more finder types reserved in POD). **GPL-2.0-or-later** — vendors Potrace |
+| **rigPlotProcessors** | [rigkid/rigPlotProcessors](https://github.com/rigkid/rigPlotProcessors) | Prepare pipeline (merge / sort / simplify) + per-layer path effects (Z wave / dash / stroke lift) |
 | **rigPlotGenerators** | [rigkid/rigPlotGenerators](https://github.com/rigkid/rigPlotGenerators) | Path generators (cropmarks / border) |
 | **rigVectorEditor** | [rigkid/rigVectorEditor](https://github.com/rigkid/rigVectorEditor) | Edit `CPaths` (translate / delete / nudge) |
 | **rigArtboards** | [rigkid/rigArtboards](https://github.com/rigkid/rigArtboards) | Shared mm editing surface — pan/zoom under cursor, selection gizmo, numeric transform (shells keep content draw + undo) |
@@ -70,6 +75,15 @@ Integration app: `packs/rigPlotter/examples/plot`. SVG IO pack example: `packs/r
 
 Product app **PixelPlotter** lives out of tree (e.g. next to RigKit), not under `examples/`. See [apps.md](apps.md). Thin host — packs own pipeline + UI.
 
+### FGF / print
+
+| Pack | Remote | Role |
+|------|--------|------|
+| **rigPrintComponent** | [rigkid/rigPrintComponent](https://github.com/rigkid/rigPrintComponent) (local `packs/` until published) | FGF print PODs (`CPrintMachine` / `Material` / `Process` / `Compression` / `Job`). DATA ONLY. Speaks `rig.print.*` |
+| **rigSlice** | [rigkid/rigSlice](https://github.com/rigkid/rigSlice) (local `packs/` until published) | GingerSlicer / Orca **CLI** (external process, not vendored) + hot-stack Z compression post-pass + FDM toolpath to `CMesh`. **Leaf. Desktop FGF — Pi risk.** |
+
+Product app **RigSlicer** lives out of tree (e.g. next to RigKit), not under `examples/`. Drop STEP/mesh; Ginger tessellates STEP. Do not grow **rigAssimp** / **rigGCode** for AP214 or pellet slice.
+
 ### Document hosts (Viewer / Player)
 
 | Pack | Remote | Role |
@@ -82,7 +96,7 @@ Product app **PixelPlotter** lives out of tree (e.g. next to RigKit), not under 
 |------|--------|------|
 | **rigOsc** | [rigkid/rigOsc](https://github.com/rigkid/rigOsc) | UDP OSC + network identity / show bus — `oscHost --smoke-osc` |
 | **rigNetScan** | [rigkid/rigNetScan](https://github.com/rigkid/rigNetScan) (local `packs/` until published) | LAN TCP connect scan — `CNetScan` / `CNetHost` + `IpScannerWindow`. Example `netscan --smoke-netscan` |
-| **rigAbletonLink** | [rigkid/rigAbletonLink](https://github.com/rigkid/rigAbletonLink) (local `packs/` until published) | Ableton Link → `CMusicClock` / `CMusicTransport`. **Leaf.** **GPL-2.0-or-later** (Link SDK). |
+| **rigAbletonLink** | [rigkid/rigAbletonLink](https://github.com/rigkid/rigAbletonLink) (local `packs/` until published) | Ableton Link to `CMusicClock` / `CMusicTransport`. **Leaf.** **GPL-2.0-or-later** (Link SDK). |
 | **rigScreenCast** | [rigkid/rigScreenCast](https://github.com/rigkid/rigScreenCast) (local `packs/` until published) | Host-window cast **send** + **receive** (RigKit peer; AirPlay RX via hard-linked UxPlay). POD in **rigComponent**. **Leaf / GPLv3** while UxPlay is linked. Never desktop capture. Google Cast RX still follow-on. |
 | **rigEthereum** | [rigkid/rigEthereum](https://github.com/rigkid/rigEthereum) (local `packs/` until published) | On-chain art record (`COnChainArt`) + keccak256 / wallet submit intent (existing wallet). **Leaf.** No keys / no broadcast. |
 
@@ -104,11 +118,12 @@ Product app **PixelPlotter** lives out of tree (e.g. next to RigKit), not under 
 |------|--------|------|
 | **rigMarkdown** | [rigkid/rigMarkdown](https://github.com/rigkid/rigMarkdown) (local `packs/` until published) | ImGui markdown present — MD4C + imgui_md. Rasters via **rigImage**. Example `markdown --smoke-markdown`. |
 | **rigCodeEditor** | [rigkid/rigCodeEditor](https://github.com/rigkid/rigCodeEditor) | Shared ImGui code editor — TextEditorPanel chrome + JetBrains Mono (opt-in for author tools; not for lean Pi installs) |
-| **rigAcp** | [rigkid/rigAcp](https://github.com/rigkid/rigAcp) | [ACP](https://agentclientprotocol.com) client — stdio JSON-RPC + `CCode` fs bridge (opt-in; no UI) |
-| **rigAgentty** | [rigkid/rigAgentty](https://github.com/rigkid/rigAgentty) | [agentty](https://agentty.org/docs/) over **rigAcp** — ImGui panel + Code Editor sync (opt-in; submodule ExternalProject or PATH binary) |
+| **rigAcp** | [rigkid/rigAcp](https://github.com/rigkid/rigAcp) | [ACP](https://agentclientprotocol.com) client — stdio JSON-RPC, `CCode` fs bridge, live `_rigkit.*` ECS tools (opt-in; no UI) |
+| **rigAgentty** | [rigkid/rigAgentty](https://github.com/rigkid/rigAgentty) | ACP session panel over **rigAcp** — any agent binary (default [agentty](https://agentty.org/docs/)) + Code Editor sync (opt-in) |
 | **rigPython** | [rigkid/rigPython](https://github.com/rigkid/rigPython) | Embedded Python host for artist sketches (`eval` when CPython embed found) |
-| **rigManifold** | [rigkid/rigManifold](https://github.com/rigkid/rigManifold) | Manifold CSG → `CMesh` (FetchContent kernel; Pi floor — bake in Setup) |
+| **rigManifold** | [rigkid/rigManifold](https://github.com/rigkid/rigManifold) | Manifold CSG to `CMesh` (FetchContent kernel; Pi floor — bake in Setup) |
 | **rigCad** | [rigkid/rigCad](https://github.com/rigkid/rigCad) | Live-scripted 3D CAD (`rigcad` sketch module when Python + Manifold available) |
+| **rigSolveSpace** | [rigkid/rigSolveSpace](https://github.com/rigkid/rigSolveSpace) (local `packs/` until published) | Driving `CCadDimension` to `CTransform`. Point-distance apply always; SolveSpace `slvs` optional FetchContent. Pi: solve on edit. |
 
 ### Optional renderer
 
@@ -124,9 +139,9 @@ git clone --recurse-submodules https://github.com/rigkid/rigBlend2D.git packs/ri
 
 | Pack | Remote | Role |
 |------|--------|------|
-| **rigVarFont** | [rigkid/rigVarFont](https://github.com/rigkid/rigVarFont) | Optional VF / FreeType fulfillment of `CText` + `IRenderer` filled text (ImVarFont `varfont_core` + `varfont_gl`). Axis values on POD; Face/atlas in the pack. GLES2 → CPU FreeType fallback. **HarfBuzz** = optional system lib behind ImVarFont (GPOS / OT features), not a pack. |
+| **rigVarFont** | [rigkid/rigVarFont](https://github.com/rigkid/rigVarFont) | Optional VF / FreeType fulfillment of `CText` + `IRenderer` filled text (ImVarFont `varfont_core` + `varfont_gl`). Axis values on POD; Face/atlas in the pack. GLES2 falls back to CPU FreeType. **HarfBuzz** = optional system lib behind ImVarFont (GPOS / OT features), not a pack. |
 
-`CText` lives in **rigComponent** and speaks `rig.media.text` (`font` → `CAssetRef` kind font; `axes` / `features` / `useKerning` on the schema). Screen present (**rigVarFont**) and PDF emit (**rigPdf**) both shape through ImVarFont `varfont_core` — same Face / features / kerning path; PDF does not link `varfont_gl` / OpenGL. Chrome labels are a separate present: **rigImGui** applies TTF `kern` pairs on ImGui `RenderText` (atlas = glyph cache). GPOS / live UFO pairs plug in through `IMui::setChromeKernFn` (VarFont `GetGposPairExtraPx`). Editable UFO source is `rig.font.*` (planned **rigFontComponent**), not `CText`.
+`CText` lives in **rigComponent** and speaks `rig.media.text` (`font` is a `CAssetRef` kind font; `axes` / `features` / `useKerning` on the schema). Screen present (**rigVarFont**) and PDF emit (**rigPdf**) both shape through ImVarFont `varfont_core` — same Face / features / kerning path; PDF does not link `varfont_gl` / OpenGL. Chrome labels are a separate present: **rigImGui** applies TTF `kern` pairs on ImGui `RenderText` (atlas = glyph cache). GPOS / live UFO pairs plug in through `IMui::setChromeKernFn` (VarFont `GetGposPairExtraPx`). Editable UFO source is `rig.font.*` (planned **rigFontComponent**), not `CText`.
 
 ## Planned
 
@@ -135,7 +150,7 @@ Not remotes yet. Scaffold only when the seam is real — survey Known first; pre
 | Idea | Notes |
 |------|--------|
 | **JSON UI sections** | Portable panel map (layout + widget ids + bindings to ECS / `sProp` paths) consumed by `IMui` fulfillments. Host windows stay in **rigImGui**; domain chrome in `*Ui` / `*Editor`. No per-window `rigWin*` packs. Share a tool = ship data (entity meaning + UI JSON), not C++ panels. |
-| **Web UI fulfillment** | Alternate `IMui` over the same JSON / ECS map (browser panels) — Contract allows it; no pack yet |
+| **ImTui as chrome** | User face: ImGui / **ImTui** in Interface Chrome (not a color scheme). Mechanism stays an `IMui` / present swap (or later ImGui to cells), not `ImGuiStyle`. Folding it into the theme list ships after **rigImTui** coverage is real. |
 | **Node anim / channels** | Broader timeline/channel products — grow **rigNodeComponent** / **rigNodeEditor** (or a thin companion) when product need is clear |
 | **rigFontComponent** | UFO source PODs — [Rig font schemas](https://github.com/rigkid/RigWorks/tree/main/schemas/font) (`rig.font.face` / `glyph` / `kern` / …). Data only. Session chrome bind is host `x.rigkit.ui_face`. |
 | **rigUfo** | `.ufo` / `.ufoz` read/write into those PODs (code / IO) |
@@ -146,6 +161,8 @@ Not remotes yet. Scaffold only when the seam is real — survey Known first; pre
 | **rigLedComponent** | UV map / LED sample PODs — Pi install path |
 | **rigInstallIoComponent** | Serial / GPIO / network device PODs (sACN later) — or split when product needs clear |
 | **Blend2D demos** | Examples beyond the **rigBlend2D** pack itself — not a new pack id |
+| **rigLayoutUi** | Master / style Kit panels on **rigImGui** — after **rigLayout** compose is real. Spreads view already lives on **rigProject** `PagesWindow` |
+| **rig.book.*** | Book metadata (`title` / `publication` / `cover` / …) — compose on the document; not a layout pack |
 
 RigWorks schema catalog: [rigkid/RigWorks](https://github.com/rigkid/RigWorks). Pack map: [docs/contract/port-map.md](contract/port-map.md).
 

@@ -1,8 +1,8 @@
 #pragma once
 
 #include "core/AppSettings.h"
-#include "core/WindowSettings.h"
 #include "core/util/CommandLineArgs.h"
+#include "core/WindowSettings.h"
 
 namespace rigkit {
 
@@ -80,6 +80,13 @@ class IApp {
 	void setWindowVisibility(const std::string& windowName, bool visible);
 	void setWindowVisibilityAll(bool visible);
 	bool getWindowVisibility(const std::string& windowName) const;
+
+	/**
+	 * @brief Re-bind app UI actions after an `IMui` chrome swap.
+	 * @details Calls registerUIActions when ECS is available. Packs also get
+	 * IPack::onUiAttached from the engine.
+	 */
+	void notifyUiAttached();
 
   protected:
 	/** @brief User hooks — override these (see sude-loop.md). */

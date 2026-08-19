@@ -1,7 +1,7 @@
 #pragma once
 
-#include <glm/glm.hpp>
 #include <algorithm>
+#include <glm/glm.hpp>
 
 namespace rigkit {
 

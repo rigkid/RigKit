@@ -49,6 +49,11 @@ jobs:
           cmake -S . -B build
           cmake --build build --target docs
 
+      - name: Fail on Doxygen warnings
+        run: |
+          chmod +x tools/check-docs.sh
+          ./tools/check-docs.sh build
+
       - name: Assemble Pages site
         run: |
           mkdir -p _site/api

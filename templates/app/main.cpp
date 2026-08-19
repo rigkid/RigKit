@@ -1,6 +1,7 @@
-#include <memory>
-#include "app.h"
 #include "core/RigKitEngine.h"
+#include "app.h"
+
+#include <memory>
 
 int main(int argc, char* argv[]) {
 	auto appInstance = std::make_unique<MyApp>();

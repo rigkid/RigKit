@@ -1,11 +1,12 @@
 #include "ecs/MEcs.h"
+
 #include <algorithm>
 #include <spdlog/spdlog.h>
 
 namespace rigkit {
 
 void warnComponentHasNoProperties(const std::string& name) {
-	spdlog::warn("[Property Inspector] component '{}' has no GetProperties() — no fields shown. "
+	spdlog::warn("[Property Inspector] component '{}' has no GetProperties() - no fields shown. "
 				 "Add one, or declare kNoProperties to opt out.",
 				 name);
 }
