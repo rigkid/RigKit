@@ -2,7 +2,7 @@
 
 RigKit is data-first and still friendly to write.
 
-**Friendly** means: short `setup` / `update` / `draw`, helpers that do one obvious thing, sensible defaults, and a path where you create a shape and see it without learning managers first. Internals stay available for packs — they are not the default teaching surface.
+**Friendly** means: short `setup` / `update` / `draw`, helpers that do one obvious thing, sensible defaults, and a path where you create a shape and see it without learning managers first. Internals stay available for packs - they are not the default teaching surface.
 
 ## Happy path
 
@@ -31,9 +31,9 @@ public:
 
 Open a file, change a few lines, **see something**.
 
-Proof app: [`examples/minimal`](../examples/minimal/) — creates rect / circle / meshes / parent–child via `CRelationship`; host Draw paints them (selection overlay when `CSelection` is set).
+Proof app: [`examples/minimal`](../examples/minimal/) - creates rect / circle / meshes / parent-child via `CRelationship`; host Draw paints them (selection overlay when `CSelection` is set).
 
-## Creators (data) — `rigComponent`
+## Creators (data) - `rigComponent`
 
 Depends on packs: `rigComponent` + `rigSystems` in `app.json`, then register them in `setup()` (see `examples/minimal`).
 
@@ -72,14 +72,14 @@ rig::makeCadCylinder(*ecs, 0.4f, 2.f, true, "cutter");
 rig::makeCadBoolean(*ecs, rigkit::ecs::CCadBoolean::Op::Difference, {"stock", "cutter"},
 					rig::fill(0.95f, 0.55f, 0.25f), "part");
 
-// Driving datum (apply via rigSolveSpace::solve — on edit, not every frame):
+// Driving datum (apply via rigSolveSpace::solve - on edit, not every frame):
 rig::makeCadDimension(*ecs, rigkit::ecs::CCadDimension::Kind::Horizontal, "stock", "cutter",
 					  4.f, false, "span");
 ```
 
 These helpers only write POD (`CTransform` + shape / `CMesh` / `CCad*` / `COrbitDrive` + `CDrawStyle`). `makeOrbitCamera` poses the eye; turn `COrbitDrive::enabled` on for a show-mode spin (`SOrbitDrive` yaws from `pitch`).
 
-## Orbit nav (code) — `rigSystems`
+## Orbit nav (code) - `rigSystems`
 
 Mouse orbit / pan / dolly is `rig::orbitNavigate` (`OrbitNav.h`). Bindings stay in the app. The helper writes `COrbitDrive`. Drag last-xy lives on `OrbitNavState` (not on the component). `orbitFrameMeshes` is F-to-frame. `orbitFromView` is for a view cube.
 
@@ -117,7 +117,7 @@ ecs->addComponent<rigkit::ecs::CRelationship>(child, rel);
 
 **Verify:** run `minimal` for creators/meshes/selection; run `oscHost` for host shell / Pi SUDE.
 
-## Immediate draw — core `author/rigDraw.h`
+## Immediate draw - core `author/rigDraw.h`
 
 ```cpp
 #include "author/rigDraw.h"
@@ -137,9 +137,9 @@ Artist guide: [nodes.md](nodes.md). Example: `packs/rigNodeEditor/examples/nodes
 
 ## Layers (mental model)
 
-1. **Author API** — `IApp`, entity creators (`makeRect` / `makeMesh*`), optional `rig::` immediate helpers
-2. **Data** — `rigComponent` PODs (`CShape`, `CMesh`, `CSelection`, …) + catalog
-3. **Fulfillment** — `rigSystems` Draw systems + host OpenGL `IRenderer`
-4. **Host** — `RigKitEngine`, `AppPaths` (`<exeDir>/data`)
+1. **Author API** - `IApp`, entity creators (`makeRect` / `makeMesh*`), optional `rig::` immediate helpers
+2. **Data** - `rigComponent` PODs (`CShape`, `CMesh`, `CSelection`, ...) + catalog
+3. **Fulfillment** - `rigSystems` Draw systems + host OpenGL `IRenderer`
+4. **Host** - `RigKitEngine`, `AppPaths` (`<exeDir>/data`)
 
-Agents changing APIs start at layer 1 and push weight down — never force artists to start at layer 3.
+Agents changing APIs start at layer 1 and push weight down - never force artists to start at layer 3.

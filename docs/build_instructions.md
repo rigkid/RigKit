@@ -8,7 +8,7 @@
 
 Third-party code is vendored as git submodules (plus vendored GLAD). Prefer those over an external package manager.
 
-Each example owns its build tree under `examples/<name>/build/`. Do not keep parallel `build-*` scratch dirs — reconfigure in place or delete. Those folders are gitignored but still litter the working copy. For a clean rebuild (e.g. after a stale dock layout sticks), delete `examples/<name>/build/` — this wipes objects, the exe, and deployed `<exeDir>/data/user/` (including saved UI layout `workspaces/imgui.ini`) — then reconfigure.
+Each example owns its build tree under `examples/<name>/build/`. Do not keep parallel `build-*` scratch dirs - reconfigure in place or delete. Those folders are gitignored but still litter the working copy. For a clean rebuild (e.g. after a stale dock layout sticks), delete `examples/<name>/build/` - this wipes objects, the exe, and deployed `<exeDir>/data/user/` (including saved UI layout `workspaces/imgui.ini`) - then reconfigure.
 
 ## Manual CMake (examples)
 
@@ -34,7 +34,7 @@ cmake -S examples/oscHost -B examples/oscHost/build \
 cmake --build examples/oscHost/build --target oscHost
 ```
 
-- **Never** set `RIGKIT_USE_ANGLE=ON` on Raspberry Pi / ARM — native GLES is used automatically there.
+- **Never** set `RIGKIT_USE_ANGLE=ON` on Raspberry Pi / ARM - native GLES is used automatically there.
 - Default builds stay desktop OpenGL (fast authoring); ANGLE is opt-in for GLES parity checks.
 - See [docs/contract/pi-host.md](contract/pi-host.md) and `cmake/RigKitAngle.cmake`.
 
@@ -48,7 +48,7 @@ cmake --build examples/oscHost/build --target oscHost
 cmake --build examples/oscHost/build --config Debug --target oscHost
 ```
 
-Packs are separate static libraries (`rigComponent`, `rigSystems`, `rigImGui`, …). Edit a pack `.cpp` when possible so `librigkit` does not recompile.
+Packs are separate static libraries (`rigComponent`, `rigSystems`, `rigImGui`, ...). Edit a pack `.cpp` when possible so `librigkit` does not recompile.
 
 ### Runtime data next to the binary
 

@@ -12,8 +12,8 @@ cmake -B build && cmake --build build
 
 ## On device (any MCU)
 
-Define **`RIGKIT_MCU`** and call `Setup` / `Update` / `Draw` / `Exit` from your board loop (ESP-IDF, Arduino, …).  
-`RIGKIT_MCU` is the firmware build switch (chip-agnostic). **`RigKit-esp32-core`** is the first concrete POD profile — ESP32 remains the reference board for this sketch.
+Define **`RIGKIT_MCU`** and call `Setup` / `Update` / `Draw` / `Exit` from your board loop (ESP-IDF, Arduino, ...).  
+`RIGKIT_MCU` is the firmware build switch (chip-agnostic). **`RigKit-esp32-core`** is the first concrete POD profile - ESP32 remains the reference board for this sketch.
 
 Share POD entity fields with the desktop host via JSON/binary later.
 

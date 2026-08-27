@@ -1,4 +1,4 @@
-# Raspberry Pi — minimum full host
+# Raspberry Pi - minimum full host
 
 Per Contract + Host vision, **Raspberry Pi is the floor for a Rig + UI fulfillment** (host + UI, usually `rigImGui`, + Draw path). Show mode may run **Rig** only (no UI). If it does not run here, it is not the floor.
 
@@ -33,7 +33,7 @@ Integration app: `packs/rigPlotter/examples/plot`. Each plot pack also has its o
 ```bash
 cmake -S packs/rigPlotter/examples/plot -B packs/rigPlotter/examples/plot/build -DCMAKE_BUILD_TYPE=Release
 cmake --build packs/rigPlotter/examples/plot/build -j$(nproc) --target plot plot_unit_smokes
-# Run smokes (paths next to the build tree; names are paths_smoke, svg_smoke, …):
+# Run smokes (paths next to the build tree; names are paths_smoke, svg_smoke, ...):
 find packs/rigPlotter/examples/plot/build -type f -name '*_smoke' -executable -print -exec {} \;
 ./packs/rigPlotter/examples/plot/build/bin/plot
 # Per-pack example (example):
@@ -41,23 +41,23 @@ cmake -S packs/rigSvg/examples/svg -B packs/rigSvg/examples/svg/build
 cmake --build packs/rigSvg/examples/svg/build --target svg
 ```
 
-Out-of-tree PaintPlotter uses the same packs; verify with its own CMake tree when shipping installs. `rigPlotFinders` vendors Potrace (**GPL-2.0-or-later**) — keep that license in the product binary notice. ANGLE is never required on Pi (native GLES).
+Out-of-tree PaintPlotter uses the same packs; verify with its own CMake tree when shipping installs. `rigPlotFinders` vendors Potrace (**GPL-2.0-or-later**) - keep that license in the product binary notice. ANGLE is never required on Pi (native GLES).
 
 ## Verify log
 
 | Date | Board | OS | Build | `--show` / smokes | `--author` / UI | Notes |
 |------|-------|-----|-------|-------------------|-----------------|-------|
 | _pending_ | | | | | | Run `examples/oscHost` on device |
-| 2026-08-02 | — | desktop interim | OK | all `*_smoke` OK (Win) | PaintPlotter + `plot` rebuilt | **Pi blocked on hardware** this session — run plot family checklist above on arm64 when a board is available; do not treat desktop as a Pi pass |
-| 2026-08-02 | — | desktop interim | OK | + gcode_import / contours / maze / toolpath3d smokes | Toolpath 3D Kit panel | v2 software closed (import + 20 finders + Toolpath 3D). **Pi/Grbl still blocked on hardware** |
-| 2026-08-02 | — | desktop interim | — | — | PaintPlotter 1.0.0 ship bar | Live preview + envelope soft-check + LICENSE/NOTICE. **Pi/Grbl still blocked on hardware** |
-| 2026-08-02 | — | desktop interim | — | + bezier_edit_smoke | Full bed bezier overlay | Main-viewport Direct Select / handles / Pen add-delete. **Pi/Grbl still blocked on hardware** |
-| _pending_ | | | | | | Real Grbl soak (short job + Soft Reset / Unlock) — **blocked on controller** |
+| 2026-08-02 | - | desktop interim | OK | all `*_smoke` OK (Win) | PaintPlotter + `plot` rebuilt | **Pi blocked on hardware** this session - run plot family checklist above on arm64 when a board is available; do not treat desktop as a Pi pass |
+| 2026-08-02 | - | desktop interim | OK | + gcode_import / contours / maze / toolpath3d smokes | Toolpath 3D Kit panel | v2 software closed (import + 20 finders + Toolpath 3D). **Pi/Grbl still blocked on hardware** |
+| 2026-08-02 | - | desktop interim | - | - | PaintPlotter 1.0.0 ship bar | Live preview + envelope soft-check + LICENSE/NOTICE. **Pi/Grbl still blocked on hardware** |
+| 2026-08-02 | - | desktop interim | - | + bezier_edit_smoke | Full bed bezier overlay | Main-viewport Direct Select / handles / Pen add-delete. **Pi/Grbl still blocked on hardware** |
+| _pending_ | | | | | | Real Grbl soak (short job + Soft Reset / Unlock) - **blocked on controller** |
 
 ## Desktop GLES parity (ANGLE)
 
 
-Optional: on **non-ARM** desktops, configure with `-DRIGKIT_USE_ANGLE=ON` (and `RIGKIT_ANGLE_ROOT` or vcpkg `angle`) so authoring can exercise an ES2 path closer to Pi. **Do not** enable ANGLE on Pi — CMake will error. Default desktop builds remain OpenGL; Pi builds always use native GLES.
+Optional: on **non-ARM** desktops, configure with `-DRIGKIT_USE_ANGLE=ON` (and `RIGKIT_ANGLE_ROOT` or vcpkg `angle`) so authoring can exercise an ES2 path closer to Pi. **Do not** enable ANGLE on Pi - CMake will error. Default desktop builds remain OpenGL; Pi builds always use native GLES.
 
 ## CI note
 

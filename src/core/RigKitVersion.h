@@ -5,7 +5,7 @@ namespace rigkit {
 /**
  * @brief Host SemVer from `cmake/VERSION` (CMake project version).
  * @details App and pack versions stay in `app.json` / `pack.json`. Do not copy
- * this string into docs — bump `cmake/VERSION` and add a History row.
+ * this string into docs - bump `cmake/VERSION` and add a History row.
  * @return Pointer to a static `MAJOR.MINOR.PATCH` literal.
  * @see docs/versioning.md
  */

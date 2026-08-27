@@ -33,7 +33,7 @@ void IApp::rigUpdate(float deltaTime) {
 		ecs->updateSystems(deltaTime);
 	}
 
-	// 2) Packs (rigImGui, show/tool packs, …)
+	// 2) Packs (rigImGui, show/tool packs, ...)
 	if (auto packs = m_engine->getPackManager()) {
 		packs->updateAll(deltaTime);
 	}
@@ -72,7 +72,7 @@ void IApp::rigDraw() {
 		packs->drawAll();
 	}
 
-	// UI pack (rigImGui) renders through IMui only — never ImGui in core.
+	// UI pack (rigImGui) renders through IMui only - never ImGui in core.
 	if (auto ui = m_engine->getUiManager()) {
 		ui->render();
 	}

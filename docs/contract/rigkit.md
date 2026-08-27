@@ -10,7 +10,7 @@ Code-free rules: no particular registry library, no GPU types inside Contract-fa
 
 ## Why ECS
 
-We use an Entity-Component-System because we build for change. We don't know what the next tool is going to be — we want to be ready for it. And reuse what we already built.
+We use an Entity-Component-System because we build for change. We don't know what the next tool is going to be - we want to be ready for it. And reuse what we already built.
 
 ## Registry ownership
 
@@ -64,11 +64,11 @@ A device that **is Rig** via entity/component POD under **RigKit-esp32-core** (a
 
 ### What travels / what does not
 
-- **Travels:** [SUDE](sude-loop.md) (`Setup` / `Update` / `Draw` / `Exit` — Draw always called; LED/GPIO present lives there); tags, POD transforms, state floats, LED/sensor fields.
+- **Travels:** [SUDE](sude-loop.md) (`Setup` / `Update` / `Draw` / `Exit` - Draw always called; LED/GPIO present lives there); tags, POD transforms, state floats, LED/sensor fields.
 - **Does not:** **rigImGui** / any UI pack; optional render packs; document / font packs.
 
 ### Proof sketch
 
-See [`tools/esp32_contract_host/`](../../tools/esp32_contract_host/) — a tiny C++ unit implementing SUDE hooks and a minimal entity table. Build with `-DRIGKIT_BUILD_ESP32_CONTRACT_HOST=ON`, or copy into an ESP-IDF / Arduino project.
+See [`tools/esp32_contract_host/`](../../tools/esp32_contract_host/) - a tiny C++ unit implementing SUDE hooks and a minimal entity table. Build with `-DRIGKIT_BUILD_ESP32_CONTRACT_HOST=ON`, or copy into an ESP-IDF / Arduino project.
 
 Prefer a small JSON or binary slice for entity POD fields when sharing state with the desktop host. Schema alignment matters more than identical ECS libraries.

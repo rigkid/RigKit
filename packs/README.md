@@ -10,7 +10,7 @@ Say and write the same camelCase token (e.g. **rigImGui** is `packs/rigImGui/`).
 
 | Pattern | Role | Examples |
 |---------|------|----------|
-| `*Component` | **Data pack** — domain POD components | `rigComponent`, `rigPlotComponent`, `rigNodeComponent`, `rigPixelPlotComponent`, `rigColorspace` |
+| `*Component` | **Data pack** - domain POD components | `rigComponent`, `rigPlotComponent`, `rigNodeComponent`, `rigPixelPlotComponent`, `rigColorspace` |
 | `*Editor` / `*Edit` | Edit **capability** (ops and/or editor window) over existing data | `rigNodeEditor`, `rigVectorEditor`, `rigMeshEdit` |
 | `*Ui` | ImGui **Kit / shell panels** over an engine (not the data) | `rigPlotterUi`, `rigPixelPlotterUi` |
 | Short / verb name | Single-purpose code, I/O, present, or transport | `rigSvg`, `rigObj`, `rigSystems`, `rigRender3D`, `rigGrbl`, `rigOsc`, `rigCompositor` |
@@ -18,9 +18,9 @@ Say and write the same camelCase token (e.g. **rigImGui** is `packs/rigImGui/`).
 
 Rules:
 
-1. Do **not** invent a `*Component` pack for every feature — grow **rigComponent** for generic PODs; new `*Component` only for a real domain.
+1. Do **not** invent a `*Component` pack for every feature - grow **rigComponent** for generic PODs; new `*Component` only for a real domain.
 2. Prefer `*Editor` over `*EditorUi`. Stacking both (`rigSvgEditorUi`) is historical; new shells: `rigFooEditor` or `rigFooUi`, not both.
-3. `*Ui` means chrome on **rigImGui** over a separate engine/data pack — not where `C*` types live.
+3. `*Ui` means chrome on **rigImGui** over a separate engine/data pack - not where `C*` types live.
 4. Mesh **data** stays in **rigComponent** (`CMesh`); mesh **tools** are **rigMeshEdit**. Same idea as `rigSvg` (IO) vs SVG shell UI.
 
 ## Data pack
@@ -56,7 +56,7 @@ Each dependency uses a git **`ref`** (tag, branch, or commit SHA):
 
 ## In-org packs
 
-**In-org** means first-party packs in the [rigkid](https://github.com/rigkid) GitHub org — each pack has its own remote.
+**In-org** means first-party packs in the [rigkid](https://github.com/rigkid) GitHub org - each pack has its own remote.
 
 **Host basics** (git submodules in this repo):
 
@@ -66,7 +66,7 @@ Each dependency uses a git **`ref`** (tag, branch, or commit SHA):
 | **rigSystems** | Update/Draw systems |
 | **rigProject** | Host project envelope + `.rig` document IO |
 | **rigImGui** | Default **Rig + UI** fulfillment. Dear ImGui is a nested submodule ([GitBruno/imgui](https://github.com/GitBruno/imgui) until [ocornut/imgui#9516](https://github.com/ocornut/imgui/pull/9516) merges); init with `--recursive`. |
-| **rigImTui** | Alternate **Rig + UI** fulfillment — GPU character-grid compositor (local `packs/rigImTui` until published as its own remote). |
+| **rigImTui** | Alternate **Rig + UI** fulfillment - GPU character-grid compositor (local `packs/rigImTui` until published as its own remote). |
 
 Everything else under `packs/` is optional: local clone or CPM at `app.json` `url` + `ref`. Survey [docs/packs_catalog.md](../docs/packs_catalog.md) before scaffolding a new pack.
 
@@ -83,7 +83,7 @@ Refresh checkouts:
 
 ## Pack example (README screenshot)
 
-**Every** in-org pack ships **one** example under `examples/<name>/` — a tiny RigKit app that teaches how to use the pack. The window is the pack README screenshot (`examples/<name>/img/preview.png`). Lead the pack README with `![preview](examples/<name>/img/preview.png)`. End the pack README with the Pages link for that pack id:
+**Every** in-org pack ships **one** example under `examples/<name>/` - a tiny RigKit app that teaches how to use the pack. The window is the pack README screenshot (`examples/<name>/img/preview.png`). Lead the pack README with `![preview](examples/<name>/img/preview.png)`. End the pack README with the Pages link for that pack id:
 
 ```md
 [API/docs](https://rigkid.github.io/<packName>/)
@@ -107,7 +107,7 @@ Screenshot workflow: build and run the example, capture the main window, save as
 
 ## Style
 
-Host `tools/format.*` never touches `packs/`. Each pack formats its own first-party `src/` + `examples/` with clang-format (`SortIncludes` — [docs/includes.md](../docs/includes.md)).
+Host `tools/format.*` never touches `packs/`. Each pack formats its own first-party `src/` + `examples/` with clang-format (`SortIncludes` - [docs/includes.md](../docs/includes.md)).
 
 From the host, once per clone:
 
@@ -122,7 +122,7 @@ That installs the host pre-commit hook and copies the pack hook into every `pack
 
 Each in-org pack remote runs its own GitHub Actions workflow (`.github/workflows/ci.yml` in the pack repo): checkout the pack under test, clone the RigKit host + submodules, overlay the pack into `packs/<name>/`, then compile the pack example. Commit and push CI changes from the pack submodule (not only the host).
 
-Private host/pack remotes need org (or per-repo) secret **`RIGKIT_CI_TOKEN`** — a fine-grained PAT with Contents:read on `rigkid/RigKit` and the in-org packs. Default `GITHUB_TOKEN` cannot clone sibling private repos. See [docs/contributing.md](../docs/contributing.md).
+Private host/pack remotes need org (or per-repo) secret **`RIGKIT_CI_TOKEN`** - a fine-grained PAT with Contents:read on `rigkid/RigKit` and the in-org packs. Default `GITHUB_TOKEN` cannot clone sibling private repos. See [docs/contributing.md](../docs/contributing.md).
 
 ## API docs / GitHub Pages
 
@@ -145,12 +145,12 @@ cmake -S . -B build && cmake --build build --target docs
 
 ## New pack
 
-**Before you scaffold:** read [docs/packs_catalog.md](../docs/packs_catalog.md) and this README’s Naming rules. Prefer growing an existing pack (especially **rigComponent** for generic PODs) over a new remote. Only create a pack when the seam is real — new domain data, new I/O, new editor/UI shell, or a leaf optional engine.
+**Before you scaffold:** read [docs/packs_catalog.md](../docs/packs_catalog.md) and this README’s Naming rules. Prefer growing an existing pack (especially **rigComponent** for generic PODs) over a new remote. Only create a pack when the seam is real - new domain data, new I/O, new editor/UI shell, or a leaf optional engine.
 
 Then start from **[rigTemplate](../templates/rigTemplate/)** (`https://github.com/rigkid/rigTemplate.git`):
 
 1. Lock the spoken name (one camelCase id). Copy `templates/rigTemplate` to `packs/<id>/` (or clone the template remote).
-2. Rename `pack.json`, sources, class, and `PackRegistry` factory string to that same id. Set `license` in `pack.json` to `MIT Rigkid Contributors` (or `GPL-2.0-or-later Rigkid Contributors`; required by CI / `check-invariants`). Keep `description`, `url`, and `dependencies` accurate there — that file owns About / `IPack` identity and runtime init order ([docs/packs.md](../docs/packs.md)). The pack constructor is only `IPack("<id>")` — no `setDescription` / `addDependency`.
+2. Rename `pack.json`, sources, class, and `PackRegistry` factory string to that same id. Set `license` in `pack.json` to `MIT Rigkid Contributors` (or `GPL-2.0-or-later Rigkid Contributors`; required by CI / `check-invariants`). Keep `description`, `url`, and `dependencies` accurate there - that file owns About / `IPack` identity and runtime init order ([docs/packs.md](../docs/packs.md)). The pack constructor is only `IPack("<id>")` - no `setDescription` / `addDependency`.
 3. Add `url` + `ref` to the app `app.json` dependencies (`"name"` must match the id). Set SPDX `license` on the example `app.json` too (`MIT` is fine for apps).
 4. Fill `examples/demo/` (example + `img/preview.png` for the README).
 5. Publish the pack remote when ready (own repo push, or `./tools/publish-template.sh` for the template itself).
@@ -161,7 +161,7 @@ Gitignored under `packs/*` except in-org packs and this README:
 
 | Pack | Role |
 |-------|------|
-| **rigBlend2D** | Blend2D `IRenderer` fulfillment — [rigkid/rigBlend2D](https://github.com/rigkid/rigBlend2D) (`third_party/blend2d` + `asmjit` are **submodules**, not committed trees) |
+| **rigBlend2D** | Blend2D `IRenderer` fulfillment - [rigkid/rigBlend2D](https://github.com/rigkid/rigBlend2D) (`third_party/blend2d` + `asmjit` are **submodules**, not committed trees) |
 
 ```bash
 git clone --recurse-submodules https://github.com/rigkid/rigBlend2D.git packs/rigBlend2D
@@ -173,4 +173,4 @@ git -C packs/rigBlend2D submodule update --init --recursive
 
 Register **rigComponent**, then **rigSystems**, then **rigImGui** (see `examples/oscHost` and `examples/minimal`). For 3D meshes: **rigComponent**, then **rigSystems**, then **rigRender3D** (+ **rigObj** / **rigMeshEdit** as needed; see `examples/lowpoly`). For node graphs: **rigComponent**, then **rigNodeComponent**, then **rigImGui**, then **rigNodeEditor** (see `packs/rigNodeEditor/examples/nodes`). Artist guide: [docs/nodes.md](../docs/nodes.md).
 
-There is **no** runtime git updater in the host — only configure-time CPM and the tools above.
+There is **no** runtime git updater in the host - only configure-time CPM and the tools above.

@@ -2,7 +2,7 @@
 
 ![preview](img/preview.png)
 
-Minimal creator + mesh proof. Build and run `minimal`: expect a blue rect (selected — yellow bounds), orange circle, yellow triangle mesh, parent/child hierarchy, and green quad on a dark clear color.
+Minimal creator + mesh proof. Build and run `minimal`: expect a blue rect (selected - yellow bounds), orange circle, yellow triangle mesh, parent/child hierarchy, and green quad on a dark clear color.
 
 ```bash
 cmake -S examples/minimal -B examples/minimal/build

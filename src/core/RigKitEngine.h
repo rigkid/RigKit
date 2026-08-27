@@ -40,7 +40,7 @@ class RigKitEngine : public ISettings {
 	/**
 	 * @brief Construct host runtime.
 	 * @param headless If true, skip GLFW/GL present (managers + packs only).
-	 *        For contract_smoke / CI — not an install present path.
+	 *        For contract_smoke / CI - not an install present path.
 	 */
 	RigKitEngine(std::unique_ptr<IApp> app, const json& settings, int argc, char* argv[],
 				 bool headless);
@@ -110,7 +110,7 @@ class RigKitEngine : public ISettings {
 	/** @brief Active chrome id (persisted as `ui.chrome` in settings). */
 	const std::string& uiChrome() const { return m_uiChrome; }
 
-	/** @brief Registered chrome factory ids (imgui, tui, …). */
+	/** @brief Registered chrome factory ids (imgui, tui, ...). */
 	std::vector<std::string> uiChromes() const;
 
 	/**

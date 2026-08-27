@@ -8,7 +8,7 @@ namespace rigkit {
 /**
  * @brief Pan/zoom state for a 2D content view (no UI types).
  * @details screen = origin + content * zoomAbs. Content units are app-defined
- * (px, mm, …). Drivers set canvas bounds each frame, then call updateDerived().
+ * (px, mm, ...). Drivers set canvas bounds each frame, then call updateDerived().
  */
 struct View2D {
 	glm::vec2 contentSize{200.f, 200.f};

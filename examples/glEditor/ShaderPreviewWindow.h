@@ -8,7 +8,7 @@
 #include "ShaderPreview.h"
 
 /**
- * @brief Live shader preview panel — compile / auto / pause / FPS / errors.
+ * @brief Live shader preview panel - compile / auto / pause / FPS / errors.
  */
 class ShaderPreviewWindow : public rigkit::IWindow {
   public:

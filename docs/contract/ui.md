@@ -10,9 +10,9 @@ This file adds **RigKit** fulfillment notes. UI packs are not Rig.
 |-------|------|
 | **Rig + UI** | Host seam; panels edit ECS/schemas; SUDE phases; no toolkit in Contract-facing components |
 | **rigImGui** | Default RigKit UI pack: dock layout, windows, Properties |
-| **rigImTui** | Alternate `IMui`: GPU character-grid compositor (cell chrome over the live GL bed). Same Player/Viewer habit — not a terminal / ggerganov backend. Switch via Preferences > Interface (Chrome row — offered only when the pack is linked) or `--tui` / `--imgui` (`ui.chrome` in settings). `IWindow` panels are **rigImGui**-only. |
+| **rigImTui** | Alternate `IMui`: GPU character-grid compositor (cell chrome over the live GL bed). Same Player/Viewer habit - not a terminal / ggerganov backend. Switch via Preferences > Interface (Chrome row - offered only when the pack is linked) or `--tui` / `--imgui` (`ui.chrome` in settings). `IWindow` panels are **rigImGui**-only. |
 
-Portable UI description is **data** (sections bound to ECS / property paths). Toolkits (`rigImGui`, `rigImTui`, a future Web UI pack) are **fulfillments** of that map through `IMui` — not a second scene graph and not per-window packs.
+Portable UI description is **data** (sections bound to ECS / property paths). Toolkits (`rigImGui`, `rigImTui`, a future Web UI pack) are **fulfillments** of that map through `IMui` - not a second scene graph and not per-window packs.
 
 Another UI pack may honor the same Rig + UI rules. Dock chrome is layout, not entity meaning.
 
@@ -35,7 +35,7 @@ Author/tool surfaces share portable entity data. Skip ECS and you fork Propertie
 - UI attaches through a host seam (`IMui` in RigKit).
 - Surfaces register by name; visibility can change.
 - Input in **Update**; UI present in **Draw** (after app `Draw`); teardown on **Exit**.
-- Edit ECS POD / schemas — not a second scene graph.
+- Edit ECS POD / schemas - not a second scene graph.
 - No toolkit types inside Contract-facing components.
 
 ## Non-requirements
@@ -60,12 +60,12 @@ No particular UI pack. No particular dock model. No GPU editor on light hosts.
 
 ### Progress
 
-Author chrome for long jobs (export, load, connect). Portable meaning is plain fields on [`Progress`](../../src/core/util/Progress.h) — title, label, fraction (`< 0` = indeterminate), cancel flag. Apps call through `IMui::progress()` (not a process singleton).
+Author chrome for long jobs (export, load, connect). Portable meaning is plain fields on [`Progress`](../../src/core/util/Progress.h) - title, label, fraction (`< 0` = indeterminate), cancel flag. Apps call through `IMui::progress()` (not a process singleton).
 
 ```cpp
 if (auto* p = ui->progress()) {
 	p->begin("Exporting layers", 80);
-	// … per step:
+	// ... per step:
 	p->tick("Layer 3 / 80");
 	p->finish("Export complete");
 }
@@ -73,7 +73,7 @@ if (auto* p = ui->progress()) {
 
 **rigImGui** draws the bar in the status strip by default, or a centered floating window when Preferences > Progress In Status Bar is off. Auto-hide after finish is configurable. Show mode detaches UI so `progress()` is null.
 
-Layout persistence next to the exe is fulfillment. Core must not include a UI toolkit — only `IMui`.
+Layout persistence next to the exe is fulfillment. Core must not include a UI toolkit - only `IMui`.
 
 ## Coordinates and HiDPI
 

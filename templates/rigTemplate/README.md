@@ -7,7 +7,7 @@ Host copy lives at `templates/rigTemplate/` in the RigKit repo (not loaded as an
 
 ## Create a new pack
 
-**Before you scaffold:** read [packs/README.md](../../packs/README.md) (pack table + Naming). Prefer growing an existing pack over a new remote. Spoken name = folder = `pack.json` `"name"` = `app.json` `"name"` — one camelCase id.
+**Before you scaffold:** read [packs/README.md](../../packs/README.md) (pack table + Naming). Prefer growing an existing pack over a new remote. Spoken name = folder = `pack.json` `"name"` = `app.json` `"name"` - one camelCase id.
 
 1. Lock that id. Copy this tree to `packs/<id>/` (or clone the `rigTemplate` remote and rename).
 2. Rename everywhere to the same id:
@@ -16,7 +16,7 @@ Host copy lives at `templates/rigTemplate/` in the RigKit repo (not loaded as an
    - class `rigTemplate` and `PackRegistry` factory string
    - `CMakeLists.txt` source list
    - README footer `[API/docs](https://rigkid.github.io/<id>/)`
-   - Leave the constructor as `IPack("<id>")` only — identity and deps come from `pack.json`
+   - Leave the constructor as `IPack("<id>")` only - identity and deps come from `pack.json`
 3. Fill `setup()`: **data** to `registerComponent`; **code** to `registerSystem`. Keep portable fields POD (NO CODE JUST DATA).
 4. Add to your app `app.json`:
 

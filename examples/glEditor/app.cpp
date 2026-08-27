@@ -57,7 +57,7 @@ bool GlEditorApp::seedShader(const std::string& name, const std::string& relativ
 	const std::string path = AppPaths::joinPath(AppPaths::getDataDir(), relativePath);
 	std::string text = readFileOrEmpty(path);
 	if (text.empty()) {
-		spdlog::warn("glEditor — missing {}", path);
+		spdlog::warn("glEditor - missing {}", path);
 		return false;
 	}
 
@@ -115,7 +115,7 @@ void GlEditorApp::watchDiskBuffers() {
 		code.text = std::move(text);
 		code.dirty = false;
 		code.epoch += 1;
-		spdlog::info("glEditor — disk reload {}", asset.path);
+		spdlog::info("glEditor - disk reload {}", asset.path);
 	}
 }
 
@@ -155,7 +155,7 @@ bool GlEditorApp::runSmoke() {
 }
 
 void GlEditorApp::setup() {
-	spdlog::info("glEditor — Shadertoy-style GLES preview over CCode");
+	spdlog::info("glEditor - Shadertoy-style GLES preview over CCode");
 	m_engine->setClearColor(0.07f, 0.07f, 0.086f, 1.0f);
 
 	auto* packs = m_engine->getPackManager();

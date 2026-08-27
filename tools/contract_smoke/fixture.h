@@ -27,7 +27,7 @@ inline bool propPointsIntoComponent(const sProp& prop, const void* component, st
 	return ptr >= base && ptr < base + size;
 }
 
-/** Headless engine + spine packs (rigComponent → rigSystems → rigProject). */
+/** Headless engine + spine packs (rigComponent to rigSystems to rigProject). */
 struct SpineFixture {
 	std::unique_ptr<RigKitEngine> engine;
 
@@ -37,7 +37,7 @@ struct SpineFixture {
 		auto* packs = engine->getPackManager();
 		REQUIRE(packs != nullptr);
 
-		// Construct packs directly — STATIC pack libs may drop PackRegistry
+		// Construct packs directly - STATIC pack libs may drop PackRegistry
 		// self-registration object files when nothing references them.
 		packs->registerPack<rigComponent>();
 		packs->registerPack<rigSystems>();

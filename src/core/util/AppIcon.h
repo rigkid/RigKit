@@ -23,7 +23,7 @@ struct IconImage {
 /**
  * @brief Load window-icon pixels from a `.ico` file.
  * @details Parses uncompressed BMP entries (32 / 24 / 8 / 4 / 1 bpp).
- * PNG-compressed entries (usually only the 256 px one) are skipped — window /
+ * PNG-compressed entries (usually only the 256 px one) are skipped - window /
  * taskbar icons use the small sizes, and core carries no PNG decoder.
  * @param path Absolute path to the `.ico` file.
  * @return One IconImage per usable entry; empty when nothing was usable.
@@ -35,7 +35,7 @@ std::vector<IconImage> loadIco(const std::string& path);
  * @details Used by the Windows host tool to embed the default identicon as the
  * PE `GLFW_ICON` resource so Explorer shows it on the exe when the app is closed.
  * @param path Destination path (overwrites).
- * @param icons One or more RGBA images (width/height 1–256).
+ * @param icons One or more RGBA images (width/height 1-256).
  * @return true when the file was written.
  */
 bool writeIco(const std::string& path, const std::vector<IconImage>& icons);

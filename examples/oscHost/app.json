@@ -2,11 +2,11 @@
   "name": "oscHost",
   "version": "0.1.0",
   "license": "MIT",
-  "description": "RigKit OSC show host — multi-instance via network id + UDP (author / show).",
+  "description": "RigKit OSC show host - multi-instance via network id + UDP (author / show).",
   "window": {
     "width": 640,
     "height": 400,
-    "title": "RigKit — oscHost"
+    "title": "RigKit - oscHost"
   },
   "dependencies": [
     {

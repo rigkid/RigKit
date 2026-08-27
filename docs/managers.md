@@ -22,7 +22,7 @@ When you derive from `rigkit::IApp`, the framework automatically injects an engi
 ```cpp
 class MyCoolApp : public rigkit::IApp {
     void setup(rigkit::RigKitEngine* engine) override {
-        // No need to cache the engine – the base class already did.
+        // No need to cache the engine - the base class already did.
         auto* ecs       = getECSManager();
         auto* ui        = getUIManager();
         auto* rendering = getRenderingManager();

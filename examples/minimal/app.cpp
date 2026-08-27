@@ -11,7 +11,7 @@
 #include <spdlog/spdlog.h>
 
 void MinimalApp::setup() {
-	spdlog::info("minimal setup — creators + meshes");
+	spdlog::info("minimal setup - creators + meshes");
 	m_engine->setClearColor(0.12f, 0.14f, 0.18f, 1.0f);
 
 	auto* packs = m_engine->getPackManager();
@@ -28,7 +28,7 @@ void MinimalApp::setup() {
 		return;
 	}
 
-	// Data path: POD shapes/meshes — host Draw + rigSystems present to the window.
+	// Data path: POD shapes/meshes - host Draw + rigSystems present to the window.
 	auto rect =
 		rig::makeRect(*ecs, 64.f, 64.f, 180.f, 110.f, rig::fill(0.25f, 0.65f, 1.0f), "demo-rect");
 	rigkit::ecs::CSelection sel;
@@ -38,7 +38,7 @@ void MinimalApp::setup() {
 	rig::makeCircle(*ecs, 360.f, 120.f, 48.f,
 					rig::fillAndStroke(1.f, 0.45f, 0.3f, 1.f, 1.f, 1.f, 2.f), "demo-circle");
 
-	// Hierarchy: child local offset under parent — SHierarchy writes world for Draw.
+	// Hierarchy: child local offset under parent - SHierarchy writes world for Draw.
 	auto parent = rig::makeRect(*ecs, 200.f, 320.f, 120.f, 80.f, rig::fill(0.55f, 0.35f, 0.9f),
 								"demo-parent");
 	auto child =

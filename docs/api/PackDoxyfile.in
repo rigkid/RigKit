@@ -1,9 +1,9 @@
-# Pack-scoped API docs — configured by tools/generate-pack-docs.sh
+# Pack-scoped API docs - configured by tools/generate-pack-docs.sh
 # Generate: ./tools/generate-pack-docs.sh <packName>
 
 PROJECT_NAME           = "@PACK_NAME@"
 PROJECT_NUMBER         = "@PROJECT_VERSION@"
-PROJECT_BRIEF          = "RigKit pack API — @PACK_NAME@"
+PROJECT_BRIEF          = "RigKit pack API - @PACK_NAME@"
 OUTPUT_DIRECTORY       = "@RIGKIT_DOXY_OUT@"
 CREATE_SUBDIRS         = NO
 ALLOW_UNICODE_NAMES    = NO

@@ -30,9 +30,9 @@ struct CanvasSettings {
 
 /**
  * @brief Off-screen drawing surface (FBO) with optional ECS present.
- * @details Immediate draws go through Graphics → IRenderer. Host window present
+ * @details Immediate draws go through Graphics to IRenderer. Host window present
  * does not require a Canvas; use beginOffscreen/endOffscreen for FBO work.
- * Frame export / SVG live in renderer packs — not on this type.
+ * Frame export / SVG live in renderer packs - not on this type.
  * @see Graphics, MCanvas, MEcs::renderSystems
  */
 class Canvas : public ISettings {

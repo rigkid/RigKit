@@ -10,13 +10,13 @@ Packs extend the host with UI, renderers, and tools. They live in separate repos
 - Ships `pack.json` (name, `description`, `license` with holder, `url`, include paths, optional deps) and `CMakeLists.txt`
 - Registers with `MPack` / `registerPack` at runtime when the app boots packs
 
-**Identity owns one file.** `pack.json` is the source for description, license, url, version, and runtime dependency names. `add_rigkit_application` deploys it to `<exeDir>/data/packs/<name>/pack.json`; `MPack::registerPack` applies those fields onto `IPack` (About and settings readers pull from there; `initAll` topo-sorts from the dependency list). Do not call `setDescription` / `setLicense` / `setUrl` / `setVersion` / `addDependency` in the pack constructor — that is a second authoring copy and CI rejects it.
+**Identity owns one file.** `pack.json` is the source for description, license, url, version, and runtime dependency names. `add_rigkit_application` deploys it to `<exeDir>/data/packs/<name>/pack.json`; `MPack::registerPack` applies those fields onto `IPack` (About and settings readers pull from there; `initAll` topo-sorts from the dependency list). Do not call `setDescription` / `setLicense` / `setUrl` / `setVersion` / `addDependency` in the pack constructor - that is a second authoring copy and CI rejects it.
 
 ## Creating a pack
 
 1. Create a folder (own repo or `packs/rigMyPack` while developing).
 2. Inherit `IPack` and implement hooks (`init`, `setup`, `update`, `draw`, `cleanup`).
-3. Add `pack.json` (`license` with holder is required — CI / `check-invariants` read it):
+3. Add `pack.json` (`license` with holder is required - CI / `check-invariants` read it):
 
 ```json
 {
@@ -33,7 +33,7 @@ Packs extend the host with UI, renderers, and tools. They live in separate repos
 
 `license` is SPDX plus the copyright holder from `LICENSE` (`MIT Rigkid Contributors`).
 Use `GPL-2.0-or-later Rigkid Contributors` when the pack ships or links GPL
-code — e.g. **rigPlotFinders** (Potrace). App manifests may keep bare `MIT`.
+code - e.g. **rigPlotFinders** (Potrace). App manifests may keep bare `MIT`.
 
 4. Minimal `CMakeLists.txt`:
 
@@ -80,9 +80,9 @@ In the app, register the pack in `bootstrapPacks()` / `setup()` (see `examples/o
 
 Receive `MEcs*` from the engine (or via your pack’s setup). Prefer the pack split:
 
-- **rigComponent** — data-only PODs + `ecs->registerComponent<T>(...)` in `setup()`
-- **rigSystems** — `ecs->registerSystem(name, Update|Draw, fn)`
-- **rigProject** — host project envelope (`CProject`/`CPage`) + `.rig` document IO
+- **rigComponent** - data-only PODs + `ecs->registerComponent<T>(...)` in `setup()`
+- **rigSystems** - `ecs->registerSystem(name, Update|Draw, fn)`
+- **rigProject** - host project envelope (`CProject`/`CPage`) + `.rig` document IO
 
 See [packs_using.md](packs_using.md). Prefer POD for anything portable ([docs/contract/rigkit.md](contract/rigkit.md)).
 

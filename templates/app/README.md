@@ -29,4 +29,4 @@ cmake --build build --target MyApp
 
 Override RigKit location: `-DRIGKIT_DIR=/path/to/rigkit`.
 
-Learn creators / hierarchy from the in-repo example [`examples/minimal`](../../examples/minimal/) — do not copy that folder into a product repo; use this starter instead.
+Learn creators / hierarchy from the in-repo example [`examples/minimal`](../../examples/minimal/) - do not copy that folder into a product repo; use this starter instead.

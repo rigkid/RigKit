@@ -4,7 +4,7 @@
 
 namespace rigkit {
 
-/** Minimal IApp for headless contract_smoke — no window, no UI. */
+/** Minimal IApp for headless contract_smoke - no window, no UI. */
 class SmokeApp : public IApp {
   public:
 	void setup() override {}

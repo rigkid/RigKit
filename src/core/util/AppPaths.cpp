@@ -91,7 +91,7 @@ std::filesystem::path resolveExePathPlatform(const char* argv0) {
 
 void ensureInit() {
 	if (!g_ready) {
-		// Fallback if main forgot init — cwd-based, last resort only.
+		// Fallback if main forgot init - cwd-based, last resort only.
 		g_exeDir = std::filesystem::current_path();
 		g_ready = true;
 	}

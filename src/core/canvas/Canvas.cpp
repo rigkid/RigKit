@@ -323,7 +323,7 @@ void Canvas::initFramebuffer() {
 
 void Canvas::initShaders() {
 #if defined(RIGKIT_GLES)
-	// GLES2 / ANGLE / Pi — GLSL ES 1.00 (no layout qualifiers).
+	// GLES2 / ANGLE / Pi - GLSL ES 1.00 (no layout qualifiers).
 	const char* vertexShaderSource = R"(
 		#version 100
 		attribute vec3 aPos;

@@ -15,13 +15,13 @@
 #
 # Nested pack.json dependencies are loaded depth-first before the pack itself.
 # First resolution wins: a pack already in RIGKIT_PROCESSED_PACKS (or an existing
-# CMake target of that name) is skipped — app.json order and nested edges may
+# CMake target of that name) is skipped - app.json order and nested edges may
 # both name the same dep without double add_subdirectory.
 #
 # Requires CMake >= 3.19 for string(JSON ...)
 #
 # Pack bookkeeping uses GLOBAL properties (reset every configure). Do not use
-# CACHE INTERNAL for these — that survives reconfigure, targets do not, and you
+# CACHE INTERNAL for these - that survives reconfigure, targets do not, and you
 # get false "Target missing; rebuilding pack" warnings.
 
 # Drop legacy cache keys from older RigKitPacks (harmless if absent).
@@ -73,7 +73,7 @@ function(rigkit_ensure_pack depName depUrl depRef OUT_APPENDED)
 		list(REMOVE_ITEM _processed ${depName})
 	endif()
 
-	# Target exists (e.g. pack CMake or another loader created it) — keep it.
+	# Target exists (e.g. pack CMake or another loader created it) - keep it.
 	if(TARGET ${depName})
 		list(APPEND _processed ${depName})
 		set_property(GLOBAL PROPERTY RIGKIT_PROCESSED_PACKS "${_processed}")
@@ -110,7 +110,7 @@ function(rigkit_ensure_pack depName depUrl depRef OUT_APPENDED)
 		if(NOT COMMAND CPMAddPackage)
 			include("${RIGKIT_ROOT}/cmake/CPM.cmake")
 		endif()
-		# Download only — nested deps must load before this pack's add_subdirectory.
+		# Download only - nested deps must load before this pack's add_subdirectory.
 		CPMAddPackage(
 			NAME ${depName}
 			GIT_REPOSITORY ${depUrl}
@@ -129,7 +129,7 @@ function(rigkit_ensure_pack depName depUrl depRef OUT_APPENDED)
 	list(APPEND _processed ${depName})
 	set_property(GLOBAL PROPERTY RIGKIT_PROCESSED_PACKS "${_processed}")
 
-	# Nested pack.json dependencies — depth-first, first wins.
+	# Nested pack.json dependencies - depth-first, first wins.
 	set(PACK_JSON_PATH "${PACK_DIR}/pack.json")
 	if(EXISTS "${PACK_JSON_PATH}")
 		file(READ "${PACK_JSON_PATH}" _packJson)

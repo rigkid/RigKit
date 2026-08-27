@@ -8,9 +8,9 @@ Root overview: [../README.md](../README.md). Agent playbook: [../AGENTS.md](../A
 
 | Doc | Purpose |
 |-----|---------|
-| [authoring.md](authoring.md) | How artists code RigKit — `setup` / `update` / `draw`, creators, POD |
+| [authoring.md](authoring.md) | How artists code RigKit - `setup` / `update` / `draw`, creators, POD |
 | [build_instructions.md](build_instructions.md) | CMake, examples, ANGLE, Pi notes |
-| [nodes.md](nodes.md) | Node graphs — editor + catalog (artist guide) |
+| [nodes.md](nodes.md) | Node graphs - editor + catalog (artist guide) |
 | [contributing.md](contributing.md) | Format, hooks, CI style, how to contribute |
 
 ## Contract + Host
@@ -19,7 +19,7 @@ Portable Rig rules (with RigKit notes). Full intro: [contract/README.md](contrac
 
 | Doc | Purpose |
 |-----|---------|
-| [contract/commandments.md](contract/commandments.md) | Ten Commandments — constitution |
+| [contract/commandments.md](contract/commandments.md) | Ten Commandments - constitution |
 | [contract/sude-loop.md](contract/sude-loop.md) | Setup / Update / Draw / Exit |
 | [contract/rigkit.md](contract/rigkit.md) | ECS conventions + ESP32 subset |
 | [contract/ui.md](contract/ui.md) | UI companion + `IMui` |
@@ -49,11 +49,11 @@ Portable Rig rules (with RigKit notes). Full intro: [contract/README.md](contrac
 
 | Doc | Purpose |
 |-----|---------|
-| [managers.md](managers.md) | Core managers (`MEcs`, Canvas, …) |
+| [managers.md](managers.md) | Core managers (`MEcs`, Canvas, ...) |
 | [settings.md](settings.md) | Settings and preferences |
 | [includes.md](includes.md) | Includes and umbrella headers |
 | [namespaces.md](namespaces.md) | Namespaces |
-| [api/mainpage.md](api/mainpage.md) | Doxygen main page source — build with `cmake --build build --target docs` |
+| [api/mainpage.md](api/mainpage.md) | Doxygen main page source - build with `cmake --build build --target docs` |
 | [../site/](../site/) | GitHub Pages landing ([rigkid.github.io/rigkit](https://rigkid.github.io/rigkit/); API under `/api/`) |
 
 ## Elsewhere
@@ -61,6 +61,6 @@ Portable Rig rules (with RigKit notes). Full intro: [contract/README.md](contrac
 | Path | Purpose |
 |------|---------|
 | [../AGENTS.md](../AGENTS.md) | Agent / contributor playbook |
-| [../skills/](../skills/) | Task skills (data, build, contract, …) |
+| [../skills/](../skills/) | Task skills (data, build, contract, ...) |
 | [../packs/](../packs/) | In-org pack checkouts |
 | [RigWorks](https://github.com/rigkid/RigWorks) | Portable framework (SUDE + ECS + schemas) |

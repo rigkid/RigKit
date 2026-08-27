@@ -16,10 +16,10 @@ enum propTypes {
 	EPT_FLOAT,
 	EPT_DOUBLE,
 	EPT_STRING,
-	EPT_VEC2, // glm::vec2 / float[2] — UI packs may map to ImVec2
+	EPT_VEC2, // glm::vec2 / float[2] - UI packs may map to ImVec2
 	EPT_VEC3, // glm::vec3 / float[3]
-	EPT_VEC4, // glm::vec4 / float[4] — UI packs may map to ImVec4
-	/// Colour as float[4]. Host extension, not a Contract datatype id — the
+	EPT_VEC4, // glm::vec4 / float[4] - UI packs may map to ImVec4
+	/// Colour as float[4]. Host extension, not a Contract datatype id - the
 	/// Contract keeps colour as field-name convention over `vec4` (properties.md
 	/// says "hosts may add prefixed ids"); this is that extension for rigImGui's
 	/// colour picker.
@@ -33,7 +33,7 @@ struct sProp {
 	std::string name;
 	propTypes type;
 	void* data;
-	/// Combo labels — required for EPT_ENUM (editors show a "misconfigured" state
+	/// Combo labels - required for EPT_ENUM (editors show a "misconfigured" state
 	/// without them rather than falling back to a raw draggable int). Lifetime
 	/// must outlive the editor draw.
 	const char* const* enumNames = nullptr;
@@ -51,7 +51,7 @@ template <typename T> class has_get_properties {
 	static constexpr bool value = decltype(test<T>(0))::value;
 };
 
-/// SFINAE: Checks for `static constexpr bool kNoProperties = true;` — the
+/// SFINAE: Checks for `static constexpr bool kNoProperties = true;` - the
 /// opt-out for derived or otherwise non-editable components. Such a component
 /// shows no fields and draws no warning.
 template <typename T> class declares_no_properties {

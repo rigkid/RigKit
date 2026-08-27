@@ -9,12 +9,12 @@ namespace rigkit {
 
 /**
  * @brief Thin façade over an IRenderer for immediate-mode drawing.
- * @details Holds the retained artist style — set a colour once, then draw many
- * shapes — and turns it into an explicit Paint per call, because IRenderer
+ * @details Holds the retained artist style - set a colour once, then draw many
+ * shapes - and turns it into an explicit Paint per call, because IRenderer
  * keeps no style state. This is the one owner of that style: callers above
  * (Canvas, author/rigDraw.h) forward here rather than caching their own copy.
  * Each draw fills first and strokes second, so a shape can do both. Does not
- * implement shadows, image loading, or stroke caps — those belong in a richer
+ * implement shadows, image loading, or stroke caps - those belong in a richer
  * renderer pack (e.g. Blend2D).
  * @see IRenderer, Paint, OpenGLRenderer, author/rigDraw.h
  */

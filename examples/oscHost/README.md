@@ -2,7 +2,7 @@
 
 ![preview](img/preview.png)
 
-RigKit **OSC show host** — one binary, author + show modes, multi-instance via **network id** and UDP (`rigOsc`).
+RigKit **OSC show host** - one binary, author + show modes, multi-instance via **network id** and UDP (`rigOsc`).
 
 Default window is **640×400** so two instances fit on one desktop.
 
@@ -34,19 +34,19 @@ std::cout << rigkit::rigOsc::commandLineHelp();
 `=` or a following value both work (`--id=box-a` or `--id box-a`).
 
 ```bash
-# Instance A (author) — listen 8000, send to B on 8001
+# Instance A (author) - listen 8000, send to B on 8001
 ./oscHost --author --network-id=box-a --listen-port=8000 --send-port=8001
 
-# Instance B (show) — listen 8001, send back to A on 8000
+# Instance B (show) - listen 8001, send back to A on 8000
 ./oscHost --show --network-id=box-b --listen-port=8001 --send-host=127.0.0.1 --send-port=8000
 ```
 
-Move Master or Color on A; within about a second B’s clear color follows (heartbeat tick pushes bus). Addresses: `/rigkit/<networkId>/master|blackout|color|…`; bare `/rigkit/…` is broadcast. `color` is three floats.
+Move Master or Color on A; within about a second B’s clear color follows (heartbeat tick pushes bus). Addresses: `/rigkit/<networkId>/master|blackout|color|...`; bare `/rigkit/...` is broadcast. `color` is three floats.
 
 ## Dependencies
 
-- `rigImGui` — host shell (author mode only)
-- `rigOsc` — real UDP OSC + `CNetworkIdentity` / show bus
+- `rigImGui` - host shell (author mode only)
+- `rigOsc` - real UDP OSC + `CNetworkIdentity` / show bus
 
 ## Build
 

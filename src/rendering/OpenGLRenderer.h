@@ -13,7 +13,7 @@
 namespace rigkit {
 
 /**
- * @brief Default host Draw fulfillment — immediate GL primitives.
+ * @brief Default host Draw fulfillment - immediate GL primitives.
  * @details Draws to the current framebuffer (typically the window). Origin is
  * top-left, y grows down. Each primitive fills or strokes according to the
  * Paint it is given. Consecutive triangles merge into one draw regardless of
@@ -99,11 +99,11 @@ class OpenGLRenderer : public IRenderer {
 	void updateProjection();
 	// Keep the open batch when topology and line width match, else flush and
 	// start a new one. Vertices append after this, so call order stays paint
-	// order. Fills pass 0 for lineWidth — it has no meaning for triangles.
+	// order. Fills pass 0 for lineWidth - it has no meaning for triangles.
 	void openBatch(unsigned mode, float lineWidth);
 	// Grow m_batch geometrically. reserve() allocates exactly what is asked,
 	// so per-primitive size()+n requests would reallocate on every call once
-	// past the initial capacity — quadratic when a big mesh streams thousands
+	// past the initial capacity - quadratic when a big mesh streams thousands
 	// of two-point strokes.
 	void reserveBatch(size_t add);
 	void enqueue(unsigned mode, std::span<const glm::vec2> pts, uint32_t color, float lineWidth);

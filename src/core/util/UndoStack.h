@@ -8,7 +8,7 @@
 namespace rigkit {
 
 /**
- * @brief Command undo/redo — no UI types.
+ * @brief Command undo/redo - no UI types.
  * @details Apps and packs push records when an edit completes. `rigImGui`
  * binds Edit menu / shortcuts when an `UndoStack*` is set on `IMui`.
  */

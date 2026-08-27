@@ -77,7 +77,7 @@ class IPack : public ISettings {
 
   public:
 	// ----------------------------------------
-	// User hooks – override these in your pack
+	// User hooks - override these in your pack
 	// ----------------------------------------
 	virtual bool init() { return true; }
 	virtual void setup() {}

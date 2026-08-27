@@ -16,7 +16,7 @@ description: >-
 
 Cleanup pass for code that works but is bloated, duplicated, or fake. Not for new features or broad redesigns.
 
-Capability units are **packs** — never reintroduce “addon” wording. Keep one pack id (spoken name = folder = manifests); do not leave mismatched display titles or rename synonyms.
+Capability units are **packs** - never reintroduce “addon” wording. Keep one pack id (spoken name = folder = manifests); do not leave mismatched display titles or rename synonyms.
 
 Pairs with [rigkit-minimal](../rigkit-minimal/SKILL.md): minimal prevents slop; deslop removes what already landed.
 
@@ -38,10 +38,10 @@ Pairs with [rigkit-minimal](../rigkit-minimal/SKILL.md): minimal prevents slop; 
 | Kind | Action |
 |------|--------|
 | Superseded by present/registry path | **Delete** |
-| Real framework capability, empty today | **Finish** or park in the right layer — never leave a fake no-op in the wrong place (Commandment 10) |
-| Setting / property row nothing reads | **Finish** (wire the reader) or delete the row — never leave an editable control with no effect |
+| Real framework capability, empty today | **Finish** or park in the right layer - never leave a fake no-op in the wrong place (Commandment 10) |
+| Setting / property row nothing reads | **Finish** (wire the reader) or delete the row - never leave an editable control with no effect |
 
-When the row is ambiguous — a stub could be a wanted capability, not just leftovers — **ask the user delete-or-finish before editing**. One question per item with path + evidence + what "finish" would mean. Only clear cases (no callers (even out of tree?), no product value, superseded) are deleted without asking.
+When the row is ambiguous - a stub could be a wanted capability, not just leftovers - **ask the user delete-or-finish before editing**. One question per item with path + evidence + what "finish" would mean. Only clear cases (no callers (even out of tree?), no product value, superseded) are deleted without asking.
 
 Examples of delete: legacy `MEcs` runners replaced by `registerSystem`; dead `Graphics` GL that never draws; unused converters.
 
@@ -49,15 +49,15 @@ Examples of finish: selection overlay over `CSelection`; Canvas FBO present; Ope
 
 ## Workflow
 
-1. **Lock behavior** — name what must stay. Prefer smoke-build / run `minimal` or the touched example when unit tests are thin.
-2. **Plan before edit** — bound files; list smells; safest deletes first.
-3. **Classify** — duplication · dead code · needless abstraction · **state churn** · **pass-back args** · **set-then-use setters** · **write-only state** · **dead control** · boundary leak (ImGui in `src/`, systems in `rigComponent`) · docs overclaim · missing verify.
-4. **One smell pass at a time** — delete, then consolidate, then naming, then verify. Re-build after each pass.
-5. **Report** — changed files · simplifications · verification · remaining risks.
+1. **Lock behavior** - name what must stay. Prefer smoke-build / run `minimal` or the touched example when unit tests are thin.
+2. **Plan before edit** - bound files; list smells; safest deletes first.
+3. **Classify** - duplication · dead code · needless abstraction · **state churn** · **pass-back args** · **set-then-use setters** · **write-only state** · **dead control** · boundary leak (ImGui in `src/`, systems in `rigComponent`) · docs overclaim · missing verify.
+4. **One smell pass at a time** - delete, then consolidate, then naming, then verify. Re-build after each pass.
+5. **Report** - changed files · simplifications · verification · remaining risks.
 
 ## State churn smell
 
-Mutation bookkeeping where a read-time gate works. Delete the bookkeeping, keep the gate — see [rigkit-minimal](../rigkit-minimal/SKILL.md#state-churn-gate-dont-mutate).
+Mutation bookkeeping where a read-time gate works. Delete the bookkeeping, keep the gate - see [rigkit-minimal](../rigkit-minimal/SKILL.md#state-churn-gate-dont-mutate).
 
 | Churn | Replace with |
 |-------|--------------|
@@ -69,12 +69,12 @@ Mutation bookkeeping where a read-time gate works. Delete the bookkeeping, keep 
 | `*Applied` / `have*Pending` sentinel pairs | One value applied once at the real hook |
 | Same default literal in engine + impl + interface | One owner holds it; the rest read through |
 | Setter on an interface that every impl copies | Reader on the dependent side (pull, don't push) |
-| Argument the callee already reaches (manager handed back, stored `m_*` passed in, second pointer to one owner) | Drop the parameter; read through the owner — [no pass-back](../rigkit-minimal/SKILL.md#no-pass-back-never-hand-over-what-the-callee-already-reaches) |
+| Argument the callee already reaches (manager handed back, stored `m_*` passed in, second pointer to one owner) | Drop the parameter; read through the owner - [no pass-back](../rigkit-minimal/SKILL.md#no-pass-back-never-hand-over-what-the-callee-already-reaches) |
 | Lambda whose only job is forwarding args to one call | Register / call the function directly |
-| `setX()` pairs a hidden mode / intent flag reconciles (`setFillColor` + `setStrokeColor` into `m_intent`) | Pass the value with the call as a POD — [no set-then-use](../rigkit-minimal/SKILL.md#no-set-then-use-per-call-data-is-a-parameter-not-stored-state) |
-| Member assigned but never read (`m_hasFill`, `m_fillOpacity`) | Delete it, or wire the reader — a setter with no reader is a dead control |
+| `setX()` pairs a hidden mode / intent flag reconciles (`setFillColor` + `setStrokeColor` into `m_intent`) | Pass the value with the call as a POD - [no set-then-use](../rigkit-minimal/SKILL.md#no-set-then-use-per-call-data-is-a-parameter-not-stored-state) |
+| Member assigned but never read (`m_hasFill`, `m_fillOpacity`) | Delete it, or wire the reader - a setter with no reader is a dead control |
 
-**Finding write-only state:** grep each suspect member — if every hit is an assignment, nothing reads it. Cheap, and it catches the whole class; no compiler flag does, since an assignment counts as a use and `-Wunused-private-field` stays quiet.
+**Finding write-only state:** grep each suspect member - if every hit is an assignment, nothing reads it. Cheap, and it catches the whole class; no compiler flag does, since an assignment counts as a use and `-Wunused-private-field` stays quiet.
 
 Keep genuine deferrals (ImGui font atlas rebuild, GLFW drop callback deferred to the next frame, GL state save/restore around foreign draws).
 

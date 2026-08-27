@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.19)
 
-# Product app starter — nest RigKit, then register this directory as the app.
+# Product app starter - nest RigKit, then register this directory as the app.
 project(MyApp VERSION 0.1.0 LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 20)
@@ -17,10 +17,10 @@ endif()
 
 # CPM in *this* scope: add_rigkit_application() runs here; functions from
 # add_subdirectory(rigkit) are not visible to the parent. Newer RigKit also
-# re-includes CPM inside add_rigkit_application — this keeps older SHAs working.
+# re-includes CPM inside add_rigkit_application - this keeps older SHAs working.
 include("${RIGKIT_DIR}/cmake/CPM.cmake")
 
 add_subdirectory("${RIGKIT_DIR}" "${CMAKE_BINARY_DIR}/rigkit")
 
-# Same helper used by RigKit's examples/ — app sources live in this directory.
+# Same helper used by RigKit's examples/ - app sources live in this directory.
 add_rigkit_application(SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")

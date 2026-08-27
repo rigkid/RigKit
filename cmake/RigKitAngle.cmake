@@ -1,5 +1,5 @@
 # Optional desktop ANGLE (OpenGL ES via libGLESv2/libEGL).
-# Never enable on Raspberry Pi / arm — native GLES is the product path.
+# Never enable on Raspberry Pi / arm - native GLES is the product path.
 #
 #   cmake -S . -B build -DRIGKIT_USE_ANGLE=ON -DRIGKIT_ANGLE_ROOT=C:/path/to/angle
 # Or vcpkg toolchain with `angle` installed (unofficial-angle).

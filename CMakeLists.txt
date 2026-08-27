@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.19)
 
-# Host SemVer — one source of truth: cmake/VERSION (see docs/versioning.md).
+# Host SemVer - one source of truth: cmake/VERSION (see docs/versioning.md).
 # Not repo-root VERSION: ${RIGKIT_ROOT} is a public include, and Windows would
 # treat that file as C++ <version>.
 file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/cmake/VERSION" RIGKIT_VERSION LIMIT_COUNT 1)
@@ -26,7 +26,7 @@ else()
 endif()
 
 # ----------------------------------------------------
-# CPM.cmake – lightweight CMake package manager
+# CPM.cmake - lightweight CMake package manager
 # This lets each application fetch only the packs it needs
 # ----------------------------------------------------
 set(CPM_DOWNLOAD_VERSION "0.38.2")
@@ -48,7 +48,7 @@ set(RIGKIT_ANGLE_ROOT "" CACHE PATH "Prebuilt ANGLE root (include/ + libGLESv2 +
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Native Pi / optional ANGLE → GLES compile path (glad gles2 + ES context).
+# Native Pi / optional ANGLE to GLES compile path (glad gles2 + ES context).
 set(RIGKIT_GLES FALSE)
 if(RIGKIT_USE_ANGLE)
 	include(${RIGKIT_ROOT}/cmake/RigKitAngle.cmake)
@@ -62,7 +62,7 @@ endif()
 set(GLFW3_FOUND OFF CACHE BOOL "" FORCE)
 set(GLFW_FOUND OFF CACHE BOOL "" FORCE)
 set(GLFW3_USE_STATIC_LIBS ON CACHE BOOL "" FORCE)
-# Library only — GLFW's `docs` target would steal the name RigKit uses for API HTML.
+# Library only - GLFW's `docs` target would steal the name RigKit uses for API HTML.
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
@@ -98,7 +98,7 @@ if(WIN32 AND NOT TARGET gen-app-icon)
 	)
 endif()
 
-# Host version string — one generated TU so a VERSION bump does not cascade.
+# Host version string - one generated TU so a VERSION bump does not cascade.
 configure_file(
 	${RIGKIT_ROOT}/cmake/RigKitVersion.cpp.in
 	${CMAKE_CURRENT_BINARY_DIR}/RigKitVersion.cpp
@@ -108,7 +108,7 @@ target_sources(rigkit PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/RigKitVersion.cpp)
 
 # MinGW PE objects default to a ~32k section limit. EnTT-heavy TUs exceed it
 # and the linker then reports nonsense undefined refs into libstdc++/tuple.
-# MSYS2 UCRT64 often leaves the MINGW CMake var unset — key off GNU-on-Windows.
+# MSYS2 UCRT64 often leaves the MINGW CMake var unset - key off GNU-on-Windows.
 if(WIN32 AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 	target_compile_options(rigkit PUBLIC -Wa,-mbig-obj)
 endif()
@@ -189,7 +189,7 @@ function(add_rigkit_application)
 
 	message(STATUS "[RigKit] Calling rigkit_load_packs for ${_sanitized_name}")
 	# Nested hosts: this function runs in the product/example directory scope.
-	# CPM included under add_subdirectory(rigkit) is not visible there — re-include
+	# CPM included under add_subdirectory(rigkit) is not visible there - re-include
 	# so optional-pack CPMAddPackage works (PaintPlotter / templates/app).
 	include("${RIGKIT_ROOT}/cmake/CPM.cmake")
 	rigkit_load_packs(${APP_MANIFEST} APP_PACK_LIBS)
@@ -317,7 +317,7 @@ function(add_rigkit_application)
 		)
 	endif()
 
-	# Icon next to the exe at the app.json-relative path — the runtime resolves
+	# Icon next to the exe at the app.json-relative path - the runtime resolves
 	# "icon" against the exe dir (window / taskbar icon on Linux and Windows).
 	if(NOT _app_icon_path STREQUAL "")
 		get_filename_component(_app_icon_reldir "${_app_icon}" DIRECTORY)
@@ -360,7 +360,7 @@ function(add_rigkit_application)
 	endforeach()
 
 	# Packs can declare runtime files (DLLs, path shims) that must sit next to
-	# the exe — set the RIGKIT_RUNTIME_FILES property on the pack target.
+	# the exe - set the RIGKIT_RUNTIME_FILES property on the pack target.
 	foreach(pack_lib ${APP_PACK_LIBS})
 		if(TARGET ${pack_lib})
 			get_target_property(_pack_runtime_files ${pack_lib} RIGKIT_RUNTIME_FILES)
@@ -396,6 +396,6 @@ if(RIGKIT_IS_TOP_LEVEL)
 		add_subdirectory(${RIGKIT_ROOT}/tools/contract_smoke)
 	endif()
 
-	# Optional API HTML (Doxygen). Target: docs → <build>/docs/api/html/index.html
+	# Optional API HTML (Doxygen). Target: docs to <build>/docs/api/html/index.html
 	include(${RIGKIT_ROOT}/cmake/RigKitDocs.cmake)
 endif()

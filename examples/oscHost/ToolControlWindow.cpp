@@ -27,7 +27,7 @@ ToolControlWindow::ToolControlWindow(OscHost* app)
 	: rigkit::IWindow("Show Control", 0), m_app(app) {}
 
 void ToolControlWindow::renderContents() {
-	ImGui::TextUnformatted("oscHost — show / network controls");
+	ImGui::TextUnformatted("oscHost - show / network controls");
 	ImGui::Separator();
 
 	if (!m_app) {
@@ -86,8 +86,8 @@ void ToolControlWindow::renderContents() {
 		ImGui::EndPopup();
 	}
 
-	ImGui::TextWrapped("Directed: %s/<id>/master|blackout|color|…  "
-					   "Broadcast: %s/… (no id). Bus sends append sender id. "
+	ImGui::TextWrapped("Directed: %s/<id>/master|blackout|color|...  "
+					   "Broadcast: %s/... (no id). Bus sends append sender id. "
 					   "Peer follows on the heartbeat tick (~1s).",
 					   ep.addressPrefix.c_str(), ep.addressPrefix.c_str());
 }

@@ -2,9 +2,9 @@
 
 ## Umbrella headers
 
-- `core/U_core.h` — core types (`RigKitEngine`, `IApp`, pack host, …)
-- `rendering/U_rendering.h` — rendering managers / registries
-- `ecs` components and `MEcs` — include from `ecs/` as needed
+- `core/U_core.h` - core types (`RigKitEngine`, `IApp`, pack host, ...)
+- `rendering/U_rendering.h` - rendering managers / registries
+- `ecs` components and `MEcs` - include from `ecs/` as needed
 
 UI lives in the `rigImGui` pack, not under `src/ui/`. Do not include Dear ImGui from host core.
 
@@ -15,7 +15,7 @@ UI lives in the `rigImGui` pack, not under `src/ui/`. Do not include Dear ImGui 
 
 ## Core vs packs
 
-Packs may include host headers (`core/`, `ecs/`, `rendering/…`). Host `src/` must not include pack headers — that keeps the thin core and the `IMui` / ImGui boundary.
+Packs may include host headers (`core/`, `ecs/`, `rendering/...`). Host `src/` must not include pack headers - that keeps the thin core and the `IMui` / ImGui boundary.
 
 In app and example `.cpp` files, put host includes before pack includes:
 
@@ -26,7 +26,7 @@ In app and example `.cpp` files, put host includes before pack includes:
 #include "packs/rigSystems/src/rigSystems.h"
 ```
 
-`.clang-format` `IncludeCategories` sort quoted `"core|ecs|rendering/…"` ahead of `"packs/…"`, and `<imgui.h>` / `"imgui.h"` ahead of other `<>` so `imfilebrowser.h` stays after ImGui. `IncludeBlocks: Preserve` keeps blank-line groups (e.g. `"app.h"` alone above the rest). Short pack names from `pack.json` include paths (`"rig.h"`, `"Mui.h"`) are not path-classified — prefer repo-relative `packs/…` in host examples when order matters, or keep a blank line between host and pack blocks.
+`.clang-format` `IncludeCategories` sort quoted `"core|ecs|rendering/..."` ahead of `"packs/..."`, and `<imgui.h>` / `"imgui.h"` ahead of other `<>` so `imfilebrowser.h` stays after ImGui. `IncludeBlocks: Preserve` keeps blank-line groups (e.g. `"app.h"` alone above the rest). Short pack names from `pack.json` include paths (`"rig.h"`, `"Mui.h"`) are not path-classified - prefer repo-relative `packs/...` in host examples when order matters, or keep a blank line between host and pack blocks.
 
 This is include / dependency order, not runtime register order. Bootstrap: [packs_using.md](packs_using.md) (`rigComponent`, then `rigSystems`, then `rigImGui`).
 
@@ -40,7 +40,7 @@ Use **clang-format only** (`tools/format.bat` / `tools/format.sh`, or format-on-
 
 Install the hook once per clone: `./tools/install-hooks.sh` (Windows: `tools\install-hooks.bat`). From the **host** that also copies the pack hook into every `packs/<name>` that is its own git repo. Pack commits never run the host hook (it skips `packs/`). New packs get `tools/` from [rigTemplate](../templates/rigTemplate/).
 
-Do not run a second rewriter that deletes or alphabetizes the first include block. `tools/fix-includes.ps1` is retired — it dropped includes and put `<imfilebrowser.h>` before `<imgui.h>`. `tools/scan-includes.ps1` is report-only.
+Do not run a second rewriter that deletes or alphabetizes the first include block. `tools/fix-includes.ps1` is retired - it dropped includes and put `<imfilebrowser.h>` before `<imgui.h>`. `tools/scan-includes.ps1` is report-only.
 
 Headers must include what they use. A missing `#include` is worse than an extra one. CI style checks format; they do not strip includes.
 

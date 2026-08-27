@@ -16,7 +16,7 @@ The `examples/` directory holds in-repo **example apps** built on RigKit. Produc
 | `minimal` | Creator + mesh + hierarchy proof |
 | `oscHost` | Contract / host reference (`--author` / `--show`; OSC via `rigOsc`, `--smoke-osc`) |
 | `glEditor` | GLSL shader preview shell |
-| `calendar` | Content scheduler — `CContentItem` month view persisted with **rigSQLite** (needs local `packs/rigSQLite/` until the pack remote exists; not in host CI yet) |
+| `calendar` | Content scheduler - `CContentItem` month view persisted with **rigSQLite** (needs local `packs/rigSQLite/` until the pack remote exists; not in host CI yet) |
 
 Product apps (out of tree) live next to RigKit (e.g. `../myApp`), not under `examples/`.
 
@@ -35,7 +35,7 @@ For a product app outside this repo, see [apps_creating.md](apps_creating.md).
   - Rendering backends (OpenGL, Blend2D via packs, etc.)
   - UI via optional packs such as `rigImGui`
 - Pack deps are declared per-example in `app.json` and resolved by `cmake/RigKitPacks.cmake`.
-- `app.json` must include SPDX `"license"` (same gate as `pack.json` — CI / `check-invariants`).
+- `app.json` must include SPDX `"license"` (same gate as `pack.json` - CI / `check-invariants`).
 
 ## Minimal skeleton
 

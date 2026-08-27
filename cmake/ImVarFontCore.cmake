@@ -15,13 +15,13 @@ if(NOT IMVARFONT_ROOT OR NOT EXISTS "${IMVARFONT_ROOT}/varfont_core.cpp")
 endif()
 
 if(NOT EXISTS "${IMVARFONT_ROOT}/varfont_core.cpp")
-	message(STATUS "imvarfont_core: ImVarFont not at IMVARFONT_ROOT — measure/shape off")
+	message(STATUS "imvarfont_core: ImVarFont not at IMVARFONT_ROOT - measure/shape off")
 	return()
 endif()
 
 find_package(Freetype QUIET)
 if(NOT Freetype_FOUND)
-	message(STATUS "imvarfont_core: ImVarFont found but FreeType missing — measure/shape off")
+	message(STATUS "imvarfont_core: ImVarFont found but FreeType missing - measure/shape off")
 	return()
 endif()
 
@@ -32,7 +32,7 @@ elseif(EXISTS "${CMAKE_CURRENT_LIST_DIR}/../packs/rigPdf/src/PdfVarFontGlStub.cp
 	set(_stub "${CMAKE_CURRENT_LIST_DIR}/../packs/rigPdf/src/PdfVarFontGlStub.cpp")
 endif()
 if(_stub STREQUAL "")
-	message(STATUS "imvarfont_core: GL stub missing — measure/shape off")
+	message(STATUS "imvarfont_core: GL stub missing - measure/shape off")
 	return()
 endif()
 
@@ -44,7 +44,7 @@ target_include_directories(imvarfont_core PUBLIC
 	$<BUILD_INTERFACE:${IMVARFONT_ROOT}>
 )
 # Include system FreeType headers for the compile. Do not link Freetype::Freetype
-# — Relayout already links PDF-Writer's bundled FreeType, and two FT copies collide.
+# - Relayout already links PDF-Writer's bundled FreeType, and two FT copies collide.
 get_target_property(_ft_inc Freetype::Freetype INTERFACE_INCLUDE_DIRECTORIES)
 if(_ft_inc)
 	target_include_directories(imvarfont_core PRIVATE ${_ft_inc})
@@ -62,7 +62,7 @@ if(PkgConfig_FOUND)
 		message(STATUS "imvarfont_core: HarfBuzz not found (kern table only)")
 	endif()
 else()
-	message(STATUS "imvarfont_core: pkg-config missing — HarfBuzz off (kern table only)")
+	message(STATUS "imvarfont_core: pkg-config missing - HarfBuzz off (kern table only)")
 endif()
 
 message(STATUS "imvarfont_core: ${IMVARFONT_ROOT}")

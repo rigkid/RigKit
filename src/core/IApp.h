@@ -13,16 +13,16 @@ class SEvent;
 }
 
 /**
- * @brief Application entry surface — setup / update / draw / exit.
+ * @brief Application entry surface - setup / update / draw / exit.
  * @details Override setup/update/draw/exit. Do not override rigSetup/rigUpdate/
- * rigDraw/rigExit — those are host template methods (SUDE + present).
+ * rigDraw/rigExit - those are host template methods (SUDE + present).
  * @see RigKitEngine, docs/contract/sude-loop.md, docs/authoring.md
  */
 class IApp {
   public:
 	virtual ~IApp() = default;
 
-	/** @brief Host SUDE glue — apps must not override. */
+	/** @brief Host SUDE glue - apps must not override. */
 	void rigSetup();
 	void rigUpdate(float deltaTime);
 	void rigDraw();
@@ -89,7 +89,7 @@ class IApp {
 	void notifyUiAttached();
 
   protected:
-	/** @brief User hooks — override these (see sude-loop.md). */
+	/** @brief User hooks - override these (see sude-loop.md). */
 	virtual void setup() {}
 	virtual void update(float) {}
 	virtual void draw() {}

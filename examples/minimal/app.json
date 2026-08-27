@@ -2,7 +2,7 @@
   "name": "minimal",
   "version": "0.1.0",
   "license": "MIT",
-  "description": "Minimal example app — creators + meshes + hierarchy",
+  "description": "Minimal example app - creators + meshes + hierarchy",
   "dependencies": [
     {
       "name": "rigComponent",

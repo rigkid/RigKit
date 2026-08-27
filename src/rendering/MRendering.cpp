@@ -72,7 +72,7 @@ std::shared_ptr<IRenderer> MRendering::getMainRenderer() const {
 }
 
 rigkit::json MRendering::getSettings() const {
-	// Association metadata only — not the main window renderer, Graphics
+	// Association metadata only - not the main window renderer, Graphics
 	// wrappers, or ECS scene (those are engine / runtime / rigProject).
 	rigkit::json j;
 	j["renderers"] = rigkit::json::array();
@@ -101,7 +101,7 @@ void MRendering::setSettings(const rigkit::json& settings) {
 } // namespace rigkit
 
 // -----------------------------------------------------------------------------
-// Helper functions – global to match IRenderer.h declarations.
+// Helper functions - global to match IRenderer.h declarations.
 
 #include <string>
 #include <vector>

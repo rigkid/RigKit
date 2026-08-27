@@ -3,7 +3,7 @@
 // GLAD first, then GLFW without system GL headers.
 #if defined(RIGKIT_GLES)
 #include <glad/gles2.h>
-// GLES2 core lacks VAO / packed depth-stencil — use OES entry points.
+// GLES2 core lacks VAO / packed depth-stencil - use OES entry points.
 #ifndef glGenVertexArrays
 #define glGenVertexArrays glGenVertexArraysOES
 #define glBindVertexArray glBindVertexArrayOES

@@ -33,7 +33,7 @@ class MPack : public IManager, public ISettings {
 	std::shared_ptr<IPack> getPack(const std::string& name) const;
 
 	/**
-	 * @brief Typed lookup by pack class after registerPack — MPack owns the instance.
+	 * @brief Typed lookup by pack class after registerPack - MPack owns the instance.
 	 * @return The registered pack, or nullptr when that class was never registered.
 	 */
 	template <typename T> std::shared_ptr<T> getPack() const {

@@ -40,7 +40,7 @@ bool saveUserDataDirOverride();
 /// UI / content fonts: `<data>/fonts` (shipped tree).
 std::string getFontsDir();
 
-/// Alias for getDataDir() — prefer getDataDir() in new code.
+/// Alias for getDataDir() - prefer getDataDir() in new code.
 std::string getAssetsDir();
 
 std::string getUserSettingsFile();

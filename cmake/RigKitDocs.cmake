@@ -4,7 +4,7 @@
 
 find_package(Doxygen QUIET)
 if(NOT DOXYGEN_FOUND)
-	message(STATUS "Doxygen not found — skip `docs` target (install doxygen to generate API HTML)")
+	message(STATUS "Doxygen not found - skip `docs` target (install doxygen to generate API HTML)")
 	return()
 endif()
 
@@ -26,13 +26,13 @@ add_custom_target(docs
 	COMMAND ${CMAKE_COMMAND} -E make_directory "${RIGKIT_DOXY_OUT}"
 	COMMAND "${DOXYGEN_EXECUTABLE}" "${RIGKIT_DOXYFILE_OUT}"
 	WORKING_DIRECTORY "${RIGKIT_ROOT}"
-	COMMENT "Generating RigKit API docs (Doxygen) → ${RIGKIT_DOXY_OUT}/html"
+	COMMENT "Generating RigKit API docs (Doxygen) to ${RIGKIT_DOXY_OUT}/html"
 	VERBATIM
 )
 
-message(STATUS "Doxygen ${DOXYGEN_VERSION} — `cmake --build <build> --target docs`")
+message(STATUS "Doxygen ${DOXYGEN_VERSION} - `cmake --build <build> --target docs`")
 if(RIGKIT_DOXY_HAVE_DOT STREQUAL "YES")
-	message(STATUS "  Graphviz dot found — class diagrams enabled")
+	message(STATUS "  Graphviz dot found - class diagrams enabled")
 else()
-	message(STATUS "  Graphviz dot not found — diagrams disabled (optional)")
+	message(STATUS "  Graphviz dot not found - diagrams disabled (optional)")
 endif()

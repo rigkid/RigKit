@@ -1,4 +1,4 @@
-# RigKit API docs — configured by CMake (docs/api/Doxyfile.in → build/docs/api/Doxyfile).
+# RigKit API docs - configured by CMake (docs/api/Doxyfile.in to build/docs/api/Doxyfile).
 # Generate: cmake --build <build> --target docs
 
 PROJECT_NAME           = "RigKit"

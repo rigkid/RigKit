@@ -211,7 +211,7 @@ void OpenGLRenderer::setFramebufferSize(int width, int height) {
 }
 
 void OpenGLRenderer::updateProjection() {
-	// Origin top-left, y grows down — design pixels, not framebuffer pixels.
+	// Origin top-left, y grows down - design pixels, not framebuffer pixels.
 	const glm::mat4 projection =
 		glm::ortho(0.f, static_cast<float>(m_width), static_cast<float>(m_height), 0.f, -1.f, 1.f);
 	glUseProgram(m_program);
@@ -319,7 +319,7 @@ void OpenGLRenderer::drawStrokedPoly(std::span<const glm::vec2> pts, bool closed
 		return;
 	}
 	// Strip or loop as independent segments, so consecutive strokes of the same
-	// width merge. Two points are already the whole loop — wrapping redraws it.
+	// width merge. Two points are already the whole loop - wrapping redraws it.
 	const bool wrap = closed && pts.size() > 2;
 	openBatch(GL_LINES, width);
 	reserveBatch((pts.size() - 1 + (wrap ? 1u : 0u)) * 2);

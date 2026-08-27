@@ -6,18 +6,18 @@
 
 | Pack | Role |
 |------|------|
-| **rigComponent** | Data-only POD components + `GetProperties` — **no systems** |
+| **rigComponent** | Data-only POD components + `GetProperties` - **no systems** |
 | **rigSystems** | Update/Draw systems that register on `MEcs` |
 | **rigRender3D** | GLES mesh present when an active `CCamera` exists |
 | **rigObj** | Wavefront OBJ load/save for `CMesh` (tinyobjloader) |
 | **rigPdf** | PDF emit from `CPage` / paths / shaped `CText` (PDF-Writer + ImVarFont core; leaf) |
-| **rigStoryComponent** | Story PODs (`CStoryFlow`, paragraph, table, named styles) — DATA ONLY |
-| **rigLayoutComponent** | Layout PODs (master, facing, visual styles, frame chain) — DATA ONLY |
-| **rigLayout** | Compose engine — story to placed `CText` on pages (Setup bake) |
+| **rigStoryComponent** | Story PODs (`CStoryFlow`, paragraph, table, named styles) - DATA ONLY |
+| **rigLayoutComponent** | Layout PODs (master, facing, visual styles, frame chain) - DATA ONLY |
+| **rigLayout** | Compose engine - story to placed `CText` on pages (Setup bake) |
 | **rigEthereum** | On-chain art record POD + keccak256 / wallet submit intent (leaf; existing wallet; no keys) |
 | **rigAssimp** | Optional Assimp multi-format to `CMesh` (leaf; app opt-in only) |
 | **rigMeshEdit** | ImGuizmo TRS edit for selected `CTransform` |
-| **rigNodeComponent** | Generic node-graph PODs (`CNodeGraph`) — DATA + catalog/eval helpers. Artist guide: [nodes.md](nodes.md) |
+| **rigNodeComponent** | Generic node-graph PODs (`CNodeGraph`) - DATA + catalog/eval helpers. Artist guide: [nodes.md](nodes.md) |
 | **rigNodeEditor** | ImGui editor over `CNodeGraph` ([nodes.md](nodes.md)) |
 | **rigProject** | Host project envelope + `.rig` document IO (document = portable `.rig`; project = host session) |
 | **rigImGui** | Properties/Debug read the **component catalog** |
@@ -25,7 +25,7 @@
 
 Core (`MEcs`) only provides thin `registerComponent` / `registerSystem` glue.
 
-In-org **basics** (`rigComponent`, `rigSystems`, `rigProject`, `rigImGui`) are git submodules on the host. Optional packs (e.g. `rigOsc`, `rigBlend2D`, plotter family) are cloned locally or fetched via CPM at a pinned **`ref`**. Survey [packs_catalog.md](packs_catalog.md) before scaffolding; then [`templates/rigTemplate`](../templates/rigTemplate/) — see [packs/README.md](../packs/README.md#new-pack).
+In-org **basics** (`rigComponent`, `rigSystems`, `rigProject`, `rigImGui`) are git submodules on the host. Optional packs (e.g. `rigOsc`, `rigBlend2D`, plotter family) are cloned locally or fetched via CPM at a pinned **`ref`**. Survey [packs_catalog.md](packs_catalog.md) before scaffolding; then [`templates/rigTemplate`](../templates/rigTemplate/) - see [packs/README.md](../packs/README.md#new-pack).
 
 ## Component authority (where types live)
 
@@ -33,15 +33,15 @@ Pick a home before writing systems or UI. Agents: [rigkit-data](../skills/rigkit
 
 | Home | Owns | Examples |
 |------|------|----------|
-| Host `src/ecs/components/` | Host-bound leftovers only — do not grow for new portable meaning | `CEvent` (menu/UI action data; `std::any` payload keeps it host-only) |
-| **rigComponent** | Generic reusable PODs — grow here; keep thin | `CTransform`, `CCanvas`, `CCamera`, `CLight`, `CPalette`, `CIndexedAtlas`, `CFaceSelection`, `CEdgeSelection`, `CShape`, `CMesh`, `CSpline3d`, `CNurbsSurface`, `CCadBox`, `CCadDimension`, `CDrawStyle`, `CSelection`, `CScreenCast`, `CScreenCastReceive`, `CCastReceiver` |
-| Domain data pack | Product-specific PODs (+ codecs / pure helpers over that POD) | `rigProject` (`CProject`, `CPage`); `rigPlotComponent` (`CPaths`, …); `rigNodeComponent` (`CNodeGraph`) |
-| Code pack | Systems / I/O / UI — not portable component homes | `rigSystems`, `rigRender3D`, `rigObj`, `rigAssimp` (leaf), `rigPdf` (leaf), `rigEthereum` (leaf), `rigScreenCast` (leaf), `rigMeshEdit`, `rigNodeEditor`, `rigPlotter`, `rigPlotFinders`, `rigSvg`, `rigImGui` |
+| Host `src/ecs/components/` | Host-bound leftovers only - do not grow for new portable meaning | `CEvent` (menu/UI action data; `std::any` payload keeps it host-only) |
+| **rigComponent** | Generic reusable PODs - grow here; keep thin | `CTransform`, `CCanvas`, `CCamera`, `CLight`, `CPalette`, `CIndexedAtlas`, `CFaceSelection`, `CEdgeSelection`, `CShape`, `CMesh`, `CSpline3d`, `CNurbsSurface`, `CCadBox`, `CCadDimension`, `CDrawStyle`, `CSelection`, `CScreenCast`, `CScreenCastReceive`, `CCastReceiver` |
+| Domain data pack | Product-specific PODs (+ codecs / pure helpers over that POD) | `rigProject` (`CProject`, `CPage`); `rigPlotComponent` (`CPaths`, ...); `rigNodeComponent` (`CNodeGraph`) |
+| Code pack | Systems / I/O / UI - not portable component homes | `rigSystems`, `rigRender3D`, `rigObj`, `rigAssimp` (leaf), `rigPdf` (leaf), `rigEthereum` (leaf), `rigScreenCast` (leaf), `rigMeshEdit`, `rigNodeEditor`, `rigPlotter`, `rigPlotFinders`, `rigSvg`, `rigImGui` |
 | App | Prototypes until promotion to `rigComponent` or a domain data pack | one-off app structs |
 
 A data pack is **components-first**, not “literally only `struct` files.” Allowed: `C*` PODs, `GetProperties`, `registerComponent`, document codecs for those types, pure helpers (catalog, eval, flatten). Forbidden: Update/Draw systems, ImGui panels, GPU/window handles in components. Engines (e.g. PlotDoc) and editors stay in **code** packs.
 
-Serialize domain types via **rigProject** codecs / root extensions — the **owning** pack (or app) calls `project::addSerializer<T>(...)` / `rigProject::registerSerializer` in `setup()`. **rigProject** only walks the registry and owns the document envelope (`CProject` / `CPage`). Do not grow a kitchen-sink serializer list inside **rigProject**.
+Serialize domain types via **rigProject** codecs / root extensions - the **owning** pack (or app) calls `project::addSerializer<T>(...)` / `rigProject::registerSerializer` in `setup()`. **rigProject** only walks the registry and owns the document envelope (`CProject` / `CPage`). Do not grow a kitchen-sink serializer list inside **rigProject**.
 
 ```cpp
 #include "AddSerializer.h"
@@ -61,7 +61,7 @@ if (auto* doc = getPack<rigkit::rigProject>("rigProject")) {
 ## Define a data component
 
 ```cpp
-// In your app or a data pack — plain struct only
+// In your app or a data pack - plain struct only
 struct MyComponent {
 	float brightness = 1.0f;
 	std::vector<sProp> GetProperties() {
@@ -76,12 +76,12 @@ struct MyComponent {
 ecs->registerComponent<MyComponent>("MyComponent", true);
 ```
 
-rigImGui Properties iterates the catalog — no hardcoded type list.
+rigImGui Properties iterates the catalog - no hardcoded type list.
 
 ## Register a system (rigSystems lane)
 
 ```cpp
-// A system is a plain function over the data — pass it straight in.
+// A system is a plain function over the data - pass it straight in.
 void MySim(MEcs& ecs, float dt);   // mutate component data
 void MyPresent(MEcs& ecs);         // ecs.getPresentRenderer() then present
 
@@ -89,7 +89,7 @@ ecs->registerSystem("MySim", SystemPhase::Update, MySim);
 ecs->registerSystem("MyPresent", SystemPhase::Draw, MyPresent);
 ```
 
-The manager binds itself, so a system takes only what it uses — `void(MEcs&, float)`, `void(MEcs&)`, `void(float)` or `void()`. Never write a lambda whose only job is to forward `MEcs&` back to the manager you registered on.
+The manager binds itself, so a system takes only what it uses - `void(MEcs&, float)`, `void(MEcs&)`, `void(float)` or `void()`. Never write a lambda whose only job is to forward `MEcs&` back to the manager you registered on.
 
 The name is the entry's identity: same name + phase replaces, so a pack that runs `setup()` again (`MPack::reloadPack`) does not end up running its systems twice.
 

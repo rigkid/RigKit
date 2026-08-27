@@ -112,7 +112,7 @@ void Progress::requestCancel() {
 	m_cancelRequested.store(true, std::memory_order_relaxed);
 	std::lock_guard lock(m_mutex);
 	if (m_active) {
-		m_label = "Cancelling…";
+		m_label = "Cancelling...";
 	}
 }
 

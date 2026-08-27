@@ -58,7 +58,7 @@ class MEcs : public IManager, public ISettings {
 
 	/**
 	 * @brief Register a fulfillment system. Packs own the functions.
-	 * @details Pass the system straight in — the manager binds itself, so a
+	 * @details Pass the system straight in - the manager binds itself, so a
 	 * system takes only what it uses: `void(MEcs&, float)`, `void(MEcs&)`,
 	 * `void(float)` or `void()`.
 	 * @param name Identity for the entry: registering the same name and phase

@@ -107,7 +107,7 @@ bool decodeBmpEntry(const unsigned char* data, size_t size, IconImage& out) {
 			}
 		}
 	} else if (!hasMask && bpp == 32 && !anyAlpha) {
-		// No mask and an unused alpha channel — treat as opaque, not invisible.
+		// No mask and an unused alpha channel - treat as opaque, not invisible.
 		for (size_t i = 3; i < out.rgba.size(); i += 4) {
 			out.rgba[i] = 255;
 		}
@@ -152,7 +152,7 @@ void hexToRgb(uint32_t hex, unsigned char rgb[3]) {
 	rgb[2] = static_cast<unsigned char>(hex & 0xFF);
 }
 
-// Rec. 601 luma — enough to rank palette entries light-to-dark.
+// Rec. 601 luma - enough to rank palette entries light-to-dark.
 float luma(uint32_t hex) {
 	return 0.299f * ((hex >> 16) & 0xFF) + 0.587f * ((hex >> 8) & 0xFF) + 0.114f * (hex & 0xFF);
 }
@@ -211,7 +211,7 @@ std::vector<IconImage> loadIco(const std::string& path) {
 		}
 		static const unsigned char pngSig[8] = {0x89, 'P', 'N', 'G', 0x0D, 0x0A, 0x1A, 0x0A};
 		if (std::memcmp(d + offset, pngSig, 8) == 0) {
-			continue; // PNG entry — would need a PNG decoder
+			continue; // PNG entry - would need a PNG decoder
 		}
 		IconImage img;
 		if (decodeBmpEntry(d + offset, bytes, img)) {

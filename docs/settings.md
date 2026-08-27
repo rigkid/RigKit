@@ -2,8 +2,8 @@
 
 RigKit has two related seams:
 
-1. **`ISettings`** — JSON get/set on managers, packs, canvas (serialize blobs).
-2. **User preferences** — pack/host POD sections registered on `MSettings`, edited in the Preferences panel, persisted to `<userData>/user/rigkit_settings.json` (default user data root = `<exeDir>/data`).
+1. **`ISettings`** - JSON get/set on managers, packs, canvas (serialize blobs).
+2. **User preferences** - pack/host POD sections registered on `MSettings`, edited in the Preferences panel, persisted to `<userData>/user/rigkit_settings.json` (default user data root = `<exeDir>/data`).
 
 ## Data Path
 
@@ -38,7 +38,7 @@ struct MyPrefs {
 	}
 };
 
-// In pack setup() — after engine is available:
+// In pack setup() - after engine is available:
 engine->getSettingsManager()->registerPreferences("myPack.tool", "My Pack", &m_prefs);
 
 // In pack cleanup():
@@ -49,7 +49,7 @@ Flow:
 
 1. Engine loads the OS Data Path pointer (if any), then `rigkit_settings.json` (`MSettings::loadFromDisk`).
 2. On `registerPreferences`, stored values for that section id are applied onto the live POD.
-3. Preferences panel (`rigImGui`, File > Preferences…) lists categories on the left and edits the selected section’s live fields via `sProp` on the right.
+3. Preferences panel (`rigImGui`, File > Preferences...) lists categories on the left and edits the selected section’s live fields via `sProp` on the right.
 4. Save button or process exit writes registered sections (merged so unloaded packs keep their keys).
 
 JSON shape:
@@ -83,7 +83,7 @@ JSON shape:
 
 `recentFiles` is a top-level blob value (not a Preferences section) written by `IMui::noteRecentFile` / File > Open Recent. `workspace` is the active named dock layout (View > Workspace in `rigImGui`); the layout files themselves live under `data/user/workspaces/<name>.ini` (dock tree plus `[RigVisibility]`). On startup, rigImGui loads that named file when present, otherwise `Standard.ini`.
 
-Built-in section: `host.app` (`AppSettings` — debug, vsync, FPS, clear color, window size/fullscreen, Data Path). Window size, fullscreen, vsync, clear color, debug, and Data Path all apply **immediately** when changed.
+Built-in section: `host.app` (`AppSettings` - debug, vsync, FPS, clear color, window size/fullscreen, Data Path). Window size, fullscreen, vsync, clear color, debug, and Data Path all apply **immediately** when changed.
 
 `rigImGui.ui` also includes chrome prefs: **Show Status Bar**, **FPS Display** (Status Bar / Menu Bar / Off), progress placement, theme, fonts, rulers.
 
@@ -122,11 +122,11 @@ out << canvasJson.dump(4);
 | `AppSettings` | Window / graphics POD for the app | Renderer GPU state |
 | `Canvas` | Surface size / clear / samples (`-1` inherits `window.samples`) | Engine pointer |
 | `MRendering` | Entity-to-renderer type and canvas settings metadata | Main window renderer (engine-owned); `Graphics` wrappers; ECS scene (use **rigProject**) |
-| `MEcs` | Entity id/name list only | Components — scene IO is **rigProject** |
+| `MEcs` | Entity id/name list only | Components - scene IO is **rigProject** |
 | `Mui` | Theme / workspace hints | Live UI prefs (`rigImGui.ui` via `MSettings`) |
 
 ## Notes
 
-- No Dear ImGui in `src/` — Preferences UI is `rigImGui` only.
+- No Dear ImGui in `src/` - Preferences UI is `rigImGui` only.
 - Headless hosts still load/save the preference file; they simply have no Preferences panel.
 - Pack `IPack::parameters` / `customSettings` remain for pack-internal config; user-facing knobs should use `registerPreferences`.

@@ -45,7 +45,7 @@ class IMui {
 	/**
 	 * @brief Present / chrome id for this fulfillment (e.g. "imgui", "tui").
 	 * @details Host may swap fulfillments via RigKitEngine::requestUiChrome.
-	 * Not an ImGuiStyle theme — a compositor / toolkit choice.
+	 * Not an ImGuiStyle theme - a compositor / toolkit choice.
 	 */
 	virtual const char* chromeId() const { return "imgui"; }
 
@@ -94,7 +94,7 @@ class IMui {
 	/**
 	 * @brief Enter/leave Edit Mode (author panels visible when ON).
 	 * @details Transient UI state. Whether the feature exists at all is the
-	 * engine's call — RigKitEngine::enableEditMode(bool), off by default — so
+	 * engine's call - RigKitEngine::enableEditMode(bool), off by default - so
 	 * this is a no-op for apps that never opted in.
 	 */
 	virtual void setEditMode(bool enabled) { (void)enabled; }
@@ -135,8 +135,8 @@ class IMui {
 	}
 
 	/**
-	 * @brief Register a File menu submenu (e.g. Open → Resource → …).
-	 * @details @p drawContents runs inside an open `BeginMenu` — emit `MenuItem`s /
+	 * @brief Register a File menu submenu (e.g. Open to Resource to ...).
+	 * @details @p drawContents runs inside an open `BeginMenu` - emit `MenuItem`s /
 	 * nested menus. Drawn each frame the parent File menu is open so lists can be live.
 	 */
 	virtual void registerFileSubmenu(const std::string& label, std::function<void()> drawContents) {
@@ -146,7 +146,7 @@ class IMui {
 
 	/**
 	 * @brief Register an app-menu row (product actions; Preferences / Quit stay host-owned).
-	 * @param label Menu label (e.g. "Import Options…").
+	 * @param label Menu label (e.g. "Import Options...").
 	 * @param action Invoked when the item is chosen.
 	 * @param shortcut Optional chord shown in the menu (display only unless also bound).
 	 */
@@ -158,8 +158,8 @@ class IMui {
 	}
 
 	/**
-	 * @brief Register an app-menu submenu (e.g. Import → Resource…).
-	 * @details @p drawContents runs inside an open `BeginMenu` — emit `MenuItem`s /
+	 * @brief Register an app-menu submenu (e.g. Import to Resource...).
+	 * @details @p drawContents runs inside an open `BeginMenu` - emit `MenuItem`s /
 	 * nested menus. Drawn each frame the parent app menu is open so lists can be live.
 	 */
 	virtual void registerAppSubmenu(const std::string& label, std::function<void()> drawContents) {
@@ -168,7 +168,7 @@ class IMui {
 	}
 
 	/**
-	 * @brief Record a successfully opened/saved document path for File → Open Recent.
+	 * @brief Record a successfully opened/saved document path for File to Open Recent.
 	 * @details Newest first; duplicates move to the front. No-op when path is empty.
 	 */
 	virtual void noteRecentFile(const std::string& path) { (void)path; }
@@ -177,7 +177,7 @@ class IMui {
 	virtual void clearRecentFiles() {}
 
 	/**
-	 * @brief Handler invoked when the user picks a File → Open Recent entry.
+	 * @brief Handler invoked when the user picks a File to Open Recent entry.
 	 * @details Apps/packs that own document load register here (e.g. load .rig).
 	 */
 	virtual void setRecentFileOpenHandler(std::function<void(const std::string& path)> handler) {
@@ -185,8 +185,8 @@ class IMui {
 	}
 
 	/**
-	 * @brief Register a File→Export menu row (packs add formats; host owns PNG).
-	 * @param label Menu label (e.g. "SVG…").
+	 * @brief Register a File to Export menu row (packs add formats; host owns PNG).
+	 * @param label Menu label (e.g. "SVG...").
 	 * @param action Invoked when the item is chosen.
 	 */
 	virtual void registerExportAction(const std::string& label, std::function<void()> action) {
@@ -228,7 +228,7 @@ class IMui {
 	}
 
 	/**
-	 * @brief Register a View menu submenu (e.g. Camera → Top / Left).
+	 * @brief Register a View menu submenu (e.g. Camera to Top / Left).
 	 * @details @p drawContents runs inside an open `BeginMenu`.
 	 */
 	virtual void registerViewSubmenu(const std::string& label, std::function<void()> drawContents) {
@@ -274,7 +274,7 @@ class IMui {
 	virtual int chromeKernPairCount() const { return 0; }
 
 	/**
-	 * @brief Optional About dialog intro (Help → About). Empty = default blurb + app.json.
+	 * @brief Optional About dialog intro (Help to About). Empty = default blurb + app.json.
 	 * @details Header is always "RigKit" plus `rigkit::version()`. Empty intro keeps the
 	 * host blurb, then app name / version / description / license. Pass a non-empty
 	 * string to replace the intro block (not the RigKit header).
@@ -287,7 +287,7 @@ class IMui {
 
 	/**
 	 * @brief Progress chrome (status bar or floating). Null when UI is detached.
-	 * @details Thread-safe begin / tick / finish. Show mode → nullptr (Rig only).
+	 * @details Thread-safe begin / tick / finish. Show mode to nullptr (Rig only).
 	 */
 	virtual Progress* progress() { return nullptr; }
 };

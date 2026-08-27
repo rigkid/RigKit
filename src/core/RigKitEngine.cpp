@@ -73,7 +73,7 @@ RigKitEngine::RigKitEngine(std::unique_ptr<IApp> app, const json& settings, int 
 
 	if (m_app) {
 		m_app->setEngine(this);
-		// Deployed app.json next to the exe — identity + default window before CLI/prefs.
+		// Deployed app.json next to the exe - identity + default window before CLI/prefs.
 		{
 			std::ifstream in(AppPaths::getManifestPath());
 			if (in) {
@@ -132,7 +132,7 @@ RigKitEngine::RigKitEngine(std::unique_ptr<IApp> app, const json& settings, int 
 	m_ecsManager->setRenderingManager(m_renderingManager.get());
 
 	if (m_headless) {
-		spdlog::info("[RigKitEngine] headless — no GLFW/GL present");
+		spdlog::info("[RigKitEngine] headless - no GLFW/GL present");
 		if (m_app) {
 			m_app->rigSetup();
 		}
@@ -140,7 +140,7 @@ RigKitEngine::RigKitEngine(std::unique_ptr<IApp> app, const json& settings, int 
 	}
 
 #if defined(RIGKIT_USE_ANGLE) && defined(_WIN32)
-	// Must be set before glfwInit — prefer D3D11 ANGLE backend on Windows.
+	// Must be set before glfwInit - prefer D3D11 ANGLE backend on Windows.
 	glfwInitHint(GLFW_ANGLE_PLATFORM_TYPE, GLFW_ANGLE_PLATFORM_TYPE_D3D11);
 #endif
 	if (!glfwInit()) {
@@ -148,7 +148,7 @@ RigKitEngine::RigKitEngine(std::unique_ptr<IApp> app, const json& settings, int 
 	}
 
 #if defined(RIGKIT_GLES)
-	// Pi native GLES or desktop ANGLE — request an ES 2.0 context (Pi floor).
+	// Pi native GLES or desktop ANGLE - request an ES 2.0 context (Pi floor).
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
@@ -175,7 +175,7 @@ RigKitEngine::RigKitEngine(std::unique_ptr<IApp> app, const json& settings, int 
 	GLFWmonitor* monitor = ws.fullscreen ? primary : nullptr;
 
 	// app.json / prefs sizes are design (logical) pixels.
-	// With GLFW_SCALE_TO_MONITOR, GLFW applies content scale — do not multiply
+	// With GLFW_SCALE_TO_MONITOR, GLFW applies content scale - do not multiply
 	// again or HiDPI launches become enormous (and prefs then save the huge size).
 	int createW = ws.width > 0 ? ws.width : 800;
 	int createH = ws.height > 0 ? ws.height : 600;
@@ -206,7 +206,7 @@ RigKitEngine::RigKitEngine(std::unique_ptr<IApp> app, const json& settings, int 
 		throw std::runtime_error("Failed to create GLFW window");
 	}
 	glfwMakeContextCurrent(m_window);
-	// Preferences / ctor may set vsync before the window exists — apply now.
+	// Preferences / ctor may set vsync before the window exists - apply now.
 	setVerticalSync(m_app ? m_app->settings().graphics.vsync : true);
 #if defined(RIGKIT_GLES)
 	if (!gladLoaderLoadGLES2()) {
@@ -224,7 +224,7 @@ RigKitEngine::RigKitEngine(std::unique_ptr<IApp> app, const json& settings, int 
 	}
 #endif
 
-	// Default Draw fulfillment: OpenGL IRenderer → window framebuffer.
+	// Default Draw fulfillment: OpenGL IRenderer to window framebuffer.
 	// Registry factory is registered by OpenGLRenderer.cpp; create + bind here
 	// so creators/meshes appear without an extra Canvas/Blend2D pack.
 	{
@@ -424,7 +424,7 @@ void RigKitEngine::applyUiChrome(const std::string& id) {
 	m_uiInitialised = true;
 	persistUiChrome();
 	notifyUiAttachedHooks();
-	spdlog::info("[RigKitEngine] UI chrome → {}", m_uiChrome);
+	spdlog::info("[RigKitEngine] UI chrome to {}", m_uiChrome);
 }
 
 void RigKitEngine::flushPendingUiChrome() {
@@ -512,7 +512,7 @@ void RigKitEngine::applyWindowSettingsFromApp() {
 		int w = ws.width > 0 ? ws.width : 800;
 		int h = ws.height > 0 ? ws.height : 600;
 		clampWindowedSize(w, h);
-		// Compare logical size — GLFW window size may already be scale-multiplied.
+		// Compare logical size - GLFW window size may already be scale-multiplied.
 		int designW = 0, designH = 0, fbW = 0, fbH = 0;
 		getPresentSize(designW, designH, fbW, fbH);
 		if (w != designW || h != designH) {
@@ -568,7 +568,7 @@ void RigKitEngine::getPresentSize(int& designW, int& designH, int& fbW, int& fbH
 	const int winW = getWindowWidth();
 	const int winH = getWindowHeight();
 
-	// Retina-style: framebuffer larger than window — window size is logical.
+	// Retina-style: framebuffer larger than window - window size is logical.
 	if (winW > 0 && winH > 0 && (fbW > winW + 1 || fbH > winH + 1)) {
 		designW = winW;
 		designH = winH;
@@ -613,7 +613,7 @@ json RigKitEngine::getSettings() const {
 	j["graphics"]["targetFps"] = getTargetFrameRate();
 	j["graphics"]["clearColor"] = colorToJson(getClearColor());
 
-	// Window settings — logical / design pixels (not scale-multiplied GLFW size).
+	// Window settings - logical / design pixels (not scale-multiplied GLFW size).
 	int designW = 0, designH = 0, fbW = 0, fbH = 0;
 	getPresentSize(designW, designH, fbW, fbH);
 	j["window"]["width"] = designW > 0 ? designW : getWindowWidth();

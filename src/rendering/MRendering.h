@@ -51,9 +51,9 @@ class MRendering : public IManager, public ISettings {
 } // namespace rigkit
 
 // -----------------------------------------------------------------------------
-// Free helpers (create / parse renderer type) — not registry methods.
+// Free helpers (create / parse renderer type) - not registry methods.
 
-// Factory helper – remains a free function so callers can create a renderer
+// Factory helper - remains a free function so callers can create a renderer
 // without dealing with the registry directly.
 std::shared_ptr<IRenderer> createRenderer(RendererType type);
 

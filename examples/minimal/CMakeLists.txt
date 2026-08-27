@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.19)
 
-# In-tree example — nest RigKit from the repo root, build only this app.
+# In-tree example - nest RigKit from the repo root, build only this app.
 get_filename_component(_RIGKIT_EXAMPLE_NAME "${CMAKE_CURRENT_SOURCE_DIR}" NAME)
 project(${_RIGKIT_EXAMPLE_NAME} VERSION 0.1.0 LANGUAGES C CXX)
 

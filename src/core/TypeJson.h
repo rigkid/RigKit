@@ -2,14 +2,14 @@
 
 /**
  * @file TypeJson.h
- * @brief Contract property datatypes ↔ nlohmann JSON.
+ * @brief Contract property datatypes  <->  nlohmann JSON.
  * @details One include for host + pack codecs: scalars, vec2/3/4, quat, colour
  * (host `EPT_COLOR` over vec4), and `typeValueToJson` / `typeValueFromJson` for
  * `sProp` / `propTypes`. Quat wire order is x, y, z, w (glm ctor is w, x, y, z).
  * `*ToJson` returns `ordered_json` (assigns into `json` too); `*FromJson`
  * accepts either. Colour arrays may be rgb or rgba (`rgbaFromJson`).
  *
- * Contract table: docs/contract/RigWorks/docs/properties.md — `curve` stays
+ * Contract table: docs/contract/RigWorks/docs/properties.md - `curve` stays
  * schema-shaped (not a leaf helper here).
  */
 
@@ -85,7 +85,7 @@ std::string stringFromJson(const Json& j, const std::string& fallback = {}) {
 	return j.template get<std::string>();
 }
 
-/// Named choice — same wire as int (schema lists literals).
+/// Named choice - same wire as int (schema lists literals).
 inline nlohmann::ordered_json enumToJson(int v) {
 	return intToJson(v);
 }
@@ -137,7 +137,7 @@ template <typename Json> glm::vec4 vec4FromJson(const Json& j, const glm::vec4& 
 			j[3].template get<float>()};
 }
 
-/// rgb or rgba array → vec4 (A defaults to `fallback.a`, usually 1).
+/// rgb or rgba array to vec4 (A defaults to `fallback.a`, usually 1).
 template <typename Json>
 glm::vec4 rgbaFromJson(const Json& j, const glm::vec4& fallback = {0.f, 0.f, 0.f, 1.f}) {
 	if (!j.is_array() || j.size() < 3) {
@@ -147,7 +147,7 @@ glm::vec4 rgbaFromJson(const Json& j, const glm::vec4& fallback = {0.f, 0.f, 0.f
 			j.size() > 3 ? j[3].template get<float>() : fallback.a};
 }
 
-/// Colour as float[4]. Missing alpha → fallback A (typically 1).
+/// Colour as float[4]. Missing alpha to fallback A (typically 1).
 inline nlohmann::ordered_json colorToJson(const glm::vec4& v) {
 	return vec4ToJson(v);
 }
@@ -156,7 +156,7 @@ glm::vec4 colorFromJson(const Json& j, const glm::vec4& fallback = {0.f, 0.f, 0.
 	return rgbaFromJson(j, fallback);
 }
 
-/// rgb array (no alpha) — light colour, emissive, etc.
+/// rgb array (no alpha) - light colour, emissive, etc.
 inline nlohmann::ordered_json rgbToJson(const glm::vec3& v) {
 	return vec3ToJson(v);
 }

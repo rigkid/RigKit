@@ -22,8 +22,8 @@ struct GradientStop {
 /**
  * @brief Colour plus fill-or-stroke intent for one draw call.
  * @details Every primitive takes a Paint, so the backend holds no style state
- * and stays free to reorder or batch draws. Retained artist style — set a
- * colour once, then draw many shapes — lives one layer up in Graphics.
+ * and stays free to reorder or batch draws. Retained artist style - set a
+ * colour once, then draw many shapes - lives one layer up in Graphics.
  * @see Graphics, OpenGLRenderer
  */
 struct Paint {
@@ -73,7 +73,7 @@ class IRenderer {
 	virtual void endFrame() = 0;
 	virtual void clear(const glm::vec4& color) = 0;
 
-	/** @note Always strokes — a line has no interior, so Paint::mode is ignored. */
+	/** @note Always strokes - a line has no interior, so Paint::mode is ignored. */
 	virtual void drawLine(float x1, float y1, float x2, float y2, const Paint& paint) = 0;
 	virtual void drawRect(float x, float y, float width, float height, const Paint& paint) = 0;
 	virtual void drawCircle(float x, float y, float radius, const Paint& paint) = 0;

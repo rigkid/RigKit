@@ -16,10 +16,10 @@
 #include <spdlog/spdlog.h>
 
 OscHost::OscHost() {
-	// Compact default — two instances fit on one desktop.
+	// Compact default - two instances fit on one desktop.
 	window().width = 640;
 	window().height = 400;
-	window().title = "RigKit — oscHost";
+	window().title = "RigKit - oscHost";
 	settings().appName = "oscHost";
 }
 
@@ -39,7 +39,7 @@ void OscHost::parseCommandLineArgs(const rigkit::CommandLineArgs& args) {
 	}
 
 	if (args.hasFlag("help") || args.hasFlag("h")) {
-		std::cout << "oscHost — RigKit OSC show host (multi-instance via network id)\n\n"
+		std::cout << "oscHost - RigKit OSC show host (multi-instance via network id)\n\n"
 				  << "  --author / --edit     Author mode (rigImGui) [default]\n"
 				  << "  --show / --install    Show mode (UI-light)\n"
 				  << rigkit::rigOsc::commandLineHelp() << "\n"
@@ -73,7 +73,7 @@ void OscHost::bootstrapPacks() {
 void OscHost::setupAuthorUi() {
 	auto* ui = getEngine()->getUiManager();
 	if (!ui) {
-		spdlog::warn("Author mode but no IMui — rigImGui failed to attach");
+		spdlog::warn("Author mode but no IMui - rigImGui failed to attach");
 		return;
 	}
 
@@ -82,7 +82,7 @@ void OscHost::setupAuthorUi() {
 		mui->setDockPassthroughCentral(true);
 		mui->addAllHostPanels();
 		mui->setWindowVisibility("Debug", true);
-		mui->showNotification("Author mode — oscHost");
+		mui->showNotification("Author mode - oscHost");
 	}
 
 	auto* wm = ui->getWindowManager();
@@ -148,11 +148,11 @@ void OscHost::setup() {
 
 	bootstrapPacks();
 	if (m_osc && !m_osc->applyCommandLine(m_cliArgs)) {
-		spdlog::error("oscHost: OSC bind failed — {}", m_osc->lastError());
+		spdlog::error("oscHost: OSC bind failed - {}", m_osc->lastError());
 	}
 	if (m_osc) {
 		const std::string title =
-			std::string("RigKit — oscHost [") + m_osc->identity().networkId + "]";
+			std::string("RigKit - oscHost [") + m_osc->identity().networkId + "]";
 		window().title = title;
 		if (auto* win = getEngine()->getWindow()) {
 			glfwSetWindowTitle(win, title.c_str());

@@ -2,7 +2,7 @@
 
 ![preview](docs/img/hero.png)
 
-**RigKit** is a lightweight creative application host for **media installations** and **artist tool apps**. It **is Rig**: a coded host of **[RigWorks](https://github.com/rigkid/RigWorks)** (SUDE + ECS + shared POD schemas; **Rig** for short). Author path is **Rig + UI** via **rigImGui** — preview above is [`packs/rigImGui/examples/host_shell`](packs/rigImGui/examples/host_shell/).
+**RigKit** is a lightweight creative application host for **media installations** and **artist tool apps**. It **is Rig**: a coded host of **[RigWorks](https://github.com/rigkid/RigWorks)** (SUDE + ECS + shared POD schemas; **Rig** for short). Author path is **Rig + UI** via **rigImGui** - preview above is [`packs/rigImGui/examples/host_shell`](packs/rigImGui/examples/host_shell/).
 
 [RigWorks](https://github.com/rigkid/RigWorks) · [honors](https://github.com/rigkid/RigWorks/blob/main/docs/honors.md) · [Site](https://rigkid.github.io/rigkit/) · [API](https://rigkid.github.io/rigkit/api/) · [Docs index](docs/README.md) · [Contract / host](docs/contract/README.md) · [port map](docs/contract/port-map.md) · [SUDE loop](docs/contract/sude-loop.md) · [ECS conventions](docs/contract/rigkit.md) · [Canvas / Managers](docs/managers.md). Start with [`examples/minimal`](examples/minimal/) or [`examples/oscHost`](examples/oscHost/README.md) (`--author` / `--show`). Artist surface: [`docs/authoring.md`](docs/authoring.md).
 
@@ -39,14 +39,14 @@ Known and planned packs: [`docs/packs_catalog.md`](docs/packs_catalog.md). pinni
 
 ## Contributing
 
-Humans and AI agents are both welcome — same [Ten Commandments](docs/contract/commandments.md), same gates.
+Humans and AI agents are both welcome - same [Ten Commandments](docs/contract/commandments.md), same gates.
 
 - [docs/contributing.md](docs/contributing.md)
 - Agent playbook: [AGENTS.md](AGENTS.md)
 
 ## License
 
-RigKit is MIT licensed — see [LICENSE](LICENSE).
+RigKit is MIT licensed - see [LICENSE](LICENSE).
 
 ## Thank you!
 

@@ -194,7 +194,7 @@ bool ShaderPreview::compile(const std::string& userSource) {
 		return false;
 	}
 
-	// Success — swap; keep last-good until this point.
+	// Success - swap; keep last-good until this point.
 	destroyProgram(m_program);
 	m_program = program;
 	m_locResolution = glGetUniformLocation(m_program, "iResolution");

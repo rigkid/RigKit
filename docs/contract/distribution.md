@@ -17,13 +17,13 @@ Artists and install hosts may omit UI packs, drop to **Rig** (show mode), and re
 | Host (`RigKitEngine`, managers) | Yes | **Yes** (coded host) | honors Rig; + UI when attached |
 | **`rigImGui`** | **Yes** | **No** | Fulfillment of **UI** via `IMui` |
 | Default Draw path (`IRenderer`) | Yes | **No** | Host present path; **rigBlend2D** optional pack |
-| Optional packs (OSC/show, tool panels, …) | As needed | **No** | Artist-owned |
+| Optional packs (OSC/show, tool panels, ...) | As needed | **No** | Artist-owned |
 
 ## Default UI kit (`rigImGui`)
 
 `rigImGui` is the UI kit shipped in the default RigKit distribution so **author** mode is a full **Rig + UI** fulfillment. It implements [`IMui`](../../src/core/IMui.h) (`Mui`): host chrome (menu, Log, Windows, Properties, optional Debug/Theme) and a place for apps to register their own windows. Portable meaning stays in ECS; panels read and edit that data.
 
-It is an in-org pack under `packs/rigImGui`, not host core and not the UI companion rules. Core must not include a UI toolkit — only the `IMui` seam. Show, headless, and light embedded hosts detach it and remain **Rig**; attach it again (or another UI pack) for **Rig + UI**.
+It is an in-org pack under `packs/rigImGui`, not host core and not the UI companion rules. Core must not include a UI toolkit - only the `IMui` seam. Show, headless, and light embedded hosts detach it and remain **Rig**; attach it again (or another UI pack) for **Rig + UI**.
 
 Other UI packs may replace **rigImGui** and still honor Rig + UI. Pack layout and pinning: [packs/README.md](../../packs/README.md).
 
@@ -35,7 +35,7 @@ Other UI packs may replace **rigImGui** and still honor Rig + UI. Pack layout an
 - UI attached (default: `rigImGui` implementing `IMui`)
 - At least one Draw fulfillment registered
 
-**Optional packs** (examples): `rigBlend2D`, `rigOsc`, plot/pixel/node families — see [packs_catalog.md](../packs_catalog.md).
+**Optional packs** (examples): `rigBlend2D`, `rigOsc`, plot/pixel/node families - see [packs_catalog.md](../packs_catalog.md).
 
 App-specific panels (e.g. Show Control) live in the app until they are reused enough to extract.
 
@@ -43,8 +43,8 @@ App-specific panels (e.g. Show Control) live in the app until they are reused en
 
 Demos and tool apps should prefer **one binary**, choosable UI layout:
 
-- **Author** — Rig + UI fulfillment (`rigImGui` panels visible)
-- **Show** — Rig; UI-light or no `rigImGui`; present path only
+- **Author** - Rig + UI fulfillment (`rigImGui` panels visible)
+- **Show** - Rig; UI-light or no `rigImGui`; present path only
 
 Not separate downloads per mode.
 

@@ -2,7 +2,7 @@
  * @file
  * @brief Host tool: write the default app identicon as a `.ico` for PE embed.
  * @details Usage: gen-app-icon <appName> <out.ico>
- * Same pixels as AppIcon::makeDefaultIcon — Windows CMake embeds the file as
+ * Same pixels as AppIcon::makeDefaultIcon - Windows CMake embeds the file as
  * GLFW_ICON so Explorer shows it on the exe when the app is not running.
  */
 

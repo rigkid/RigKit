@@ -49,7 +49,7 @@ void Setup(AppState& app) {
 	std::snprintf(sensor.tag, sizeof(sensor.tag), "sensor0");
 	app.entities.push_back(sensor);
 
-	std::puts("[esp32_contract_host] Setup — SUDE + RigKit-esp32-core");
+	std::puts("[esp32_contract_host] Setup - SUDE + RigKit-esp32-core");
 }
 
 void Update(AppState& app, float dt) {
@@ -73,14 +73,14 @@ void Draw(AppState&) {
 }
 
 void Exit(AppState& app) {
-	std::printf("[esp32_contract_host] Exit — frames=%d entities=%zu led.intensity=%.2f\n",
+	std::printf("[esp32_contract_host] Exit - frames=%d entities=%zu led.intensity=%.2f\n",
 				app.frames, app.entities.size(),
 				app.entities.empty() ? 0.f : app.entities[0].intensity);
 }
 
 #ifndef RIGKIT_MCU
 // Host self-test (desktop). On firmware, define RIGKIT_MCU and call Setup/Update/Draw/Exit
-// from the board loop (ESP-IDF, Arduino, …).
+// from the board loop (ESP-IDF, Arduino, ...).
 int main() {
 	AppState app;
 	Setup(app);

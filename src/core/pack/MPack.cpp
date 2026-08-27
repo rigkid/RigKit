@@ -36,7 +36,7 @@ void applyPackManifestFields(rigkit::IPack& pack, const json& manifest) {
 			pack.setVersion(std::to_string(manifest["version"].get<double>()));
 		}
 	}
-	// Runtime init order — same names as CMake/CPM (string or { "name": ... }).
+	// Runtime init order - same names as CMake/CPM (string or { "name": ... }).
 	if (manifest.contains("dependencies") && manifest["dependencies"].is_array()) {
 		std::vector<std::string> deps;
 		deps.reserve(manifest["dependencies"].size());
@@ -259,7 +259,7 @@ bool rigkit::MPack::loadPack(const std::string& path) {
 		return loadFromManifest(manifestPath);
 	}
 
-	// Single-file / DLL packs are not a host path — packs load via pack.json + static link.
+	// Single-file / DLL packs are not a host path - packs load via pack.json + static link.
 	if (std::filesystem::exists(path)) {
 		spdlog::warn("Direct pack file load unsupported (use pack.json / STATIC packs): {}", path);
 		return false;

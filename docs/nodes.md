@@ -16,7 +16,7 @@ Packs: **rigNodeComponent** (data + catalog + eval + `.rig` codecs) + **rigNodeE
 
 Apps can still use **Float Out** / **Vec2 Out** / **Color Out** (eval fills
 `EvalResult::outputs` lists). Prefer **Ref** sinks to write scene properties by
-entity name + property name — no hardcoded app index binding.
+entity name + property name - no hardcoded app index binding.
 
 A 3D editor app can seed tiny **Ref** nodes:
 
@@ -95,13 +95,13 @@ Search in **Add node**. `typeId` is what `.rig` stores.
 
 | Title | typeId |
 |-------|--------|
-| Add / Subtract / Multiply / Divide / Modulo / Power | `float.add` … `float.pow` |
-| Min / Max / Abs / Negate | `float.min` … `float.neg` |
-| Floor / Ceil / Fract | `float.floor` … `float.fract` |
-| Sin / Cos / Tan | `float.sin` … `float.tan` |
+| Add / Subtract / Multiply / Divide / Modulo / Power | `float.add` ... `float.pow` |
+| Min / Max / Abs / Negate | `float.min` ... `float.neg` |
+| Floor / Ceil / Fract | `float.floor` ... `float.fract` |
+| Sin / Cos / Tan | `float.sin` ... `float.tan` |
 | Clamp | `float.clamp` |
 | Map | `float.map` |
-| Mix / Step / SmoothStep | `float.mix` … `float.smoothstep` |
+| Mix / Step / SmoothStep | `float.mix` ... `float.smoothstep` |
 
 ### Modulators
 
@@ -126,8 +126,8 @@ Search in **Add node**. `typeId` is what `.rig` stores.
 | Title | typeId |
 |-------|--------|
 | Vec2 / Split / Join | `vec2.value` / `vec2.split` / `vec2.join` |
-| Add / Sub / Mul / Scale | `vec2.add` … `vec2.scale` |
-| Length / Normalize / Dot | `vec2.length` … `vec2.dot` |
+| Add / Sub / Mul / Scale | `vec2.add` ... `vec2.scale` |
+| Length / Normalize / Dot | `vec2.length` ... `vec2.dot` |
 
 ### Color
 
@@ -152,7 +152,7 @@ Search in **Add node**. `typeId` is what `.rig` stores.
 | Vec2 Ref | `ref.vec2` | Writes one vec2, or two floats (`prop` + `propY`) |
 | Color Ref | `ref.color` | Writes Color R/G/B (optional name prefix) |
 
-Call `applyRefWrites` is no longer required in app `update` — `SGraphEval`
+Call `applyRefWrites` is no longer required in app `update` - `SGraphEval`
 (registered by **rigNodeComponent**) evaluates every `CNodeGraph` and applies Ref
 writes each Update. Ref `entity` + `prop` is the same addressing as `rig.mod.binding`
 (`target` + `propertyKey`). Contract modulators / tweens use `CModLfo` /
@@ -176,7 +176,7 @@ more catalogs later; the built-in table above is what ships today.
 2. Link LFO `out` to **Float Out** `in` (or a **Float Ref** to a scene property).
 3. Watch the status bar / pin value oscillate.
 
-Example binding: LFO, then Float Ref, then `camera` / `Speed` — tweak the LFO
+Example binding: LFO, then Float Ref, then `camera` / `Speed` - tweak the LFO
 in the Node Editor and drive orbit from Update.
 
 ### 3. Mapped pulse
@@ -202,6 +202,6 @@ Example binding: Vec2 Out sets orbit radius (x) and height (y).
 ## Limits
 
 - One graph entity is edited (first / selected `CNodeGraph` in the scene).
-- Eval is CPU float/vec2/vec4 — not a shader graph.
+- Eval is CPU float/vec2/vec4 - not a shader graph.
 - Open/Save needs **rigProject** registered; otherwise those buttons stay inert.
 - Wiring outputs into transforms/materials is the **app’s** job each Update.

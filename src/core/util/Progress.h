@@ -7,7 +7,7 @@
 namespace rigkit {
 
 /**
- * @brief Thread-safe progress chrome state — no UI toolkit types.
+ * @brief Thread-safe progress chrome state - no UI toolkit types.
  * @details Apps/packs call begin / tick / finish via `IMui::progress()`.
  *          **rigImGui** presents status-bar or floating fulfillment.
  * @see docs/contract/ui.md

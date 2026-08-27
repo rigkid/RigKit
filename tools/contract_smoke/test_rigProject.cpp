@@ -88,7 +88,7 @@ void buildRoundTripScene(MEcs& ecs, const std::string& docPath) {
 	rel.parent = parent;
 	ecs.addComponent<ecs::CRelationship>(child, rel);
 
-	// Session-only — must not survive the round-trip.
+	// Session-only - must not survive the round-trip.
 	ecs::CSelection sel;
 	sel.isSelected = true;
 	ecs.addComponent<ecs::CSelection>(parent, sel);
@@ -324,8 +324,8 @@ TEST_CASE("rigProject Contract import maps rig.* geometry light material") {
 
 /**
  * The writer and the Contract reader must agree on one format. Every other test
- * here checks a side against itself — the serializer against its own loader, the
- * importer against a hand-written literal — so both stay green while producing
+ * here checks a side against itself - the serializer against its own loader, the
+ * importer against a hand-written literal - so both stay green while producing
  * files the other cannot read. This is the only case that joins them.
  */
 TEST_CASE("rigProject .rig save is readable by Contract import") {
@@ -350,13 +350,13 @@ TEST_CASE("rigProject .rig save is readable by Contract import") {
 	auto result = importWithPackCodecs(reader, text.c_str(), path.c_str());
 
 	// Without this the failure reads as a bare REQUIRE(false) and hides which
-	// side broke — a parse error, a missing envelope, or an unreadable key.
+	// side broke - a parse error, a missing envelope, or an unreadable key.
 	INFO("import error: " << result.error);
 	// A fatal assert skips the cleanup below, so the file stays for inspection.
 	INFO("written file: " << path);
 	REQUIRE(result.ok);
 	// Extensions are reported as skipped by design, so only a rig.* id the
-	// reader does not know is a fault — that means the writer invented one.
+	// reader does not know is a fault - that means the writer invented one.
 	for (const auto& key : result.skipped) {
 		INFO("unknown component key: " << key);
 		CHECK(key.rfind("rig.", 0) != 0);
