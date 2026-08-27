@@ -58,6 +58,7 @@ class OpenGLRenderer : public IRenderer {
 	void setFont(const std::string& fontPath, float size) override;
 	void drawText(const std::string& text, float x, float y, const glm::vec4& color) override;
 	glm::vec2 getTextBounds(const std::string& text) override;
+	bool hasFilledText() const override { return m_textBackend != nullptr; }
 
 	/** @brief Install/clear optional filled-text backend (owned by the pack). */
 	void setTextBackend(ITextBackend* backend) { m_textBackend = backend; }

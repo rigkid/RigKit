@@ -5,6 +5,7 @@
 #include "core/util/AppPaths.h"
 #include "ecs/MEcs.h"
 #include "ecs/systems/SEvent.h"
+#include "rendering/FpsOverlay.h"
 #include "rendering/IRenderer.h"
 #include "rendering/MRendering.h"
 
@@ -63,6 +64,12 @@ void IApp::rigDraw() {
 			if (auto* ecs = m_engine->getECSManager()) {
 				ecs->setPresentRenderer(main.get());
 				ecs->renderSystems();
+			}
+			if (m_settings.graphics.showFps) {
+				// Draw systems (3D especially) leave their viewport/program.
+				main->beginFrame();
+				presentFpsOverlay(*main, m_engine->getCurrentFrameRate(),
+								  m_engine->getDeltaTime());
 			}
 			main->endFrame();
 		}

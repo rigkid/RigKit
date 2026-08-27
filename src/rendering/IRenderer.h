@@ -101,6 +101,8 @@ class IRenderer {
 	virtual void setFont(const std::string& fontPath, float size) = 0;
 	virtual void drawText(const std::string& text, float x, float y, const glm::vec4& color) = 0;
 	virtual glm::vec2 getTextBounds(const std::string& text) = 0;
+	/// True when a font pack (e.g. rigVarFont) installed filled text.
+	virtual bool hasFilledText() const { return false; }
 
 	virtual void pushMatrix() = 0;
 	virtual void popMatrix() = 0;

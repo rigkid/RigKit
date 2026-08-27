@@ -16,6 +16,8 @@ struct GraphicsSettings {
 	bool vsync = true;
 	int targetFps = 60; // 0 = uncapped (but still limited by vsync)
 	glm::vec4 clearColor{0.4f, 0.4f, 0.4f, 1.0f};
+	/// Host corner FPS overlay. Off by default; toggle in Preferences.
+	bool showFps = false;
 };
 
 struct AppSettings : public ISettings {
@@ -38,6 +40,7 @@ struct AppSettings : public ISettings {
 			{0, "Debug Mode", EPT_BOOL, &debugMode},
 			{1, "VSync", EPT_BOOL, &graphics.vsync},
 			{2, "Target FPS", EPT_INT, &graphics.targetFps},
+			{8, "Show FPS", EPT_BOOL, &graphics.showFps},
 			{3, "Clear Color", EPT_COLOR, &graphics.clearColor},
 			{4, "Window Width", EPT_INT, &window.width},
 			{5, "Window Height", EPT_INT, &window.height},
@@ -67,6 +70,9 @@ struct AppSettings : public ISettings {
 		}
 		if (j.contains("license") && j["license"].is_string()) {
 			license = j["license"].get<std::string>();
+		}
+		if (j.contains("icon") && j["icon"].is_string()) {
+			window.icon = j["icon"].get<std::string>();
 		}
 		if (j.contains("window") && j["window"].is_object()) {
 			const auto& w = j["window"];
@@ -100,6 +106,7 @@ struct AppSettings : public ISettings {
 		// Graphics
 		j["graphics"]["vsync"] = graphics.vsync;
 		j["graphics"]["targetFps"] = graphics.targetFps;
+		j["graphics"]["showFps"] = graphics.showFps;
 		j["graphics"]["clearColor"] = colorToJson(graphics.clearColor);
 		return j;
 	}
@@ -140,6 +147,8 @@ struct AppSettings : public ISettings {
 				graphics.vsync = g["vsync"].get<bool>();
 			if (g.contains("targetFps"))
 				graphics.targetFps = g["targetFps"].get<int>();
+			if (g.contains("showFps"))
+				graphics.showFps = g["showFps"].get<bool>();
 			if (g.contains("clearColor")) {
 				graphics.clearColor = colorFromJson(g["clearColor"], graphics.clearColor);
 			}

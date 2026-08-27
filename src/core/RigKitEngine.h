@@ -12,6 +12,9 @@
 #include "core/IMui.h"
 #include "core/ISettings.h"
 #include "core/WindowSettings.h"
+#if !defined(_WIN32)
+#include "core/util/AppIcon.h"
+#endif
 
 struct GLFWwindow;
 
@@ -181,6 +184,11 @@ class RigKitEngine : public ISettings {
 	std::string m_uiChrome = "imgui";
 	std::string m_pendingUiChrome;
 	std::unordered_map<std::string, UiChromeFactory> m_uiChromeFactories;
+
+#if !defined(_WIN32)
+	/// Keeps icon RGBA alive for glfwSetWindowIcon (Linux/X11 only).
+	std::vector<AppIcon::IconImage> m_windowIconImages;
+#endif
 
 	/// Windowed geometry restored when leaving fullscreen (prefs or toggle).
 	bool m_haveWindowedRestore = false;

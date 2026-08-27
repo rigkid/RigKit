@@ -25,7 +25,7 @@ Pack deps are resolved from `app.json` by `cmake/RigKitPacks.cmake` (cloned into
 
 Every app gets a window / taskbar icon so builds stop looking identical. Two paths:
 
-**No icon file (default):** the host draws a deterministic identicon from the `app.json` `name` - the name hash picks a curated colour palette (max 5 colours, lightest as background) and a small mirrored block pattern. Same name = same icon on every launch, different apps look different, nothing to author. On Windows the build also runs `gen-app-icon` and embeds that same image as the PE `GLFW_ICON` resource, so Explorer shows it on the exe when the app is closed.
+**No icon file (default):** the host draws a deterministic identicon from the `app.json` `name` - the name hash picks a curated colour palette (max 5 colours, lightest as background) and a small mirrored block pattern. Same name = same icon on every launch, different apps look different, nothing to author. On Windows the build also runs `gen-app-icon` and embeds that same image as PE icon resources (`1` for Explorer / pinned shortcuts, `GLFW_ICON` for GLFW). Explorer and pinned taskbar buttons use the embedded exe icon when the app is not running.
 
 **Custom icon:** put an `.ico` file (multi-size: 16/32/48) in the app folder and name it in `app.json`:
 

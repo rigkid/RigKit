@@ -244,6 +244,21 @@ class IMui {
 		(void)shortcut;
 	}
 
+	/**
+	 * @brief Bind a named keyboard shortcut (Shortcuts panel + fulfillment input).
+	 * @param id Stable id (e.g. "view.reload"). Re-register replaces the action.
+	 * @param label Display name (e.g. "Reload").
+	 * @param chord Menu-style chord (e.g. "Ctrl+R"). Empty leaves the key unbound.
+	 * @param action Invoked when the chord is pressed.
+	 */
+	virtual void registerShortcut(const std::string& id, const std::string& label,
+								  const std::string& chord, std::function<void()> action) {
+		(void)id;
+		(void)label;
+		(void)chord;
+		(void)action;
+	}
+
 	/** @brief Gizmo / tool op for Tools menu (Select V, Move W, Rotate E, Scale R). */
 	enum class GizmoOp { Select, Translate, Rotate, Scale };
 	virtual void setGizmoOp(GizmoOp op) { (void)op; }

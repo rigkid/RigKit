@@ -318,18 +318,36 @@ void OpenGLRenderer::drawStrokedPoly(std::span<const glm::vec2> pts, bool closed
 	if (!m_initialized || pts.size() < 2) {
 		return;
 	}
-	// Strip or loop as independent segments, so consecutive strokes of the same
-	// width merge. Two points are already the whole loop - wrapping redraws it.
+	// Wide GL_LINES are sheared parallelograms (and GLES only guarantees width
+	// 1). Expand each segment to a rectangle perpendicular to the stroke.
+	const float half = std::max(0.5f, width * 0.5f);
 	const bool wrap = closed && pts.size() > 2;
-	openBatch(GL_LINES, width);
-	reserveBatch((pts.size() - 1 + (wrap ? 1u : 0u)) * 2);
+	const size_t segs = (pts.size() - 1) + (wrap ? 1u : 0u);
+	openBatch(GL_TRIANGLES, 0.f);
+	reserveBatch(segs * 6);
+	auto quad = [&](glm::vec2 a, glm::vec2 b) {
+		const glm::vec2 d = b - a;
+		const float len = glm::length(d);
+		if (len < 1e-6f) {
+			return;
+		}
+		const glm::vec2 n = glm::vec2(-d.y, d.x) * (half / len);
+		const glm::vec2 p0 = a + n;
+		const glm::vec2 p1 = b + n;
+		const glm::vec2 p2 = b - n;
+		const glm::vec2 p3 = a - n;
+		m_batch.push_back({p0, color});
+		m_batch.push_back({p1, color});
+		m_batch.push_back({p2, color});
+		m_batch.push_back({p0, color});
+		m_batch.push_back({p2, color});
+		m_batch.push_back({p3, color});
+	};
 	for (size_t i = 0; i + 1 < pts.size(); ++i) {
-		m_batch.push_back({pts[i], color});
-		m_batch.push_back({pts[i + 1], color});
+		quad(pts[i], pts[i + 1]);
 	}
 	if (wrap) {
-		m_batch.push_back({pts.back(), color});
-		m_batch.push_back({pts.front(), color});
+		quad(pts.back(), pts.front());
 	}
 }
 
@@ -394,7 +412,7 @@ void OpenGLRenderer::drawLines(const std::vector<glm::vec2>& pts, const Paint& p
 	if (pts.size() < 2) {
 		return;
 	}
-	enqueue(GL_LINES, pts, packColor(paint.color), paint.strokeWidth);
+	drawStrokedPoly(pts, false, packColor(paint.color), paint.strokeWidth);
 }
 
 void OpenGLRenderer::beginPath() {
@@ -438,6 +456,7 @@ void OpenGLRenderer::setFont(const std::string& fontPath, float size) {
 }
 
 void OpenGLRenderer::drawText(const std::string& text, float x, float y, const glm::vec4& color) {
+	flush();
 	if (m_textBackend) {
 		m_textBackend->drawText(text, x, y, color);
 		return;

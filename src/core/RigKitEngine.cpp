@@ -8,6 +8,9 @@
 #include "core/TypeJson.h"
 #include "core/util/AppPaths.h"
 #include "core/util/CommandLineArgs.h"
+#if !defined(_WIN32)
+#include "core/util/AppIcon.h"
+#endif
 #include "core/util/MSettings.h"
 #include "ecs/MEcs.h"
 #include "rendering/MRendering.h"
@@ -24,7 +27,64 @@
 #include <spdlog/spdlog.h>
 #include <thread>
 
+#if defined(_WIN32)
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#include <shobjidl.h>
+#endif
+
 namespace rigkit {
+namespace {
+
+#if defined(_WIN32)
+// Stable taskbar / pinned-shortcut identity (default is exe path only).
+void setWindowsAppUserModelId(const std::string& appName) {
+	if (appName.empty()) {
+		return;
+	}
+	std::wstring id = L"RigKit.";
+	for (unsigned char c : appName) {
+		const bool ok = (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') ||
+						(c >= '0' && c <= '9') || c == '.' || c == '-' || c == '_';
+		if (ok) {
+			id += static_cast<wchar_t>(c);
+		}
+	}
+	if (id.size() > 7) {
+		SetCurrentProcessExplicitAppUserModelID(id.c_str());
+	}
+}
+#endif
+
+#if !defined(_WIN32)
+void applyWindowIcon(GLFWwindow* window, const WindowSettings& ws, const std::string& appName,
+					 std::vector<AppIcon::IconImage>& storage) {
+	std::vector<AppIcon::IconImage> icons;
+	if (!ws.icon.empty()) {
+		const std::string iconPath = AppPaths::joinPath(AppPaths::getExecutableDir(), ws.icon);
+		icons = AppIcon::loadIco(iconPath);
+		if (icons.empty()) {
+			spdlog::warn("[RigKitEngine] app icon '{}' missing or unusable", iconPath);
+		}
+	}
+	if (icons.empty()) {
+		icons = AppIcon::makeDefaultIcon(appName.empty() ? "RigKit App" : appName);
+	}
+	if (icons.empty()) {
+		return;
+	}
+	storage = std::move(icons);
+	std::vector<GLFWimage> images;
+	images.reserve(storage.size());
+	for (auto& icon : storage) {
+		images.push_back(GLFWimage{icon.width, icon.height, icon.rgba.data()});
+	}
+	glfwSetWindowIcon(window, static_cast<int>(images.size()), images.data());
+}
+#endif
+
+} // namespace
 
 // Initialize static member
 RigKitEngine* RigKitEngine::s_instance = nullptr;
@@ -146,6 +206,11 @@ RigKitEngine::RigKitEngine(std::unique_ptr<IApp> app, const json& settings, int 
 	if (!glfwInit()) {
 		throw std::runtime_error("Failed to initialize GLFW");
 	}
+#if defined(_WIN32)
+	if (m_app) {
+		setWindowsAppUserModelId(m_app->settings().appName);
+	}
+#endif
 
 #if defined(RIGKIT_GLES)
 	// Pi native GLES or desktop ANGLE - request an ES 2.0 context (Pi floor).
@@ -208,6 +273,10 @@ RigKitEngine::RigKitEngine(std::unique_ptr<IApp> app, const json& settings, int 
 	glfwMakeContextCurrent(m_window);
 	// Preferences / ctor may set vsync before the window exists - apply now.
 	setVerticalSync(m_app ? m_app->settings().graphics.vsync : true);
+#if !defined(_WIN32)
+	applyWindowIcon(m_window, ws, m_app ? m_app->settings().appName : std::string{},
+					m_windowIconImages);
+#endif
 #if defined(RIGKIT_GLES)
 	if (!gladLoaderLoadGLES2()) {
 		throw std::runtime_error(
@@ -611,6 +680,7 @@ json RigKitEngine::getSettings() const {
 	// Graphics settings
 	j["graphics"]["vsync"] = getVerticalSync();
 	j["graphics"]["targetFps"] = getTargetFrameRate();
+	j["graphics"]["showFps"] = m_app && m_app->settings().graphics.showFps;
 	j["graphics"]["clearColor"] = colorToJson(getClearColor());
 
 	// Window settings - logical / design pixels (not scale-multiplied GLFW size).
@@ -636,6 +706,9 @@ void RigKitEngine::setSettings(const json& settings) {
 		}
 		if (g.contains("targetFps")) {
 			setTargetFrameRate(g["targetFps"].get<int>());
+		}
+		if (g.contains("showFps") && m_app) {
+			m_app->settings().graphics.showFps = g["showFps"].get<bool>();
 		}
 		if (g.contains("clearColor")) {
 			const glm::vec4 c = colorFromJson(g["clearColor"], getClearColor());

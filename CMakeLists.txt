@@ -222,7 +222,10 @@ function(add_rigkit_application)
 	if(WIN32)
 		set(_app_icon_dir "${CMAKE_CURRENT_BINARY_DIR}/rigkit_app_icon")
 		file(MAKE_DIRECTORY "${_app_icon_dir}")
-		file(WRITE "${_app_icon_dir}/app_icon.rc" "GLFW_ICON ICON \"app.ico\"\n")
+		file(WRITE "${_app_icon_dir}/app_icon.rc"
+			"1 ICON \"app.ico\"\n"
+			"GLFW_ICON ICON \"app.ico\"\n"
+		)
 		set(_app_icon_rc "${_app_icon_dir}/app_icon.rc")
 		if(NOT _app_icon_path STREQUAL "")
 			configure_file("${_app_icon_path}" "${_app_icon_dir}/app.ico" COPYONLY)

@@ -14,6 +14,7 @@ public:
 		window().height = 600;
 		window().title = "My piece"; // GLFW OS title = app name (never overwrite with document name)
 		window().samples = 4; // default-framebuffer MSAA (create-time). Canvas and compositor bake FBOs inherit this.
+		settings().graphics.showFps = true; // host corner overlay (Preferences > Show FPS)
 	}
 	void setup() override {
 		// Bootstrap data + systems packs, then create entities:
@@ -62,6 +63,9 @@ rig::makeMeshQuad(*ecs, x, y, w, h, rig::fill(0.3f, 0.9f, 0.5f));
 
 // 3D (needs rigRender3D Draw present):
 rig::makeOrbitCamera(*ecs, {0.f, 0.f, 0.f}, 5.6f, 0.36f, true, "camera");
+// Locked ortho face (`COrthoView`). Open a panel with rigkit::openOrthoView /
+// registerOrthoViewMenu (rigImGui OrthoViewWindow) — not an example-local window.
+rig::makeOrthoCamera(*ecs, rigkit::ecs::COrthoView::Face::Top);
 rig::makeLight(*ecs, {0.f, 0.f, 0.f});
 rig::makePalette(*ecs);
 rig::makeMeshGrid(*ecs);
@@ -77,7 +81,7 @@ rig::makeCadDimension(*ecs, rigkit::ecs::CCadDimension::Kind::Horizontal, "stock
 					  4.f, false, "span");
 ```
 
-These helpers only write POD (`CTransform` + shape / `CMesh` / `CCad*` / `COrbitDrive` + `CDrawStyle`). `makeOrbitCamera` poses the eye; turn `COrbitDrive::enabled` on for a show-mode spin (`SOrbitDrive` yaws from `pitch`).
+These helpers only write POD (`CTransform` + shape / `CMesh` / `CCad*` / `COrbitDrive` / `COrthoView` + `CDrawStyle`). `makeOrbitCamera` poses the eye; turn `COrbitDrive::enabled` on for a show-mode spin (`SOrbitDrive` yaws from `pitch`). `makeOrthoCamera` stays inactive so it never steals the main bed.
 
 ## Orbit nav (code) - `rigSystems`
 
