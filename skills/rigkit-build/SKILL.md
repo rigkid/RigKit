@@ -95,6 +95,7 @@ Details: [docs/build_instructions.md](../../docs/build_instructions.md), [tools/
 - In-org packs (rigkid GitHub org remotes) live under `packs/`.
 - Local `packs/<name>/` (submodule or clone) wins; else CPM clones at `ref`.
 - Refresh: `./tools/update-packs.sh` (optional `--app examples/.../app.json`).
+- Status: `./tools/pack-status.sh` (optional `--app`, `--build`, `--strict`) — dirty/ahead/behind and `RIGKIT_DIR` drift.
 - New pack: survey [packs/README.md](../../packs/README.md) (table + Naming) before scaffolding; prefer growing an existing pack. Then [`templates/rigTemplate`](../../templates/rigTemplate/); publish template with `./tools/publish-template.sh`.
 - Details: [packs/README.md](../../packs/README.md).
 

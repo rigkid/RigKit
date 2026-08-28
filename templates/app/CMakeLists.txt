@@ -6,8 +6,14 @@ project(MyApp VERSION 0.1.0 LANGUAGES C CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Path to RigKit (submodule, sibling clone, or CPM SOURCE_DIR).
+# Path to RigKit: submodule (./rigkit), sibling clone (../RigKit), or override -D RIGKIT_DIR=...
 set(RIGKIT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/rigkit" CACHE PATH "Path to RigKit checkout")
+if(NOT EXISTS "${RIGKIT_DIR}/CMakeLists.txt")
+	set(_rigkit_sibling "${CMAKE_CURRENT_SOURCE_DIR}/../RigKit")
+	if(EXISTS "${_rigkit_sibling}/CMakeLists.txt")
+		set(RIGKIT_DIR "${_rigkit_sibling}" CACHE PATH "Path to RigKit checkout" FORCE)
+	endif()
+endif()
 if(NOT EXISTS "${RIGKIT_DIR}/CMakeLists.txt")
 	message(FATAL_ERROR
 		"RigKit not found at RIGKIT_DIR=${RIGKIT_DIR}.\n"

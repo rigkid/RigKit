@@ -78,6 +78,19 @@ Refresh checkouts:
 
 ```bash
 ./tools/update-packs.sh
+```
+
+See what is checked out, dirty, or behind a pin:
+
+```bash
+./tools/pack-status.sh
+./tools/pack-status.sh --app examples/svgEditor/app.json --build examples/svgEditor/build
+./tools/pack-status.sh --strict   # non-zero if anything needs attention
+```
+
+In-tree examples configure with `RIGKIT_DIR=${CMAKE_CURRENT_SOURCE_DIR}/../..` so they always build against this checkout. Sibling product apps should point at the same tree (e.g. `../RigKit`).
+
+```bash
 ./tools/update-packs.sh --app examples/oscHost/app.json
 ```
 

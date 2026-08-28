@@ -122,3 +122,4 @@ fi
 
 echo "Done. Basics are submodules — commit new SHAs in RigKit when you bump them."
 echo "Optional packs: clone under packs/<name>/ or let CPM fetch from app.json url+ref."
+echo "Status: ./tools/pack-status.sh [--app <app.json>] [--build <build-dir>] [--strict]"
