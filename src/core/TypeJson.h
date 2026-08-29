@@ -13,9 +13,9 @@
  * schema-shaped (not a leaf helper here).
  */
 
-#include <cstdint>
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
+#include <cstdint>
 #include <nlohmann/json.hpp>
 #include <string>
 #include "ecs/PropertyReflection.h"

@@ -1,7 +1,7 @@
 #include "core/IApp.h"
 
-#include "core/pack/MPack.h"
 #include "core/RigKitEngine.h"
+#include "core/pack/MPack.h"
 #include "core/util/AppPaths.h"
 #include "ecs/MEcs.h"
 #include "ecs/systems/SEvent.h"
@@ -68,8 +68,7 @@ void IApp::rigDraw() {
 			if (m_settings.graphics.showFps) {
 				// Draw systems (3D especially) leave their viewport/program.
 				main->beginFrame();
-				presentFpsOverlay(*main, m_engine->getCurrentFrameRate(),
-								  m_engine->getDeltaTime());
+				presentFpsOverlay(*main, m_engine->getCurrentFrameRate(), m_engine->getDeltaTime());
 			}
 			main->endFrame();
 		}

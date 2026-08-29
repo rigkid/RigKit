@@ -144,14 +144,24 @@ void Graphics::fill() {
 }
 
 void Graphics::stroke() {
-	if (!m_renderer) {
+	if (!m_renderer || m_currentPath.size() < 2) {
 		return;
 	}
 	const Paint paint = strokePaint();
-	for (size_t i = 0; i + 1 < m_currentPath.size(); ++i) {
-		m_renderer->drawLine(m_currentPath[i].x, m_currentPath[i].y, m_currentPath[i + 1].x,
-							 m_currentPath[i + 1].y, paint);
+	size_t n = m_currentPath.size();
+	const bool closed = !m_pathOpen && n >= 3;
+	if (closed && glm::length(m_currentPath.front() - m_currentPath.back()) < 1e-4f) {
+		--n;
 	}
+	m_renderer->beginPath();
+	m_renderer->moveTo(m_currentPath[0].x, m_currentPath[0].y);
+	for (size_t i = 1; i < n; ++i) {
+		m_renderer->lineTo(m_currentPath[i].x, m_currentPath[i].y);
+	}
+	if (closed) {
+		m_renderer->closePath();
+	}
+	m_renderer->stroke(paint.color, paint.strokeWidth);
 }
 
 void Graphics::drawText(const std::string& text, float x, float y) {

@@ -3,8 +3,8 @@
 #include "core/util/AppPaths.h"
 #include "IPack.h"
 #include "ISettings.h"
-#include "json.h"
 #include "PackRegistry.h"
+#include "json.h"
 
 #include <algorithm>
 #include <filesystem>

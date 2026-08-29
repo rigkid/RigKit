@@ -14,8 +14,8 @@ namespace rigkit {
  * keeps no style state. This is the one owner of that style: callers above
  * (Canvas, author/rigDraw.h) forward here rather than caching their own copy.
  * Each draw fills first and strokes second, so a shape can do both. Does not
- * implement shadows, image loading, or stroke caps - those belong in a richer
- * renderer pack (e.g. Blend2D).
+ * implement shadows or image loading. Stroke joins and caps live on the
+ * present renderer (OpenGL default: round).
  * @see IRenderer, Paint, OpenGLRenderer, author/rigDraw.h
  */
 class Graphics {

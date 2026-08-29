@@ -1,8 +1,8 @@
 #pragma once
 
 #include "core/AppSettings.h"
-#include "core/util/CommandLineArgs.h"
 #include "core/WindowSettings.h"
+#include "core/util/CommandLineArgs.h"
 
 namespace rigkit {
 

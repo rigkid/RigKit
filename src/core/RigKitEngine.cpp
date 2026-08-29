@@ -1,28 +1,28 @@
 #include "core/RigKitEngine.h"
 
 #include "core/AppSettings.h"
-#include "core/canvas/MCanvas.h"
 #include "core/IApp.h"
+#include "core/TypeJson.h"
+#include "core/canvas/MCanvas.h"
 #include "core/pack/IPack.h"
 #include "core/pack/MPack.h"
-#include "core/TypeJson.h"
 #include "core/util/AppPaths.h"
 #include "core/util/CommandLineArgs.h"
 #if !defined(_WIN32)
 #include "core/util/AppIcon.h"
 #endif
+#include "rendering/U_gladGlfw.h"
 #include "core/util/MSettings.h"
 #include "ecs/MEcs.h"
 #include "rendering/MRendering.h"
 #include "rendering/OpenGLRenderer.h"
-#include "rendering/U_gladGlfw.h"
 #include "rendering/U_rendering.h"
 
+#include <glm/glm.hpp>
 #include <algorithm>
 #include <chrono>
 #include <cmath>
 #include <fstream>
-#include <glm/glm.hpp>
 #include <iostream>
 #include <spdlog/spdlog.h>
 #include <thread>

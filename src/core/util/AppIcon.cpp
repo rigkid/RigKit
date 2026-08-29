@@ -251,17 +251,17 @@ bool writeIco(const std::string& path, const std::vector<IconImage>& icons) {
 		const size_t andStride = ((static_cast<size_t>(img.width) + 31) / 32) * 4;
 		std::vector<unsigned char> entry;
 		entry.reserve(40 + xorStride * img.height + andStride * img.height);
-		appendU32(entry, 40);									  // biSize
-		appendU32(entry, static_cast<uint32_t>(img.width));		  // biWidth
+		appendU32(entry, 40);									 // biSize
+		appendU32(entry, static_cast<uint32_t>(img.width));		 // biWidth
 		appendU32(entry, static_cast<uint32_t>(img.height * 2)); // XOR + AND
-		appendU16(entry, 1);									  // biPlanes
-		appendU16(entry, 32);									  // biBitCount
-		appendU32(entry, 0);									  // BI_RGB
-		appendU32(entry, 0);									  // biSizeImage
-		appendU32(entry, 0);									  // biXPelsPerMeter
-		appendU32(entry, 0);									  // biYPelsPerMeter
-		appendU32(entry, 0);									  // biClrUsed
-		appendU32(entry, 0);									  // biClrImportant
+		appendU16(entry, 1);									 // biPlanes
+		appendU16(entry, 32);									 // biBitCount
+		appendU32(entry, 0);									 // BI_RGB
+		appendU32(entry, 0);									 // biSizeImage
+		appendU32(entry, 0);									 // biXPelsPerMeter
+		appendU32(entry, 0);									 // biYPelsPerMeter
+		appendU32(entry, 0);									 // biClrUsed
+		appendU32(entry, 0);									 // biClrImportant
 		// Bottom-up BGRA; alpha from the source RGBA.
 		for (int y = img.height - 1; y >= 0; --y) {
 			for (int x = 0; x < img.width; ++x) {
@@ -288,8 +288,8 @@ bool writeIco(const std::string& path, const std::vector<IconImage>& icons) {
 		const int h = icons[i].height;
 		file.push_back(w >= 256 ? 0 : static_cast<unsigned char>(w));
 		file.push_back(h >= 256 ? 0 : static_cast<unsigned char>(h));
-		file.push_back(0); // color count
-		file.push_back(0); // reserved
+		file.push_back(0);	 // color count
+		file.push_back(0);	 // reserved
 		appendU16(file, 1);	 // planes
 		appendU16(file, 32); // bit count
 		appendU32(file, static_cast<uint32_t>(entries[i].size()));

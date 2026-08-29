@@ -8,7 +8,7 @@ namespace rigkit {
 /**
  * @brief Optional filled-text present path for OpenGLRenderer.
  * @details Packs (e.g. rigVarFont) install a backend so setFont / drawText /
- * getTextBounds stop being the placeholder bar. Filled atlas quads only  - 
+ * getTextBounds stop being the placeholder bar. Filled atlas quads only  -
  * outline stroking is not part of this seam. Null backend keeps the bar.
  */
 struct ITextBackend {

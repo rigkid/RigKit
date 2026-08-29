@@ -11,7 +11,9 @@
 #include <array>
 #include <cmath>
 #include <cstddef>
+#include <span>
 #include <spdlog/spdlog.h>
+#include <vector>
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
@@ -49,6 +51,136 @@ int arcSegments(float radius) {
 		return 256;
 	}
 	return std::clamp(static_cast<int>(std::ceil(2.0 * M_PI / step)), 8, 256);
+}
+
+glm::vec2 unitDir(glm::vec2 d) {
+	const float len = glm::length(d);
+	if (len < 1e-8f) {
+		return {1.f, 0.f};
+	}
+	return d / len;
+}
+
+glm::vec2 perp(glm::vec2 d) {
+	return {-d.y, d.x};
+}
+
+glm::vec2 rotate2(glm::vec2 v, float a) {
+	const float c = std::cos(a);
+	const float s = std::sin(a);
+	return {v.x * c - v.y * s, v.x * s + v.y * c};
+}
+
+// Left/right pairs for a connected stroke: miter on gentle turns, round
+// sweep on sharper ones, round caps on open ends. Same idea as the plotter
+// strip expander - independent segment quads leave notches and square butts.
+void buildStrokeStrip(std::span<const glm::vec2> pts, bool closed, float half,
+					  std::vector<glm::vec2>& strip) {
+	strip.clear();
+	if (pts.size() < 2) {
+		return;
+	}
+
+	std::vector<glm::vec2> poly;
+	poly.reserve(pts.size());
+	for (const glm::vec2& p : pts) {
+		if (poly.empty() || glm::length(p - poly.back()) > 1e-6f) {
+			poly.push_back(p);
+		}
+	}
+	const bool wrap = closed && poly.size() > 2;
+	if (wrap && glm::length(poly.front() - poly.back()) < 1e-4f) {
+		poly.pop_back();
+	}
+	const size_t n = poly.size();
+	if (n < 2) {
+		return;
+	}
+
+	constexpr int kCapSteps = 8;
+	constexpr float kRound = 0.25f;
+	constexpr float kMiterLimit = 4.f;
+	strip.reserve(n * 2 + static_cast<size_t>(kCapSteps) * 4 + 16);
+
+	auto emitPair = [&](glm::vec2 p, glm::vec2 normal) {
+		strip.push_back(p - normal * half);
+		strip.push_back(p + normal * half);
+	};
+	auto dirAt = [&](size_t i, size_t j) { return unitDir(poly[j] - poly[i]); };
+	auto normalIn = [&](size_t i) -> glm::vec2 {
+		if (wrap) {
+			return perp(dirAt((i + n - 1) % n, i));
+		}
+		if (i == 0) {
+			return perp(dirAt(0, 1));
+		}
+		return perp(dirAt(i - 1, i));
+	};
+	auto normalOut = [&](size_t i) -> glm::vec2 {
+		if (wrap) {
+			return perp(dirAt(i, (i + 1) % n));
+		}
+		if (i + 1 == n) {
+			return perp(dirAt(n - 2, n - 1));
+		}
+		return perp(dirAt(i, i + 1));
+	};
+
+	if (!wrap) {
+		const glm::vec2 n0 = normalIn(0);
+		for (int s = kCapSteps; s >= 1; --s) {
+			const float a =
+				static_cast<float>(M_PI) * static_cast<float>(s) / static_cast<float>(kCapSteps);
+			emitPair(poly[0], rotate2(n0, a));
+		}
+	}
+
+	for (size_t i = 0; i < n; ++i) {
+		const glm::vec2 n0 = normalIn(i);
+		const glm::vec2 n1 = normalOut(i);
+		const bool join = wrap || (i > 0 && i + 1 < n);
+		if (!join) {
+			emitPair(poly[i], i == 0 ? n0 : n1);
+			continue;
+		}
+		const float angle = std::atan2(n0.x * n1.y - n0.y * n1.x, glm::dot(n0, n1));
+		if (std::abs(angle) <= kRound) {
+			glm::vec2 n = unitDir(n0 + n1);
+			if (glm::dot(n, n) < 1e-8f) {
+				n = n1;
+			}
+			float scale = 1.f;
+			const float denom = glm::dot(n, n0);
+			if (std::abs(denom) > 1e-4f) {
+				scale = 1.f / denom;
+				if (std::abs(scale) > kMiterLimit) {
+					scale = 1.f;
+				}
+			}
+			emitPair(poly[i], n * scale);
+		} else {
+			const int steps =
+				std::clamp(static_cast<int>(std::ceil(std::abs(angle) / kRound)), 1, 10);
+			for (int s = 0; s <= steps; ++s) {
+				const float t = static_cast<float>(s) / static_cast<float>(steps);
+				emitPair(poly[i], rotate2(n0, angle * t));
+			}
+		}
+	}
+
+	if (!wrap) {
+		const glm::vec2 n1 = normalOut(n - 1);
+		for (int s = 1; s <= kCapSteps; ++s) {
+			const float a =
+				static_cast<float>(M_PI) * static_cast<float>(s) / static_cast<float>(kCapSteps);
+			emitPair(poly[n - 1], rotate2(n1, a));
+		}
+	}
+
+	if (wrap && strip.size() >= 4) {
+		strip.push_back(strip[0]);
+		strip.push_back(strip[1]);
+	}
 }
 
 } // namespace
@@ -319,35 +451,26 @@ void OpenGLRenderer::drawStrokedPoly(std::span<const glm::vec2> pts, bool closed
 		return;
 	}
 	// Wide GL_LINES are sheared parallelograms (and GLES only guarantees width
-	// 1). Expand each segment to a rectangle perpendicular to the stroke.
+	// 1). A connected left/right strip keeps joins watertight and can cap ends.
 	const float half = std::max(0.5f, width * 0.5f);
-	const bool wrap = closed && pts.size() > 2;
-	const size_t segs = (pts.size() - 1) + (wrap ? 1u : 0u);
-	openBatch(GL_TRIANGLES, 0.f);
-	reserveBatch(segs * 6);
-	auto quad = [&](glm::vec2 a, glm::vec2 b) {
-		const glm::vec2 d = b - a;
-		const float len = glm::length(d);
-		if (len < 1e-6f) {
-			return;
-		}
-		const glm::vec2 n = glm::vec2(-d.y, d.x) * (half / len);
-		const glm::vec2 p0 = a + n;
-		const glm::vec2 p1 = b + n;
-		const glm::vec2 p2 = b - n;
-		const glm::vec2 p3 = a - n;
-		m_batch.push_back({p0, color});
-		m_batch.push_back({p1, color});
-		m_batch.push_back({p2, color});
-		m_batch.push_back({p0, color});
-		m_batch.push_back({p2, color});
-		m_batch.push_back({p3, color});
-	};
-	for (size_t i = 0; i + 1 < pts.size(); ++i) {
-		quad(pts[i], pts[i + 1]);
+	buildStrokeStrip(pts, closed, half, m_strokeScratch);
+	const size_t pairs = m_strokeScratch.size() / 2;
+	if (pairs < 2) {
+		return;
 	}
-	if (wrap) {
-		quad(pts.back(), pts.front());
+	openBatch(GL_TRIANGLES, 0.f);
+	reserveBatch((pairs - 1) * 6);
+	for (size_t i = 1; i < pairs; ++i) {
+		const glm::vec2 l0 = m_strokeScratch[(i - 1) * 2];
+		const glm::vec2 r0 = m_strokeScratch[(i - 1) * 2 + 1];
+		const glm::vec2 l1 = m_strokeScratch[i * 2];
+		const glm::vec2 r1 = m_strokeScratch[i * 2 + 1];
+		m_batch.push_back({l0, color});
+		m_batch.push_back({r0, color});
+		m_batch.push_back({l1, color});
+		m_batch.push_back({r0, color});
+		m_batch.push_back({r1, color});
+		m_batch.push_back({l1, color});
 	}
 }
 
@@ -412,12 +535,19 @@ void OpenGLRenderer::drawLines(const std::vector<glm::vec2>& pts, const Paint& p
 	if (pts.size() < 2) {
 		return;
 	}
-	drawStrokedPoly(pts, false, packColor(paint.color), paint.strokeWidth);
+	// Independent segments (IRenderer contract). Connected runs go through
+	// drawPolygon / path stroke so joins stay on one contour.
+	const uint32_t color = packColor(paint.color);
+	for (size_t i = 0; i + 1 < pts.size(); i += 2) {
+		drawStrokedPoly(std::span<const glm::vec2>(pts.data() + i, 2), false, color,
+						paint.strokeWidth);
+	}
 }
 
 void OpenGLRenderer::beginPath() {
 	m_path.clear();
 	m_pathOpen = true;
+	m_pathClosed = false;
 }
 
 void OpenGLRenderer::moveTo(float x, float y) {
@@ -438,6 +568,7 @@ void OpenGLRenderer::curveTo(float, float, float, float, float x, float y) {
 
 void OpenGLRenderer::closePath() {
 	m_pathOpen = false;
+	m_pathClosed = true;
 }
 
 void OpenGLRenderer::fill(const glm::vec4& color) {
@@ -445,7 +576,7 @@ void OpenGLRenderer::fill(const glm::vec4& color) {
 }
 
 void OpenGLRenderer::stroke(const glm::vec4& color, float width) {
-	drawStrokedPoly(m_path, true, packColor(color), width);
+	drawStrokedPoly(m_path, m_pathClosed, packColor(color), width);
 }
 
 void OpenGLRenderer::setFont(const std::string& fontPath, float size) {

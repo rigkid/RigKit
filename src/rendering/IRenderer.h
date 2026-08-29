@@ -144,7 +144,8 @@ class IRenderer {
 
 	/**
 	 * @brief Independent segments, 2 vertices each.
-	 * @details Default walks drawLine. OpenGL batches as GL_LINES.
+	 * @details Default walks drawLine. Each pair is its own stroke (caps, no
+	 * join to the next pair). Connected contours use path stroke or drawPolygon.
 	 */
 	virtual void drawLines(const std::vector<glm::vec2>& pts, const Paint& paint) {
 		for (size_t i = 0; i + 1 < pts.size(); i += 2) {

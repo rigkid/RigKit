@@ -1,7 +1,7 @@
 #pragma once
 
-#include <cstdint>
 #include <glm/glm.hpp>
+#include <cstdint>
 #include <memory>
 #include <span>
 #include <string>
@@ -128,6 +128,8 @@ class OpenGLRenderer : public IRenderer {
 
 	std::vector<glm::vec2> m_path;
 	bool m_pathOpen = false;
+	bool m_pathClosed = false;
+	std::vector<glm::vec2> m_strokeScratch;
 
 	unsigned m_program = 0;
 	unsigned m_vao = 0;

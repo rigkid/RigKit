@@ -1,23 +1,23 @@
 #include "app.h"
 
-#include "core/pack/MPack.h"
+#include "rendering/U_gladGlfw.h"
 #include "core/RigKitEngine.h"
+#include "core/pack/MPack.h"
 #include "core/util/AppPaths.h"
 #include "core/util/CommandLineArgs.h"
 #include "ecs/MEcs.h"
-#include "rendering/U_gladGlfw.h"
 #include "packs/rigCodeEditor/src/rigCodeEditor.h"
 #include "packs/rigComponent/src/CAssetRef.h"
 #include "packs/rigComponent/src/CCode.h"
 #include "packs/rigComponent/src/rigComponent.h"
-#include "packs/rigImGui/src/Mui.h"
 #include "packs/rigImGui/src/MWindow.h"
+#include "packs/rigImGui/src/Mui.h"
 #include "packs/rigImGui/src/rigImGui.h"
 #include "packs/rigSystems/src/rigSystems.h"
 #include "ShaderPreviewWindow.h"
 
-#include <fstream>
 #include <imgui.h>
+#include <fstream>
 #include <imgui_internal.h>
 #include <spdlog/spdlog.h>
 #include <sstream>

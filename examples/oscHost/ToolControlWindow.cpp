@@ -5,8 +5,8 @@
 #include "packs/rigOsc/src/rigOsc.h"
 #include "app.h"
 
-#include <cstring>
 #include <imgui.h>
+#include <cstring>
 
 namespace {
 

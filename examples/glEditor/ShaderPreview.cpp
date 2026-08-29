@@ -1,9 +1,9 @@
 #include "ShaderPreview.h"
 
+#include "rendering/U_gladGlfw.h"
 #include <algorithm>
 #include <spdlog/spdlog.h>
 #include <vector>
-#include "rendering/U_gladGlfw.h"
 
 namespace {
 
