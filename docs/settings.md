@@ -69,6 +69,7 @@ JSON shape:
       "Theme File": "custom.json",
       "Font File": "",
       "Font Size": 16.0,
+      "Font Weight": 400.0,
       "Confirm Quit": false,
       "Notification Seconds": 3.0,
       "Notification Width": 320.0,

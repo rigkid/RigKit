@@ -228,6 +228,18 @@ class IMui {
 	}
 
 	/**
+	 * @brief Register an Edit menu submenu (e.g. Rotate to 90 / 180).
+	 * @details @p drawContents runs inside an open `BeginMenu`. @p isEnabled
+	 * disables the submenu when set and false.
+	 */
+	virtual void registerEditSubmenu(const std::string& label, std::function<void()> drawContents,
+									 std::function<bool()> isEnabled = {}) {
+		(void)label;
+		(void)drawContents;
+		(void)isEnabled;
+	}
+
+	/**
 	 * @brief Register a View menu submenu (e.g. Camera to Top / Left).
 	 * @details @p drawContents runs inside an open `BeginMenu`.
 	 */
