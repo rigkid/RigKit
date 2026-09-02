@@ -58,6 +58,7 @@ Artist guide: [nodes.md](nodes.md).
 | **rigPlotterUi** | [rigkid/rigPlotterUi](https://github.com/rigkid/rigPlotterUi) | Plotter Kit panels on rigImGui |
 | **rigSvgEditorUi** | [rigkid/rigSvgEditorUi](https://github.com/rigkid/rigSvgEditorUi) | SVG editor shell (toolbar / artboard / layers) |
 | **rigPlotFinders** | [rigkid/rigPlotFinders](https://github.com/rigkid/rigPlotFinders) | Image to stroke finders (hatch / grid / Potrace; more finder types reserved in POD). **GPL-2.0-or-later** - vendors Potrace |
+| **rigComposition** | [rigkid/rigComposition](https://github.com/rigkid/rigComposition) (local `packs/` until published) | Image composition read - `CComposition` lines / salient mass / ranked template scores over `rig::pixel::Raster`. DATA + pure helpers, first-party analysis (no OpenCV). **Leaf** |
 | **rigPlotProcessors** | [rigkid/rigPlotProcessors](https://github.com/rigkid/rigPlotProcessors) | Prepare pipeline (merge / sort / simplify) + per-layer path effects (Z wave / dash / stroke lift) |
 | **rigPlotGenerators** | [rigkid/rigPlotGenerators](https://github.com/rigkid/rigPlotGenerators) | Path generators (cropmarks / border) |
 | **rigVectorEditor** | [rigkid/rigVectorEditor](https://github.com/rigkid/rigVectorEditor) | Edit `CPaths` (translate / delete / nudge) |
