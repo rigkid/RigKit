@@ -16,7 +16,7 @@ Schemas were cross-pollinated toward this reference host (v0.1). Data packs hold
 | `rig.spatial.transform` | **rigComponent** - `CTransform` | Serialize `position` / `rotation` (quat) / `scale`. `euler` is editor cache only - sync both ways; `localMatrix` uses quat. Do not serialize `euler` or `world`. |
 | `rig.spatial.group` | **rigComponent** - `CGroup` | Marker only (empty). Children use `CRelationship::parent`. |
 | `rig.spatial.camera` | **rigComponent** - `CCamera` (present **rigRender3D**) | Matches projection set (`active`, `projection`, clips, FOV, aspect). |
-| `rig.spatial.layer` | **rigComponent** - `CLayer` | `order` / `locked` / tint (`rgba`). `visible` travels as `x.rigkit.layer_visible` (Contract schema has no visible yet). |
+| `rig.spatial.layer` | **rigComponent** - `CLayer` | `order` / `locked` / tint (`rgba`). Hide bit is `rig.render.visibility` when present; otherwise `x.rigkit.layer_visible`. |
 | `rig.paint.fill_stroke` | **rigComponent** - `CDrawStyle` | Core fill/stroke; caps/joins/dash are host extensions. |
 | `rig.geometry.mesh` | **rigComponent** - `CMesh` | positions / optional normals / indices / optional n-gon `loops`+`loopSizes` / texcoords / mode / optional face colours. Edges are consecutive loop pairs (no parallel edge table). |
 | `rig.geometry.spline` | **rigComponent** - `CSpline` | NURBS curve in the plane. |
@@ -40,7 +40,14 @@ Schemas were cross-pollinated toward this reference host (v0.1). Data packs hold
 | `rig.pixel.palette` | **rigComponent** - `CPalette` | `colors` (16 rgba). `shadeNext` travels separately as `x.rigkit.palette_shade`. |
 | `rig.render.light` | **rigComponent** - `CLight` | Dir/point + colour / intensity / banded shade. Spot not in v0.1. |
 | `rig.io.osc` | **rigOsc** - `COscEndpoint` | Listen/send ports + prefix. |
-| `rig.pixel.effect_chain` | **rigPixelPlotComponent** - `CPixelEffectChain` | `stage` image/draw/generate + `effectId` / `enabled` + step `id` / `parentStep` / chain `nextId`; params pack-local. `parentStep` is stored and round-tripped; evaluation currently reads the preceding step (flat compose). |
+| `rig.pixel.effect_chain` | **rigPixelPlotComponent** - `CPixelEffectChain` | `stage` image/draw/generate + `effectId` / `enabled` + step `id` / `parentStep` / chain `nextId`. Step `blendMode` / `opacity` / `options` travel as `x.rigkit.pixel_effect_step`. |
+| `rig.pixel.canvas` | **rigPixelPlotComponent** - `CPixelCanvas` | `width` / `height` / `clearRgba` only. Title is `rig.meta.named` on the scene. `exportWithTimestamp` / `preferGpu` on `x.rigkit.pixel_canvas_meta`. |
+| `rig.pixel.source` | **rigPixelPlotComponent** - `CPixelSource` | Contract `kind` + `asset` / `generatorName` / sequence / webcam / `videoTime`. Label is `rig.meta.named`. Loop extras + `cast-receive` stay on `x.rigkit.pixel_source_ext`. |
+| `rig.pixel.layer` | **rigPixelPlotComponent** - `CPixelLayer` | `kind` / `rgba` / `maskSource` / entity refs (`image` / `maskAsset` / `maskLayer` / `maskPathEntity` / `groupParent`). No `name` / `visible` / `blendMode` / `opacity` / `index` on this object — those compose `named` + `spatial.layer` + `render.visibility` + `render.blend`. Plot guard is `x.rigkit.pixel_layer_ext.protected`. |
+| `rig.meta.named` | **rigComponent** - `CName` + `MEcs::entityName` | Display name / `stableId`. `ProjectSerializer` writes this from `entityName` — do not register a second codec. |
+| `rig.render.visibility` | **rigComponent** - `CRenderVisibility` | `visible`. Absent = shown. |
+| `rig.render.blend` | **rigComponent** - `CRenderBlend` | Compositing-1 tokens + `add` / `subtract` / `disabled`, plus `opacity`. Defaults omitted. |
+| `rig.ui.panel` / `group` / `control` | **rigComponent** - `CUiPanel` / `CUiGroup` / `CUiControl` | Portable tool surfaces. PixelPlotter emits `pixel.source` / `pixel.layers` / `pixel.canvas`. ImGui docks are fulfillment. |
 | `rig.node.graph` | **rigNodeComponent** - `CNodeGraph` / `NodeGraphData` | `nodes` / `links` / `nextId`. Also used as `nested` on group nodes. |
 | `rig.node.node` | nested in graph | Supports `nested` + `publishes` for nestable groups (`typeId` e.g. `group`). |
 | `rig.node.publish` | `NodePublish` on `GraphNode` | `pin` / `innerNode` / `innerPin`. |
@@ -55,8 +62,7 @@ Schemas were cross-pollinated toward this reference host (v0.1). Data packs hold
 | Schema | RigKit | Honesty |
 |--------|--------|---------|
 | `rig.geometry.rectangle` / `ellipse` / ... | **rigComponent** - `CShape` | Host still uses a union POD (`type` / `sides` / `innerRadius`); Rig split primitives in 0.5.0 - do not advertise a single schema id yet. |
-| `rig.pixel.canvas` / `source` / `layer` / `raster` | **rigPixelPlotComponent** | Intent only - not a finished field map. Compositor `kind=group` + parent exist on `CPixelLayer`. |
-| `rig.meta.named` | *(none)* | No `CName`; names on domain PODs. Grow **rigComponent**. |
+| `rig.pixel.raster` | **rigPixelPlotComponent** - working / output rasters | Size only (`x.rigkit.pixel_*_raster`). Contract `rgba[]` is not written — derived from source + chain. Do not mark Close. |
 | `rig.paint.solid` | **rigColorspace** - `CColor` | `rgba` + optional `cmyk` + optional `ink` + optional overprint flags. `model` / `space` are host authoring lanes. |
 | `rig.paint.fill` / `stroke` | **rigColorspace** - `CPaintFill` / `CPaintStroke` | Entity paint refs; stroke `width` on the stroke POD. |
 | `rig.paint.gradient` | **rigPlotComponent** - `CGradient` | Wire `kind` / stops `t`/`rgba`. `interp` / `spread` / `intensity` / `angle`/`center`/radii are host stand-ins for `p0`/`p1`. |
@@ -83,6 +89,11 @@ Schemas were cross-pollinated toward this reference host (v0.1). Data packs hold
 | `rig.io.serial` / `rig.sensor.*` | **rigInstallIoComponent** (or split) |
 | `rig.book.*` | Document metadata - not layout; no owning pack yet |
 | LAN host / TCP scan (no `rig.*` id yet) | **rigNetScan** - `CNetScan` / `CNetHost` as `x.rigkit.net_scan` / `x.rigkit.net_host` |
+| `rig.pixel.region` | **rigPixelPlotComponent** - `CPixelRegion` as `x.rigkit.pixel_region` | Local proposal: fit / fill / brush / color. |
+| `rig.pixel.mask_path` | **rigPixelPlotComponent** - `CPixelMaskPath` as `x.rigkit.pixel_mask_path` | Local proposal; polygon may later compose `rig.geometry.path`. |
+| `rig.pixel.composite` | **rigPixelPlotComponent** - `CPixelComposite` as `x.rigkit.pixel_composite` | Local proposal: enabled / stack policy. |
+| `rig.pixel.source` `cast-receive` | **rigPixelPlotComponent** - `x.rigkit.pixel_source_ext` | Local proposal to add the kind (or compose `rig.media.cast`). |
+| `rig.pixel.raster` `derived` / `rebake` | working / output size-only extras | Local proposal so size-only documents validate without fake `rgba[]`. |
 
 ## UI
 

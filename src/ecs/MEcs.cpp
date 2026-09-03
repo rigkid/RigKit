@@ -63,6 +63,29 @@ std::string MEcs::entityName(entt::entity entity) const {
 	return {};
 }
 
+void MEcs::setEntityName(entt::entity entity, const std::string& name) {
+	for (auto it = m_namedEntities.begin(); it != m_namedEntities.end();) {
+		if (it->second == entity) {
+			it = m_namedEntities.erase(it);
+		} else {
+			++it;
+		}
+	}
+	if (name.empty() || !m_registry.valid(entity)) {
+		return;
+	}
+	std::string unique = name;
+	int suffix = 2;
+	while (true) {
+		const auto it = m_namedEntities.find(unique);
+		if (it == m_namedEntities.end() || it->second == entity) {
+			break;
+		}
+		unique = name + " (" + std::to_string(suffix++) + ")";
+	}
+	m_namedEntities[unique] = entity;
+}
+
 bool MEcs::hasRegisteredComponent(const ComponentTypeInfo& info, entt::entity entity) const {
 	return info.has && info.has(const_cast<entt::registry&>(m_registry), entity);
 }

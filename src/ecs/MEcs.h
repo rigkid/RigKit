@@ -94,6 +94,8 @@ class MEcs : public IManager, public ISettings {
 
 	/** @brief Name passed to createEntity, or empty if unnamed. */
 	std::string entityName(entt::entity entity) const;
+	/** @brief Bind `rig.meta.named` — unique among live entities (suffix on clash). */
+	void setEntityName(entt::entity entity, const std::string& name);
 
 	void setRenderingManager(MRendering* renderingManager) {
 		m_renderingManager = renderingManager;

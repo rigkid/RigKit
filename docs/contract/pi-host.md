@@ -26,6 +26,20 @@ cmake --build examples/oscHost/build -j$(nproc) --target oscHost
 
 Until hardware is available, desktop build of `examples/oscHost` is the integration smoke test.
 
+### PixelPlotter (out-of-tree product host)
+
+Sibling checkout. GLES paths already exist. Default Pi images should leave FFmpeg and AirPlay optional / off.
+
+```bash
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build -j$(nproc) --target pixelplotter
+./build/bin/pixelplotter --show
+./build/bin/pixelplotter --author
+./build/bin/pixelplotter --smoke
+```
+
+Desktop `--smoke` is not a Pi pass. Fill the verify-log row only when a board runs `--show`, `--author`, and `--smoke`.
+
 ### Plot pack family (optional product path)
 
 Integration app: `packs/rigPlotter/examples/plot`. Each plot pack also has its own thin example under `packs/<pack>/examples/<name>/` (README screenshot). Headless unit smokes live under each pack’s `tools/*_smoke.cpp` and build with the plot tree (`plot_unit_smokes` target).
@@ -48,6 +62,7 @@ Out-of-tree PaintPlotter uses the same packs; verify with its own CMake tree whe
 | Date | Board | OS | Build | `--show` / smokes | `--author` / UI | Notes |
 |------|-------|-----|-------|-------------------|-----------------|-------|
 | _pending_ | | | | | | Run `examples/oscHost` on device |
+| _pending_ | | | | | | PixelPlotter `--show` / `--author` / `--smoke` — **blocked on hardware** |
 | 2026-08-02 | - | desktop interim | OK | all `*_smoke` OK (Win) | PaintPlotter + `plot` rebuilt | **Pi blocked on hardware** this session - run plot family checklist above on arm64 when a board is available; do not treat desktop as a Pi pass |
 | 2026-08-02 | - | desktop interim | OK | + gcode_import / contours / maze / toolpath3d smokes | Toolpath 3D Kit panel | v2 software closed (import + 20 finders + Toolpath 3D). **Pi/Grbl still blocked on hardware** |
 | 2026-08-02 | - | desktop interim | - | - | PaintPlotter 1.0.0 ship bar | Live preview + envelope soft-check + LICENSE/NOTICE. **Pi/Grbl still blocked on hardware** |
