@@ -20,7 +20,9 @@ rigMeshEdit	https://github.com/rigkid/rigMeshEdit.git	main
 rigNodeComponent	https://github.com/rigkid/rigNodeComponent.git	main
 rigNodeEditor	https://github.com/rigkid/rigNodeEditor.git	main
 rigObj	https://github.com/rigkid/rigObj.git	main
+rigOpenCV	https://github.com/rigkid/rigOpenCV.git	main
 rigOsc	https://github.com/rigkid/rigOsc.git	main
+rigPainty	https://github.com/rigkid/rigPainty.git	main
 rigPdf	https://github.com/rigkid/rigPdf.git	main
 rigPixelPlotComponent	https://github.com/rigkid/rigPixelPlotComponent.git	main
 rigPixelPlotter	https://github.com/rigkid/rigPixelPlotter.git	main

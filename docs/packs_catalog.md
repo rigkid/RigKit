@@ -71,6 +71,7 @@ Integration app: `packs/rigPlotter/examples/plot`. SVG IO pack example: `packs/r
 | Pack | Remote | Role |
 |------|--------|------|
 | **rigPixelPlotComponent** | [rigkid/rigPixelPlotComponent](https://github.com/rigkid/rigPixelPlotComponent) | PixelPlotter PODs (source, canvas, effect chain, rasters). DATA ONLY |
+| **rigPainty** | [rigkid/rigPainty](https://github.com/rigkid/rigPainty) (local `packs/` until published) | Painterly ETF / flow-based DoG / Hertzmann canvas SBR. CODE. Native `paintPicture` does not use finders or DoG. Optional lindemeier/painty submodule. Links **rigPlotFinders** (**GPL-2.0-or-later**) |
 | **rigPixelPlotter** | [rigkid/rigPixelPlotter](https://github.com/rigkid/rigPixelPlotter) | PixelDoc pipeline (IMAGE/DRAW, GPU, layers, PNG) |
 | **rigPixelPlotterUi** | [rigkid/rigPixelPlotterUi](https://github.com/rigkid/rigPixelPlotterUi) | Kit UI panels (Main View, Canvas, Resources, Layers) |
 
@@ -96,6 +97,7 @@ Product app **RigSlicer** lives out of tree (e.g. next to RigKit), not under `ex
 | Pack | Remote | Role |
 |------|--------|------|
 | **rigOsc** | [rigkid/rigOsc](https://github.com/rigkid/rigOsc) | UDP OSC + network identity / show bus - `oscHost --smoke-osc` |
+| **rigTouch** | [rigkid/rigTouch](https://github.com/rigkid/rigTouch) (local `packs/` until published) | Linux evdev Type-B multi-touch - per-frame `TouchFrame` (contacts + two-finger pan / pinch). **Leaf.** Empty frame on non-Linux. Pi: user needs `input` group. |
 | **rigNetScan** | [rigkid/rigNetScan](https://github.com/rigkid/rigNetScan) (local `packs/` until published) | LAN TCP connect scan - `CNetScan` / `CNetHost` + `IpScannerWindow`. Example `netscan --smoke-netscan` |
 | **rigAbletonLink** | [rigkid/rigAbletonLink](https://github.com/rigkid/rigAbletonLink) (local `packs/` until published) | Ableton Link to `CMusicClock` / `CMusicTransport`. **Leaf.** **GPL-2.0-or-later** (Link SDK). |
 | **rigScreenCast** | [rigkid/rigScreenCast](https://github.com/rigkid/rigScreenCast) (local `packs/` until published) | Host-window cast **send** + **receive** (RigKit peer; AirPlay RX via hard-linked UxPlay). POD in **rigComponent**. **Leaf / GPLv3** while UxPlay is linked. Never desktop capture. Google Cast RX still follow-on. |
@@ -112,6 +114,7 @@ Product app **RigSlicer** lives out of tree (e.g. next to RigKit), not under `ex
 | Pack | Remote | Role |
 |------|--------|------|
 | **rigImage** | [rigkid/rigImage](https://github.com/rigkid/rigImage) (local `packs/` until published) | Raster decode + GLES upload (stb_image). CPU buffer is `rig::pixel::Raster` (`rig.pixel.raster`). Path POD stays `CAssetRef` in **rigComponent**. Example `image --smoke-image`. |
+| **rigOpenCV** | [rigkid/rigOpenCV](https://github.com/rigkid/rigOpenCV) (local `packs/` until published) | Optional OpenCV Raster bridge (`toMat` / `fromMat`). FetchContent OpenCV 4.10.0 `core`+`imgproc` - does not use a machine / openFrameworks copy. **Leaf.** **Pi / rebuild risk** (first configure compiles OpenCV). |
 
 ### Scripting / CAD
 

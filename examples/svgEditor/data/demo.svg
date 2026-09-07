@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300">
+  <!-- svgEditor demo: typographic "a" + blob circle -->
+  <g id="Letter">
+    <!-- Counter subpath winds opposite to the outer ring (NonZero fill keeps it open). -->
+    <path d="M120 170 C96 170 78 154 78 130 C78 104 98 88 128 88 C146 88 160 96 168 110 L168 88 L190 88 L190 170 L170 170 L170 150 C162 164 146 170 120 170 Z M128 108 C112 108 100 116 100 130 C100 144 112 154 128 154 C142 154 154 144 154 128 C154 116 142 108 128 108 Z" fill="#ffd246" stroke="#ffd246" stroke-width="1.5"/>
+  </g>
+  <g id="Blob">
+    <circle cx="300" cy="150" r="55" fill="none" stroke="#5ac8ff" stroke-width="1.5"/>
+  </g>
+</svg>

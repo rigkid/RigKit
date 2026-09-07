@@ -36,6 +36,10 @@ for file in $staged_files; do
     echo "$file" | grep -qE "^(third_party|assets|packs)/" && continue
     [ ! -f "$file" ] && continue
     [ ! -s "$file" ] && continue
+    # Binary files (git reports "-" diff stats) keep their exact bytes.
+    case "$(git diff --cached --numstat -- "$file" | cut -f1)" in
+        -|"") continue ;;
+    esac
     if [ "$(tail -c1 "$file" | wc -l)" -eq 0 ]; then
         echo "Adding newline to end of file: $file"
         echo "" >> "$file"

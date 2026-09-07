@@ -111,6 +111,7 @@ See [docs/authoring.md](docs/authoring.md).
 | GLES mesh present (`CCamera` + `CMesh`) | **rigRender3D** - CODE ONLY |
 | Wavefront OBJ / `CMesh` | **rigObj** - CODE / IO (tinyobjloader) |
 | Assimp multi-format to `CMesh` | **rigAssimp** - CODE / IO, **leaf** (nothing depends on it; app opt-in) |
+| OpenCV Raster bridge | **rigOpenCV** - CODE / IO, **leaf** (FetchContent `core`+`imgproc`; nothing depends on it) |
 | FGF print PODs | **rigPrintComponent** - DATA ONLY (`CPrint*`, `rig.print.*`) |
 | Ginger CLI + Z compression | **rigSlice** - CODE / IO, **leaf**, desktop FGF (**Pi risk**) |
 | Mesh edit TRS on selection | **rigMeshEdit** - CODE (needs **rigImGui**) |

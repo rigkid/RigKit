@@ -9,7 +9,6 @@ packs/*
 !packs/rigSystems
 
 # Host examples not ready for the first private land (keep local; do not stage).
-examples/svgEditor/
 examples/example-lowpoly/
 examples/calendar/
 

@@ -1,0 +1,22 @@
+{
+  "name": "svgEditor",
+  "version": "0.1.0",
+  "license": "MIT",
+  "description": "SVG editor shell example (toolbar, artboard, layers)",
+  "window": { "width": 800, "height": 600, "title": "svgEditor" },
+  "dependencies": [
+    { "name": "rigComponent", "url": "https://github.com/rigkid/rigComponent.git", "ref": "main" },
+    { "name": "rigSystems", "url": "https://github.com/rigkid/rigSystems.git", "ref": "main" },
+    { "name": "rigProject", "url": "https://github.com/rigkid/rigProject.git", "ref": "main" },
+    { "name": "rigPlotComponent", "url": "https://github.com/rigkid/rigPlotComponent.git", "ref": "main" },
+    { "name": "rigColorspace", "url": "https://github.com/rigkid/rigColorspace.git", "ref": "main" },
+    { "name": "rigCompositor", "url": "https://github.com/rigkid/rigCompositor.git", "ref": "main" },
+    { "name": "rigSvg", "url": "https://github.com/rigkid/rigSvg.git", "ref": "main" },
+    { "name": "rigVectorEditor", "url": "https://github.com/rigkid/rigVectorEditor.git", "ref": "main" },
+    { "name": "rigPlotter", "url": "https://github.com/rigkid/rigPlotter.git", "ref": "main" },
+    { "name": "rigArtboards", "url": "https://github.com/rigkid/rigArtboards.git", "ref": "main" },
+    { "name": "rigImage", "url": "https://github.com/rigkid/rigImage.git", "ref": "main" },
+    { "name": "rigImGui", "url": "https://github.com/rigkid/rigImGui.git", "ref": "main" },
+    { "name": "rigSvgEditorUi", "url": "https://github.com/rigkid/rigSvgEditorUi.git", "ref": "main" }
+  ]
+}

@@ -16,6 +16,7 @@
 | **rigLayout** | Compose engine - story to placed `CText` on pages (Setup bake) |
 | **rigEthereum** | On-chain art record POD + keccak256 / wallet submit intent (leaf; existing wallet; no keys) |
 | **rigAssimp** | Optional Assimp multi-format to `CMesh` (leaf; app opt-in only) |
+| **rigOpenCV** | Optional OpenCV Raster bridge (leaf; FetchContent core+imgproc; app opt-in only) |
 | **rigMeshEdit** | ImGuizmo TRS edit for selected `CTransform` |
 | **rigNodeComponent** | Generic node-graph PODs (`CNodeGraph`) - DATA + catalog/eval helpers. Artist guide: [nodes.md](nodes.md) |
 | **rigNodeEditor** | ImGui editor over `CNodeGraph` ([nodes.md](nodes.md)) |
@@ -36,7 +37,7 @@ Pick a home before writing systems or UI. Agents: [rigkit-data](../skills/rigkit
 | Host `src/ecs/components/` | Host-bound leftovers only - do not grow for new portable meaning | `CEvent` (menu/UI action data; `std::any` payload keeps it host-only) |
 | **rigComponent** | Generic reusable PODs - grow here; keep thin | `CTransform`, `CCanvas`, `CCamera`, `CLight`, `CPalette`, `CIndexedAtlas`, `CFaceSelection`, `CEdgeSelection`, `CShape`, `CMesh`, `CSpline3d`, `CNurbsSurface`, `CCadBox`, `CCadDimension`, `CDrawStyle`, `CSelection`, `CScreenCast`, `CScreenCastReceive`, `CCastReceiver` |
 | Domain data pack | Product-specific PODs (+ codecs / pure helpers over that POD) | `rigProject` (`CProject`, `CPage`); `rigPlotComponent` (`CPaths`, ...); `rigNodeComponent` (`CNodeGraph`) |
-| Code pack | Systems / I/O / UI - not portable component homes | `rigSystems`, `rigRender3D`, `rigObj`, `rigAssimp` (leaf), `rigPdf` (leaf), `rigEthereum` (leaf), `rigScreenCast` (leaf), `rigMeshEdit`, `rigNodeEditor`, `rigPlotter`, `rigPlotFinders`, `rigSvg`, `rigImGui` |
+| Code pack | Systems / I/O / UI - not portable component homes | `rigSystems`, `rigRender3D`, `rigObj`, `rigAssimp` (leaf), `rigOpenCV` (leaf), `rigPdf` (leaf), `rigEthereum` (leaf), `rigScreenCast` (leaf), `rigMeshEdit`, `rigNodeEditor`, `rigPlotter`, `rigPlotFinders`, `rigSvg`, `rigImGui` |
 | App | Prototypes until promotion to `rigComponent` or a domain data pack | one-off app structs |
 
 A data pack is **components-first**, not “literally only `struct` files.” Allowed: `C*` PODs, `GetProperties`, `registerComponent`, document codecs for those types, pure helpers (catalog, eval, flatten). Forbidden: Update/Draw systems, ImGui panels, GPU/window handles in components. Engines (e.g. PlotDoc) and editors stay in **code** packs.

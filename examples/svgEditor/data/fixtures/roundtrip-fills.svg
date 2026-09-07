@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="210mm" height="297mm" viewBox="0 0 210 297">
+  <defs>
+    <linearGradient id="gradLinear" gradientUnits="userSpaceOnUse"
+                    x1="20" y1="40" x2="100" y2="40" spreadMethod="pad">
+      <stop offset="0%" stop-color="#ff3366"/>
+      <stop offset="100%" stop-color="#3366ff"/>
+    </linearGradient>
+    <linearGradient id="gradShared" gradientUnits="userSpaceOnUse"
+                    x1="20" y1="210" x2="100" y2="210" spreadMethod="reflect">
+      <stop offset="0%" stop-color="#00ccaa"/>
+      <stop offset="100%" stop-color="#2244aa"/>
+    </linearGradient>
+    <linearGradient id="gradStroke" gradientUnits="userSpaceOnUse"
+                    x1="120" y1="120" x2="180" y2="180" spreadMethod="pad">
+      <stop offset="0%" stop-color="#ff8800"/>
+      <stop offset="100%" stop-color="#8800ff"/>
+    </linearGradient>
+    <radialGradient id="gradRadial" gradientUnits="userSpaceOnUse"
+                    cx="150" cy="80" r="40" fx="150" fy="80" spreadMethod="pad">
+      <stop offset="0%" stop-color="#ffe066"/>
+      <stop offset="100%" stop-color="#663399"/>
+    </radialGradient>
+  </defs>
+  <g id="Shapes">
+    <path d="M20 120 L80 120 L80 180 L20 180 Z" fill="#22aa66" stroke="none"/>
+    <path d="M100 120 L160 120 L160 180 L100 180 Z" fill="none" stroke="#222222" stroke-width="1.5"/>
+    <path d="M20 20 L100 20 L100 60 L20 60 Z" fill="url(#gradLinear)" stroke="#111111" stroke-width="0.5"/>
+    <circle cx="150" cy="80" r="40" fill="url(#gradRadial)" stroke="none"/>
+    <path d="M20 70 L100 70 L100 100 L20 100 Z" fill="url(#gradLinear)" stroke="none"/>
+    <path d="M20 200 L60 200 L60 240 L20 240 Z" fill="url(#gradShared)" stroke="none"/>
+    <path d="M70 200 L110 200 L110 240 L70 240 Z" fill="url(#gradShared)" stroke="none"/>
+    <path d="M120 120 L180 120 L180 180 L120 180 Z" fill="none" stroke="url(#gradStroke)" stroke-width="4"/>
+    <path d="M120 200 L180 200 L180 250 L120 250 Z" fill="url(#gradLinear)" stroke="url(#gradStroke)" stroke-width="2"/>
+  </g>
+</svg>
