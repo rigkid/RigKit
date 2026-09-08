@@ -46,9 +46,9 @@ struct Paint {
 /**
  * @brief Abstract 2D present backend (primitives, paths, style).
  * @details Default host fulfillment is OpenGLRenderer. Style is per call via
- * Paint; the matrix stack is the only retained drawing state. Gradients, pixel
- * export, and rich text may be no-ops until a pack (e.g. Blend2D) implements
- * them. Does not create a window or swap buffers.
+ * Paint; the matrix stack and the active gradient are the only retained
+ * drawing state. Pixel export and rich text may be no-ops until a pack
+ * (e.g. Blend2D) implements them. Does not create a window or swap buffers.
  * @see OpenGLRenderer, createRenderer, Graphics, Paint
  */
 class IRenderer {
@@ -111,7 +111,9 @@ class IRenderer {
 	virtual void scale(float sx, float sy) = 0;
 	virtual void resetMatrix() = 0;
 
-	/** @note OpenGL default path may no-op; Blend2D pack can fulfill. */
+	/** @note Stops must be sorted by offset. Gradient replaces the draw colour
+	 *  until clearGradient. OpenGL evaluates in the shader (up to 8 stops);
+	 *  Blend2D fulfills natively. */
 	virtual void setLinearGradient(float x1, float y1, float x2, float y2,
 								   const std::vector<GradientStop>& stops) = 0;
 	virtual void setRadialGradient(float cx, float cy, float radius,

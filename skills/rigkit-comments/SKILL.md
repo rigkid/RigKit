@@ -60,7 +60,7 @@ Prefer `/** ... */` or `///` with `@` commands (Javadoc-style; Doxygen accepts b
 | `@param name` | Non-obvious parameters only; skip self-explanatory names when the brief is enough |
 | `@return` | When the return value carries meaning beyond the type |
 | `@note` / `@warning` | Pi, re-entrancy, ownership, pack bootstrap order |
-| `@deprecated` | With replacement |
+| `@deprecated` | Only on a short-lived obsolete redirect (gone by the next host MAJOR), with the replacement. Prefer deleting the old name and a [versioning.md](../../docs/versioning.md) History row. |
 | `@see` | Related type, doc, or pack |
 
 Do **not** Doxygen-decorate private helpers, `.cpp`-local statics, or obvious POD field getters. Keep POD component headers light - a short `@brief` on the struct is enough; fields usually speak for themselves.

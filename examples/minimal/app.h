@@ -11,6 +11,5 @@ class MinimalApp : public rigkit::IApp {
 	void update(float) override {}
 	void draw() override {
 		// Host Draw presents ECS shapes/meshes created in setup().
-		// Immediate helpers (optional): #include "author/rigDraw.h"
 	}
 };

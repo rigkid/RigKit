@@ -115,7 +115,7 @@ Published: [https://rigkid.github.io/rigkit/](https://rigkid.github.io/rigkit/) 
 
 ## API change sweep
 
-When a public signature changes (`MPack`, `IApp`, `IMui`, pack headers), grep before building: `src/`, `packs/`, `examples/`, `tools/`, `templates/`, `docs/`, `.cursor/skills/`, `skills/`. Product apps live in their own repos and no gate here covers them - list the call sites you cannot reach and ask which to update.
+When a public signature changes (`MPack`, `IApp`, `IMui`, pack headers), grep before building: `src/`, `packs/`, `examples/`, `tools/`, `templates/`, `docs/`, `.cursor/skills/`, `skills/`. Switch every in-tree caller to the new name in the same change — do not keep the old signature as an alias ([contributing.md](../../docs/contributing.md#api-changes)). Product apps live in their own repos and no gate here covers them - list the call sites you cannot reach and ask which to update.
 
 ## Local CI before commit (required)
 

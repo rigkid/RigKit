@@ -79,7 +79,6 @@ void Canvas::resize(int width, int height) {
 	m_height = height;
 	m_graphics->setCanvasSize(m_width, m_height);
 	initFramebuffer();
-	// Set default background to white after resize
 	clear(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
@@ -93,95 +92,6 @@ void Canvas::clear(float r, float g, float b, float a) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	m_impl->resolveDirty = m_impl->appliedSamples > 1;
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-}
-
-void Canvas::background(float r, float g, float b, float a) {
-	clear(r, g, b, a);
-}
-
-void Canvas::fill(float r, float g, float b, float a) {
-	m_graphics->setFillColor(r, g, b, a);
-}
-
-void Canvas::noFill() {
-	m_graphics->noFill();
-}
-
-void Canvas::stroke(float r, float g, float b, float a) {
-	m_graphics->setStrokeColor(r, g, b, a);
-}
-
-void Canvas::noStroke() {
-	m_graphics->noStroke();
-}
-
-void Canvas::strokeWeight(float weight) {
-	m_graphics->setStrokeWidth(weight);
-}
-
-void Canvas::rect(float x, float y, float width, float height) {
-	m_graphics->drawRect(x, y, width, height);
-}
-
-void Canvas::ellipse(float x, float y, float width, float height) {
-	m_graphics->drawEllipse(x, y, width, height);
-}
-
-void Canvas::line(float x1, float y1, float x2, float y2) {
-	m_graphics->drawLine(x1, y1, x2, y2);
-}
-
-void Canvas::triangle(float x1, float y1, float x2, float y2, float x3, float y3) {
-	m_graphics->drawTriangle(x1, y1, x2, y2, x3, y3);
-}
-
-void Canvas::circle(float x, float y, float diameter) {
-	ellipse(x, y, diameter, diameter);
-}
-
-void Canvas::text(const std::string& text, float x, float y) {
-	if (m_graphics) {
-		m_graphics->setFont("Arial", m_textSize);
-		m_graphics->drawText(text, x, y);
-	}
-}
-
-void Canvas::textSize(float size) {
-	m_textSize = size;
-}
-
-void Canvas::textAlign(int align) {
-	m_textAlign = align;
-}
-
-void Canvas::pushMatrix() {
-	if (m_graphics) {
-		m_graphics->pushMatrix();
-	}
-}
-
-void Canvas::popMatrix() {
-	if (m_graphics) {
-		m_graphics->popMatrix();
-	}
-}
-
-void Canvas::translate(float x, float y) {
-	if (m_graphics) {
-		m_graphics->translate(x, y);
-	}
-}
-
-void Canvas::rotate(float angle) {
-	if (m_graphics) {
-		m_graphics->rotate(angle);
-	}
-}
-
-void Canvas::scale(float x, float y) {
-	if (m_graphics) {
-		m_graphics->scale(x, y);
-	}
 }
 
 void Canvas::beginOffscreen() {

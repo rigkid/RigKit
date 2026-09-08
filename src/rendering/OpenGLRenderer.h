@@ -1,6 +1,7 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include <array>
 #include <cstdint>
 #include <memory>
 #include <span>
@@ -19,8 +20,9 @@ namespace rigkit {
  * Paint it is given. Consecutive triangles merge into one draw regardless of
  * colour, and the batch is issued at the next topology change, transform, or
  * endFrame; call order still decides what paints on top. Does not create a
- * window or swap buffers. Gradients and saveTo* are no-ops until a richer pack
- * implements them.
+ * window or swap buffers. Gradients (linear/radial/conic, up to 8 sorted
+ * stops) replace the Paint colour for every primitive until clearGradient.
+ * saveTo* stays a no-op until a richer pack implements it.
  * @see IRenderer, Paint, MEcs::setPresentRenderer, Graphics
  */
 class OpenGLRenderer : public IRenderer {
@@ -113,6 +115,9 @@ class OpenGLRenderer : public IRenderer {
 	void drawStrokedPoly(std::span<const glm::vec2> pts, bool closed, uint32_t color, float width);
 	/** @brief Fill or stroke a closed outline according to @p paint. */
 	void drawOutline(std::span<const glm::vec2> pts, const Paint& paint);
+	// Flush the open batch, then retain the gradient for subsequent draws.
+	// Stops beyond kMaxGradientStops are dropped; empty stops clear.
+	void applyGradient(int type, const glm::vec4& geom, const std::vector<GradientStop>& stops);
 	// Fills and returns the reusable scratch ring, so circles cost no
 	// allocation per frame. Valid until the next call.
 	const std::vector<glm::vec2>& ellipsePoints(float cx, float cy, float rx, float ry);
@@ -137,6 +142,21 @@ class OpenGLRenderer : public IRenderer {
 	int m_uModel = -1;
 	int m_uProjection = -1;
 	size_t m_vboBytes = 0;
+
+	// Retained gradient state, mirrored into shader uniforms at flush.
+	// Type: 0 none, 1 linear, 2 radial, 3 conic. Geometry packs
+	// (x1,y1,x2,y2) / (cx,cy,radius,-) / (cx,cy,angle,-).
+	static constexpr int kMaxGradientStops = 8;
+	int m_gradType = 0;
+	glm::vec4 m_gradGeom{0.f};
+	int m_gradCount = 0;
+	std::array<glm::vec4, kMaxGradientStops> m_gradColors{};
+	std::array<float, kMaxGradientStops> m_gradOffsets{};
+	int m_uGradType = -1;
+	int m_uGradGeom = -1;
+	int m_uGradCount = -1;
+	int m_uGradColor = -1;
+	int m_uGradOffset = -1;
 
 	std::vector<Vertex> m_batch;
 	unsigned m_batchMode = 0;

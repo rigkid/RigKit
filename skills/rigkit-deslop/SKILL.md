@@ -43,7 +43,7 @@ Pairs with [rigkit-minimal](../rigkit-minimal/SKILL.md): minimal prevents slop; 
 
 When the row is ambiguous - a stub could be a wanted capability, not just leftovers - **ask the user delete-or-finish before editing**. One question per item with path + evidence + what "finish" would mean. Only clear cases (no callers (even out of tree?), no product value, superseded) are deleted without asking.
 
-Examples of delete: legacy `MEcs` runners replaced by `registerSystem`; dead `Graphics` GL that never draws; unused converters.
+Examples of delete: old public names after a rename (`AppPaths::getAssetsDir` when `getDataDir()` is the API); `MEcs` runners replaced by `registerSystem`; dead `Graphics` GL that never draws; unused converters. A “prefer X in new code” alias is the old name — delete it in the same change, then History + SemVer ([contributing.md](../../docs/contributing.md#api-changes)).
 
 Examples of finish: selection overlay over `CSelection`; Canvas FBO present; OpenGL `switchRenderer`. Drawing preview becomes tool-session data in a tool pack (see TODO / authoring.md), not a core stub.
 

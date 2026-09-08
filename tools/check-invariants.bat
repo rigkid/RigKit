@@ -18,11 +18,20 @@ for /r src %%F in (*.c *.cpp *.h *.hpp) do (
 )
 
 REM --- 4. rigComponent = data ---
+REM Unix S*.cpp is case-sensitive (SHierarchy). Windows globs are not, so
+REM sketch.cpp must not trip this. Match basename starting with capital S,
+REM or containing System / Systems.
 if exist packs\rigComponent\src (
-  for /r packs\rigComponent\src %%F in (S*.cpp S*.h *System*.cpp *System*.h *Systems*.cpp *Systems*.h) do (
-    if exist "%%F" (
-      echo FAIL: systems-shaped file in rigComponent ^(%%F^)
-      set FAIL=1
+  for /r packs\rigComponent\src %%F in (*.cpp *.h *.hpp) do (
+    echo %%F | findstr /I /C:"\third_party\" >nul || (
+      echo %%~nxF | findstr /R /C:"^S" >nul && (
+        echo FAIL: systems-shaped file in rigComponent ^(%%F^)
+        set FAIL=1
+      )
+      echo %%~nxF | findstr /C:"System" >nul && (
+        echo FAIL: systems-shaped file in rigComponent ^(%%F^)
+        set FAIL=1
+      )
     )
   )
 )

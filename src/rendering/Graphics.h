@@ -12,11 +12,11 @@ namespace rigkit {
  * @details Holds the retained artist style - set a colour once, then draw many
  * shapes - and turns it into an explicit Paint per call, because IRenderer
  * keeps no style state. This is the one owner of that style: callers above
- * (Canvas, author/rigDraw.h) forward here rather than caching their own copy.
+ * present / systems forward here rather than caching their own copy.
  * Each draw fills first and strokes second, so a shape can do both. Does not
  * implement shadows or image loading. Stroke joins and caps live on the
  * present renderer (OpenGL default: round).
- * @see IRenderer, Paint, OpenGLRenderer, author/rigDraw.h
+ * @see IRenderer, Paint, OpenGLRenderer
  */
 class Graphics {
   public:

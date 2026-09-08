@@ -197,6 +197,11 @@ bool OpenGLRenderer::initialize(int width, int height) {
 		return true;
 	}
 
+	// Gradient uniforms live in user space - the same coordinates draw calls
+	// use - so a gradient follows the model matrix exactly like its geometry
+	// (same semantics as the Blend2D fulfillment). Stop evaluation is a
+	// fixed-bound loop with sequential mixes, legal in ESSL 1.00 fragment
+	// shaders (uniform arrays indexed by the loop index, no break).
 #if defined(RIGKIT_GLES)
 	const char* vsSrc = R"(#version 100
 attribute vec2 aPos;
@@ -204,16 +209,45 @@ attribute vec4 aColor;
 uniform mat4 model;
 uniform mat4 projection;
 varying vec4 vColor;
+varying vec2 vPos;
 void main() {
 	vColor = aColor;
+	vPos = aPos;
 	gl_Position = projection * model * vec4(aPos, 0.0, 1.0);
 }
 )";
 	const char* fsSrc = R"(#version 100
 precision mediump float;
 varying vec4 vColor;
+varying vec2 vPos;
+uniform int uGradType;
+uniform vec4 uGradGeom;
+uniform int uGradCount;
+uniform vec4 uGradColor[8];
+uniform float uGradOffset[8];
+vec4 gradientColor(vec2 p) {
+	float t = 0.0;
+	if (uGradType == 1) {
+		vec2 d = uGradGeom.zw - uGradGeom.xy;
+		t = clamp(dot(p - uGradGeom.xy, d) / max(dot(d, d), 1e-6), 0.0, 1.0);
+	} else if (uGradType == 2) {
+		t = clamp(length(p - uGradGeom.xy) / max(uGradGeom.z, 1e-6), 0.0, 1.0);
+	} else {
+		float a = atan(p.y - uGradGeom.y, p.x - uGradGeom.x) - uGradGeom.z;
+		t = fract(a / 6.28318530718);
+	}
+	vec4 c = uGradColor[0];
+	for (int i = 1; i < 8; ++i) {
+		if (i < uGradCount) {
+			float o0 = uGradOffset[i - 1];
+			float f = clamp((t - o0) / max(uGradOffset[i] - o0, 1e-6), 0.0, 1.0);
+			c = mix(c, uGradColor[i], f);
+		}
+	}
+	return c;
+}
 void main() {
-	gl_FragColor = vColor;
+	gl_FragColor = (uGradType == 0) ? vColor : gradientColor(vPos);
 }
 )";
 #else
@@ -223,16 +257,45 @@ layout (location = 1) in vec4 aColor;
 uniform mat4 model;
 uniform mat4 projection;
 out vec4 vColor;
+out vec2 vPos;
 void main() {
 	vColor = aColor;
+	vPos = aPos;
 	gl_Position = projection * model * vec4(aPos, 0.0, 1.0);
 }
 )";
 	const char* fsSrc = R"(#version 330 core
 in vec4 vColor;
+in vec2 vPos;
 out vec4 FragColor;
+uniform int uGradType;
+uniform vec4 uGradGeom;
+uniform int uGradCount;
+uniform vec4 uGradColor[8];
+uniform float uGradOffset[8];
+vec4 gradientColor(vec2 p) {
+	float t = 0.0;
+	if (uGradType == 1) {
+		vec2 d = uGradGeom.zw - uGradGeom.xy;
+		t = clamp(dot(p - uGradGeom.xy, d) / max(dot(d, d), 1e-6), 0.0, 1.0);
+	} else if (uGradType == 2) {
+		t = clamp(length(p - uGradGeom.xy) / max(uGradGeom.z, 1e-6), 0.0, 1.0);
+	} else {
+		float a = atan(p.y - uGradGeom.y, p.x - uGradGeom.x) - uGradGeom.z;
+		t = fract(a / 6.28318530718);
+	}
+	vec4 c = uGradColor[0];
+	for (int i = 1; i < 8; ++i) {
+		if (i < uGradCount) {
+			float o0 = uGradOffset[i - 1];
+			float f = clamp((t - o0) / max(uGradOffset[i] - o0, 1e-6), 0.0, 1.0);
+			c = mix(c, uGradColor[i], f);
+		}
+	}
+	return c;
+}
 void main() {
-	FragColor = vColor;
+	FragColor = (uGradType == 0) ? vColor : gradientColor(vPos);
 }
 )";
 #endif
@@ -285,6 +348,11 @@ void main() {
 
 	m_uModel = glGetUniformLocation(m_program, "model");
 	m_uProjection = glGetUniformLocation(m_program, "projection");
+	m_uGradType = glGetUniformLocation(m_program, "uGradType");
+	m_uGradGeom = glGetUniformLocation(m_program, "uGradGeom");
+	m_uGradCount = glGetUniformLocation(m_program, "uGradCount");
+	m_uGradColor = glGetUniformLocation(m_program, "uGradColor");
+	m_uGradOffset = glGetUniformLocation(m_program, "uGradOffset");
 
 	glGenVertexArrays(1, &m_vao);
 	glGenBuffers(1, &m_vbo);
@@ -404,6 +472,13 @@ void OpenGLRenderer::flush() {
 		return;
 	}
 	updateProjection();
+	glUniform1i(m_uGradType, m_gradType);
+	if (m_gradType != 0) {
+		glUniform4fv(m_uGradGeom, 1, glm::value_ptr(m_gradGeom));
+		glUniform1i(m_uGradCount, m_gradCount);
+		glUniform4fv(m_uGradColor, kMaxGradientStops, glm::value_ptr(m_gradColors[0]));
+		glUniform1fv(m_uGradOffset, kMaxGradientStops, m_gradOffsets.data());
+	}
 #if !defined(RIGKIT_GLES)
 	if (m_batchMode == GL_LINES) {
 		glLineWidth(std::max(1.f, m_batchLineWidth));
@@ -638,11 +713,41 @@ void OpenGLRenderer::resetMatrix() {
 	m_matrixStack.clear();
 }
 
-void OpenGLRenderer::setLinearGradient(float, float, float, float,
-									   const std::vector<GradientStop>&) {}
-void OpenGLRenderer::setRadialGradient(float, float, float, const std::vector<GradientStop>&) {}
-void OpenGLRenderer::setConicGradient(float, float, float, const std::vector<GradientStop>&) {}
-void OpenGLRenderer::clearGradient() {}
+void OpenGLRenderer::applyGradient(int type, const glm::vec4& geom,
+								   const std::vector<GradientStop>& stops) {
+	flush();
+	if (stops.empty()) {
+		m_gradType = 0;
+		return;
+	}
+	m_gradType = type;
+	m_gradGeom = geom;
+	m_gradCount = static_cast<int>(std::min<size_t>(stops.size(), kMaxGradientStops));
+	for (int i = 0; i < m_gradCount; ++i) {
+		m_gradOffsets[static_cast<size_t>(i)] = stops[static_cast<size_t>(i)].offset;
+		m_gradColors[static_cast<size_t>(i)] = stops[static_cast<size_t>(i)].color;
+	}
+}
+
+void OpenGLRenderer::setLinearGradient(float x1, float y1, float x2, float y2,
+									   const std::vector<GradientStop>& stops) {
+	applyGradient(1, glm::vec4(x1, y1, x2, y2), stops);
+}
+
+void OpenGLRenderer::setRadialGradient(float cx, float cy, float radius,
+									   const std::vector<GradientStop>& stops) {
+	applyGradient(2, glm::vec4(cx, cy, radius, 0.f), stops);
+}
+
+void OpenGLRenderer::setConicGradient(float cx, float cy, float angle,
+									  const std::vector<GradientStop>& stops) {
+	applyGradient(3, glm::vec4(cx, cy, angle, 0.f), stops);
+}
+
+void OpenGLRenderer::clearGradient() {
+	flush();
+	m_gradType = 0;
+}
 
 bool OpenGLRenderer::saveToFile(const std::string&) {
 	return false;

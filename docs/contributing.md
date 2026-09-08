@@ -54,6 +54,16 @@ If you use VS Code, install `ms-vscode.cpptools`, `ms-vscode.cmake-tools`, and `
 - **UI:** no Dear ImGui includes in `src/` - see [contract/ui.md](contract/ui.md). Complete Contract = SUDE-ECS-UI.
 - **UI text:** no emoji in UI or comments; rigImGui may use IconFont icons.
 
+## API changes
+
+Public first-party APIs (`src/` headers, pack entry headers, `IApp` / `IMui` / `IPack`) have **one current name**. When a name or signature moves, switch callers in the same change. Product apps update with the host — same deal as Dear ImGui: keep your copy current; do not keep a second forever path so old call sites compile.
+
+- Do not leave “prefer X in new code” aliases, behavior forks, or compat shims in the main API.
+- A thin obsolete redirect is allowed only until the next host MAJOR, then it is deleted. It does not sit beside the real function as a peer.
+- Record the old symbol and the replacement in [versioning.md](versioning.md) History and bump SemVer ([versioning.md](versioning.md) table).
+- In-tree sweep: [rigkit-build API change sweep](../skills/rigkit-build/SKILL.md#api-change-sweep). Out-of-tree apps are not gated here — list the call sites you cannot reach.
+- `third_party/` and pack-vendored trees are not first-party. Do not modernize them to satisfy this rule.
+
 ## Headless contract smoke
 
 CI runs a doctest + CTest lane (`tools/contract_smoke`) that guards core + spine packs (data registration, `GetProperties`, systems boundary, header purity). No window / UI.

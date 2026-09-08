@@ -15,6 +15,7 @@ See [docs/contract/commandments.md](docs/contract/commandments.md).
 - [ ] **Vocabulary** — pack / Contract / fulfillment / Host (no “addon”)
 - [ ] **Gates** — `tools/check-invariants` + format + `contract_smoke` + example(s) touched
 - [ ] **No fake stubs** — product paths finish or stay unpublished (no “not implemented yet” UI)
+- [ ] **One current API** — no leftover public alias / shim (or N/A)
 
 ### Risk callouts (required when relevant)
 

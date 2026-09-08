@@ -12,11 +12,14 @@ App versions live in `app.json`. Pack versions live in `pack.json`. The Contract
 | Additive public host API | `MINOR` (`1.1.0`, ...) |
 | Fix with no API shape change | `PATCH` |
 
-When you bump `cmake/VERSION`, add a History row below (release notes, not a second source of truth). Tag releases `v1.0.0`, `v1.1.0`, .... `tools/check-invariants` requires `cmake/VERSION` to be SemVer.
+When you bump `cmake/VERSION`, add a History row below (release notes, not a second source of truth). A removed or renamed public symbol must appear there with its replacement (callers update; no forever shim — [contributing.md](contributing.md#api-changes)). Tag releases `v1.0.0`, `v1.1.0`, .... `tools/check-invariants` requires `cmake/VERSION` to be SemVer.
 
 ## History
 
 | Version | Notes |
 |---------|-------|
+| unreleased | Removed `author/rigDraw.h` (`rig::` immediate helpers over Graphics). Use `rig/sketch.h` (`rig::circle` and friends) or `rig::make*` creators. |
+| unreleased | Removed `Canvas` draw / text / matrix methods (`fill`, `rect`, `circle`, `text`, `pushMatrix`, ...). Use `rig::` sketch or creators. `Graphics` stays as the internal facade. |
+| unreleased | Removed `Canvas::background` (alias of `clear`). Use `clear`. |
 | **1.0.0** | Host SemVer source of truth. CMake, Doxygen, About, and `rigkit::version()` read `cmake/VERSION`. Pack `pack.json` version is applied onto `IPack`. |
 

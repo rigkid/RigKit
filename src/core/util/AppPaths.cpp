@@ -277,10 +277,6 @@ std::string getFontsDir() {
 	return joinPath(getDataDir(), "fonts");
 }
 
-std::string getAssetsDir() {
-	return getDataDir();
-}
-
 std::string getWorkspacesDir() {
 	return joinPath(getUserDataDir(), "user/workspaces");
 }

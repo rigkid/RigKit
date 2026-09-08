@@ -41,7 +41,7 @@ Depends on packs: `rigComponent` + `rigSystems` in `app.json`, then register the
 With pack include paths from the manifest, prefer:
 
 ```cpp
-#include "rig.h"       // umbrella for rig/create.h
+#include "rig.h"       // umbrella for rig/create.h + rig/sketch.h
 // or: #include "rig/create.h"
 ```
 
@@ -121,18 +121,21 @@ ecs->addComponent<rigkit::ecs::CRelationship>(child, rel);
 
 **Verify:** run `minimal` for creators/meshes/selection; run `oscHost` for host shell / Pi SUDE.
 
-## Immediate draw - core `author/rigDraw.h`
+## Sketch (retained style) - `rig/sketch.h`
+
+Fill and stroke once, then spawn inspectable entities. `circle(x, y, r)` takes radius. Each primitive calls a `make*` creator and tracks the entity so `clearSketch()` can wipe the last run.
 
 ```cpp
-#include "author/rigDraw.h"
+#include "rig/sketch.h"
 
-rig::setGraphics(graphics); // Graphics must have an IRenderer set
 rig::setFill(1.f, 0.4f, 0.2f);
 rig::circle(x, y, r);
-rig::mesh(positions, indices);
+rig::rect(40.f, 40.f, 220.f, 170.f);
 ```
 
-Prefer creators when the piece should be inspectable / serializable data.
+`setFill` / `setStroke` are the retained-style setters. `fill` / `stroke` stay the `CDrawStyle` factories used by `make*`. Page placement is app-side (`setSketchEntityHook`); the sketch layer does not depend on rigProject.
+
+Python `sketch.py` is the same vocabulary (`fill`, `circle`, matrix, path) via the rigPython example bindings.
 
 ## Node graphs
 
@@ -141,7 +144,7 @@ Artist guide: [nodes.md](nodes.md). Example: `packs/rigNodeEditor/examples/nodes
 
 ## Layers (mental model)
 
-1. **Author API** - `IApp`, entity creators (`makeRect` / `makeMesh*`), optional `rig::` immediate helpers
+1. **Author API** - `IApp`, entity creators (`makeRect` / `makeMesh*`), optional `rig::` sketch helpers
 2. **Data** - `rigComponent` PODs (`CShape`, `CMesh`, `CSelection`, ...) + catalog
 3. **Fulfillment** - `rigSystems` Draw systems + host OpenGL `IRenderer`
 4. **Host** - `RigKitEngine`, `AppPaths` (`<exeDir>/data`)

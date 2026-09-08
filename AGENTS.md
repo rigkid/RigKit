@@ -158,6 +158,7 @@ If you are an agent whose tool needs its own project-level rule or skill folder 
 - **Naming:** interfaces `I*`, managers often `M*`; files match type names. Capability unit = **pack** (`packs/`, `pack.json`, `IPack` / `MPack`) - never “addon”. **One id:** spoken name = folder = `pack.json` `"name"` = `app.json` `"name"` = CMake target. Survey [docs/packs_catalog.md](docs/packs_catalog.md) before scaffolding a new pack. Suffixes: `*Component` = data, `*Editor`/`*Edit` = edit capability, `*Ui` = UI shell pack - [packs/README.md](packs/README.md#naming). **Host** = runtime pillar; **Canvas** = render surface / FBO type.
 - **UI text:** no emoji in UI or comments (IconFont ok in `rigImGui`). No unicode arrows in Markdown - write “to”, “then”, or “>” for menus ([rigkit-comments](skills/rigkit-comments/SKILL.md)).
 - **Public API docs:** Doxygen-compatible tags (`@brief`, `@param`, `@return`, ...); voice stays plain / Weissflog ([rigkit-comments](skills/rigkit-comments/SKILL.md)). Generate HTML: `cmake --build build --target docs` writes `build/docs/api/html/index.html`. **Next-year rule:** write as if someone reads this next year - never “day-one”, “honest”, formerly, or rename archaeology.
+- **One current API.** Public first-party names do not keep a forever shim. When a name moves, callers update; History records the replacement ([docs/contributing.md](docs/contributing.md#api-changes)).
 
 ## Project skills
 
