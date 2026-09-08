@@ -29,6 +29,7 @@ In-org packs are separate remotes in the [rigkid](https://github.com/rigkid) org
 | **rigObj** | [rigkid/rigObj](https://github.com/rigkid/rigObj) | Wavefront OBJ / `CMesh` (tinyobjloader) |
 | **rigAssimp** | [rigkid/rigAssimp](https://github.com/rigkid/rigAssimp) | Optional Assimp multi-format to `CMesh` (**leaf** - nothing depends on it; not Pi-default) |
 | **rigMeshEdit** | [rigkid/rigMeshEdit](https://github.com/rigkid/rigMeshEdit) | ImGuizmo TRS, face pick/paint, extrude; OBJ + `.rig` scene |
+| **rigAtlas** | [rigkid/rigAtlas](https://github.com/rigkid/rigAtlas) (local `packs/` until published) | xatlas UV unwrap + chart packing over `CMesh` (writes `texcoords`, splits seam vertices). CPU bake in Setup. **Leaf.** |
 
 ### Nodes
 
@@ -50,7 +51,7 @@ Artist guide: [nodes.md](nodes.md).
 | **rigPdf** | [rigkid/rigPdf](https://github.com/rigkid/rigPdf) (local `packs/` until published) | PDF emit from `CPage` / paths / text; Separation / overprint / PDF/X. Shapes `CText` via ImVarFont `varfont_core` (+ optional system HarfBuzz). **Leaf.** |
 | **rigStoryComponent** | [rigkid/rigStoryComponent](https://github.com/rigkid/rigStoryComponent) (local `packs/` until published) | Story PODs - `rig.story.flow` / paragraph / table / named styles. DATA ONLY |
 | **rigLayoutComponent** | [rigkid/rigLayoutComponent](https://github.com/rigkid/rigLayoutComponent) (local `packs/` until published) | Layout PODs - master / facing / visual paragraph+character styles / frame chain. DATA ONLY |
-| **rigLayout** | [rigkid/rigLayout](https://github.com/rigkid/rigLayout) (local `packs/` until published) | Paginate story onto `CPage` + `CText` (Setup bake). Product host **RigLayout** lives out of tree |
+| **rigLayout** | [rigkid/rigLayout](https://github.com/rigkid/rigLayout) (local `packs/` until published) | Paginate story onto `CPage` + `CText` (Setup bake). Product host **Relay** ([GitBruno/relayout](https://github.com/GitBruno/relayout)) lives out of tree |
 | **rigDxf** | [rigkid/rigDxf](https://github.com/rigkid/rigDxf) | DXF / typed POD (`CPath` / `CArc` / `CEllipse` / `CSpline`) + `ParsedPathDoc` flatten. **GPL-2.0-or-later** (dxflib) |
 | **rigGCode** | [rigkid/rigGCode](https://github.com/rigkid/rigGCode) | `CPaths` / G-code text emit/import (no serial) |
 | **rigGrbl** | [rigkid/rigGrbl](https://github.com/rigkid/rigGrbl) | GRBL serial send |
@@ -92,11 +93,23 @@ Product app **RigSlicer** lives out of tree (e.g. next to RigKit), not under `ex
 |------|--------|------|
 | **rigDocumentShell** | [rigkid/rigDocumentShell](https://github.com/rigkid/rigDocumentShell) (local `packs/` until published) | Document-host chrome (Viewer/Player): File Open `.rig`, skipped keys, Edit Mode defaults. Not rigProject load; not present/play. |
 
+### Audio / music
+
+| Pack | Remote | Role |
+|------|--------|------|
+| **rigAudio** | [rigkid/rigAudio](https://github.com/rigkid/rigAudio) | Audio in and out (miniaudio). Capture analysis to node `AudioBus`; playback `Mixer` renders `ISynth` sources, `AudioFile` voices (WAV/FLAC/MP3), `ISendFx` sends (pass / schroeder / bitcrush); polled `BeatClock` follows `CMusicTransport` |
+| **rigOpen303** | [rigkid/rigOpen303](https://github.com/rigkid/rigOpen303) (local `packs/` until published) | TB-303 bassline `ISynth` - Open303 DSP (MIT) fetched pinned; accent / slide, normalized params. **Leaf.** |
+| **rigDexed** | [rigkid/rigDexed](https://github.com/rigkid/rigDexed) (local `packs/` until published) | Dexed DX7 FM `ISynth` - MSFA + MkI / OPL engines, DX7 `.syx` cartridges. **Leaf. GPL-3.0-or-later.** |
+
+Synth packs fulfill `rigkit::audio::ISynth` from **rigAudio**; sequencing stays with the app (beat clock / transport POD).
+
 ### Install / show
 
 | Pack | Remote | Role |
 |------|--------|------|
 | **rigOsc** | [rigkid/rigOsc](https://github.com/rigkid/rigOsc) | UDP OSC + network identity / show bus - `oscHost --smoke-osc` |
+| **rigJoystick** | [rigkid/rigJoystick](https://github.com/rigkid/rigJoystick) (local `packs/` until published) | GLFW joystick / gamepad poll - per-frame axes, buttons, press / release edges, normalized gamepad layout. Pi via evdev. **Leaf.** |
+| **rigDmx** | [rigkid/rigDmx](https://github.com/rigkid/rigDmx) (local `packs/` until published) | DMX512 universes out - Enttec DMX USB PRO serial + sACN / E1.31 UDP (multicast or unicast); `"stub"` serial for no-hardware runs. **Leaf.** |
 | **rigTouch** | [rigkid/rigTouch](https://github.com/rigkid/rigTouch) (local `packs/` until published) | Linux evdev Type-B multi-touch - per-frame `TouchFrame` (contacts + two-finger pan / pinch). **Leaf.** Empty frame on non-Linux. Pi: user needs `input` group. |
 | **rigNetScan** | [rigkid/rigNetScan](https://github.com/rigkid/rigNetScan) (local `packs/` until published) | LAN TCP connect scan - `CNetScan` / `CNetHost` + `IpScannerWindow`. Example `netscan --smoke-netscan` |
 | **rigAbletonLink** | [rigkid/rigAbletonLink](https://github.com/rigkid/rigAbletonLink) (local `packs/` until published) | Ableton Link to `CMusicClock` / `CMusicTransport`. **Leaf.** **GPL-2.0-or-later** (Link SDK). |
@@ -163,7 +176,7 @@ Not remotes yet. Scaffold only when the seam is real - survey Known first; prefe
 | **rigMusicComponent** | Transport / clock / sequencer / pattern / step PODs - [Rig music schemas](https://github.com/rigkid/RigWorks/tree/main/schemas/music); data only |
 | **rigAnimComponent** | *(folded into `rigComponent` + `rigSystems` for now - `CTween`/`CModLfo`/`CModBinding` + `STweens`/`SModulators`)* |
 | **rigLedComponent** | UV map / LED sample PODs - Pi install path |
-| **rigInstallIoComponent** | Serial / GPIO / network device PODs (sACN later) - or split when product needs clear |
+| **rigInstallIoComponent** | Serial / GPIO / network device PODs - or split when product needs clear. DMX / sACN transport already ships in **rigDmx** |
 | **Blend2D demos** | Examples beyond the **rigBlend2D** pack itself - not a new pack id |
 | **rigLayoutUi** | Master / style Kit panels on **rigImGui** - after **rigLayout** compose is real. Spreads view already lives on **rigProject** `PagesWindow` |
 | **rig.book.*** | Book metadata (`title` / `publication` / `cover` / ...) - compose on the document; not a layout pack |

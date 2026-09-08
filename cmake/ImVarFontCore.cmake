@@ -7,7 +7,7 @@
 #   imvarfont_gl_stub  — no-op GPU seam (PDF emit)
 #   imvarfont_gl       — analytic coverage shaders (preview / zoom)
 #
-# IMVARFONT_HOST_GL=ON (set by Relayout before add_subdirectory) attaches the
+# IMVARFONT_HOST_GL=ON (set by Relay before add_subdirectory) attaches the
 # real GL lib to core. Default attaches the stub so headless PDF still links.
 
 if(NOT TARGET imvarfont_core)
@@ -38,7 +38,7 @@ if(NOT TARGET imvarfont_core)
 		$<BUILD_INTERFACE:${IMVARFONT_ROOT}>
 	)
 	# Include system FreeType headers for the compile. Do not link Freetype::Freetype
-	# - Relayout already links PDF-Writer's bundled FreeType, and two FT copies collide.
+	# - Relay already links PDF-Writer's bundled FreeType, and two FT copies collide.
 	get_target_property(_ft_inc Freetype::Freetype INTERFACE_INCLUDE_DIRECTORIES)
 	if(_ft_inc)
 		target_include_directories(imvarfont_core PRIVATE ${_ft_inc})

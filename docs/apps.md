@@ -18,7 +18,7 @@ The `examples/` directory holds in-repo **example apps** built on RigKit. Produc
 | `glEditor` | GLSL shader preview shell |
 | `calendar` | Content scheduler - `CContentItem` month view persisted with **rigSQLite** (needs local `packs/rigSQLite/` until the pack remote exists; not in host CI yet) |
 
-Product apps (out of tree) live next to RigKit (e.g. `../myApp`), not under `examples/`.
+Product apps (out of tree) live next to RigKit (e.g. `../Relay` — [Relay](https://github.com/GitBruno/relayout), the book layout host), not under `examples/`.
 
 ## Adding a new example
 
