@@ -77,9 +77,9 @@ done
 
 # --- Markdown: no unicode arrows (to / then / > instead) -----------------------
 # Pattern is ASCII \u{} so the script file's encoding cannot mangle the class.
-ARROW_PATHS=(AGENTS.md docs skills packs templates examples)
+ARROW_PATHS=(AGENTS.md docs skills packs templates examples .github)
 ARROW_RE='\u{2190}|\u{2192}|\u{2194}|\u{21D0}|\u{21D2}|\u{21D4}'
-arrow_globs=(--glob '*.md' --glob '*.mdc' --glob '!**/third_party/**' --glob '!**/build/**')
+arrow_globs=(--glob '*.md' --glob '*.mdc' --glob '*.yml' --glob '!**/third_party/**' --glob '!**/build/**' --glob '!**/RigWorks/**')
 if command -v rg >/dev/null 2>&1; then
 	matches="$(rg -n --no-ignore "${arrow_globs[@]}" -e "$ARROW_RE" "${ARROW_PATHS[@]}" 2>/dev/null || true)"
 else
@@ -87,14 +87,14 @@ else
 import pathlib, re, sys
 root = pathlib.Path('.')
 pat = re.compile(r'[\u2190\u2192\u2194\u21d0\u21d2\u21d4]')
-skip = {'third_party', 'build'}
+skip = {'third_party', 'build', 'RigWorks'}
 paths = sys.argv[1:]
 hits = []
 for base in paths:
 	p = pathlib.Path(base)
 	files = p.rglob('*') if p.is_dir() else [p]
 	for f in files:
-		if f.suffix.lower() not in {'.md', '.mdc'}:
+		if f.suffix.lower() not in {'.md', '.mdc', '.yml'}:
 			continue
 		if any(part in skip for part in f.parts):
 			continue
@@ -120,17 +120,32 @@ if [[ -n "$matches" ]]; then
 	echo "$matches" >&2
 fi
 
-# Living prose (skip commandments tablet + skills that ban the phrases)
-for f in docs/authoring.md docs/contributing.md docs/packs_using.md \
-	docs/contract/README.md docs/contract/sude-loop.md docs/contract/rigkit.md \
-	docs/contract/ui.md docs/contract/distribution.md docs/contract/pi-host.md; do
+# Living prose (skip commandments tablet, AGENTS.md, comments/deslop skills
+# that name the ban, and vendored RigWorks). Include port-map / README / skills.
+ARCH_PATHS=(
+	docs/authoring.md docs/contributing.md docs/packs_using.md
+	docs/contract/README.md docs/contract/sude-loop.md docs/contract/rigkit.md
+	docs/contract/ui.md docs/contract/distribution.md docs/contract/pi-host.md
+	docs/contract/port-map.md README.md
+)
+for f in "${ARCH_PATHS[@]}"; do
 	[[ -f "$f" ]] || continue
-	matches="$(search_i '\bformerly\b|day-one|day one' "$f")"
+	matches="$(search_i '\bformerly\b|day-one|day one|\bhonest\b|\bhonesty\b' "$f")"
 	if [[ -n "$matches" ]]; then
-		hit "archaeology phrasing in $f (next-year docs only)"
+		hit "archaeology or banned honest/honesty in $f (next-year docs only)"
 		echo "$matches" >&2
 	fi
 done
+if [[ -d skills ]]; then
+	matches="$(search_i '\bformerly\b|day-one|day one|\bhonest\b|\bhonesty\b' skills)"
+	if [[ -n "$matches" ]]; then
+		filtered="$(echo "$matches" | grep -vE 'rigkit-comments|rigkit-deslop|check-invariants' || true)"
+		if [[ -n "$filtered" ]]; then
+			hit "archaeology or banned honest/honesty in skills/"
+			echo "$filtered" >&2
+		fi
+	fi
+fi
 
 # --- 10. No fake stubs (published product path that admits it does not work) ----
 STUB_PATHS=(src examples packs)
@@ -157,8 +172,9 @@ check_manifest_license() {
 		return
 	fi
 	# SPDX id, optional " Rigkid Contributors" (matches LICENSE copyright holder).
-	if ! grep -qE '"license"[[:space:]]*:[[:space:]]*"(MIT|GPL-2\.0-or-later)( Rigkid Contributors)?"' "$mj"; then
-		hit "unknown $kind license in $mj (expected MIT or GPL-2.0-or-later[, Rigkid Contributors])"
+	# Leaf packs may carry the license of vendored engines (GPL-3, BSD-3).
+	if ! grep -qE '"license"[[:space:]]*:[[:space:]]*"(MIT|GPL-2\.0-or-later|GPL-3\.0-or-later|BSD-3-Clause)( Rigkid Contributors)?"' "$mj"; then
+		hit "unknown $kind license in $mj (expected MIT, GPL-2.0-or-later, GPL-3.0-or-later, or BSD-3-Clause)"
 	fi
 }
 if [[ -d packs ]]; then

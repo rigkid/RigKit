@@ -10,7 +10,7 @@ Schemas were cross-pollinated toward this reference host (v0.1). Data packs hold
 
 ## Close
 
-| Schema | RigKit | Honesty |
+| Schema | RigKit | Notes |
 |--------|--------|---------|
 | `rig.spatial.relationship` | **rigComponent** - `CRelationship` | Exact `parent`. |
 | `rig.spatial.transform` | **rigComponent** - `CTransform` | Serialize `position` / `rotation` (quat) / `scale`. `euler` is editor cache only - sync both ways; `localMatrix` uses quat. Do not serialize `euler` or `world`. |
@@ -59,7 +59,7 @@ Schemas were cross-pollinated toward this reference host (v0.1). Data packs hold
 
 ## Partial
 
-| Schema | RigKit | Honesty |
+| Schema | RigKit | Notes |
 |--------|--------|---------|
 | `rig.geometry.rectangle` / `ellipse` / ... | **rigComponent** - `CShape` | Host still uses a union POD (`type` / `sides` / `innerRadius`); Rig split primitives in 0.5.0 - do not advertise a single schema id yet. |
 | `rig.pixel.raster` | **rigPixelPlotComponent** - working / output rasters | Size only (`x.rigkit.pixel_*_raster`). Contract `rgba[]` is not written — derived from source + chain. Do not mark Close. |

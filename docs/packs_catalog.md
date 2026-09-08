@@ -91,7 +91,7 @@ Product app **RigSlicer** lives out of tree (e.g. next to RigKit), not under `ex
 
 | Pack | Remote | Role |
 |------|--------|------|
-| **rigDocumentShell** | [rigkid/rigDocumentShell](https://github.com/rigkid/rigDocumentShell) (local `packs/` until published) | Document-host chrome (Viewer/Player): File Open `.rig`, skipped keys, Edit Mode defaults. Not rigProject load; not present/play. |
+| **rigDocumentShell** | [rigkid/rigDocumentShell](https://github.com/rigkid/rigDocumentShell) (local `packs/` until published) | Document-host chrome (Viewer/Player): File Open `.rig`, skipped keys, Edit Mode defaults, `PagesWindow`. Not load/serialize; not present/play. |
 
 ### Audio / music
 
@@ -178,7 +178,7 @@ Not remotes yet. Scaffold only when the seam is real - survey Known first; prefe
 | **rigLedComponent** | UV map / LED sample PODs - Pi install path |
 | **rigInstallIoComponent** | Serial / GPIO / network device PODs - or split when product needs clear. DMX / sACN transport already ships in **rigDmx** |
 | **Blend2D demos** | Examples beyond the **rigBlend2D** pack itself - not a new pack id |
-| **rigLayoutUi** | Master / style Kit panels on **rigImGui** - after **rigLayout** compose is real. Spreads view already lives on **rigProject** `PagesWindow` |
+| **rigLayoutUi** | Master / style Kit panels on **rigImGui** - after **rigLayout** compose is real. Spreads view already lives on **rigDocumentShell** `PagesWindow` |
 | **rig.book.*** | Book metadata (`title` / `publication` / `cover` / ...) - compose on the document; not a layout pack |
 
 RigWorks schema catalog: [rigkid/RigWorks](https://github.com/rigkid/RigWorks). Pack map: [docs/contract/port-map.md](contract/port-map.md).

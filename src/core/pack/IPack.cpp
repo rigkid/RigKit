@@ -22,26 +22,6 @@ void IPack::setDependencies(std::vector<std::string> deps) {
 	m_dependencies = std::move(deps);
 }
 
-void IPack::addEventListener(const std::string& event, std::function<void()> callback) {
-	m_eventListeners[event].push_back(callback);
-}
-
-void IPack::removeEventListener(const std::string& event) {
-	auto it = m_eventListeners.find(event);
-	if (it != m_eventListeners.end()) {
-		m_eventListeners.erase(it);
-	}
-}
-
-void IPack::triggerEvent(const std::string& event) {
-	auto it = m_eventListeners.find(event);
-	if (it != m_eventListeners.end()) {
-		for (auto& callback : it->second) {
-			callback();
-		}
-	}
-}
-
 void IPack::log(const std::string& message) {
 	spdlog::info("[Pack {}] {}", m_name, message);
 }
@@ -54,45 +34,6 @@ void IPack::warning(const std::string& message) {
 	spdlog::warn("[Pack {} WARNING] {}", m_name, message);
 }
 
-// Parameter system implementation
-void IPack::setParameter(const std::string& name, float value) {
-	m_parameters[name] = value;
-
-	// Trigger callback if registered
-	auto it = m_parameterCallbacks.find(name);
-	if (it != m_parameterCallbacks.end()) {
-		it->second(value);
-	}
-
-	this->log("Parameter " + name + " set to " + std::to_string(value));
-}
-
-float IPack::getParameter(const std::string& name) const {
-	auto it = m_parameters.find(name);
-	if (it != m_parameters.end()) {
-		return it->second;
-	}
-	return 0.0f;
-}
-
-void IPack::onParameterChanged(const std::string& name, std::function<void(float)> callback) {
-	m_parameterCallbacks[name] = callback;
-}
-
-void IPack::setParameter(const std::string& name, const std::string& value) {
-	m_stringParameters[name] = value;
-	this->log("String parameter " + name + " set to " + value);
-}
-
-std::string IPack::getStringParameter(const std::string& name) const {
-	auto it = m_stringParameters.find(name);
-	if (it != m_stringParameters.end()) {
-		return it->second;
-	}
-	return "";
-}
-
-// ISettings implementation
 json IPack::getSettings() const {
 	json settings;
 	settings["name"] = m_name;
@@ -104,8 +45,6 @@ json IPack::getSettings() const {
 	settings["initialized"] = m_initialized;
 	settings["time"] = m_time;
 	settings["dependencies"] = m_dependencies;
-	settings["parameters"] = m_parameters;
-	settings["stringParameters"] = m_stringParameters;
 	settings["customSettings"] = m_settings;
 	return settings;
 }
@@ -131,10 +70,6 @@ void IPack::setSettings(const json& settings) {
 		m_time = settings["time"];
 	if (settings.contains("dependencies"))
 		m_dependencies = settings["dependencies"];
-	if (settings.contains("parameters"))
-		m_parameters = settings["parameters"];
-	if (settings.contains("stringParameters"))
-		m_stringParameters = settings["stringParameters"];
 	if (settings.contains("customSettings"))
 		m_settings = settings["customSettings"];
 }

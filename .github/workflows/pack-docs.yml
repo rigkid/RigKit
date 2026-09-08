@@ -1,7 +1,7 @@
 name: Pack docs (reusable)
 
 # Called from each pack remote's docs.yml.
-# Publishes pack-scoped Doxygen → https://rigkid.github.io/<pack>/
+# Publishes pack-scoped Doxygen to https://rigkid.github.io/<pack>/
 #
 # Caller must pass secrets: inherit (needs RIGKIT_CI_TOKEN for private host).
 

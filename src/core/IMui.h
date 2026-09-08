@@ -7,8 +7,6 @@
 #include "core/json.h"
 #include "ecs/MEcs.h"
 
-struct ImFontAtlas;
-
 // Forward declarations
 namespace rigkit {
 class RigKitEngine;
@@ -275,13 +273,6 @@ class IMui {
 	enum class GizmoOp { Select, Translate, Rotate, Scale };
 	virtual void setGizmoOp(GizmoOp op) { (void)op; }
 	virtual GizmoOp gizmoOp() const { return GizmoOp::Select; }
-
-	/**
-	 * @brief Extra fonts for packs (e.g. monospace code editor).
-	 * @details Called during fulfillment font load / reload, before the atlas is
-	 * used. Pass nullptr to clear. Multiple packs may register; order is FIFO.
-	 */
-	virtual void registerFontAtlasHook(std::function<void(ImFontAtlas& atlas)> hook) { (void)hook; }
 
 	/**
 	 * @brief Extra advance (pixels at `sizePx`) for a chrome label pair.

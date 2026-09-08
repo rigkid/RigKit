@@ -118,6 +118,8 @@ cmake --build packs/<pack>/examples/<name>/build --target <name>
 
 Screenshot workflow: build and run the example, capture the main window, save as `examples/<name>/img/preview.png` (no emoji chrome), commit with the example. Host `examples/` stay Contract/product apps; they do **not** replace a pack example.
 
+Packs still missing a preview or example: [docs/TODO.md](../docs/TODO.md).
+
 ## Style
 
 Host `tools/format.*` never touches `packs/`. Each pack formats its own first-party `src/` + `examples/` with clang-format (`SortIncludes` - [docs/includes.md](../docs/includes.md)).

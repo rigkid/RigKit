@@ -5,8 +5,8 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
-# Site root + API HTML → https://rigkid.github.io/rigkit/ (+ /api/)
-# One-time: repo Settings → Pages → Source: GitHub Actions.
+# Site root + API HTML to https://rigkid.github.io/rigkit/ (+ /api/)
+# One-time: repo Settings > Pages > Source: GitHub Actions.
 # Private Pages need an org plan that allows them (or public remotes).
 
 permissions:

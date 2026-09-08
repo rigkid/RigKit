@@ -1,9 +1,7 @@
 #pragma once
 
-#include <functional>
 #include <memory>
 #include <string>
-#include <unordered_map>
 #include <vector>
 #include "ISettings.h"
 
@@ -55,19 +53,6 @@ class IPack : public ISettings {
 	// Utility functions for packs
 	template <typename T> T* getPack(const std::string& name);
 
-	// Event system
-	void addEventListener(const std::string& event, std::function<void()> callback);
-	void removeEventListener(const std::string& event);
-	void triggerEvent(const std::string& event);
-
-	// Parameter system (common to many packs)
-	void setParameter(const std::string& name, float value);
-	float getParameter(const std::string& name) const;
-	void onParameterChanged(const std::string& name, std::function<void(float)> callback);
-	void setParameter(const std::string& name, const std::string& value);
-	std::string getStringParameter(const std::string& name) const;
-
-	// Time tracking (common to many packs)
 	float getTime() const { return m_time; }
 	void resetTime() { m_time = 0.0f; }
 
@@ -104,14 +89,7 @@ class IPack : public ISettings {
 	// Dependencies
 	std::vector<std::string> m_dependencies;
 
-	// Event system
-	std::unordered_map<std::string, std::vector<std::function<void()>>> m_eventListeners;
-
-	// Common pack functionality
 	float m_time;
-	std::unordered_map<std::string, float> m_parameters;
-	std::unordered_map<std::string, std::string> m_stringParameters;
-	std::unordered_map<std::string, std::function<void(float)>> m_parameterCallbacks;
 
 	// Settings storage
 	json m_settings;

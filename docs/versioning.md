@@ -18,6 +18,11 @@ When you bump `cmake/VERSION`, add a History row below (release notes, not a sec
 
 | Version | Notes |
 |---------|-------|
+| unreleased | `CCompositePass::BlendMode` ordinals match `CRenderBlend` (`add`=6, `color-dodge`=12, `disabled`=18). Tokens unchanged; raw ints in old documents remap. |
+| unreleased | `CPlotLayer` no longer owns mask; `CCompositePass` does. Wire: `x.rigkit.composite_pass`. Old `plot_layer` mask keys migrate on load. |
+| unreleased | Removed `IMui::registerFontAtlasHook`. Packs that add fonts call `Mui::registerFontAtlasHook`. |
+| unreleased | `PagesWindow` lives on **rigDocumentShell** (`PagesWindow.h`). |
+| unreleased | Removed `IPack` event / parameter maps (`addEventListener`, `setParameter`, `onParameterChanged`, ...) and `MPack` `addGlobalEventListener` / `triggerGlobalEvent`. Pack identity stays on `pack.json`; live data stays on ECS. |
 | unreleased | Removed `author/rigDraw.h` (`rig::` immediate helpers over Graphics). Use `rig/sketch.h` (`rig::circle` and friends) or `rig::make*` creators. |
 | unreleased | Removed `Canvas` draw / text / matrix methods (`fill`, `rect`, `circle`, `text`, `pushMatrix`, ...). Use `rig::` sketch or creators. `Graphics` stays as the internal facade. |
 | unreleased | Removed `Canvas::background` (alias of `clear`). Use `clear`. |

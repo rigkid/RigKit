@@ -1,6 +1,5 @@
 #pragma once
 
-#include <functional>
 #include <memory>
 #include <string>
 #include <typeinfo>
@@ -80,10 +79,6 @@ class MPack : public IManager, public ISettings {
 	void setPackDirectory(const std::string& directory);
 	const std::string& getPackDirectory() const { return m_packDirectory; }
 
-	// Event system
-	void addGlobalEventListener(const std::string& event, std::function<void()> callback);
-	void triggerGlobalEvent(const std::string& event);
-
 	// ISettings interface
 	json getSettings() const override;
 	void setSettings(const json& settings) override;
@@ -98,9 +93,6 @@ class MPack : public IManager, public ISettings {
 	// Configuration
 	std::string m_packDirectory;
 	std::unordered_map<std::string, bool> m_packConfig; // enabled/disabled state
-
-	// Event system
-	std::unordered_map<std::string, std::vector<std::function<void()>>> m_globalEventListeners;
 
 	// Helper functions
 	std::shared_ptr<IPack> findPackByType(const std::type_info& type) const;

@@ -28,6 +28,7 @@
 #include "packs/rigSystems/src/rigSystems.h"
 #include "packs/rigVectorEditor/src/PathBooleanOps.h"
 #include "packs/rigVectorEditor/src/PathEditOps.h"
+#include "packs/rigVectorEditor/src/PathOffsetOps.h"
 #include "packs/rigVectorEditor/src/SoftMaskOps.h"
 #include "packs/rigVectorEditor/src/TextOutlineOps.h"
 #include "packs/rigVectorEditor/src/rigVectorEditor.h"
@@ -250,9 +251,8 @@ bool SvgEditorApp::runSmoke() {
 		// as a fill, not come back as a stroke strip.
 		doc.pathEdit().layerIndex = 0;
 		bag = doc.editablePaths();
-		if (!bag || bag->paths.empty() || !bag->isFilled(0) ||
-			bag->pathColors.empty() || bag->pathColors[0].r < 0.9f ||
-			bag->pathColors[0].g > 0.1f) {
+		if (!bag || bag->paths.empty() || !bag->isFilled(0) || bag->pathColors.empty() ||
+			bag->pathColors[0].r < 0.9f || bag->pathColors[0].g > 0.1f) {
 			spdlog::error("svgEditor smoke: authored SVG export lost the fill");
 			return false;
 		}
@@ -363,6 +363,15 @@ bool SvgEditorApp::runSmoke() {
 		return false;
 	}
 
+	rigkit::ecs::CPaths offsetBag;
+	pushRect(offsetBag, 0.f, 0.f, 40.f, 30.f);
+	const auto offsetOut = rigkit::pathEdit::applyPathOffset(
+		offsetBag, {0}, 2.f, rigkit::pathEdit::JoinStyle::Miter, 2.f, 0.25f, false);
+	if (offsetOut.size() != 1 || offsetBag.paths.size() != 1) {
+		spdlog::error("svgEditor smoke: Offset Path failed");
+		return false;
+	}
+
 	rigkit::ecs::CPaths maskBag;
 	const int circ = rigkit::pathEdit::appendFilledCircle(maskBag, {50.f, 50.f}, 40.f);
 	const auto mask = rigkit::plot::flattenPath(maskBag.paths[static_cast<size_t>(circ)], 0.5f);
@@ -449,10 +458,8 @@ bool SvgEditorApp::runSmoke() {
 			}
 			for (const auto& item : doc.ecs().getComponent<rigkit::ecs::CImages>(e).items) {
 				if (item.href == "images/smoke.png" && std::abs(item.pos.x - 12.f) < 0.05f &&
-					std::abs(item.pos.y - 18.f) < 0.05f &&
-					std::abs(item.size.x - 50.f) < 0.05f &&
-					std::abs(item.size.y - 30.f) < 0.05f &&
-					std::abs(item.opacity - 0.8f) < 0.01f) {
+					std::abs(item.pos.y - 18.f) < 0.05f && std::abs(item.size.x - 50.f) < 0.05f &&
+					std::abs(item.size.y - 30.f) < 0.05f && std::abs(item.opacity - 0.8f) < 0.01f) {
 					found = true;
 				}
 			}

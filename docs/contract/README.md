@@ -74,7 +74,7 @@ One file word (**document**, `.rig`), one host word (**project**). The rigProjec
 
 Full catalog: [Rig schemas](https://github.com/rigkid/RigWorks/tree/main/schemas).
 
-**Field-accurate map:** [port-map.md](port-map.md) - Close vs Partial vs Planned, with honesty notes. Do not treat affinity as “speaks this schema.”
+**Field-accurate map:** [port-map.md](port-map.md) - Close vs Partial vs Planned, with notes. Do not treat affinity as “speaks this schema.”
 
 Ship what you support. Rig holds the creative vocabulary as formats; RigKit packs fulfill subsets POD-first.
 

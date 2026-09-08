@@ -306,6 +306,21 @@ function(add_rigkit_application)
 					"$<TARGET_FILE_DIR:${_sanitized_name}>/data"
 		)
 	endif()
+	# Pack-shipped runtime data (e.g. Vidvox ISF library) before app data/ overlays.
+	get_property(_rigkit_pack_data_list GLOBAL PROPERTY RIGKIT_PROCESSED_PACKS)
+	if(NOT _rigkit_pack_data_list)
+		set(_rigkit_pack_data_list "${APP_PACK_LIBS}")
+	endif()
+	foreach(pack_lib ${_rigkit_pack_data_list})
+		set(_pack_data "${RIGKIT_ROOT}/packs/${pack_lib}/data")
+		if(EXISTS "${_pack_data}")
+			add_custom_command(TARGET ${_sanitized_name} POST_BUILD
+				COMMAND ${CMAKE_COMMAND} -E copy_directory "${_pack_data}"
+						"$<TARGET_FILE_DIR:${_sanitized_name}>/data"
+				COMMENT "Deploy ${pack_lib} data/ next to ${_sanitized_name}"
+			)
+		endif()
+	endforeach()
 	if(EXISTS "${_app_data_src}")
 		add_custom_command(TARGET ${_sanitized_name} POST_BUILD
 			COMMAND ${CMAKE_COMMAND} -E copy_directory "${_app_data_src}"

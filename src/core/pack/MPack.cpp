@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <filesystem>
 #include <fstream>
+#include <functional>
 #include <iostream>
 #include <spdlog/spdlog.h>
 #include <sstream>
@@ -451,20 +452,6 @@ void rigkit::MPack::loadPackConfig() {
 
 void rigkit::MPack::setPackDirectory(const std::string& directory) {
 	m_packDirectory = directory;
-}
-
-void rigkit::MPack::addGlobalEventListener(const std::string& event,
-										   std::function<void()> callback) {
-	m_globalEventListeners[event].push_back(callback);
-}
-
-void rigkit::MPack::triggerGlobalEvent(const std::string& event) {
-	auto it = m_globalEventListeners.find(event);
-	if (it != m_globalEventListeners.end()) {
-		for (auto& callback : it->second) {
-			callback();
-		}
-	}
 }
 
 rigkit::json rigkit::MPack::getSettings() const {
