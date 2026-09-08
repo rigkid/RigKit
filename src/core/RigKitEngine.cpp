@@ -361,8 +361,10 @@ void RigKitEngine::run() {
 		flushPendingUiChrome();
 		glfwPollEvents();
 
-		// Frame rate limiting (if VSync disabled or monitor faster than target)
-		if (m_app->settings().graphics.targetFps > 0) {
+		// Frame rate limiting when VSync is off. With VSync on the swap already
+		// paces the loop; sleeping on top of it overshoots by the OS timer
+		// granularity (~15 ms on Windows) and drags 60 fps down to ~38.
+		if (m_app->settings().graphics.targetFps > 0 && !m_app->settings().graphics.vsync) {
 			float targetFrame = 1.0f / static_cast<float>(m_app->settings().graphics.targetFps);
 			auto frameEnd = clock::now();
 			float frameDuration = std::chrono::duration<float>(frameEnd - frameStart).count();
