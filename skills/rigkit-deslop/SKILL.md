@@ -71,6 +71,7 @@ Mutation bookkeeping where a read-time gate works. Delete the bookkeeping, keep 
 | Setter on an interface that every impl copies | Reader on the dependent side (pull, don't push) |
 | Argument the callee already reaches (manager handed back, stored `m_*` passed in, second pointer to one owner) | Drop the parameter; read through the owner - [no pass-back](../rigkit-minimal/SKILL.md#no-pass-back-never-hand-over-what-the-callee-already-reaches) |
 | Lambda whose only job is forwarding args to one call | Register / call the function directly |
+| Public function whose body only forwards to a same-signature `*Impl` / `*Internal` in the anonymous namespace | One definition: close the anonymous namespace before it and define the public name there (overloads that adapt arguments stay) |
 | `setX()` pairs a hidden mode / intent flag reconciles (`setFillColor` + `setStrokeColor` into `m_intent`) | Pass the value with the call as a POD - [no set-then-use](../rigkit-minimal/SKILL.md#no-set-then-use-per-call-data-is-a-parameter-not-stored-state) |
 | Member assigned but never read (`m_hasFill`, `m_fillOpacity`) | Delete it, or wire the reader - a setter with no reader is a dead control |
 
