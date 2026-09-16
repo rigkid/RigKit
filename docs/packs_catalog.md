@@ -100,6 +100,7 @@ Product app **RigSlicer** lives out of tree (e.g. next to RigKit), not under `ex
 | Pack | Remote | Role |
 |------|--------|------|
 | **rigAudio** | [rigkid/rigAudio](https://github.com/rigkid/rigAudio) | Audio in and out (miniaudio). Capture analysis to node `AudioBus`; playback `Mixer` renders `ISynth` sources, `AudioFile` voices (WAV/FLAC/MP3), `ISendFx` sends (pass / schroeder / bitcrush); polled `BeatClock` follows `CMusicTransport` |
+| **rigMilk** | [rigkid/rigMilk](https://github.com/rigkid/rigMilk) (local `packs/` until published) | MilkDrop1-class `.milk` visualizer. GLES2 warp mesh over `CVisualizer` (in **rigComponent**); equations via MIT projectm-eval; switching policy from **rigAudio**. Shader presets skipped. **Leaf.** |
 | **rigOpen303** | [rigkid/rigOpen303](https://github.com/rigkid/rigOpen303) (local `packs/` until published) | TB-303 bassline `ISynth` - Open303 DSP (MIT) fetched pinned; accent / slide, normalized params. **Leaf.** |
 | **rigDexed** | [rigkid/rigDexed](https://github.com/rigkid/rigDexed) (local `packs/` until published) | Dexed DX7 FM `ISynth` - MSFA + MkI / OPL engines, DX7 `.syx` cartridges. **Leaf. GPL-3.0-or-later.** |
 

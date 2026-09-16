@@ -161,6 +161,7 @@ When changing an in-org pack, also build that pack’s examples (same as the pac
 | rigImGui | `host_shell` | `packs/rigImGui/examples/host_shell` |
 | rigManifold | `csg` | `packs/rigManifold/examples/csg` |
 | rigMeshEdit | `gizmo` | `packs/rigMeshEdit/examples/gizmo` |
+| rigMilk | `visualizer` | `packs/rigMilk/examples/visualizer` |
 | rigPlotter (integration) | `plot` + `*_smoke` | `packs/rigPlotter/examples/plot` |
 | Every other pack | its `examples/<name>/` | see pack README (`img/preview.png` required) |
 

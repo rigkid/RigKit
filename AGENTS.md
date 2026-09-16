@@ -121,6 +121,7 @@ See [docs/authoring.md](docs/authoring.md).
 | Node graph editor UI | **rigNodeEditor** |
 | Color model, swatches, grey value / harmony / separation tools | **rigColorspace** - DATA + pure helpers |
 | FBO layer compositor + masks | **rigCompositor** |
+| MilkDrop1-class `.milk` visualizer | **rigMilk** - CODE (projectm-eval + GLES2; **rigAudio** beat policy) |
 | Serial port + monitor | **rigSerial** - CODE / IO (`CSerial` / `rig.io.serial`; trunk for GRBL / Enttec) |
 | DMX512 universe buffer | **rigDmx** - CODE / IO (trunk; no sockets, no USB) |
 | sACN / E1.31 | **rigSacn** - CODE / IO (**leaf** on **rigDmx**) |

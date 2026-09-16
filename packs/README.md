@@ -13,7 +13,7 @@ Say and write the same camelCase token (e.g. **rigImGui** is `packs/rigImGui/`).
 | `*Component` | **Data pack** - domain POD components | `rigComponent`, `rigPlotComponent`, `rigNodeComponent`, `rigPixelPlotComponent`, `rigColorspace` |
 | `*Editor` / `*Edit` | Edit **capability** (ops and/or editor window) over existing data | `rigNodeEditor`, `rigVectorEditor`, `rigMeshEdit` |
 | `*Ui` | ImGui **Kit / shell panels** over an engine (not the data) | `rigPlotterUi`, `rigPixelPlotterUi` |
-| Short / verb name | Single-purpose code, I/O, present, or transport | `rigSvg`, `rigObj`, `rigSystems`, `rigRender3D`, `rigSerial`, `rigGrbl`, `rigOsc`, `rigCompositor` |
+| Short / verb name | Single-purpose code, I/O, present, or transport | `rigSvg`, `rigObj`, `rigMilk`, `rigSystems`, `rigRender3D`, `rigSerial`, `rigGrbl`, `rigOsc`, `rigCompositor` |
 | Product engine name | Orchestration that mutates domain PODs | `rigPlotter`, `rigPixelPlotter` |
 
 Rules:
@@ -204,6 +204,6 @@ git -C packs/rigBlend2D submodule update --init --recursive
 
 ## Bootstrap order
 
-Register **rigComponent**, then **rigSystems**, then **rigImGui** (see `examples/oscHost` and `examples/minimal`). For 3D meshes: **rigComponent**, then **rigSystems**, then **rigRender3D** (+ **rigObj** / **rigMeshEdit** as needed; see `examples/lowpoly`). For node graphs: **rigComponent**, then **rigNodeComponent**, then **rigImGui**, then **rigNodeEditor** (see `packs/rigNodeEditor/examples/nodes`). Artist guide: [docs/nodes.md](../docs/nodes.md).
+Register **rigComponent**, then **rigSystems**, then **rigImGui** (see `examples/oscHost` and `examples/minimal`). For 3D meshes: **rigComponent**, then **rigSystems**, then **rigRender3D** (+ **rigObj** / **rigMeshEdit** as needed; see `examples/lowpoly`). For node graphs: **rigComponent**, then **rigNodeComponent**, then **rigImGui**, then **rigNodeEditor** (see `packs/rigNodeEditor/examples/nodes`). For `.milk` visuals: **rigComponent**, then **rigAudio**, then **rigMilk** (see `packs/rigMilk/examples/visualizer`). Artist guide: [docs/nodes.md](../docs/nodes.md).
 
 There is **no** runtime git updater in the host - only configure-time CPM and the tools above.

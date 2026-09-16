@@ -79,9 +79,12 @@ rig::makeCadBoolean(*ecs, rigkit::ecs::CCadBoolean::Op::Difference, {"stock", "c
 // Driving datum (apply via rigSolveSpace::solve - on edit, not every frame):
 rig::makeCadDimension(*ecs, rigkit::ecs::CCadDimension::Kind::Horizontal, "stock", "cutter",
 					  4.f, false, "span");
+
+// MilkDrop1 visualizer (needs rigMilk + rigAudio):
+rig::makeVisualizer(*ecs, "data/presets");
 ```
 
-These helpers only write POD (`CTransform` + shape / `CMesh` / `CCad*` / `COrbitDrive` / `COrthoView` + `CDrawStyle`). `makeOrbitCamera` poses the eye; turn `COrbitDrive::enabled` on for a show-mode spin (`SOrbitDrive` yaws from `pitch`). `makeOrthoCamera` stays inactive so it never steals the main bed.
+These helpers only write POD (`CTransform` + shape / `CMesh` / `CCad*` / `COrbitDrive` / `COrthoView` + `CDrawStyle` / `CVisualizer`). `makeOrbitCamera` poses the eye; turn `COrbitDrive::enabled` on for a show-mode spin (`SOrbitDrive` yaws from `pitch`). `makeOrthoCamera` stays inactive so it never steals the main bed. `makeVisualizer` is presented by **rigMilk**.
 
 ## Orbit nav (code) - `rigSystems`
 

@@ -17,6 +17,7 @@ rigGrbl	https://github.com/rigkid/rigGrbl.git	main
 rigImGui	https://github.com/rigkid/rigImGui.git	main
 rigManifold	https://github.com/rigkid/rigManifold.git	main
 rigMeshEdit	https://github.com/rigkid/rigMeshEdit.git	main
+rigMilk	https://github.com/rigkid/rigMilk.git	main
 rigNodeComponent	https://github.com/rigkid/rigNodeComponent.git	main
 rigNodeEditor	https://github.com/rigkid/rigNodeEditor.git	main
 rigObj	https://github.com/rigkid/rigObj.git	main
