@@ -2,7 +2,7 @@
 
 Packs extend the host with UI, renderers, and tools. They live in separate repos and are cloned into `packs/` from an example’s `app.json` (see `cmake/RigKitPacks.cmake`). Local checkouts under `packs/` are gitignored except [packs/README.md](../packs/README.md).
 
-**Catalog (Known + Planned):** [packs_catalog.md](packs_catalog.md).
+**Catalog (Known + Planned):** [packs_catalog.md](packs_catalog.md). **Branch / trunk / leaf:** [packs/README.md](../packs/README.md#branch-trunk-leaf) - folders stay flat; an app lists a leaf and nested `pack.json` deps pull the branch.
 
 ## What a pack is
 

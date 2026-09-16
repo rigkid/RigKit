@@ -13,7 +13,7 @@ Say and write the same camelCase token (e.g. **rigImGui** is `packs/rigImGui/`).
 | `*Component` | **Data pack** - domain POD components | `rigComponent`, `rigPlotComponent`, `rigNodeComponent`, `rigPixelPlotComponent`, `rigColorspace` |
 | `*Editor` / `*Edit` | Edit **capability** (ops and/or editor window) over existing data | `rigNodeEditor`, `rigVectorEditor`, `rigMeshEdit` |
 | `*Ui` | ImGui **Kit / shell panels** over an engine (not the data) | `rigPlotterUi`, `rigPixelPlotterUi` |
-| Short / verb name | Single-purpose code, I/O, present, or transport | `rigSvg`, `rigObj`, `rigSystems`, `rigRender3D`, `rigGrbl`, `rigOsc`, `rigCompositor` |
+| Short / verb name | Single-purpose code, I/O, present, or transport | `rigSvg`, `rigObj`, `rigSystems`, `rigRender3D`, `rigSerial`, `rigGrbl`, `rigOsc`, `rigCompositor` |
 | Product engine name | Orchestration that mutates domain PODs | `rigPlotter`, `rigPixelPlotter` |
 
 Rules:
@@ -22,6 +22,24 @@ Rules:
 2. Prefer `*Editor` over `*EditorUi`. Stacking both (`rigSvgEditorUi`) is historical; new shells: `rigFooEditor` or `rigFooUi`, not both.
 3. `*Ui` means chrome on **rigImGui** over a separate engine/data pack - not where `C*` types live.
 4. Mesh **data** stays in **rigComponent** (`CMesh`); mesh **tools** are **rigMeshEdit**. Same idea as `rigSvg` (IO) vs SVG shell UI.
+
+## Branch, trunk, leaf
+
+Folders stay flat: `packs/<id>/`. The tree is `pack.json` `dependencies`, not nested directories (those break one id, CPM, and remotes).
+
+[cmake/RigKitPacks.cmake](../cmake/RigKitPacks.cmake) loads nested deps depth-first. **The app lists the leaf; the leaf lists parents; the branch comes in.** List an ancestor in `app.json` only when you need the trunk without the leaf (serial monitor without GRBL).
+
+| Word | Meaning |
+|------|---------|
+| **Trunk** | Shared parent (`rigSerial`, `rigDmx`, `rigAudio`, `rigPlotComponent`). Many leaves may depend on it. An app may depend on a trunk alone. |
+| **Leaf** | App-facing tip. Other in-org packs do not depend on it. Heavy / GPL optionals (`rigAssimp`, `rigOpenCV`) are leaves too. |
+| **Branch** | Trunk plus the leaves that hang on it. |
+
+Create from the **leaf the app needs**. Extract a trunk when a second leaf would copy it. Catalog headings are drawings, not pack ids. Empty parent packs are fake stubs - the catalog may draw a branch before the trunk pack exists.
+
+Name packs by meaning (medium / domain / protocol), not by routing geography. There is no `rigWan`. LAN vs WAN is not a seam.
+
+I/O target tree: **rigSerial** (medium) and **rigDmx** (universe domain) are trunks. Protocol leaves: **rigGrbl** and **rigEnttec** on serial; **rigSacn**, **rigArtnet**, and **rigEnttec** on DMX. **rigOsc** and **rigNetScan** are siblings, not children of DMX. **rigNet** exists only after two packs would copy IP/interface helpers. See [docs/packs_catalog.md](../docs/packs_catalog.md).
 
 ## Data pack
 
@@ -160,7 +178,7 @@ cmake -S . -B build && cmake --build build --target docs
 
 ## New pack
 
-**Before you scaffold:** read [docs/packs_catalog.md](../docs/packs_catalog.md) and this README’s Naming rules. Prefer growing an existing pack (especially **rigComponent** for generic PODs) over a new remote. Only create a pack when the seam is real - new domain data, new I/O, new editor/UI shell, or a leaf optional engine.
+**Before you scaffold:** read [docs/packs_catalog.md](../docs/packs_catalog.md) and this README’s Naming + Branch rules. Prefer growing an existing pack (especially **rigComponent** for generic PODs) over a new remote. Only create a pack when the seam is real - new domain data, new I/O, new editor/UI shell, or a leaf optional engine. Start at the leaf; extract a trunk when a second leaf would copy it.
 
 Then start from **[rigTemplate](../templates/rigTemplate/)** (`https://github.com/rigkid/rigTemplate.git`):
 

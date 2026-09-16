@@ -121,6 +121,10 @@ See [docs/authoring.md](docs/authoring.md).
 | Node graph editor UI | **rigNodeEditor** |
 | Color model, swatches, grey value / harmony / separation tools | **rigColorspace** - DATA + pure helpers |
 | FBO layer compositor + masks | **rigCompositor** |
+| Serial port + monitor | **rigSerial** - CODE / IO (`CSerial` / `rig.io.serial`; trunk for GRBL / Enttec) |
+| DMX512 universe buffer | **rigDmx** - CODE / IO (trunk; no sockets, no USB) |
+| sACN / E1.31 | **rigSacn** - CODE / IO (**leaf** on **rigDmx**) |
+| Enttec USB PRO | **rigEnttec** - CODE / IO (**leaf** on **rigDmx** + **rigSerial**) |
 | Register for inspector | `MEcs::registerComponent` + plain structs + `GetProperties()` |
 
 Never put systems in data packs (`rigComponent`, `rigPlotComponent`, ...).

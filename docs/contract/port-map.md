@@ -40,6 +40,7 @@ Schemas were cross-pollinated toward this reference host (v0.1). Data packs hold
 | `rig.pixel.palette` | **rigComponent** - `CPalette` | `colors` (16 rgba). `shadeNext` travels separately as `x.rigkit.palette_shade`. |
 | `rig.render.light` | **rigComponent** - `CLight` | Dir/point + colour / intensity / banded shade. Spot not in v0.1. |
 | `rig.io.osc` | **rigOsc** - `COscEndpoint` | Listen/send ports + prefix. |
+| `rig.io.serial` | **rigSerial** - `CSerial` | `port` / `baud` / `enabled`. Byte buffers and handles stay in the pack. |
 | `rig.pixel.effect_chain` | **rigPixelPlotComponent** - `CPixelEffectChain` | `stage` image/draw/generate + `effectId` / `enabled` + step `id` / `parentStep` / chain `nextId`. Step `blendMode` / `opacity` / `options` travel as `x.rigkit.pixel_effect_step`. |
 | `rig.pixel.canvas` | **rigPixelPlotComponent** - `CPixelCanvas` | `width` / `height` / `clearRgba` only. Title is `rig.meta.named` on the scene. `exportWithTimestamp` / `preferGpu` on `x.rigkit.pixel_canvas_meta`. |
 | `rig.pixel.source` | **rigPixelPlotComponent** - `CPixelSource` | Contract `kind` + `asset` / `generatorName` / sequence / webcam / `videoTime`. Label is `rig.meta.named`. Loop extras + `cast-receive` stay on `x.rigkit.pixel_source_ext`. |
@@ -86,7 +87,10 @@ Schemas were cross-pollinated toward this reference host (v0.1). Data packs hold
 | `rig.anim.curve` | **rigComponent** - `CCurve` | Close for curve POD + presets; tween/LFO still planned. |
 | `rig.anim.*` / `rig.mod.*` (remaining) | **rigAnimComponent** or grow **rigComponent** |
 | `rig.led.*` | **rigLedComponent** |
-| `rig.io.serial` / `rig.sensor.*` | **rigInstallIoComponent** (or split) |
+| `rig.io.dmx` | **rigDmx** | Universe / direction / enabled. 512-slot buffer stays in the pack. No sockets, no USB. Transports (`rigSacn`, `rigArtnet`, `rigEnttec`) read this buffer. |
+| `rig.io.sacn` | **rigSacn** | E1.31 endpoint. Depends on **rigDmx**. Pack exists; schema still Planned until POD fields Close. |
+| `rig.io.artnet` | **rigArtnet** | Art-Net endpoint. No schema yet; add when the pack is real. Depends on **rigDmx**. |
+| `rig.sensor.*` | - | No owning pack yet. Do not fold into serial. |
 | `rig.book.*` | Document metadata - not layout; no owning pack yet |
 | LAN host / TCP scan (no `rig.*` id yet) | **rigNetScan** - `CNetScan` / `CNetHost` as `x.rigkit.net_scan` / `x.rigkit.net_host` |
 | `rig.pixel.region` | **rigPixelPlotComponent** - `CPixelRegion` as `x.rigkit.pixel_region` | Local proposal: fit / fill / brush / color. |

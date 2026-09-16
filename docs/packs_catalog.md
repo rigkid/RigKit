@@ -54,11 +54,13 @@ Artist guide: [nodes.md](nodes.md).
 | **rigLayout** | [rigkid/rigLayout](https://github.com/rigkid/rigLayout) (local `packs/` until published) | Paginate story onto `CPage` + `CText` (Setup bake). Product host **Relay** ([GitBruno/relayout](https://github.com/GitBruno/relayout)) lives out of tree |
 | **rigDxf** | [rigkid/rigDxf](https://github.com/rigkid/rigDxf) | DXF / typed POD (`CPath` / `CArc` / `CEllipse` / `CSpline`) + `ParsedPathDoc` flatten. **GPL-2.0-or-later** (dxflib) |
 | **rigGCode** | [rigkid/rigGCode](https://github.com/rigkid/rigGCode) | `CPaths` / G-code text emit/import (no serial) |
-| **rigGrbl** | [rigkid/rigGrbl](https://github.com/rigkid/rigGrbl) | GRBL serial send |
+| **rigGrbl** | [rigkid/rigGrbl](https://github.com/rigkid/rigGrbl) | GRBL lines over **rigSerial** (**leaf**) |
 | **rigPlotter** | [rigkid/rigPlotter](https://github.com/rigkid/rigPlotter) | PlotDoc orchestration |
 | **rigPlotterUi** | [rigkid/rigPlotterUi](https://github.com/rigkid/rigPlotterUi) | Plotter Kit panels on rigImGui |
 | **rigSvgEditorUi** | [rigkid/rigSvgEditorUi](https://github.com/rigkid/rigSvgEditorUi) | SVG editor shell (toolbar / artboard / layers) |
-| **rigPlotFinders** | [rigkid/rigPlotFinders](https://github.com/rigkid/rigPlotFinders) | Image to stroke finders (hatch / grid / Potrace; more finder types reserved in POD). **GPL-2.0-or-later** - vendors Potrace |
+| **rigPlotFinders** | [rigkid/rigPlotFinders](https://github.com/rigkid/rigPlotFinders) | Image to stroke finders (hatch / grid / Potrace / Curve Fit; more finder types reserved in POD). **GPL-2.0-or-later** - vendors Potrace |
+| **rigTrace** | [rigkid/rigTrace](https://github.com/rigkid/rigTrace) (local `packs/` until published) | Raster to colour-plate stack - posterize, field / primitives / EvenOdd holes / complete-under, then Schneider fit on leftovers. CODE ONLY. No Potrace. MIT |
+| **rigTraceUi** | [rigkid/rigTraceUi](https://github.com/rigkid/rigTraceUi) (local `packs/` until published) | Trace panel + filled plate preview. Raster in, `TraceSettings` / `TraceStack` out. Links **rigTrace** (MIT) |
 | **rigComposition** | [rigkid/rigComposition](https://github.com/rigkid/rigComposition) (local `packs/` until published) | Image composition read - `CComposition` lines / salient mass / ranked template scores over `rig::pixel::Raster`. DATA + pure helpers, first-party analysis (no OpenCV). **Leaf** |
 | **rigPlotProcessors** | [rigkid/rigPlotProcessors](https://github.com/rigkid/rigPlotProcessors) | Prepare pipeline (merge / sort / simplify) + per-layer path effects (Z wave / dash / stroke lift) |
 | **rigPlotGenerators** | [rigkid/rigPlotGenerators](https://github.com/rigkid/rigPlotGenerators) | Path generators (cropmarks / border) |
@@ -101,20 +103,35 @@ Product app **RigSlicer** lives out of tree (e.g. next to RigKit), not under `ex
 | **rigOpen303** | [rigkid/rigOpen303](https://github.com/rigkid/rigOpen303) (local `packs/` until published) | TB-303 bassline `ISynth` - Open303 DSP (MIT) fetched pinned; accent / slide, normalized params. **Leaf.** |
 | **rigDexed** | [rigkid/rigDexed](https://github.com/rigkid/rigDexed) (local `packs/` until published) | Dexed DX7 FM `ISynth` - MSFA + MkI / OPL engines, DX7 `.syx` cartridges. **Leaf. GPL-3.0-or-later.** |
 
-Synth packs fulfill `rigkit::audio::ISynth` from **rigAudio**; sequencing stays with the app (beat clock / transport POD).
+Synth packs fulfill `rigkit::audio::ISynth` from **rigAudio**; sequencing stays with the app (beat clock / transport POD). Same leaf-on-trunk shape as I/O: the app lists the synth; **rigAudio** comes in via `pack.json`.
 
-### Install / show
+### I/O / show
+
+Folders stay flat. The tree is `pack.json` dependencies: an app lists a **leaf**, the leaf pulls its **trunk**. There is no `rigWan` - LAN vs WAN is routing, not a pack. Name medium / domain / protocol, not geography. Branch rules: [`packs/README.md`](../packs/README.md#branch-trunk-leaf).
+
+**Trunks (medium / domain)**
 
 | Pack | Remote | Role |
 |------|--------|------|
-| **rigOsc** | [rigkid/rigOsc](https://github.com/rigkid/rigOsc) | UDP OSC + network identity / show bus - `oscHost --smoke-osc` |
+| **rigSerial** | [rigkid/rigSerial](https://github.com/rigkid/rigSerial) (local `packs/` until published) | Serial medium - `CSerial` / `rig.io.serial` (`port` / `baud` / `enabled`) + OS port + serial monitor `IWindow`. Same shape as **rigOsc** / `COscEndpoint`. Not GRBL, not DMX. GPIO / presence stay out |
+| **rigDmx** | [rigkid/rigDmx](https://github.com/rigkid/rigDmx) (local `packs/` until published) | DMX512 universe buffer + `rig.io.dmx` / `rig.dmx.fixture`. No sockets, no USB. Transports read this buffer. **Trunk, not a leaf.** |
+
+**Protocol leaves** (one wire format each)
+
+| Pack | Remote | Role |
+|------|--------|------|
+| **rigOsc** | [rigkid/rigOsc](https://github.com/rigkid/rigOsc) | UDP OSC + network identity / show bus - `oscHost --smoke-osc`. Sibling of serial / DMX, not a child |
+| **rigGrbl** | [rigkid/rigGrbl](https://github.com/rigkid/rigGrbl) | GRBL lines. Depends on **rigSerial**. **Leaf.** |
+| **rigSacn** | [rigkid/rigSacn](https://github.com/rigkid/rigSacn) (local `packs/` until published) | sACN / E1.31 over UDP. Depends on **rigDmx**. Own cadence / memcmp. **Leaf.** |
+| **rigEnttec** | [rigkid/rigEnttec](https://github.com/rigkid/rigEnttec) (local `packs/` until published) | Enttec USB PRO. Depends on **rigDmx** + **rigSerial**. Universe 1, stub port, own cadence / memcmp. **Leaf.** |
+| **rigNetScan** | [rigkid/rigNetScan](https://github.com/rigkid/rigNetScan) (local `packs/` until published) | LAN TCP connect scan - `CNetScan` / `CNetHost` + `IpScannerWindow`. Example `netscan --smoke-netscan`. **rigNet** only after a second pack would copy interface helpers |
 | **rigJoystick** | [rigkid/rigJoystick](https://github.com/rigkid/rigJoystick) (local `packs/` until published) | GLFW joystick / gamepad poll - per-frame axes, buttons, press / release edges, normalized gamepad layout. Pi via evdev. **Leaf.** |
-| **rigDmx** | [rigkid/rigDmx](https://github.com/rigkid/rigDmx) (local `packs/` until published) | DMX512 universes out - Enttec DMX USB PRO serial + sACN / E1.31 UDP (multicast or unicast); `"stub"` serial for no-hardware runs. **Leaf.** |
 | **rigTouch** | [rigkid/rigTouch](https://github.com/rigkid/rigTouch) (local `packs/` until published) | Linux evdev Type-B multi-touch - per-frame `TouchFrame` (contacts + two-finger pan / pinch). **Leaf.** Empty frame on non-Linux. Pi: user needs `input` group. |
-| **rigNetScan** | [rigkid/rigNetScan](https://github.com/rigkid/rigNetScan) (local `packs/` until published) | LAN TCP connect scan - `CNetScan` / `CNetHost` + `IpScannerWindow`. Example `netscan --smoke-netscan` |
 | **rigAbletonLink** | [rigkid/rigAbletonLink](https://github.com/rigkid/rigAbletonLink) (local `packs/` until published) | Ableton Link to `CMusicClock` / `CMusicTransport`. **Leaf.** **GPL-2.0-or-later** (Link SDK). |
 | **rigScreenCast** | [rigkid/rigScreenCast](https://github.com/rigkid/rigScreenCast) (local `packs/` until published) | Host-window cast **send** + **receive** (RigKit peer; AirPlay RX via hard-linked UxPlay). POD in **rigComponent**. **Leaf / GPLv3** while UxPlay is linked. Never desktop capture. Google Cast RX still follow-on. |
 | **rigEthereum** | [rigkid/rigEthereum](https://github.com/rigkid/rigEthereum) (local `packs/` until published) | On-chain art record (`COnChainArt`) + keccak256 / wallet submit intent (existing wallet). **Leaf.** No keys / no broadcast. |
+
+Art-Net is a **planned leaf** on **rigDmx**. Do not stuff it into **rigSacn**.
 
 ### Persistence
 
@@ -176,7 +193,8 @@ Not remotes yet. Scaffold only when the seam is real - survey Known first; prefe
 | **rigMusicComponent** | Transport / clock / sequencer / pattern / step PODs - [Rig music schemas](https://github.com/rigkid/RigWorks/tree/main/schemas/music); data only |
 | **rigAnimComponent** | *(folded into `rigComponent` + `rigSystems` for now - `CTween`/`CModLfo`/`CModBinding` + `STweens`/`SModulators`)* |
 | **rigLedComponent** | UV map / LED sample PODs - Pi install path |
-| **rigInstallIoComponent** | Serial / GPIO / network device PODs - or split when product needs clear. DMX / sACN transport already ships in **rigDmx** |
+| **rigArtnet** | Art-Net UDP. Depends on **rigDmx**. Add `rig.io.artnet` when the pack is real; do not stuff it into sACN |
+| **rigNet** | Shared IP / interface helpers. Extract from **rigNetScan** only when a second pack would copy them. Not LAN, not a WAN twin |
 | **Blend2D demos** | Examples beyond the **rigBlend2D** pack itself - not a new pack id |
 | **rigLayoutUi** | Master / style Kit panels on **rigImGui** - after **rigLayout** compose is real. Spreads view already lives on **rigDocumentShell** `PagesWindow` |
 | **rig.book.*** | Book metadata (`title` / `publication` / `cover` / ...) - compose on the document; not a layout pack |
