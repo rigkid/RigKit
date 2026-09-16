@@ -42,6 +42,8 @@ rigSlice	https://github.com/rigkid/rigSlice.git	main
 rigSQLite	https://github.com/rigkid/rigSQLite.git	main
 rigSvg	https://github.com/rigkid/rigSvg.git	main
 rigSvgEditorUi	https://github.com/rigkid/rigSvgEditorUi.git	main
+rigTrace	https://github.com/rigkid/rigTrace.git	main
+rigTraceUi	https://github.com/rigkid/rigTraceUi.git	main
 rigSystems	https://github.com/rigkid/rigSystems.git	main
 rigVarFont	https://github.com/rigkid/rigVarFont.git	main
 rigVectorEditor	https://github.com/rigkid/rigVectorEditor.git	main

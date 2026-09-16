@@ -36,6 +36,8 @@ in the params row. Entities that receive graph values can carry `CDriveHint`
 | Add a node | **File > Add node** - pick a category, or type in Search |
 | Move a node | Drag the node body |
 | Link | Click an **output** pin, then an **input** pin - or drag Out to In |
+| Disconnect | Click a wire (highlights), then **Del** - or right-click the wire > **Disconnect** |
+| Rewire | Drag a connected **input** pin - the wire follows; drop on another input, or release on empty canvas to disconnect |
 | Cancel a link | Esc, or click empty canvas (after a drag miss) |
 | Select | Click a node (yellow outline) |
 | Edit params | Select a node - params appear in **Properties** |
@@ -63,6 +65,11 @@ Pin `type` uses Rig property datatypes:
 | Pink | `vec4` | Often colour (RGBA); domain in pin/catalog name |
 
 Pins connect on exact match, or host coercion (`float` / `vec2` / `vec4`). Empty `type` = wildcard.
+
+Numeric params double as **input pins** (same name as the param key, e.g. LFO
+`freq` / `amp`, Map `inMin` ... `outMax`): a connected pin overrides the knob,
+which shows as `linked`. String params, enum combos, the Value nodes, and
+Clamp's range (already the `b` / `c` pins) stay knob-only.
 
 ## Nestable groups
 
@@ -112,6 +119,21 @@ Search in **Add node**. `typeId` is what `.rig` stores.
 | Random | `mod.random` | Stepped random |
 | Ramp | `mod.ramp` | Looping ramp |
 | Envelope | `mod.envelope` | ADSR; `gate` input |
+| Beat | `mod.beat` | Musical clock (host tempo bus): `phase` / `bar` / `pulse` / `bpm` outs. `Cycle beats` sets the loop length (0.25 = 16ths, 4 = one bar). Free-runs at the BPM param when no clock source is active |
+
+### MIDI
+
+Live device I/O via the `MidiBus` (rigMidi publishes input and drains the out
+queue onto the selected output). Nodes still evaluate without that pack.
+
+| Title | typeId | Notes |
+|-------|--------|-------|
+| MIDI In | `midi.in` | Last note `gate` / `note` / `vel`, `pulse` on note-on, `cc` for the CC number param. `Channel` 0 = omni |
+| MIDI Note | `midi.note` | Rising `gate` sends Note On, falling sends Note Off. `note` / `vel` / `ch` are knobs or pins. `on` pulses the attack |
+| MIDI CC | `midi.cc` | `value` 0..1 → CC 0..127 when it changes. `cc` / `ch` knobs or pins |
+
+Patch **Beat** `pulse` into **MIDI Note** `gate` to fire a note every cycle. Map
+a slider or `mod.audio` `level` into **MIDI CC** `value` to send a fader.
 
 ### Logic
 
@@ -199,9 +221,19 @@ Example binding: Color Ref / Color Out tints a key light.
 
 Example binding: Vec2 Out sets orbit radius (x) and height (y).
 
+### 6. MIDI note from the clock
+
+1. **Beat** `pulse` into **MIDI Note** `gate`.
+2. Set **Note** / **Vel** / **Channel** (or patch them).
+3. Pick an output in Preferences > Audio > MIDI. Each cycle fires a note.
+
 ## Limits
 
 - One graph entity is edited (first / selected `CNodeGraph` in the scene).
 - Eval is CPU float/vec2/vec4 - not a shader graph.
 - Open/Save needs **rigProject** registered; otherwise those buttons stay inert.
 - Wiring outputs into transforms/materials is the **app’s** job each Update.
+
+Host MIDI (KidVJ): devices and clock sync are **Preferences > Audio > MIDI**.
+Map Mix sliders with right-click **MIDI Learn** (View > MIDI Map for the table).
+`mod.beat` follows incoming MIDI clock when Clock Sync is on.

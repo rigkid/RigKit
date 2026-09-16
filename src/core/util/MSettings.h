@@ -15,6 +15,8 @@ namespace rigkit {
 struct PrefSectionView {
 	std::string id;
 	std::string label;
+	/// Sidebar group. Empty = own row. Same group shares one sidebar item.
+	std::string group;
 };
 
 /**
@@ -38,10 +40,11 @@ class MSettings : public IManager, public ISettings {
 
 	template <typename T>
 	void registerPreferences(const std::string& id, const std::string& label, T* data,
-							 std::function<void()> onChanged = nullptr) {
+							 std::function<void()> onChanged = nullptr,
+							 const std::string& group = {}) {
 		static_assert(has_get_properties<T>::value, "Preference POD must provide GetProperties()");
 		registerPreferencesImpl(
-			id, label, [data]() { return data->GetProperties(); }, std::move(onChanged));
+			id, label, [data]() { return data->GetProperties(); }, std::move(onChanged), group);
 	}
 
 	void unregisterPreferences(const std::string& id);
@@ -69,13 +72,14 @@ class MSettings : public IManager, public ISettings {
 	struct Section {
 		std::string id;
 		std::string label;
+		std::string group;
 		std::function<std::vector<sProp>()> properties;
 		std::function<void()> onChanged;
 	};
 
 	void registerPreferencesImpl(const std::string& id, const std::string& label,
 								 std::function<std::vector<sProp>()> properties,
-								 std::function<void()> onChanged);
+								 std::function<void()> onChanged, const std::string& group);
 	void applySectionFromBlob(const Section& section);
 	Section* findSection(const std::string& id);
 	const Section* findSection(const std::string& id) const;

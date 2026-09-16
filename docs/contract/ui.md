@@ -53,6 +53,7 @@ No particular UI pack. No particular dock model. No GPU editor on light hosts.
 | `IWindow` + `MWindow` | Pack/app panels in the dock layout |
 | `IMui::dockPassthroughCentral` | Central node shows GL bed vs solid fill |
 | File / export / undo / gizmo hooks | Author chrome |
+| `IMui::registerFileThumbnailDecoder` | Pack CPU decoders for file-browser Icons (e.g. **rigSvg** `.svg`) |
 | `IMui::addViewportOverlay` | Multi-subscriber draw over the GL bed (ImGui screen space). Packs use this so they do not steal the app gizmo slot. |
 | File > Open Recent | `IMui::noteRecentFile` + `setRecentFileOpenHandler`; persisted in `rigkit_settings.json` |
 | View > Workspace | Named dock layouts (`rigImGui`): save/load/delete `data/user/workspaces/<name>.ini` (docks + window visibility); active name in `rigkit_settings.json`; startup restores the session autosave, presets seed only the first session |

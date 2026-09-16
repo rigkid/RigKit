@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <functional>
 #include <string>
 #include <vector>
@@ -30,6 +31,20 @@ enum class NotificationType { Info, Success, Warning, Error };
 class IMui {
   public:
 	using FileDialogCallback = std::function<void(const std::string& path)>;
+
+	/** @brief CPU RGBA for a file-browser Icons tile. Packs fill this off-thread. */
+	struct FileThumbnailPixels {
+		int w = 0;
+		int h = 0;
+		std::vector<std::uint8_t> rgba;
+	};
+
+	/**
+	 * @brief Decode one file to a thumbnail raster (long edge <= maxEdge).
+	 * @details UTF-8 path. Called on a worker thread. Return false to skip.
+	 */
+	using FileThumbnailDecoder =
+		std::function<bool(const std::string& path, int maxEdge, FileThumbnailPixels& out)>;
 
 	virtual ~IMui() = default;
 
@@ -116,6 +131,18 @@ class IMui {
 		(void)title;
 		(void)filters;
 		(void)onSelected;
+	}
+
+	/**
+	 * @brief Register a CPU decoder for file-browser Icons (e.g. `.svg`).
+	 * @details Extension is case-insensitive (`.svg` / `svg`). Re-register replaces.
+	 * Default IMui is a no-op so headless hosts ignore it. Packs register from
+	 * `setup()` and `onUiAttached()`.
+	 */
+	virtual void registerFileThumbnailDecoder(const std::string& extension,
+											  FileThumbnailDecoder decoder) {
+		(void)extension;
+		(void)decoder;
 	}
 
 	/**

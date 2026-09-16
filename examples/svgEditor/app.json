@@ -17,6 +17,8 @@
     { "name": "rigArtboards", "url": "https://github.com/rigkid/rigArtboards.git", "ref": "main" },
     { "name": "rigImage", "url": "https://github.com/rigkid/rigImage.git", "ref": "main" },
     { "name": "rigImGui", "url": "https://github.com/rigkid/rigImGui.git", "ref": "main" },
-    { "name": "rigSvgEditorUi", "url": "https://github.com/rigkid/rigSvgEditorUi.git", "ref": "main" }
+    { "name": "rigSvgEditorUi", "url": "https://github.com/rigkid/rigSvgEditorUi.git", "ref": "main" },
+    { "name": "rigTrace", "url": "https://github.com/rigkid/rigTrace.git", "ref": "main" },
+    { "name": "rigTraceUi", "url": "https://github.com/rigkid/rigTraceUi.git", "ref": "main" }
   ]
 }

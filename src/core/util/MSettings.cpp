@@ -81,13 +81,14 @@ bool MSettings::saveToDisk() {
 
 void MSettings::registerPreferencesImpl(const std::string& id, const std::string& label,
 										std::function<std::vector<sProp>()> properties,
-										std::function<void()> onChanged) {
+										std::function<void()> onChanged, const std::string& group) {
 	if (id.empty() || !properties) {
 		spdlog::error("[Settings] registerPreferences requires non-empty id and properties");
 		return;
 	}
 	if (Section* existing = findSection(id)) {
 		existing->label = label;
+		existing->group = group;
 		existing->properties = std::move(properties);
 		existing->onChanged = std::move(onChanged);
 		applySectionFromBlob(*existing);
@@ -97,6 +98,7 @@ void MSettings::registerPreferencesImpl(const std::string& id, const std::string
 	Section section;
 	section.id = id;
 	section.label = label;
+	section.group = group;
 	section.properties = std::move(properties);
 	section.onChanged = std::move(onChanged);
 	m_sections.push_back(std::move(section));
@@ -118,7 +120,7 @@ std::vector<PrefSectionView> MSettings::preferenceSections() const {
 	std::vector<PrefSectionView> out;
 	out.reserve(m_sections.size());
 	for (const auto& section : m_sections) {
-		out.push_back({section.id, section.label});
+		out.push_back({section.id, section.label, section.group});
 	}
 	return out;
 }

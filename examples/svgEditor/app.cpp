@@ -1,6 +1,7 @@
 #include "app.h"
 
 #include "rendering/U_gladGlfw.h"
+#include "core/IMui.h"
 #include "core/RigKitEngine.h"
 #include "core/pack/MPack.h"
 #include "core/util/AppPaths.h"
@@ -12,6 +13,7 @@
 #include "packs/rigCompositor/src/LayerMaskOps.h"
 #include "packs/rigCompositor/src/rigCompositor.h"
 #include "packs/rigImGui/src/rigImGui.h"
+#include "packs/rigImage/src/Image.h"
 #include "packs/rigImage/src/rigImage.h"
 #include "packs/rigPlotComponent/src/CCompositePass.h"
 #include "packs/rigPlotComponent/src/CImages.h"
@@ -24,8 +26,13 @@
 #include "packs/rigPlotter/src/rigPlotter.h"
 #include "packs/rigProject/src/rigProject.h"
 #include "packs/rigSvg/src/rigSvg.h"
+#include "packs/rigSvgEditorUi/src/SvgEditUndo.h"
 #include "packs/rigSvgEditorUi/src/rigSvgEditorUi.h"
 #include "packs/rigSystems/src/rigSystems.h"
+#include "packs/rigTrace/src/Trace.h"
+#include "packs/rigTrace/src/TraceStack.h"
+#include "packs/rigTrace/src/rigTrace.h"
+#include "packs/rigTraceUi/src/rigTraceUi.h"
 #include "packs/rigVectorEditor/src/PathBooleanOps.h"
 #include "packs/rigVectorEditor/src/PathEditOps.h"
 #include "packs/rigVectorEditor/src/PathOffsetOps.h"
@@ -34,10 +41,67 @@
 #include "packs/rigVectorEditor/src/rigVectorEditor.h"
 
 #include <glm/glm.hpp>
+#include <algorithm>
+#include <cmath>
 #include <filesystem>
 #include <fstream>
 #include <spdlog/spdlog.h>
+#include <string>
 #include <vector>
+
+namespace {
+
+std::string tracePlateLayerName(const rigkit::trace::TracePlate& plate) {
+	if (plate.isField) {
+		return "Field";
+	}
+	const float r = plate.color.r;
+	const float g = plate.color.g;
+	const float b = plate.color.b;
+	const float mx = std::max(r, std::max(g, b));
+	const float mn = std::min(r, std::min(g, b));
+	const float sat = (mx <= 1e-6f) ? 0.f : (mx - mn) / mx;
+	if (mx < 0.14f) {
+		return "Black";
+	}
+	if (sat < 0.12f && mx > 0.88f) {
+		return "White";
+	}
+	if (sat < 0.12f) {
+		return "Grey";
+	}
+	const float d = mx - mn;
+	float h = 0.f;
+	if (mx == r) {
+		h = std::fmod((g - b) / d, 6.f);
+	} else if (mx == g) {
+		h = (b - r) / d + 2.f;
+	} else {
+		h = (r - g) / d + 4.f;
+	}
+	h *= 60.f;
+	if (h < 0.f) {
+		h += 360.f;
+	}
+	if (h < 30.f || h >= 330.f) {
+		return "Red";
+	}
+	if (h < 75.f) {
+		return "Yellow";
+	}
+	if (h < 160.f) {
+		return "Green";
+	}
+	if (h < 200.f) {
+		return "Cyan";
+	}
+	if (h < 270.f) {
+		return "Blue";
+	}
+	return "Magenta";
+}
+
+} // namespace
 
 SvgEditorApp::SvgEditorApp() {
 	window().width = 800;
@@ -142,43 +206,67 @@ void SvgEditorApp::setup() {
 	packs->registerPack<rigkit::rigPlotter>();
 	packs->registerPack<rigkit::rigImGui>();
 	packs->registerPack<rigkit::rigSvgEditorUi>();
+	packs->registerPack<rigkit::rigTrace>();
+	packs->registerPack<rigkit::rigTraceUi>();
 	packs->initAll();
 	packs->setupAll();
 
 	m_document = packs->getPack<rigkit::rigProject>();
 	m_plotter = packs->getPack<rigkit::rigPlotter>();
+	m_traceUi = packs->getPack<rigkit::rigTraceUi>();
 	if (!m_document || !m_plotter) {
 		spdlog::error("svgEditor - missing rigProject or rigPlotter after bootstrap");
 		return;
+	}
+	if (m_traceUi && m_traceUi->panel()) {
+		m_traceUi->panel()->setCommitHook([this](const rigkit::trace::TraceStack& stack) {
+			if (!m_plotter || stack.empty()) {
+				return;
+			}
+			auto* ui = m_engine ? m_engine->getUiManager() : nullptr;
+			rigkit::UndoStack* undo = ui ? ui->undoStack() : nullptr;
+			auto* doc = &m_plotter->doc();
+			rigkit::mutateDocGeometry(undo, doc, "Trace image", [&] {
+				for (const auto& plate : stack.plates) {
+					if (plate.path.empty()) {
+						continue;
+					}
+					auto e = doc->addLayer(tracePlateLayerName(plate));
+					if (e == entt::null) {
+						continue;
+					}
+					rigkit::trace::TraceStack one;
+					one.plates.push_back(plate);
+					rigkit::ecs::CPaths bag;
+					rigkit::trace::flattenStack(one, bag);
+					doc->ecs().registry().emplace_or_replace<rigkit::ecs::CPaths>(e, bag);
+					doc->markPathsGpuDirty(e);
+				}
+			});
+			doc->bumpViewEpoch();
+		});
 	}
 
 	auto& doc = m_plotter->doc();
 	// Page stays SVG Y-down; the overlay sets CBedView.yUp = false.
 	doc.importOptions().svgFlipY = false;
-	// Letter/Blob demo is the sample; showcase.svg is File > Samples.
-	// --smoke uses the same compact document its assertions are written against.
-	const std::string dataDir = AppPaths::getDataDir();
-	const std::string demoPath = dataDir + "/demo.svg";
-	if (doc.importSvg(demoPath)) {
-		doc.meta().name = "demo";
-		doc.meta().workingSvgPath = demoPath;
-		doc.ensureProjectEnvelope(documentPathHint());
-		doc.bumpViewEpoch();
-		spdlog::info("svgEditor - imported {} (paper {:.0f}x{:.0f} mm, {} layers)", demoPath,
-					 doc.pageSize().x, doc.pageSize().y, doc.layerEntities().size());
-	} else {
-		spdlog::warn("svgEditor - demo.svg missing; seeding Letter/Blob layers");
-		seedDemoLayers();
-		doc.meta().name = "demo";
-		doc.ensureProjectEnvelope(AppPaths::joinPath(AppPaths::getDataDir(), "demo"));
-		doc.bumpViewEpoch();
-	}
-
-	// Preselect letter path on first run.
-	doc.pathEdit().layerIndex = 0;
-	doc.pathEdit().selectOnly(0);
-
 	if (m_smoke) {
+		// Assertions are written against the compact Letter/Blob document.
+		const std::string demoPath = AppPaths::joinPath(AppPaths::getDataDir(), "demo.svg");
+		if (doc.importSvg(demoPath)) {
+			doc.meta().name = "demo";
+			doc.meta().workingSvgPath = demoPath;
+			doc.ensureProjectEnvelope(documentPathHint());
+			doc.bumpViewEpoch();
+		} else {
+			spdlog::warn("svgEditor - demo.svg missing; seeding Letter/Blob layers");
+			seedDemoLayers();
+			doc.meta().name = "demo";
+			doc.ensureProjectEnvelope(documentPathHint());
+			doc.bumpViewEpoch();
+		}
+		doc.pathEdit().layerIndex = 0;
+		doc.pathEdit().selectOnly(0);
 		m_smokeOk = runSmoke();
 		if (!m_smokeOk) {
 			spdlog::error("svgEditor --smoke failed");
@@ -188,10 +276,95 @@ void SvgEditorApp::setup() {
 		if (auto* win = m_engine->getWindow()) {
 			glfwSetWindowShouldClose(win, GLFW_TRUE);
 		}
+		return;
 	}
+
+	// Interactive launch: blank Untitled, not the sample. File > Samples has demo.
+	doc.newProject("Untitled");
+	doc.importOptions().svgFlipY = false;
+	doc.setDirty(false);
 }
 
-void SvgEditorApp::update(float) {}
+void SvgEditorApp::update(float) {
+	syncTraceSource();
+}
+
+void SvgEditorApp::clearTraceSource() {
+	if (m_traceUi && m_traceUi->panel()) {
+		m_traceUi->panel()->clearSource();
+	}
+	m_traceHref.clear();
+	m_traceLayer = -1;
+	m_traceImage = -1;
+	m_traceX = 0.f;
+	m_traceY = 0.f;
+	m_traceW = 0.f;
+	m_traceH = 0.f;
+}
+
+void SvgEditorApp::syncTraceSource() {
+	if (!m_traceUi || !m_traceUi->panel() || !m_plotter) {
+		return;
+	}
+	auto& doc = m_plotter->doc();
+	auto& sel = doc.pathEdit();
+	if (sel.imageIndex < 0 || sel.layerIndex < 0) {
+		if (m_traceImage >= 0) {
+			clearTraceSource();
+		}
+		return;
+	}
+	const auto layers = doc.layerEntities();
+	if (sel.layerIndex >= static_cast<int>(layers.size())) {
+		if (m_traceImage >= 0) {
+			clearTraceSource();
+		}
+		return;
+	}
+	const auto e = layers[static_cast<size_t>(sel.layerIndex)];
+	if (!doc.ecs().hasComponent<rigkit::ecs::CImages>(e)) {
+		if (m_traceImage >= 0) {
+			clearTraceSource();
+		}
+		return;
+	}
+	const auto& images = doc.ecs().getComponent<rigkit::ecs::CImages>(e);
+	if (sel.imageIndex >= static_cast<int>(images.items.size())) {
+		if (m_traceImage >= 0) {
+			clearTraceSource();
+		}
+		return;
+	}
+	const auto& item = images.items[static_cast<size_t>(sel.imageIndex)];
+	if (sel.layerIndex == m_traceLayer && sel.imageIndex == m_traceImage &&
+		item.href == m_traceHref && std::abs(item.pos.x - m_traceX) < 0.01f &&
+		std::abs(item.pos.y - m_traceY) < 0.01f && std::abs(item.size.x - m_traceW) < 0.01f &&
+		std::abs(item.size.y - m_traceH) < 0.01f) {
+		return;
+	}
+
+	const auto& meta = doc.meta();
+	const std::string& base = !meta.workingSvgPath.empty() ? meta.workingSvgPath : meta.sourcePath;
+	std::string baseDir;
+	if (!base.empty()) {
+		baseDir = std::filesystem::path(base).parent_path().string();
+	}
+	const std::string resolved = rig::image::resolvePath(item.href, baseDir);
+	rig::pixel::Raster pixels;
+	if (resolved.empty() || !rig::image::load(resolved, pixels) || pixels.width <= 0) {
+		clearTraceSource();
+		return;
+	}
+	m_traceUi->panel()->setSource(pixels, item.pos.x, item.pos.y, item.size.x, item.size.y);
+	m_traceUi->panel()->setSourceLabel(item.href);
+	m_traceLayer = sel.layerIndex;
+	m_traceImage = sel.imageIndex;
+	m_traceHref = item.href;
+	m_traceX = item.pos.x;
+	m_traceY = item.pos.y;
+	m_traceW = item.size.x;
+	m_traceH = item.size.y;
+}
 
 std::string SvgEditorApp::documentPathHint() const {
 	return AppPaths::joinPath(AppPaths::getDataDir(), "demo");
@@ -466,6 +639,71 @@ bool SvgEditorApp::runSmoke() {
 		}
 		if (!found) {
 			spdlog::error("svgEditor smoke: <image> did not survive SVG round-trip");
+			return false;
+		}
+	}
+
+	{
+		rig::pixel::Raster square;
+		square.width = 64;
+		square.height = 64;
+		square.rgba.assign(64 * 64 * 4, 255);
+		for (int y = 12; y < 52; ++y) {
+			for (int x = 12; x < 52; ++x) {
+				std::uint8_t* p = square.rgba.data() + static_cast<size_t>((y * 64 + x) * 4);
+				p[0] = 0;
+				p[1] = 0;
+				p[2] = 0;
+				p[3] = 255;
+			}
+		}
+		rigkit::trace::TraceSettings ts;
+		ts.hueDetect = false;
+		ts.inkCount = 2;
+		ts.posterizeLevels = 2;
+		ts.keepBackground = false;
+		ts.dropBackground = true;
+		rigkit::ecs::CPaths traced;
+		const int n = rigkit::trace::run(square, ts, traced, 0.f, 0.f, 64.f, 64.f);
+		int lines = 0;
+		int cubics = 0;
+		std::vector<glm::vec2> verts;
+		for (const auto& path : traced.paths) {
+			for (const auto& c : path.commands) {
+				if (c.type == rigkit::ecs::CPath::Cmd::LineTo) {
+					++lines;
+				} else if (c.type == rigkit::ecs::CPath::Cmd::CubicTo) {
+					++cubics;
+				}
+				if (c.type == rigkit::ecs::CPath::Cmd::MoveTo ||
+					c.type == rigkit::ecs::CPath::Cmd::LineTo) {
+					verts.push_back(c.p);
+				}
+			}
+			break;
+		}
+		if (n <= 0 || cubics != 0 || verts.size() < 4) {
+			spdlog::error("svgEditor smoke: square was not LineTos (paths={} lines={} cubics={})",
+						  n, lines, cubics);
+			return false;
+		}
+		if (glm::length(verts.back() - verts.front()) < 1e-3f) {
+			verts.pop_back();
+		}
+		if (verts.size() != 4) {
+			spdlog::error("svgEditor smoke: square vertex count {} (want 4)", verts.size());
+			return false;
+		}
+		const float s0 = glm::length(verts[1] - verts[0]);
+		const float s1 = glm::length(verts[2] - verts[1]);
+		if (s0 < 1.f || std::abs(s0 - s1) / s0 > 0.08f) {
+			spdlog::error("svgEditor smoke: sides not equal ({:.2f} vs {:.2f})", s0, s1);
+			return false;
+		}
+		const glm::vec2 e0 = glm::normalize(verts[1] - verts[0]);
+		const glm::vec2 e1 = glm::normalize(verts[2] - verts[1]);
+		if (std::abs(glm::dot(e0, e1)) > 0.12f) {
+			spdlog::error("svgEditor smoke: corner not square (dot={:.3f})", glm::dot(e0, e1));
 			return false;
 		}
 	}
