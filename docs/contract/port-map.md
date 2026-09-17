@@ -82,7 +82,7 @@ Schemas were cross-pollinated toward this reference host (v0.1). Data packs hold
 
 | Schema family | Planned pack |
 |---------------|--------------|
-| `rig.font.*` | **rigFontComponent** (UFO source PODs). Chrome bind is host `x.rigkit.ui_face`, not a `rig.*` id. IO in **rigUfo**. |
+| `rig.font.*` | **rigFontComponent** (UFO source PODs; local `packs/` until published). Chrome bind is host `x.rigkit.ui_face`, not a `rig.*` id. IO in **rigUfo**. Shape / reconstruct in **rigFont**. Host example `ufomat`. |
 | `rig.music.*` | **rigMusicComponent** (sequencer, then pattern, then steps) |
 | `rig.anim.curve` | **rigComponent** - `CCurve` | Close for curve POD + presets; tween/LFO still planned. |
 | `rig.anim.*` / `rig.mod.*` (remaining) | **rigAnimComponent** or grow **rigComponent** |

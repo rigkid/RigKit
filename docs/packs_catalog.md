@@ -59,8 +59,8 @@ Artist guide: [nodes.md](nodes.md).
 | **rigPlotterUi** | [rigkid/rigPlotterUi](https://github.com/rigkid/rigPlotterUi) | Plotter Kit panels on rigImGui |
 | **rigSvgEditorUi** | [rigkid/rigSvgEditorUi](https://github.com/rigkid/rigSvgEditorUi) | SVG editor shell (toolbar / artboard / layers) |
 | **rigPlotFinders** | [rigkid/rigPlotFinders](https://github.com/rigkid/rigPlotFinders) | Image to stroke finders (hatch / grid / Potrace / Curve Fit; more finder types reserved in POD). **GPL-2.0-or-later** - vendors Potrace |
-| **rigTrace** | [rigkid/rigTrace](https://github.com/rigkid/rigTrace) (local `packs/` until published) | Raster to colour-plate stack - posterize, field / primitives / EvenOdd holes / complete-under, then Schneider fit on leftovers. CODE ONLY. No Potrace. MIT |
-| **rigTraceUi** | [rigkid/rigTraceUi](https://github.com/rigkid/rigTraceUi) (local `packs/` until published) | Trace panel + filled plate preview. Raster in, `TraceSettings` / `TraceStack` out. Links **rigTrace** (MIT) |
+| **rigTrace** | [rigkid/rigTrace](https://github.com/rigkid/rigTrace) (local `packs/` until published) | Raster to colour-plate stack - one ink per plate, classified `rig.geometry.*` shapes per island (Line first; Expand fills to Rect; Arc / Ring), field / holes / complete-under, then Schneider fit on leftovers. CODE ONLY. No Potrace. MIT |
+| **rigTraceUi** | [rigkid/rigTraceUi](https://github.com/rigkid/rigTraceUi) (local `packs/` until published) | Trace panel + preview (VectorEditor `fillMesh` / `strokeMesh`). Raster in, `TraceSettings` / `TraceStack` out. Links **rigTrace** + **rigVectorEditor** (MIT) |
 | **rigComposition** | [rigkid/rigComposition](https://github.com/rigkid/rigComposition) (local `packs/` until published) | Image composition read - `CComposition` lines / salient mass / ranked template scores over `rig::pixel::Raster`. DATA + pure helpers, first-party analysis (no OpenCV). **Leaf** |
 | **rigPlotProcessors** | [rigkid/rigPlotProcessors](https://github.com/rigkid/rigPlotProcessors) | Prepare pipeline (merge / sort / simplify) + per-layer path effects (Z wave / dash / stroke lift) |
 | **rigPlotGenerators** | [rigkid/rigPlotGenerators](https://github.com/rigkid/rigPlotGenerators) | Path generators (cropmarks / border) |
@@ -176,7 +176,13 @@ git clone --recurse-submodules https://github.com/rigkid/rigBlend2D.git packs/ri
 |------|--------|------|
 | **rigVarFont** | [rigkid/rigVarFont](https://github.com/rigkid/rigVarFont) | Optional VF / FreeType fulfillment of `CText` + `IRenderer` filled text (ImVarFont `varfont_core` + `varfont_gl`). Axis values on POD; Face/atlas in the pack. GLES2 falls back to CPU FreeType. **HarfBuzz** = optional system lib behind ImVarFont (GPOS / OT features), not a pack. |
 
-`CText` lives in **rigComponent** and speaks `rig.media.text` (`font` is a `CAssetRef` kind font; `axes` / `features` / `useKerning` on the schema). Screen present (**rigVarFont**) and PDF emit (**rigPdf**) both shape through ImVarFont `varfont_core` - same Face / features / kerning path; PDF does not link `varfont_gl` / OpenGL. Chrome labels are a separate present: **rigImGui** applies TTF `kern` pairs on ImGui `RenderText` (atlas = glyph cache). GPOS / live UFO pairs plug in through `IMui::setChromeKernFn` (VarFont `GetGposPairExtraPx`). Editable UFO source is `rig.font.*` (planned **rigFontComponent**), not `CText`.
+`CText` lives in **rigComponent** and speaks `rig.media.text` (`font` is a `CAssetRef` kind font; `axes` / `features` / `useKerning` on the schema). Screen present (**rigVarFont**) and PDF emit (**rigPdf**) both shape through ImVarFont `varfont_core` - same Face / features / kerning path; PDF does not link `varfont_gl` / OpenGL. Chrome labels are a separate present: **rigImGui** applies TTF `kern` pairs on ImGui `RenderText` (atlas = glyph cache). GPOS / live UFO pairs plug in through `IMui::setChromeKernFn` (VarFont `GetGposPairExtraPx`). Editable UFO source is `rig.font.*` (**rigFontComponent** + **rigUfo**; host example **ufomat** / UFOMAT), not `CText`.
+
+| Pack | Remote | Role |
+|------|--------|------|
+| **rigFontComponent** | local `packs/rigFontComponent` until published | UFO source PODs - `CFontFace` / glyph / kern / axis / cell / ... Data only. |
+| **rigUfo** | local `packs/rigUfo` until published | `.ufo` / `.ufoz` read/write into those PODs; static TTF via fontmake (code / IO) |
+| **rigFont** | local `packs/rigFont` until published | Shape / reconstruct over `rig.font.*` source PODs (code). Not **rigVarFont**. |
 
 ## Planned
 
@@ -187,9 +193,6 @@ Not remotes yet. Scaffold only when the seam is real - survey Known first; prefe
 | **JSON UI sections** | Portable panel map (layout + widget ids + bindings to ECS / `sProp` paths) consumed by `IMui` fulfillments. Host windows stay in **rigImGui**; domain chrome in `*Ui` / `*Editor`. No per-window `rigWin*` packs. Share a tool = ship data (entity meaning + UI JSON), not C++ panels. |
 | **ImTui as chrome** | User face: ImGui / **ImTui** in Interface Chrome (not a color scheme). Mechanism stays an `IMui` / present swap (or later ImGui to cells), not `ImGuiStyle`. Folding it into the theme list ships after **rigImTui** coverage is real. |
 | **Node anim / channels** | Broader timeline/channel products - grow **rigNodeComponent** / **rigNodeEditor** (or a thin companion) when product need is clear |
-| **rigFontComponent** | UFO source PODs - [Rig font schemas](https://github.com/rigkid/RigWorks/tree/main/schemas/font) (`rig.font.face` / `glyph` / `kern` / ...). Data only. Session chrome bind is host `x.rigkit.ui_face`. |
-| **rigUfo** | `.ufo` / `.ufoz` read/write into those PODs (code / IO) |
-| **rigFont** | Chrome shaper + dirty glyph raster over `rig.font.*` (code) |
 | **rigFontUi** | Font view / glyph edit / text view on **rigImGui** |
 | **rigMusicComponent** | Transport / clock / sequencer / pattern / step PODs - [Rig music schemas](https://github.com/rigkid/RigWorks/tree/main/schemas/music); data only |
 | **rigAnimComponent** | *(folded into `rigComponent` + `rigSystems` for now - `CTween`/`CModLfo`/`CModBinding` + `STweens`/`SModulators`)* |

@@ -134,6 +134,30 @@ class IMui {
 	}
 
 	/**
+	 * @brief User-pinned Quick access folders (UTF-8).
+	 * @details Host persists these. Pack-owned file browsers seed from here
+	 * and push back through setFileDialogPinnedFolders.
+	 */
+	virtual std::vector<std::string> fileDialogPinnedFolders() const { return {}; }
+
+	/**
+	 * @brief Replace pinned Quick access folders and persist them.
+	 */
+	virtual void setFileDialogPinnedFolders(const std::vector<std::string>& paths) {
+		(void)paths;
+	}
+
+	/**
+	 * @brief File-browser view: "icons" or "details". Empty if unknown.
+	 */
+	virtual std::string fileDialogView() const { return {}; }
+
+	/**
+	 * @brief Set file-browser view ("icons" / "details") and persist it.
+	 */
+	virtual void setFileDialogView(const std::string& mode) { (void)mode; }
+
+	/**
 	 * @brief Register a CPU decoder for file-browser Icons (e.g. `.svg`).
 	 * @details Extension is case-insensitive (`.svg` / `svg`). Re-register replaces.
 	 * Default IMui is a no-op so headless hosts ignore it. Packs register from

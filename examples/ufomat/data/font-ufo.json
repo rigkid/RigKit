@@ -1,0 +1,142 @@
+{
+  "rig": "0.16.0",
+  "document": {
+    "title": "UFO as Rig"
+  },
+  "entities": [
+    {
+      "id": "face",
+      "components": {
+        "rig.meta.named": { "name": "LiveFace Regular", "stableId": "LiveFace-Regular" },
+        "rig.font.face": {
+          "family": "LiveFace",
+          "style": "Regular",
+          "unitsPerEm": 1000,
+          "ascender": 800,
+          "descender": -200,
+          "capHeight": 700,
+          "xHeight": 500,
+          "version": "0.1",
+          "features": "features-fea"
+        }
+      }
+    },
+    {
+      "id": "features-fea",
+      "components": {
+        "rig.meta.named": { "name": "features.fea", "stableId": "features.fea" },
+        "rig.spatial.relationship": { "parent": "face" },
+        "rig.media.code": {
+          "text": "languagesystem DFLT dflt;\n",
+          "language": "fea"
+        }
+      }
+    },
+    {
+      "id": "layer-foreground",
+      "components": {
+        "rig.meta.named": { "name": "public.default", "stableId": "public.default" },
+        "rig.spatial.relationship": { "parent": "face" },
+        "rig.font.layer": { "role": "foreground" }
+      }
+    },
+    {
+      "id": "glyph-A",
+      "components": {
+        "rig.meta.named": { "name": "A", "stableId": "A" },
+        "rig.spatial.relationship": { "parent": "layer-foreground" },
+        "rig.font.glyph": { "unicodes": [65], "width": 600 },
+        "rig.geometry.path": {
+          "commands": [
+            { "type": "move-to", "point": [50, 0] },
+            { "type": "line-to", "point": [300, 700] },
+            { "type": "line-to", "point": [550, 0] },
+            { "type": "close" }
+          ]
+        }
+      }
+    },
+    {
+      "id": "anchor-A-top",
+      "components": {
+        "rig.meta.named": { "name": "top", "stableId": "top" },
+        "rig.spatial.relationship": { "parent": "glyph-A" },
+        "rig.font.anchor": { "point": [300, 700] }
+      }
+    },
+    {
+      "id": "glyph-V",
+      "components": {
+        "rig.meta.named": { "name": "V", "stableId": "V" },
+        "rig.spatial.relationship": { "parent": "layer-foreground" },
+        "rig.font.glyph": { "unicodes": [86], "width": 600 },
+        "rig.geometry.path": {
+          "commands": [
+            { "type": "move-to", "point": [50, 700] },
+            { "type": "line-to", "point": [300, 0] },
+            { "type": "line-to", "point": [550, 700] }
+          ]
+        }
+      }
+    },
+    {
+      "id": "glyph-space",
+      "components": {
+        "rig.meta.named": { "name": "space", "stableId": "space" },
+        "rig.spatial.relationship": { "parent": "layer-foreground" },
+        "rig.font.glyph": { "unicodes": [32], "width": 250 }
+      }
+    },
+    {
+      "id": "glyph-acute",
+      "components": {
+        "rig.meta.named": { "name": "acute", "stableId": "acute" },
+        "rig.spatial.relationship": { "parent": "layer-foreground" },
+        "rig.font.glyph": { "width": 0 },
+        "rig.geometry.path": {
+          "commands": [
+            { "type": "move-to", "point": [280, 720] },
+            { "type": "line-to", "point": [340, 820] }
+          ]
+        }
+      }
+    },
+    {
+      "id": "glyph-Aacute",
+      "components": {
+        "rig.meta.named": { "name": "Aacute", "stableId": "Aacute" },
+        "rig.spatial.relationship": { "parent": "layer-foreground" },
+        "rig.font.glyph": { "unicodes": [193], "width": 600 }
+      }
+    },
+    {
+      "id": "component-Aacute-A",
+      "components": {
+        "rig.spatial.relationship": { "parent": "glyph-Aacute" },
+        "rig.font.component": { "glyph": "glyph-A" }
+      }
+    },
+    {
+      "id": "component-Aacute-acute",
+      "components": {
+        "rig.spatial.relationship": { "parent": "glyph-Aacute" },
+        "rig.font.component": { "glyph": "glyph-acute" }
+      }
+    },
+    {
+      "id": "kern-AV",
+      "components": {
+        "rig.spatial.relationship": { "parent": "face" },
+        "rig.font.kern": { "left": "A", "right": "V", "value": -40 }
+      }
+    },
+    {
+      "id": "group-kern1-A",
+      "components": {
+        "rig.meta.named": { "name": "public.kern1.A", "stableId": "public.kern1.A" },
+        "rig.spatial.relationship": { "parent": "face" },
+        "rig.font.group": { "members": ["A", "Aacute"], "side": "left" }
+      }
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "name": "rigFontComponent",
+  "url": "https://github.com/rigkid/rigFontComponent.git",
+  "ref": "main",
+  "version": "0.1.0",
+  "author": "Rigkid",
+  "license": "MIT Rigkid Contributors",
+  "description": "UFO source PODs (CFontFace / glyph / kern / ...). DATA ONLY. Speaks rig.font.*",
+  "dependencies": [
+    {
+      "name": "rigComponent",
+      "url": "https://github.com/rigkid/rigComponent.git",
+      "ref": "main"
+    },
+    {
+      "name": "rigProject",
+      "url": "https://github.com/rigkid/rigProject.git",
+      "ref": "main"
+    }
+  ],
+  "include_paths": [
+    "src"
+  ]
+}

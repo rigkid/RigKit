@@ -52,53 +52,7 @@
 namespace {
 
 std::string tracePlateLayerName(const rigkit::trace::TracePlate& plate) {
-	if (plate.isField) {
-		return "Field";
-	}
-	const float r = plate.color.r;
-	const float g = plate.color.g;
-	const float b = plate.color.b;
-	const float mx = std::max(r, std::max(g, b));
-	const float mn = std::min(r, std::min(g, b));
-	const float sat = (mx <= 1e-6f) ? 0.f : (mx - mn) / mx;
-	if (mx < 0.14f) {
-		return "Black";
-	}
-	if (sat < 0.12f && mx > 0.88f) {
-		return "White";
-	}
-	if (sat < 0.12f) {
-		return "Grey";
-	}
-	const float d = mx - mn;
-	float h = 0.f;
-	if (mx == r) {
-		h = std::fmod((g - b) / d, 6.f);
-	} else if (mx == g) {
-		h = (b - r) / d + 2.f;
-	} else {
-		h = (r - g) / d + 4.f;
-	}
-	h *= 60.f;
-	if (h < 0.f) {
-		h += 360.f;
-	}
-	if (h < 30.f || h >= 330.f) {
-		return "Red";
-	}
-	if (h < 75.f) {
-		return "Yellow";
-	}
-	if (h < 160.f) {
-		return "Green";
-	}
-	if (h < 200.f) {
-		return "Cyan";
-	}
-	if (h < 270.f) {
-		return "Blue";
-	}
-	return "Magenta";
+	return rigkit::trace::plateInkName(plate);
 }
 
 } // namespace
@@ -228,7 +182,7 @@ void SvgEditorApp::setup() {
 			auto* doc = &m_plotter->doc();
 			rigkit::mutateDocGeometry(undo, doc, "Trace image", [&] {
 				for (const auto& plate : stack.plates) {
-					if (plate.path.empty()) {
+					if (plate.empty() || !plate.included) {
 						continue;
 					}
 					auto e = doc->addLayer(tracePlateLayerName(plate));
@@ -279,10 +233,8 @@ void SvgEditorApp::setup() {
 		return;
 	}
 
-	// Interactive launch: blank Untitled, not the sample. File > Samples has demo.
-	doc.newProject("Untitled");
-	doc.importOptions().svgFlipY = false;
-	doc.setDirty(false);
+	// Interactive launch stays empty until File > New... or Open...
+	doc.closeSession();
 }
 
 void SvgEditorApp::update(float) {
@@ -704,6 +656,234 @@ bool SvgEditorApp::runSmoke() {
 		const glm::vec2 e1 = glm::normalize(verts[2] - verts[1]);
 		if (std::abs(glm::dot(e0, e1)) > 0.12f) {
 			spdlog::error("svgEditor smoke: corner not square (dot={:.3f})", glm::dot(e0, e1));
+			return false;
+		}
+
+		// Default panel path: hue bins + greys then merge down to inkCount.
+		// Six flat inks, one merge (white into a neighbour) - not yellow into green.
+		rig::pixel::Raster swatch;
+		swatch.width = 48;
+		swatch.height = 48;
+		swatch.rgba.assign(48 * 48 * 4, 255);
+		const std::uint8_t inks[][3] = {{220, 40, 40}, {40, 180, 60}, {40, 80, 210},
+										{240, 220, 40}, {20, 20, 20}, {240, 240, 240}};
+		for (int y = 0; y < 48; ++y) {
+			for (int x = 0; x < 48; ++x) {
+				const int band = (x / 8) % 6;
+				std::uint8_t* p = swatch.rgba.data() + static_cast<size_t>((y * 48 + x) * 4);
+				p[0] = inks[band][0];
+				p[1] = inks[band][1];
+				p[2] = inks[band][2];
+			}
+		}
+		rigkit::trace::TraceSettings hueTs;
+		hueTs.hueDetect = true;
+		hueTs.inkCount = 5;
+		hueTs.hueBins = 4;
+		hueTs.posterizeLevels = 4;
+		hueTs.keepBackground = true;
+		hueTs.dropBackground = false;
+		rigkit::trace::TraceStack hueStack;
+		const int hn = rigkit::trace::runStack(swatch, hueTs, hueStack, 0.f, 0.f, 48.f, 48.f);
+		if (hn < 5 || hueStack.plates.size() < 5 || !hueStack.plates.front().isField) {
+			spdlog::error("svgEditor smoke: hue merge kept {} plates (need Field + 4 inks)", hn);
+			return false;
+		}
+
+		// Nested accents (blue field, green body, pink dots, black + yellow).
+		// Closest-pair RGB used to swallow the marks into green and drop the field.
+		auto putRgb = [](rig::pixel::Raster& img, int x, int y, std::uint8_t r, std::uint8_t g,
+						 std::uint8_t b) {
+			if (x < 0 || y < 0 || x >= img.width || y >= img.height) {
+				return;
+			}
+			std::uint8_t* p = img.rgba.data() + static_cast<size_t>((y * img.width + x) * 4);
+			p[0] = r;
+			p[1] = g;
+			p[2] = b;
+			p[3] = 255;
+		};
+		auto fillCircle = [&](rig::pixel::Raster& img, int cx, int cy, int rad, std::uint8_t r,
+							  std::uint8_t g, std::uint8_t b) {
+			const int r2 = rad * rad;
+			for (int y = cy - rad; y <= cy + rad; ++y) {
+				for (int x = cx - rad; x <= cx + rad; ++x) {
+					const int dx = x - cx;
+					const int dy = y - cy;
+					if (dx * dx + dy * dy <= r2) {
+						putRgb(img, x, y, r, g, b);
+					}
+				}
+			}
+		};
+		auto fillRect = [&](rig::pixel::Raster& img, int x0, int y0, int x1, int y1, std::uint8_t r,
+							std::uint8_t g, std::uint8_t b) {
+			for (int y = y0; y < y1; ++y) {
+				for (int x = x0; x < x1; ++x) {
+					putRgb(img, x, y, r, g, b);
+				}
+			}
+		};
+		rig::pixel::Raster pad;
+		pad.width = 160;
+		pad.height = 120;
+		pad.rgba.assign(160 * 120 * 4, 255);
+		fillRect(pad, 0, 0, 160, 120, 70, 90, 200);
+		fillCircle(pad, 52, 60, 34, 80, 190, 100);
+		fillCircle(pad, 108, 60, 34, 80, 190, 100);
+		fillRect(pad, 52, 26, 108, 94, 80, 190, 100);
+		fillCircle(pad, 36, 38, 7, 240, 170, 170);
+		fillCircle(pad, 124, 38, 7, 240, 170, 170);
+		fillCircle(pad, 36, 82, 7, 240, 170, 170);
+		fillCircle(pad, 124, 82, 7, 240, 170, 170);
+		fillCircle(pad, 64, 60, 8, 20, 20, 20);
+		fillRect(pad, 78, 54, 90, 66, 250, 220, 40);
+		fillRect(pad, 92, 54, 104, 66, 245, 245, 230);
+		fillCircle(pad, 114, 60, 8, 20, 20, 20);
+		rigkit::trace::TraceSettings padTs = hueTs;
+		padTs.hueBins = 5;
+		padTs.satFloor = 0.12f;
+		rigkit::trace::TraceStack padStack;
+		const int pn = rigkit::trace::runStack(pad, padTs, padStack, 0.f, 0.f, 160.f, 120.f);
+		int sawField = 0;
+		int sawGreen = 0;
+		int sawPink = 0;
+		int sawBlack = 0;
+		int sawYellow = 0;
+		for (const auto& plate : padStack.plates) {
+			if (plate.isField) {
+				++sawField;
+			}
+			const std::string name = rigkit::trace::plateInkName(plate);
+			if (name == "Green") {
+				++sawGreen;
+			} else if (name == "Red" || name == "Magenta") {
+				++sawPink;
+			} else if (name == "Black") {
+				++sawBlack;
+			} else if (name == "Yellow") {
+				++sawYellow;
+			}
+		}
+		if (pn < 4 || !sawField || !sawGreen || !sawPink || (!sawBlack && !sawYellow)) {
+			spdlog::error("svgEditor smoke: nested accents collapsed (plates={} field={} green={} "
+						  "pink={} black={} yellow={})",
+						  pn, sawField, sawGreen, sawPink, sawBlack, sawYellow);
+			return false;
+		}
+
+		// Bone + pink cap + five yellow dots. Select-colour outline, not a
+		// page-wide capsule and not yellow eaten by the body.
+		rig::pixel::Raster bone;
+		bone.width = 160;
+		bone.height = 100;
+		bone.rgba.assign(160 * 100 * 4, 255);
+		fillRect(bone, 0, 0, 160, 100, 70, 90, 200);
+		fillCircle(bone, 50, 50, 30, 90, 55, 35);
+		fillCircle(bone, 110, 50, 30, 90, 55, 35);
+		fillRect(bone, 50, 20, 110, 80, 90, 55, 35);
+		for (int y = 58; y < 82; ++y) {
+			for (int x = 20; x < 140; ++x) {
+				std::uint8_t* p = bone.rgba.data() + static_cast<size_t>((y * 160 + x) * 4);
+				if (p[0] == 90 && p[1] == 55 && p[2] == 35) {
+					p[0] = 230;
+					p[1] = 140;
+					p[2] = 170;
+				}
+			}
+		}
+		const int dots[5][2] = {{48, 36}, {70, 34}, {90, 34}, {110, 36}, {80, 48}};
+		for (const auto& d : dots) {
+			fillCircle(bone, d[0], d[1], 5, 250, 220, 40);
+		}
+		rigkit::trace::TraceSettings boneTs;
+		boneTs.hueDetect = true;
+		boneTs.inkCount = 5;
+		boneTs.satFloor = 0.14f;
+		boneTs.keepBackground = true;
+		boneTs.dropBackground = false;
+		boneTs.completeUnder = false;
+		rigkit::trace::TraceStack boneStack;
+		const int bn = rigkit::trace::runStack(bone, boneTs, boneStack, 0.f, 0.f, 160.f, 100.f);
+		int boneField = 0;
+		int boneYellowMoves = 0;
+		int bonePink = 0;
+		int boneBodyPath = 0;
+		int boneCapsule = 0;
+		for (const auto& plate : boneStack.plates) {
+			if (plate.isField) {
+				++boneField;
+				continue;
+			}
+			const std::string name = rigkit::trace::plateInkName(plate);
+			for (const auto& shape : plate.shapes) {
+				if (shape.kind == rigkit::trace::ShapeKind::Capsule) {
+					++boneCapsule;
+				}
+				if (name == "Yellow") {
+					for (const auto& c : shape.path.commands) {
+						if (c.type == rigkit::ecs::CPath::Cmd::MoveTo) {
+							++boneYellowMoves;
+						}
+					}
+				} else if (plate.color.r > 0.7f && plate.color.b > 0.45f && plate.color.g < 0.75f) {
+					++bonePink;
+				} else if (shape.kind == rigkit::trace::ShapeKind::Path) {
+					++boneBodyPath;
+				}
+			}
+		}
+		if (bn < 4 || !boneField || boneYellowMoves < 5 || !bonePink || !boneBodyPath ||
+			boneCapsule > 0) {
+			spdlog::error("svgEditor smoke: bone outline failed (plates={} field={} yellowMoves={} "
+						  "pink={} bodyPath={} capsule={})",
+						  bn, boneField, boneYellowMoves, bonePink, boneBodyPath, boneCapsule);
+			return false;
+		}
+		int yellowIdx = -1;
+		glm::vec4 yellowCol{};
+		for (int i = 0; i < static_cast<int>(boneStack.plates.size()); ++i) {
+			const auto& plate = boneStack.plates[static_cast<size_t>(i)];
+			if (!plate.isField && rigkit::trace::plateInkName(plate) == "Yellow") {
+				yellowIdx = i;
+				yellowCol = plate.color;
+				break;
+			}
+		}
+		if (yellowIdx < 0) {
+			spdlog::error("svgEditor smoke: bone lock needs a Yellow plate");
+			return false;
+		}
+		boneStack.plates[static_cast<size_t>(yellowIdx)].included = false;
+		boneStack.plates[static_cast<size_t>(yellowIdx)].locked = true;
+		boneTs.inkCount = 4;
+		boneTs.satFloor = 0.22f;
+		rigkit::trace::TraceStack lockedStack;
+		const int ln =
+			rigkit::trace::runStack(bone, boneTs, lockedStack, 0.f, 0.f, 160.f, 100.f, nullptr,
+									&boneStack);
+		int lockedYellow = 0;
+		int unlockedYellow = 0;
+		for (const auto& plate : lockedStack.plates) {
+			const bool sameCol = std::abs(plate.color.r - yellowCol.r) < 0.02f &&
+								 std::abs(plate.color.g - yellowCol.g) < 0.02f &&
+								 std::abs(plate.color.b - yellowCol.b) < 0.02f;
+			const bool yellow =
+				!plate.isField && (rigkit::trace::plateInkName(plate) == "Yellow" || sameCol);
+			if (plate.locked && !plate.included) {
+				if (!sameCol) {
+					spdlog::error("svgEditor smoke: locked plate colour changed");
+					return false;
+				}
+				++lockedYellow;
+			} else if (yellow) {
+				++unlockedYellow;
+			}
+		}
+		if (ln < 2 || lockedYellow != 1 || unlockedYellow != 0) {
+			spdlog::error("svgEditor smoke: locked-off yellow retune failed (plates={} locked={} "
+						  "unlockedYellow={})",
+						  ln, lockedYellow, unlockedYellow);
 			return false;
 		}
 	}

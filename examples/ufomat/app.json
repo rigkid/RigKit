@@ -1,0 +1,19 @@
+{
+  "name": "ufomat",
+  "version": "0.1.0",
+  "license": "MIT",
+  "description": "UFOMAT - UFO source editor (ECS + CPath)",
+  "window": { "width": 1100, "height": 720, "title": "UFOMAT" },
+  "dependencies": [
+    { "name": "rigComponent", "url": "https://github.com/rigkid/rigComponent.git", "ref": "main" },
+    { "name": "rigSystems", "url": "https://github.com/rigkid/rigSystems.git", "ref": "main" },
+    { "name": "rigProject", "url": "https://github.com/rigkid/rigProject.git", "ref": "main" },
+    { "name": "rigFontComponent", "url": "https://github.com/rigkid/rigFontComponent.git", "ref": "main" },
+    { "name": "rigFont", "url": "https://github.com/rigkid/rigFont.git", "ref": "main" },
+    { "name": "rigUfo", "url": "https://github.com/rigkid/rigUfo.git", "ref": "main" },
+    { "name": "rigPlotComponent", "url": "https://github.com/rigkid/rigPlotComponent.git", "ref": "main" },
+    { "name": "rigVectorEditor", "url": "https://github.com/rigkid/rigVectorEditor.git", "ref": "main" },
+    { "name": "rigArtboards", "url": "https://github.com/rigkid/rigArtboards.git", "ref": "main" },
+    { "name": "rigImGui", "url": "https://github.com/rigkid/rigImGui.git", "ref": "main" }
+  ]
+}

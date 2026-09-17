@@ -1,0 +1,85 @@
+{
+  "rig": "0.24.0",
+  "document": {
+    "title": "Variable face as Rig"
+  },
+  "entities": [
+    {
+      "id": "face",
+      "components": {
+        "rig.meta.named": { "name": "LiveFace Variable", "stableId": "LiveFace-Variable" },
+        "rig.font.face": {
+          "family": "LiveFace",
+          "style": "Variable",
+          "unitsPerEm": 1000,
+          "ascender": 800,
+          "descender": -200,
+          "capHeight": 700,
+          "xHeight": 500,
+          "version": "0.1"
+        }
+      }
+    },
+    {
+      "id": "axis-wght",
+      "components": {
+        "rig.spatial.relationship": { "parent": "face", "order": 0 },
+        "rig.font.axis": {
+          "tag": "wght",
+          "name": "Weight",
+          "min": 100,
+          "default": 400,
+          "max": 900
+        },
+        "rig.font.avar": {
+          "segments": [
+            { "fromCoord": -1, "toCoord": -1 },
+            { "fromCoord": 0, "toCoord": 0 },
+            { "fromCoord": 1, "toCoord": 1 }
+          ]
+        }
+      }
+    },
+    {
+      "id": "layer-foreground",
+      "components": {
+        "rig.meta.named": { "name": "public.default", "stableId": "public.default" },
+        "rig.spatial.relationship": { "parent": "face" },
+        "rig.font.layer": { "role": "foreground" }
+      }
+    },
+    {
+      "id": "glyph-I",
+      "components": {
+        "rig.meta.named": { "name": "I", "stableId": "I" },
+        "rig.spatial.relationship": { "parent": "layer-foreground" },
+        "rig.font.glyph": { "unicodes": [73], "width": 600 },
+        "rig.geometry.path": {
+          "commands": [
+            { "type": "move-to", "point": [260, 0] },
+            { "type": "line-to", "point": [340, 0] },
+            { "type": "line-to", "point": [340, 700] },
+            { "type": "line-to", "point": [260, 700] },
+            { "type": "close" }
+          ]
+        },
+        "rig.font.cell": {
+          "baseAdv": 600,
+          "terms": [
+            {
+              "axisTag": "wght",
+              "sign": 1,
+              "adv": 0,
+              "segs": [
+                { "type": "line", "points": [[-20, 0], [20, 0]] },
+                { "type": "line", "points": [[20, 0], [20, 0]] },
+                { "type": "line", "points": [[20, 0], [-20, 0]] },
+                { "type": "line", "points": [[-20, 0], [-20, 0]] }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
