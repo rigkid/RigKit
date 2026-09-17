@@ -26,8 +26,8 @@
 #include "packs/rigPlotter/src/rigPlotter.h"
 #include "packs/rigProject/src/rigProject.h"
 #include "packs/rigSvg/src/rigSvg.h"
-#include "packs/rigSvgEditorUi/src/SvgEditUndo.h"
-#include "packs/rigSvgEditorUi/src/rigSvgEditorUi.h"
+#include "packs/rigVectorUi/src/VectorEditUndo.h"
+#include "packs/rigVectorUi/src/rigVectorUi.h"
 #include "packs/rigSystems/src/rigSystems.h"
 #include "packs/rigTrace/src/Trace.h"
 #include "packs/rigTrace/src/TraceStack.h"
@@ -159,7 +159,7 @@ void SvgEditorApp::setup() {
 	packs->registerPack<rigkit::rigImage>();
 	packs->registerPack<rigkit::rigPlotter>();
 	packs->registerPack<rigkit::rigImGui>();
-	packs->registerPack<rigkit::rigSvgEditorUi>();
+	packs->registerPack<rigkit::rigVectorUi>();
 	packs->registerPack<rigkit::rigTrace>();
 	packs->registerPack<rigkit::rigTraceUi>();
 	packs->initAll();

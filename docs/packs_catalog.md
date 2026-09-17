@@ -57,7 +57,7 @@ Artist guide: [nodes.md](nodes.md).
 | **rigGrbl** | [rigkid/rigGrbl](https://github.com/rigkid/rigGrbl) | GRBL lines over **rigSerial** (**leaf**) |
 | **rigPlotter** | [rigkid/rigPlotter](https://github.com/rigkid/rigPlotter) | PlotDoc orchestration |
 | **rigPlotterUi** | [rigkid/rigPlotterUi](https://github.com/rigkid/rigPlotterUi) | Plotter Kit panels on rigImGui |
-| **rigSvgEditorUi** | [rigkid/rigSvgEditorUi](https://github.com/rigkid/rigSvgEditorUi) | SVG editor shell (toolbar / artboard / layers) |
+| **rigVectorUi** | [rigkid/rigVectorUi](https://github.com/rigkid/rigVectorUi) | Artboard Kit (toolbar / layers / properties) over PlotDoc. Links **rigPlotter** + **rigVectorEditor** + **rigArtboards**. SVG is Import/Export via **rigSvg**. |
 | **rigPlotFinders** | [rigkid/rigPlotFinders](https://github.com/rigkid/rigPlotFinders) | Image to stroke finders (hatch / grid / Potrace / Curve Fit; more finder types reserved in POD). **GPL-2.0-or-later** - vendors Potrace |
 | **rigTrace** | [rigkid/rigTrace](https://github.com/rigkid/rigTrace) (local `packs/` until published) | Raster to colour-plate stack - one ink per plate, classified `rig.geometry.*` shapes per island (Line first; Expand fills to Rect; Arc / Ring), field / holes / complete-under, then Schneider fit on leftovers. CODE ONLY. No Potrace. MIT |
 | **rigTraceUi** | [rigkid/rigTraceUi](https://github.com/rigkid/rigTraceUi) (local `packs/` until published) | Trace panel + preview (VectorEditor `fillMesh` / `strokeMesh`). Raster in, `TraceSettings` / `TraceStack` out. Links **rigTrace** + **rigVectorEditor** (MIT) |

@@ -109,7 +109,7 @@ Register **rigComponent** before **rigSystems** before **rigImGui**. 3D present:
 packs->registerPack<rigkit::rigProject>();
 packs->registerPack<rigkit::rigPlotter>();
 packs->registerPack<rigkit::rigImGui>();
-packs->registerPack<rigkit::rigSvgEditorUi>(); // or rigPlotterUi
+packs->registerPack<rigkit::rigVectorUi>(); // or rigPlotterUi
 packs->initAll();
 packs->setupAll();
 

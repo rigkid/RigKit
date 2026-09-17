@@ -11,17 +11,18 @@ Say and write the same camelCase token (e.g. **rigImGui** is `packs/rigImGui/`).
 | Pattern | Role | Examples |
 |---------|------|----------|
 | `*Component` | **Data pack** - domain POD components | `rigComponent`, `rigPlotComponent`, `rigNodeComponent`, `rigPixelPlotComponent`, `rigColorspace` |
-| `*Editor` / `*Edit` | Edit **capability** (ops and/or editor window) over existing data | `rigNodeEditor`, `rigVectorEditor`, `rigMeshEdit` |
-| `*Ui` | ImGui **Kit / shell panels** over an engine (not the data) | `rigPlotterUi`, `rigPixelPlotterUi` |
+| `*Edit` | CODE **ops** over existing POD. No dock, no product menus. Headless callers can link it. | `rigMeshEdit` |
+| `*Ui` | IMui **chrome** - one panel or a Kit. Named after the engine or domain, never a file format. | `rigPlotterUi`, `rigTraceUi`, `rigVectorUi` |
 | Short / verb name | Single-purpose code, I/O, present, or transport | `rigSvg`, `rigObj`, `rigMilk`, `rigSystems`, `rigRender3D`, `rigSerial`, `rigGrbl`, `rigOsc`, `rigCompositor` |
 | Product engine name | Orchestration that mutates domain PODs | `rigPlotter`, `rigPixelPlotter` |
 
 Rules:
 
 1. Do **not** invent a `*Component` pack for every feature - grow **rigComponent** for generic PODs; new `*Component` only for a real domain.
-2. Prefer `*Editor` over `*EditorUi`. Stacking both (`rigSvgEditorUi`) is historical; new shells: `rigFooEditor` or `rigFooUi`, not both.
-3. `*Ui` means chrome on **rigImGui** over a separate engine/data pack - not where `C*` types live.
-4. Mesh **data** stays in **rigComponent** (`CMesh`); mesh **tools** are **rigMeshEdit**. Same idea as `rigSvg` (IO) vs SVG shell UI.
+2. The cut is **ops vs chrome**: `*Edit` is CODE; `*Ui` is IMui. Do not add new `*Editor` packs (historical ids stay: `rigNodeEditor`, `rigCodeEditor`, `rigVectorEditor`). Never stack `*EditorUi`.
+3. `*Ui` means chrome on **rigImGui** / `IMui` over a separate engine or data pack - not where `C*` types live. Name it after that engine or domain, never a file format. Do not fold chrome into the engine under `gui/` (engines must stay linkable without `IMui`; one engine may have more than one Kit).
+4. Mesh **data** stays in **rigComponent** (`CMesh`); mesh **tools** are **rigMeshEdit**. Same idea as `rigSvg` (IO) vs **rigVectorUi** (artboard Kit).
+5. `*Shell` is not a suffix family. **rigDocumentShell** is a one-off product-host pack (Viewer / Player File Open, Pages, skipped keys). Do not grow `rigOscShell` / `rigPlotterShell`.
 
 ## Branch, trunk, leaf
 

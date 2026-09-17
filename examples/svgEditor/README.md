@@ -2,7 +2,7 @@
 
 ![preview](img/preview.png)
 
-Dedicated **SVG editor shell** example - not the plotter CNC kit.
+Dedicated **artboard Kit** example - not the plotter CNC kit. SVG stays Import / Export via **rigSvg**.
 
 ## First-run chrome
 
@@ -26,7 +26,7 @@ cmake --build examples/svgEditor/build --target svgEditor
 
 ## Packs
 
-- **rigSvgEditorUi** - shell UI (this example’s product surface)
+- **rigVectorUi** - artboard Kit (this example's product surface)
 - **rigVectorEditor** - path edit / text / Pathfinder / soft mask
 - **rigColorspace** - color POD + conversion, grey value / contrast, harmonies (Swatches UI later)
 - **rigCompositor** - FBO bake/blit + path masks (Layers Add Mask to artboard composite)
