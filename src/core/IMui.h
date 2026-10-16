@@ -357,6 +357,28 @@ class IMui {
 	 * @details Thread-safe begin / tick / finish. Show mode to nullptr (Rig only).
 	 */
 	virtual Progress* progress() { return nullptr; }
+
+	/**
+	 * @brief One character on the monitor grid (character-grid chrome).
+	 * @details `x,y` is the cell top-left in window pixels, Y down. `w,h` is the cell.
+	 */
+	struct MonitorGlyph {
+		char32_t ch = 0;
+		float x = 0.f;
+		float y = 0.f;
+		float w = 0.f;
+		float h = 0.f;
+	};
+
+	/**
+	 * @brief Copy non-space monitor cells into @p out, up to @p cap.
+	 * @return How many glyphs were written. 0 when this chrome is not a cell grid.
+	 */
+	virtual int copyMonitorGlyphs(MonitorGlyph* out, int cap) const {
+		(void)out;
+		(void)cap;
+		return 0;
+	}
 };
 
 } // namespace rigkit
