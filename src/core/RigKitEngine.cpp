@@ -604,6 +604,21 @@ void RigKitEngine::applyWindowSettingsFromApp() {
 	}
 }
 
+void RigKitEngine::toggleFullscreen() {
+	if (!m_app) {
+		return;
+	}
+	m_app->settings().window.fullscreen = !m_app->settings().window.fullscreen;
+	applyWindowSettingsFromApp();
+	if (m_settingsManager) {
+		m_settingsManager->saveToDisk();
+	}
+}
+
+bool RigKitEngine::isFullscreen() const {
+	return m_app && m_app->settings().window.fullscreen;
+}
+
 int RigKitEngine::getWindowWidth() const {
 	if (!m_window) {
 		return m_app ? m_app->settings().window.width : 0;

@@ -149,6 +149,10 @@ class RigKitEngine : public ISettings {
 
 	/** @brief Apply AppSettings.window to the live GLFW window (size / fullscreen). */
 	void applyWindowSettingsFromApp();
+	/** @brief Flip AppSettings.window.fullscreen, apply it, and save preferences. */
+	void toggleFullscreen();
+	/** @brief The fullscreen flag in AppSettings (host View menu checkmark). */
+	bool isFullscreen() const;
 
 	/** @brief Apply a pending chrome request (end of frame). */
 	void flushPendingUiChrome();
