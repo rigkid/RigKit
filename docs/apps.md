@@ -2,6 +2,19 @@
 
 The `examples/` directory holds in-repo **example apps** built on RigKit. Product apps that are not framework references should live in separate repositories (see [`templates/app`](../templates/app/) and [apps_creating.md](apps_creating.md)).
 
+## Names
+
+**One id:** folder = `app.json` `"name"` = CMake target (the build keeps `-` in the target).
+
+| Kind | Id | Where |
+|------|----|-------|
+| Host example | `example-<Name>` | `examples/example-<Name>/` in this repo |
+| Product app | `app-<Name>` | Its own repo, started from [`templates/app`](../templates/app/) |
+
+Pack demos under `packs/<id>/examples/<short>/` stay a short id. They are the pack's demo, not a host example and not a product app.
+
+Examples already in this tree keep the id they have: `minimal`, `oscHost`, `glEditor`, `calendar`, `svgEditor`, `ufomat`. New folders use the prefix.
+
 ## Structure
 
 - Each example lives in its own subdirectory under `examples/` (e.g., `examples/oscHost/`).
@@ -18,14 +31,21 @@ The `examples/` directory holds in-repo **example apps** built on RigKit. Produc
 | `glEditor` | GLSL shader preview shell |
 | `calendar` | Content scheduler - `CContentItem` month view persisted with **rigSQLite** (needs local `packs/rigSQLite/` until the pack remote exists; not in host CI yet) |
 | `ufomat` | UFOMAT - UFO source editor (`rigFontComponent` + `rigFont` + `rigUfo`; `--smoke` / `--smoke-ttf`) |
+| `svgEditor` | Artboard Kit - toolbar, layers, SVG / DXF import (`--smoke`) |
+| `example-svgAnimator` | SVG path playback - `rigSvg` into `CPath`, `CTween` / `STweens` slides one path (`--smoke`) |
 
-Product apps (out of tree) live next to RigKit (e.g. `../Relay` — [Relay](https://github.com/GitBruno/relayout), the book layout host), not under `examples/`.
+Product apps (out of tree) live next to RigKit, not under `examples/`. `../app-svgAnimator` plays SVG paths. `../Relay` is [Relay](https://github.com/GitBruno/relayout), the book layout host.
 
 ## Adding a new example
 
-1. Copy an example: `cp -r examples/minimal examples/my_new_demo`
-2. Edit `app.json` (`name`, SPDX `license`, pack `dependencies`) and implement `IApp` in `app.h` / `app.cpp`.
-3. Build that folder: `cmake -S examples/my_new_demo -B examples/my_new_demo/build`
+1. Copy an example: `cp -r examples/minimal examples/example-myNewDemo`
+2. Edit `app.json` so `"name"` is `example-myNewDemo` (folder = name = CMake target), plus SPDX `license` and pack `dependencies`. Implement `IApp` in `app.h` / `app.cpp`.
+3. Configure and build from that folder:
+
+```bash
+cmake -S examples/example-myNewDemo -B examples/example-myNewDemo/build
+cmake --build examples/example-myNewDemo/build --target example-myNewDemo
+```
 
 For a product app outside this repo, see [apps_creating.md](apps_creating.md).
 

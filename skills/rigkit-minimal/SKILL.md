@@ -20,7 +20,7 @@ description: >-
 
 Lazy means efficient, not careless. Shortest working diff after understanding the problem.
 
-Capability units are **packs** - never “addon”. Spoken name = folder id = `pack.json` / `app.json` `"name"` ([packs/README.md#naming](../../packs/README.md#naming)).
+Capability units are **packs** - never “addon”. Spoken name = folder id = `pack.json` / `app.json` `"name"` ([packs/README.md#naming](../../packs/README.md#naming)). A new host example id starts with `example-`. A new product app id starts with `app-` ([docs/apps_creating.md](../../docs/apps_creating.md)). Pack demos stay a short id.
 
 ## Ladder
 

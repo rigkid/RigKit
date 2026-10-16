@@ -5,7 +5,7 @@ class MyApp : public rigkit::IApp {
 	MyApp() {
 		window().width = 800;
 		window().height = 600;
-		window().title = "MyApp";
+		window().title = "app-MyApp";
 	}
 	void setup() override;
 	void update(float) override {}

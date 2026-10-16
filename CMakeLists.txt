@@ -49,11 +49,12 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Native Pi / optional ANGLE to GLES compile path (glad gles2 + ES context).
+# Apple Silicon is arm64 too, but NSGL has no OpenGL ES, so Darwin stays desktop GL.
 set(RIGKIT_GLES FALSE)
 if(RIGKIT_USE_ANGLE)
 	include(${RIGKIT_ROOT}/cmake/RigKitAngle.cmake)
 	set(RIGKIT_GLES TRUE)
-elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "arm" OR CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64")
+elseif(NOT APPLE AND (CMAKE_SYSTEM_PROCESSOR MATCHES "arm" OR CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64"))
 	set(RIGKIT_GLES TRUE)
 endif()
 
@@ -173,7 +174,8 @@ function(add_rigkit_application)
 		string(JSON _project_name GET "${_manifest}" name)
 		set(_app_icon_seed "${_project_name}")
 
-		string(REGEX REPLACE "[^a-zA-Z0-9_]" "_" _sanitized_name "${_project_name}")
+		# Keep '-' so example- / app- ids stay the CMake target (one id).
+		string(REGEX REPLACE "[^a-zA-Z0-9_-]" "_" _sanitized_name "${_project_name}")
 		string(REGEX REPLACE "_+" "_" _sanitized_name "${_sanitized_name}")
 		string(REGEX REPLACE "^_|_$" "" _sanitized_name "${_sanitized_name}")
 

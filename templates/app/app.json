@@ -1,12 +1,12 @@
 {
-  "name": "MyApp",
+  "name": "app-MyApp",
   "version": "0.1.0",
   "license": "MIT",
   "description": "Product app started from templates/app",
   "window": {
     "width": 800,
     "height": 600,
-    "title": "MyApp"
+    "title": "app-MyApp"
   },
   "dependencies": [
     {

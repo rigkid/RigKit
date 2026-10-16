@@ -7,7 +7,7 @@ Per Contract + Host vision, **Raspberry Pi is the floor for a Rig + UI fulfillme
 ## Requirements
 
 - Build RigKit (`rigkit` library + examples) on Raspberry Pi OS (arm64 preferred).
-- GL ES path: RigKit already selects `glad` GLES2 on `__arm__` / `__aarch64__` (see `RigKitEngine` init).
+- GL ES path: RigKit selects `glad` GLES2 on non-Apple `arm` / `aarch64` (Raspberry Pi). macOS stays desktop OpenGL 4.1 (see `RigKitEngine` init).
 - At least one example (`examples/oscHost`) runs in **show** and **author** modes.
 - Long-running Update/Draw loop suitable for media installs.
 

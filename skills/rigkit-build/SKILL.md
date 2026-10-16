@@ -10,7 +10,7 @@ description: >-
 
 # RigKit build
 
-Capability units are **packs** (`packs/`, `pack.json`, `cmake/RigKitPacks.cmake`). Spoken name = folder id = `pack.json` `"name"` = `app.json` `"name"` - [packs/README.md#naming](../../packs/README.md#naming).
+Capability units are **packs** (`packs/`, `pack.json`, `cmake/RigKitPacks.cmake`). Spoken name = folder id = `pack.json` `"name"` = `app.json` `"name"` - [packs/README.md#naming](../../packs/README.md#naming). New host examples are `example-<Name>`; new product apps are `app-<Name>` ([docs/apps_creating.md](../../docs/apps_creating.md)). The CMake target keeps the hyphen.
 
 ## Pi gate (always)
 
