@@ -26,8 +26,6 @@
 #include "packs/rigPlotter/src/rigPlotter.h"
 #include "packs/rigProject/src/rigProject.h"
 #include "packs/rigSvg/src/rigSvg.h"
-#include "packs/rigVectorUi/src/VectorEditUndo.h"
-#include "packs/rigVectorUi/src/rigVectorUi.h"
 #include "packs/rigSystems/src/rigSystems.h"
 #include "packs/rigTrace/src/Trace.h"
 #include "packs/rigTrace/src/TraceStack.h"
@@ -39,6 +37,8 @@
 #include "packs/rigVectorEditor/src/SoftMaskOps.h"
 #include "packs/rigVectorEditor/src/TextOutlineOps.h"
 #include "packs/rigVectorEditor/src/rigVectorEditor.h"
+#include "packs/rigVectorUi/src/VectorEditUndo.h"
+#include "packs/rigVectorUi/src/rigVectorUi.h"
 
 #include <glm/glm.hpp>
 #include <algorithm>
@@ -665,8 +665,8 @@ bool SvgEditorApp::runSmoke() {
 		swatch.width = 48;
 		swatch.height = 48;
 		swatch.rgba.assign(48 * 48 * 4, 255);
-		const std::uint8_t inks[][3] = {{220, 40, 40}, {40, 180, 60}, {40, 80, 210},
-										{240, 220, 40}, {20, 20, 20}, {240, 240, 240}};
+		const std::uint8_t inks[][3] = {{220, 40, 40},	{40, 180, 60}, {40, 80, 210},
+										{240, 220, 40}, {20, 20, 20},  {240, 240, 240}};
 		for (int y = 0; y < 48; ++y) {
 			for (int x = 0; x < 48; ++x) {
 				const int band = (x / 8) % 6;
@@ -859,9 +859,8 @@ bool SvgEditorApp::runSmoke() {
 		boneTs.inkCount = 4;
 		boneTs.satFloor = 0.22f;
 		rigkit::trace::TraceStack lockedStack;
-		const int ln =
-			rigkit::trace::runStack(bone, boneTs, lockedStack, 0.f, 0.f, 160.f, 100.f, nullptr,
-									&boneStack);
+		const int ln = rigkit::trace::runStack(bone, boneTs, lockedStack, 0.f, 0.f, 160.f, 100.f,
+											   nullptr, &boneStack);
 		int lockedYellow = 0;
 		int unlockedYellow = 0;
 		for (const auto& plate : lockedStack.plates) {

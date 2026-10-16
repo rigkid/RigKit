@@ -143,9 +143,7 @@ class IMui {
 	/**
 	 * @brief Replace pinned Quick access folders and persist them.
 	 */
-	virtual void setFileDialogPinnedFolders(const std::vector<std::string>& paths) {
-		(void)paths;
-	}
+	virtual void setFileDialogPinnedFolders(const std::vector<std::string>& paths) { (void)paths; }
 
 	/**
 	 * @brief File-browser view: "icons" or "details". Empty if unknown.
