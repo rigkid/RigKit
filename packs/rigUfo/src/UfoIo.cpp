@@ -162,7 +162,17 @@ UfoResult loadUfoDir(MEcs& ecs, const fs::path& root) {
 	facePod.descender = static_cast<float>(info.number("descender", -200));
 	facePod.capHeight = static_cast<float>(info.number("capHeight", 700));
 	facePod.xHeight = static_cast<float>(info.number("xHeight", 500));
+	facePod.italicAngle = static_cast<float>(info.number("italicAngle", 0));
 	facePod.version = info.string("openTypeNameVersion", info.string("versionMajor"));
+	facePod.copyright = info.string("copyright");
+	facePod.trademark = info.string("trademark");
+	facePod.designer = info.string("openTypeNameDesigner");
+	facePod.designerUrl = info.string("openTypeNameDesignerURL");
+	facePod.manufacturer = info.string("openTypeNameManufacturer");
+	facePod.manufacturerUrl = info.string("openTypeNameManufacturerURL");
+	facePod.licence = info.string("openTypeNameLicense");
+	facePod.licenceUrl = info.string("openTypeNameLicenseURL");
+	facePod.note = info.string("note");
 	ecs.addComponent(face, facePod);
 	addName(ecs, face, family + " " + style, family + "-" + style);
 	result.face = face;
@@ -327,9 +337,26 @@ bool saveUfoDir(MEcs& ecs, const fs::path& root, std::string* error) {
 	info.dict["descender"] = Plist::real(facePod.descender);
 	info.dict["capHeight"] = Plist::real(facePod.capHeight);
 	info.dict["xHeight"] = Plist::real(facePod.xHeight);
+	if (facePod.italicAngle != 0.f) {
+		info.dict["italicAngle"] = Plist::real(facePod.italicAngle);
+	}
 	if (!facePod.version.empty()) {
 		info.dict["openTypeNameVersion"] = Plist::str(facePod.version);
 	}
+	auto put = [&info](const char* key, const std::string& v) {
+		if (!v.empty()) {
+			info.dict[key] = Plist::str(v);
+		}
+	};
+	put("copyright", facePod.copyright);
+	put("trademark", facePod.trademark);
+	put("openTypeNameDesigner", facePod.designer);
+	put("openTypeNameDesignerURL", facePod.designerUrl);
+	put("openTypeNameManufacturer", facePod.manufacturer);
+	put("openTypeNameManufacturerURL", facePod.manufacturerUrl);
+	put("openTypeNameLicense", facePod.licence);
+	put("openTypeNameLicenseURL", facePod.licenceUrl);
+	put("note", facePod.note);
 	writeText(root / "fontinfo.plist", writePlist(info));
 
 	if (!facePod.features.empty()) {
@@ -339,64 +366,85 @@ bool saveUfoDir(MEcs& ecs, const fs::path& root, std::string* error) {
 		}
 	}
 
-	entt::entity layer = entt::null;
-	std::string layerName = "public.default";
+	// Every CFontLayer child becomes a UFO layer; the first one is the
+	// default "glyphs" dir. Master locations (rig.font.master) have no UFO
+	// home - they live in the .rig document.
+	std::vector<std::pair<entt::entity, std::string>> layers;
 	for (auto e : childrenOf(ecs, face)) {
 		if (ecs.hasComponent<ecs::CFontLayer>(e)) {
-			layer = e;
-			layerName = glyphNameOf(ecs, e);
-			if (layerName.empty()) {
-				layerName = "public.default";
+			std::string name = glyphNameOf(ecs, e);
+			if (name.empty()) {
+				name = layers.empty() ? "public.default" : "layer";
 			}
-			break;
+			layers.emplace_back(e, name);
 		}
 	}
+	if (layers.empty()) {
+		layers.emplace_back(entt::null, "public.default");
+	}
+
+	auto layerDirName = [](const std::string& layerName, size_t index) {
+		if (index == 0) {
+			return std::string("glyphs");
+		}
+		std::string dir = "glyphs.";
+		for (char c : layerName) {
+			const bool ok = (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') ||
+							(c >= '0' && c <= '9') || c == '.' || c == '_' || c == '-';
+			dir += ok ? c : '_';
+		}
+		return dir;
+	};
 
 	Plist layerContents;
 	layerContents.kind = Plist::Array;
-	Plist layerRow;
-	layerRow.kind = Plist::Array;
-	layerRow.arr.push_back(Plist::str(layerName));
-	layerRow.arr.push_back(Plist::str("glyphs"));
-	layerContents.arr.push_back(std::move(layerRow));
-	writeText(root / "layercontents.plist", writePlist(layerContents));
+	for (size_t li = 0; li < layers.size(); ++li) {
+		const auto& [layer, layerName] = layers[li];
+		const std::string dirName = layerDirName(layerName, li);
+		Plist layerRow;
+		layerRow.kind = Plist::Array;
+		layerRow.arr.push_back(Plist::str(layerName));
+		layerRow.arr.push_back(Plist::str(dirName));
+		layerContents.arr.push_back(std::move(layerRow));
 
-	const fs::path glyphsDir = root / "glyphs";
-	fs::create_directories(glyphsDir, ec);
-	Plist contents;
-	contents.kind = Plist::Dict;
+		const fs::path glyphsDir = root / dirName;
+		fs::create_directories(glyphsDir, ec);
+		Plist contents;
+		contents.kind = Plist::Dict;
 
-	const auto glyphParents =
-		(layer != entt::null) ? childrenOf(ecs, layer) : childrenOf(ecs, face);
-	for (auto e : glyphParents) {
-		if (!ecs.hasComponent<ecs::CFontGlyph>(e)) {
-			continue;
-		}
-		const auto& g = ecs.getComponent<ecs::CFontGlyph>(e);
-		Glif glif;
-		glif.name = glyphNameOf(ecs, e);
-		glif.width = g.width;
-		glif.unicodes = g.unicodes;
-		if (ecs.hasComponent<ecs::CPath>(e)) {
-			glif.path = ecs.getComponent<ecs::CPath>(e);
-		}
-		for (auto child : childrenOf(ecs, e)) {
-			if (ecs.hasComponent<ecs::CFontComponent>(child)) {
-				glif.components.push_back(ecs.getComponent<ecs::CFontComponent>(child));
+		const auto glyphParents =
+			(layer != entt::null) ? childrenOf(ecs, layer) : childrenOf(ecs, face);
+		for (auto e : glyphParents) {
+			if (!ecs.hasComponent<ecs::CFontGlyph>(e)) {
+				continue;
 			}
-			if (ecs.hasComponent<ecs::CFontAnchor>(child)) {
-				GlifAnchor an;
-				an.name = glyphNameOf(ecs, child);
-				an.x = ecs.getComponent<ecs::CFontAnchor>(child).point.x;
-				an.y = ecs.getComponent<ecs::CFontAnchor>(child).point.y;
-				glif.anchors.push_back(an);
+			const auto& g = ecs.getComponent<ecs::CFontGlyph>(e);
+			Glif glif;
+			glif.name = glyphNameOf(ecs, e);
+			glif.width = g.width;
+			glif.unicodes = g.unicodes;
+			if (ecs.hasComponent<ecs::CPath>(e)) {
+				glif.path = ecs.getComponent<ecs::CPath>(e);
 			}
+			for (auto child : childrenOf(ecs, e)) {
+				if (ecs.hasComponent<ecs::CFontComponent>(child)) {
+					glif.components.push_back(ecs.getComponent<ecs::CFontComponent>(child));
+				}
+				if (ecs.hasComponent<ecs::CFontAnchor>(child)) {
+					GlifAnchor an;
+					an.name = glyphNameOf(ecs, child);
+					an.x = ecs.getComponent<ecs::CFontAnchor>(child).point.x;
+					an.y = ecs.getComponent<ecs::CFontAnchor>(child).point.y;
+					glif.anchors.push_back(an);
+				}
+			}
+			const auto file = glyphFileName(glif.name);
+			contents.dict[glif.name] = Plist::str(file);
+			writeText(glyphsDir / file, writeGlif(glif));
 		}
-		const auto file = glyphFileName(glif.name);
-		contents.dict[glif.name] = Plist::str(file);
-		writeText(glyphsDir / file, writeGlif(glif));
+		writeText(glyphsDir / "contents.plist", writePlist(contents));
 	}
-	writeText(glyphsDir / "contents.plist", writePlist(contents));
+	writeText(root / "layercontents.plist", writePlist(layerContents));
 
 	Plist groups;
 	groups.kind = Plist::Dict;

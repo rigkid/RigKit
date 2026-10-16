@@ -3,6 +3,7 @@
 #include <entt/entt.hpp>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 #include "ecs/MEcs.h"
 
@@ -46,6 +47,12 @@ void setKernPair(MEcs& ecs, const std::string& left, const std::string& right, f
 
 /** @brief First glyph whose `unicodes` contains @p cp, else `.notdef`, else null. */
 entt::entity findGlyphByUnicode(MEcs& ecs, uint32_t cp);
+
+/** @brief Layer entities parented to @p face, in registry order. */
+std::vector<entt::entity> layersOfFace(MEcs& ecs, entt::entity face);
+
+/** @brief Glyph named @p name whose parent is @p layer, or `entt::null`. */
+entt::entity findGlyphInLayer(MEcs& ecs, entt::entity layer, const std::string& name);
 
 } // namespace font
 } // namespace rigkit

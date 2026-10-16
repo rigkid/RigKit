@@ -241,6 +241,34 @@ void setKernPair(MEcs& ecs, const std::string& left, const std::string& right, f
 	}
 }
 
+std::vector<entt::entity> layersOfFace(MEcs& ecs, entt::entity face) {
+	std::vector<entt::entity> out;
+	for (auto e : ecs.registry().view<ecs::CFontLayer>()) {
+		if (face != entt::null && ecs.hasComponent<ecs::CRelationship>(e) &&
+			ecs.getComponent<ecs::CRelationship>(e).parent != face) {
+			continue;
+		}
+		out.push_back(e);
+	}
+	return out;
+}
+
+entt::entity findGlyphInLayer(MEcs& ecs, entt::entity layer, const std::string& name) {
+	if (layer == entt::null || name.empty()) {
+		return entt::null;
+	}
+	for (auto e : ecs.registry().view<ecs::CFontGlyph>()) {
+		if (!ecs.hasComponent<ecs::CRelationship>(e) ||
+			ecs.getComponent<ecs::CRelationship>(e).parent != layer) {
+			continue;
+		}
+		if (stableName(ecs, e) == name) {
+			return e;
+		}
+	}
+	return entt::null;
+}
+
 entt::entity findGlyphByUnicode(MEcs& ecs, uint32_t cp) {
 	entt::entity fallback = entt::null;
 	for (auto e : ecs.registry().view<ecs::CFontGlyph>()) {

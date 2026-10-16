@@ -30,8 +30,11 @@ add_library(${PACK_NAME} STATIC
 	src/FontSerializers.h
 	src/FontFind.cpp
 	src/FontFind.h
+	src/FontCharsets.cpp
+	src/FontCharsets.h
 	src/CFontFace.h
 	src/CFontLayer.h
+	src/CFontMaster.h
 	src/CFontGlyph.h
 	src/CFontComponent.h
 	src/CFontAnchor.h

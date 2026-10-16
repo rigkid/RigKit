@@ -1,5 +1,5 @@
 {
-  "rig": "0.16.0",
+  "rig": "0.32.0",
   "document": {
     "title": "UFO as Rig"
   },
@@ -17,6 +17,10 @@
           "capHeight": 700,
           "xHeight": 500,
           "version": "0.1",
+          "copyright": "Copyright 2026 LiveFace Project",
+          "designer": "LiveFace Project",
+          "licence": "This Font Software is licensed under the SIL Open Font License, Version 1.1.",
+          "licenceUrl": "https://openfontlicense.org",
           "features": "features-fea"
         }
       }

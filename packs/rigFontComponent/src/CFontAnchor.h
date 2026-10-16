@@ -10,7 +10,8 @@ namespace ecs {
 
 /**
  * @brief Named point on a glyph (UFO anchor). Speaks `rig.font.anchor`.
- * @details Name lives on `CName`. Child of the glyph. Not `CAnchor` (3x3 cell).
+ * @details Name lives on `CName`. Child of the glyph. Not `CAnchor`
+ * (`rig.spatial.anchor` cuboid cell).
  */
 struct CFontAnchor {
 	glm::vec2 point{0.f, 0.f};

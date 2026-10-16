@@ -12,6 +12,7 @@
 #include "CFontGroup.h"
 #include "CFontKern.h"
 #include "CFontLayer.h"
+#include "CFontMaster.h"
 
 namespace rigkit {
 namespace font {
@@ -75,9 +76,26 @@ bool serializeFace(entt::registry& reg, entt::entity e, ordered_json& j) {
 	j["descender"] = f.descender;
 	j["capHeight"] = f.capHeight;
 	j["xHeight"] = f.xHeight;
+	if (f.italicAngle != 0.f) {
+		j["italicAngle"] = f.italicAngle;
+	}
 	if (!f.version.empty()) {
 		j["version"] = f.version;
 	}
+	auto put = [&j](const char* key, const std::string& v) {
+		if (!v.empty()) {
+			j[key] = v;
+		}
+	};
+	put("copyright", f.copyright);
+	put("trademark", f.trademark);
+	put("designer", f.designer);
+	put("designerUrl", f.designerUrl);
+	put("manufacturer", f.manufacturer);
+	put("manufacturerUrl", f.manufacturerUrl);
+	put("licence", f.licence);
+	put("licenceUrl", f.licenceUrl);
+	put("note", f.note);
 	if (!f.features.empty()) {
 		j["features"] = f.features;
 	}
@@ -96,7 +114,17 @@ bool deserializeFace(entt::registry& reg, entt::entity e, const ordered_json& j)
 	f.descender = j.value("descender", f.descender);
 	f.capHeight = j.value("capHeight", f.capHeight);
 	f.xHeight = j.value("xHeight", f.xHeight);
+	f.italicAngle = j.value("italicAngle", f.italicAngle);
 	f.version = j.value("version", f.version);
+	f.copyright = j.value("copyright", f.copyright);
+	f.trademark = j.value("trademark", f.trademark);
+	f.designer = j.value("designer", f.designer);
+	f.designerUrl = j.value("designerUrl", f.designerUrl);
+	f.manufacturer = j.value("manufacturer", f.manufacturer);
+	f.manufacturerUrl = j.value("manufacturerUrl", f.manufacturerUrl);
+	f.licence = j.value("licence", f.licence);
+	f.licenceUrl = j.value("licenceUrl", f.licenceUrl);
+	f.note = j.value("note", f.note);
 	f.features = j.value("features", f.features);
 	reg.emplace_or_replace<ecs::CFontFace>(e, std::move(f));
 	return true;
@@ -320,6 +348,38 @@ bool deserializeAvar(entt::registry& reg, entt::entity e, const ordered_json& j)
 	return true;
 }
 
+bool serializeMaster(entt::registry& reg, entt::entity e, ordered_json& j) {
+	if (!reg.all_of<ecs::CFontMaster>(e)) {
+		return false;
+	}
+	const auto& m = reg.get<ecs::CFontMaster>(e);
+	auto loc = ordered_json::array();
+	for (const auto& av : m.location) {
+		ordered_json aj;
+		aj["tag"] = av.tag;
+		aj["value"] = av.value;
+		loc.push_back(std::move(aj));
+	}
+	j["location"] = std::move(loc);
+	return true;
+}
+
+bool deserializeMaster(entt::registry& reg, entt::entity e, const ordered_json& j) {
+	ecs::CFontMaster m;
+	if (j.contains("location") && j["location"].is_array()) {
+		for (const auto& aj : j["location"]) {
+			ecs::CFontMaster::AxisValue av;
+			av.tag = aj.value("tag", "");
+			av.value = aj.value("value", 0.f);
+			if (!av.tag.empty()) {
+				m.location.push_back(std::move(av));
+			}
+		}
+	}
+	reg.emplace_or_replace<ecs::CFontMaster>(e, std::move(m));
+	return true;
+}
+
 bool serializeCell(entt::registry& reg, entt::entity e, ordered_json& j) {
 	if (!reg.all_of<ecs::CFontCell>(e)) {
 		return false;
@@ -427,6 +487,8 @@ void registerProjectSerializers(project::ComponentSerializerRegistry& registry) 
 										   deserializeAvar);
 	project::addSerializer<ecs::CFontCell>(registry, "FontCell", "rig.font.cell", serializeCell,
 										   deserializeCell);
+	project::addSerializer<ecs::CFontMaster>(registry, "FontMaster", "rig.font.master",
+											 serializeMaster, deserializeMaster);
 }
 
 } // namespace font

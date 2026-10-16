@@ -14,6 +14,7 @@
 #include "CFontGroup.h"
 #include "CFontKern.h"
 #include "CFontLayer.h"
+#include "CFontMaster.h"
 #include "FontSerializers.h"
 #include "rigProject.h"
 
@@ -48,6 +49,7 @@ void rigFontComponent::setup() {
 	ecs->registerComponent<ecs::CFontAxis>("FontAxis", true);
 	ecs->registerComponent<ecs::CFontAvar>("FontAvar", true);
 	ecs->registerComponent<ecs::CFontCell>("FontCell", true);
+	ecs->registerComponent<ecs::CFontMaster>("FontMaster", true);
 
 	if (auto* packs = engine->getPackManager()) {
 		if (auto doc = std::dynamic_pointer_cast<rigProject>(packs->getPack("rigProject"))) {
