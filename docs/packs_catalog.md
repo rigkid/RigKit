@@ -99,10 +99,12 @@ Product app **RigSlicer** lives out of tree (e.g. next to RigKit), not under `ex
 
 | Pack | Remote | Role |
 |------|--------|------|
-| **rigAudio** | [rigkid/rigAudio](https://github.com/rigkid/rigAudio) | Audio in and out (miniaudio). Capture analysis to node `AudioBus`; playback `Mixer` renders `ISynth` sources, `AudioFile` voices (WAV/FLAC/MP3), `ISendFx` sends (pass / schroeder / bitcrush); polled `BeatClock` follows `CMusicTransport` |
+| **rigAudio** | [rigkid/rigAudio](https://github.com/rigkid/rigAudio) | Audio in and out (miniaudio). Capture analysis to node `AudioBus`; playback `Mixer` renders `ISynth` sources, `AudioFile` voices (WAV/FLAC/MP3), `ISendFx` sends (pass / schroeder / bitcrush); `XyScopeSynth` traces polylines as stereo XY on the mix or a second sound card; polled `BeatClock` follows `CMusicTransport` |
 | **rigMilk** | [rigkid/rigMilk](https://github.com/rigkid/rigMilk) (local `packs/` until published) | MilkDrop1-class `.milk` visualizer. GLES2 warp mesh over `CVisualizer` (in **rigComponent**); equations via MIT projectm-eval; switching policy from **rigAudio**. Shader presets skipped. **Leaf.** |
 | **rigOpen303** | [rigkid/rigOpen303](https://github.com/rigkid/rigOpen303) (local `packs/` until published) | TB-303 bassline `ISynth` - Open303 DSP (MIT) fetched pinned; accent / slide, normalized params. **Leaf.** |
 | **rigDexed** | [rigkid/rigDexed](https://github.com/rigkid/rigDexed) (local `packs/` until published) | Dexed DX7 FM `ISynth` - MSFA + MkI / OPL engines, DX7 `.syx` cartridges. **Leaf. GPL-3.0-or-later.** |
+| **rigAudioUi** | [rigkid/rigAudioUi](https://github.com/rigkid/rigAudioUi) | ImGui widgets over **rigAudio**: time rulers, playhead, ClipPool, Sampler (arm/record/stop of the mixer output tap) |
+| **rigVolca** | [rigkid/rigVolca](https://github.com/rigkid/rigVolca) (local `packs/` until published) | Korg volca sample / sample2 Syro transfer + MIDI (notes-to-speed, CC, clock). **Leaf** on **rigAudio** + **rigMidi**. Vendors Korg Syro (BSD-3-Clause). Example `SampleManager`. |
 
 Synth packs fulfill `rigkit::audio::ISynth` from **rigAudio**; sequencing stays with the app (beat clock / transport POD). Same leaf-on-trunk shape as I/O: the app lists the synth; **rigAudio** comes in via `pack.json`.
 
@@ -145,6 +147,7 @@ Art-Net is a **planned leaf** on **rigDmx**. Do not stuff it into **rigSacn**.
 | Pack | Remote | Role |
 |------|--------|------|
 | **rigImage** | [rigkid/rigImage](https://github.com/rigkid/rigImage) (local `packs/` until published) | Raster decode + GLES upload (stb_image). CPU buffer is `rig::pixel::Raster` (`rig.pixel.raster`). Path POD stays `CAssetRef` in **rigComponent**. Example `image --smoke-image`. |
+| **rigVideo** | [rigkid/rigVideo](https://github.com/rigkid/rigVideo) (local `packs/` until published) | Video IO - webcam (MF/V4L2), file decode (FFmpeg / Media Foundation), filmstrip / still, ffmpeg CLI trim/extract. **Leaf.** |
 | **rigOpenCV** | [rigkid/rigOpenCV](https://github.com/rigkid/rigOpenCV) (local `packs/` until published) | Optional OpenCV Raster bridge (`toMat` / `fromMat`). FetchContent OpenCV 4.10.0 `core`+`imgproc` - does not use a machine / openFrameworks copy. **Leaf.** **Pi / rebuild risk** (first configure compiles OpenCV). |
 
 ### Scripting / CAD

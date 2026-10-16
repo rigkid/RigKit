@@ -96,6 +96,8 @@ Schemas were cross-pollinated toward this reference host (v0.1). Data packs hold
 | `rig.pixel.region` | **rigPixelPlotComponent** - `CPixelRegion` as `x.rigkit.pixel_region` | Local proposal: fit / fill / brush / color. |
 | `rig.pixel.mask_path` | **rigPixelPlotComponent** - `CPixelMaskPath` as `x.rigkit.pixel_mask_path` | Local proposal; polygon may later compose `rig.geometry.path`. |
 | `rig.pixel.composite` | **rigPixelPlotComponent** - `CPixelComposite` as `x.rigkit.pixel_composite` | Local proposal: enabled / stack policy. |
+| `rig.pixel.map_output` | **rigPixelPlotComponent** - `CPixelMapOutput` as `x.rigkit.pixel_map_output` | Local proposal: projector frame size / enabled. |
+| `rig.pixel.video_texture` | **rigPixelPlotComponent** - `CPixelVideoTexture` as `x.rigkit.pixel_video_texture` | Local proposal: one video placed on the projector frame. |
 | `rig.pixel.source` `cast-receive` | **rigPixelPlotComponent** - `x.rigkit.pixel_source_ext` | Local proposal to add the kind (or compose `rig.media.cast`). |
 | `rig.pixel.raster` `derived` / `rebake` | working / output size-only extras | Local proposal so size-only documents validate without fake `rgba[]`. |
 

@@ -50,6 +50,7 @@ in the params row. Entities that receive graph values can carry `CDriveHint`
 | Demo graph | App startup: color wash (LFO to Map to Brightness to Color Out / Ref). **File > Seed demo** - Value(1) + Value(2) to Add to Float Out (= 3) |
 | Save / load | **File > Save Scene...** / **Open Scene...** (needs `rigProject`) |
 | Groups | **File > Empty group** / **Group selection** / **Ungroup** / **Publish pin** / **Up** |
+| Patch bay | **Ctrl-P** or **View > Patch** - From / Destination list of the same links. Drop a property on Destination. The canvas stays. |
 
 Live values show on output pins while the graph runs. The Node Editor status bar shows
 `t=` (seconds), **Float Out** results, and Ref bindings.
@@ -114,11 +115,12 @@ Search in **Add node**. `typeId` is what `.rig` stores.
 
 | Title | typeId | Notes |
 |-------|--------|-------|
-| LFO | `mod.lfo` | Wave: Sine / Triangle / Saw / Square |
+| LFO | `mod.lfo` | Wave: Sine / Triangle / Saw / Square. `Run`: **Loop** free-runs (a rising edge on the optional `gate` hard-syncs the cycle); **One shot** rests until a `gate` trigger, plays a single cycle at `Frequency`, then rests at the cycle-start value. Feed `gate` from Audio `onset` or Beat `edge` |
 | Noise | `mod.noise` | Smooth noise |
 | Random | `mod.random` | Stepped random |
 | Ramp | `mod.ramp` | Looping ramp |
-| Envelope | `mod.envelope` | ADSR; `gate` input |
+| Envelope | `mod.envelope` | ADSR; `gate` input (level-driven - needs the gate held high) |
+| Decay | `mod.decay` | Trigger envelope, 0..1 out. A rising edge on `gate` loads the level, then it falls over `Decay` seconds. **Retrigger** reloads to `Load`; **Accumulate** stacks `Load` per hit (clamped at 1), so dense hits pile up and ebb away. Feed it Audio `onset` or Beat `edge` / `pulse` - those one-frame triggers are too short for the ADSR |
 | Beat | `mod.beat` | Musical clock (host tempo bus): `phase` / `bar` / `pulse` / `bpm` outs. `Cycle beats` sets the loop length (0.25 = 16ths, 4 = one bar). Free-runs at the BPM param when no clock source is active |
 
 ### MIDI
@@ -233,6 +235,7 @@ Example binding: Vec2 Out sets orbit radius (x) and height (y).
 - Eval is CPU float/vec2/vec4 - not a shader graph.
 - Open/Save needs **rigProject** registered; otherwise those buttons stay inert.
 - Wiring outputs into transforms/materials is the **app’s** job each Update.
+- **Ctrl-P** toggles the Patch bay only. The Node Editor stays. Both edit the same links.
 
 Host MIDI (KidVJ): devices and clock sync are **Preferences > Audio > MIDI**.
 Map Mix sliders with right-click **MIDI Learn** (View > MIDI Map for the table).

@@ -48,3 +48,7 @@ rigSystems	https://github.com/rigkid/rigSystems.git	main
 rigVarFont	https://github.com/rigkid/rigVarFont.git	main
 rigVectorEditor	https://github.com/rigkid/rigVectorEditor.git	main
 rigVectorUi	https://github.com/rigkid/rigVectorUi.git	main
+rigAudioUi	https://github.com/rigkid/rigAudioUi.git	main
+rigCast	https://github.com/rigkid/rigCast.git	main
+rigMidi	https://github.com/rigkid/rigMidi.git	main
+rigVolca	https://github.com/rigkid/rigVolca.git	main
