@@ -34,6 +34,10 @@
 #include <shobjidl.h>
 #endif
 
+#if defined(RIGKIT_GLES)
+#include <glad/egl.h>
+#endif
+
 namespace rigkit {
 namespace {
 
@@ -285,7 +289,8 @@ RigKitEngine::RigKitEngine(std::unique_ptr<IApp> app, const json& settings, int 
 					m_windowIconImages);
 #endif
 #if defined(RIGKIT_GLES)
-	if (!gladLoaderLoadGLES2()) {
+	// The GLES2 loader asks EGL for proc addresses; bind libEGL first.
+	if (!gladLoaderLoadEGL(EGL_NO_DISPLAY) || !gladLoaderLoadGLES2()) {
 		throw std::runtime_error(
 #if defined(RIGKIT_USE_ANGLE)
 			"Failed to initialize GLAD GLES2 (ANGLE). Ensure libGLESv2/libEGL are available."

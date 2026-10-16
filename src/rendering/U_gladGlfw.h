@@ -10,6 +10,9 @@
 #define glDeleteVertexArrays glDeleteVertexArraysOES
 #define glIsVertexArray glIsVertexArrayOES
 #endif
+#ifndef GL_VERTEX_ARRAY_BINDING
+#define GL_VERTEX_ARRAY_BINDING GL_VERTEX_ARRAY_BINDING_OES
+#endif
 #ifndef GL_DEPTH24_STENCIL8
 #define GL_DEPTH24_STENCIL8 GL_DEPTH24_STENCIL8_OES
 #endif

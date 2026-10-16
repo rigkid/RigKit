@@ -115,7 +115,12 @@ if(WIN32 AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 endif()
 
 if(RIGKIT_GLES)
-	target_sources(rigkit PRIVATE ${RIGKIT_ROOT}/third_party/glad/src/gles2.c)
+	# gles2.c's loader resolves entry points through glad's own EGL loader
+	# (glad/egl.h), so no EGL headers or import library are needed at build time.
+	target_sources(rigkit PRIVATE
+		${RIGKIT_ROOT}/third_party/glad/src/gles2.c
+		${RIGKIT_ROOT}/third_party/glad/src/egl.c
+	)
 	target_compile_definitions(rigkit PUBLIC RIGKIT_GLES=1)
 	if(RIGKIT_USE_ANGLE)
 		target_compile_definitions(rigkit PUBLIC RIGKIT_USE_ANGLE=1)
