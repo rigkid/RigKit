@@ -12,6 +12,8 @@
 #include "packs/rigComponent/src/rigComponent.h"
 #include "packs/rigCompositor/src/LayerMaskOps.h"
 #include "packs/rigCompositor/src/rigCompositor.h"
+#include "packs/rigDxf/src/DxfLoader.h"
+#include "packs/rigDxf/src/rigDxf.h"
 #include "packs/rigImGui/src/rigImGui.h"
 #include "packs/rigImage/src/Image.h"
 #include "packs/rigImage/src/rigImage.h"
@@ -37,6 +39,7 @@
 #include "packs/rigVectorEditor/src/SoftMaskOps.h"
 #include "packs/rigVectorEditor/src/TextOutlineOps.h"
 #include "packs/rigVectorEditor/src/rigVectorEditor.h"
+#include "packs/rigVectorUi/src/VectorDocumentCommands.h"
 #include "packs/rigVectorUi/src/VectorEditUndo.h"
 #include "packs/rigVectorUi/src/rigVectorUi.h"
 
@@ -154,6 +157,7 @@ void SvgEditorApp::setup() {
 	packs->registerPack<rigkit::rigColorspace>();
 	packs->registerPack<rigkit::rigCompositor>();
 	packs->registerPack<rigkit::rigSvg>();
+	packs->registerPack<rigkit::rigDxf>();
 	packs->registerPack<rigkit::rigVectorEditor>();
 	packs->registerPack<rigkit::rigArtboards>();
 	packs->registerPack<rigkit::rigImage>();
@@ -168,6 +172,14 @@ void SvgEditorApp::setup() {
 	m_document = packs->getPack<rigkit::rigProject>();
 	m_plotter = packs->getPack<rigkit::rigPlotter>();
 	m_traceUi = packs->getPack<rigkit::rigTraceUi>();
+	if (auto vectorUi = packs->getPack<rigkit::rigVectorUi>()) {
+		if (auto* cmd = vectorUi->documentCommands()) {
+			cmd->registerPathLoader(".dxf",
+									[](const std::string& path, rigkit::plot::ParsedPathDoc& out) {
+										return rigkit::dxf::loadFile(path, out);
+									});
+		}
+	}
 	if (!m_document || !m_plotter) {
 		spdlog::error("svgEditor - missing rigProject or rigPlotter after bootstrap");
 		return;
@@ -181,6 +193,25 @@ void SvgEditorApp::setup() {
 			rigkit::UndoStack* undo = ui ? ui->undoStack() : nullptr;
 			auto* doc = &m_plotter->doc();
 			rigkit::mutateDocGeometry(undo, doc, "Trace image", [&] {
+				if (!m_traceApplied.empty()) {
+					const auto layers = doc->layerEntities();
+					std::vector<int> drop;
+					for (unsigned int id : m_traceApplied) {
+						const auto e = static_cast<entt::entity>(id);
+						for (int i = 0; i < static_cast<int>(layers.size()); ++i) {
+							if (layers[static_cast<size_t>(i)] == e) {
+								drop.push_back(i);
+								break;
+							}
+						}
+					}
+					std::sort(drop.begin(), drop.end());
+					drop.erase(std::unique(drop.begin(), drop.end()), drop.end());
+					for (int k = static_cast<int>(drop.size()) - 1; k >= 0; --k) {
+						doc->removeLayer(drop[static_cast<size_t>(k)]);
+					}
+					m_traceApplied.clear();
+				}
 				for (const auto& plate : stack.plates) {
 					if (plate.empty() || !plate.included) {
 						continue;
@@ -195,6 +226,7 @@ void SvgEditorApp::setup() {
 					rigkit::trace::flattenStack(one, bag);
 					doc->ecs().registry().emplace_or_replace<rigkit::ecs::CPaths>(e, bag);
 					doc->markPathsGpuDirty(e);
+					m_traceApplied.push_back(static_cast<unsigned int>(e));
 				}
 			});
 			doc->bumpViewEpoch();
@@ -203,7 +235,16 @@ void SvgEditorApp::setup() {
 
 	auto& doc = m_plotter->doc();
 	// Page stays SVG Y-down; the overlay sets CBedView.yUp = false.
-	doc.importOptions().svgFlipY = false;
+	auto& opts = doc.importOptions();
+	opts.svgFlipY = false;
+	opts.dxfFlipY = true;
+	opts.dxfOriginToPage = true;
+	opts.dxfJoinConnected = true;
+	opts.dxfPromoteFacetedCircles = true;
+	opts.dxfPromoteFacetedArcs = true;
+	opts.dxfImportText = true;
+	opts.dxfImportDimensions = true;
+	opts.dxfDimensionsOwnLayer = true;
 	if (m_smoke) {
 		// Assertions are written against the compact Letter/Blob document.
 		const std::string demoPath = AppPaths::joinPath(AppPaths::getDataDir(), "demo.svg");
@@ -341,6 +382,99 @@ bool SvgEditorApp::runSmoke() {
 	if (pathCount == 0) {
 		spdlog::error("svgEditor smoke: no paths");
 		return false;
+	}
+
+	{
+		auto* packs = m_engine ? m_engine->getPackManager() : nullptr;
+		auto vectorUi = packs ? packs->getPack<rigkit::rigVectorUi>() : nullptr;
+		auto* cmd = vectorUi ? vectorUi->documentCommands() : nullptr;
+		if (!cmd) {
+			spdlog::error("svgEditor smoke: document commands missing");
+			return false;
+		}
+		const std::string demoPath = AppPaths::joinPath(AppPaths::getDataDir(), "demo.svg");
+		const std::string fixture =
+			AppPaths::joinPath(AppPaths::getDataDir(), "fixtures/roundtrip-fills.svg");
+		const std::string dxfPath =
+			AppPaths::joinPath(AppPaths::getDataDir(), "fixtures/sample.dxf");
+		doc.closeSession();
+		cmd->acceptDrop({demoPath});
+		if (!cmd->sessionOpen()) {
+			spdlog::error("svgEditor smoke: drop-open failed");
+			return false;
+		}
+		const size_t opened = doc.layerEntities().size();
+		if (opened == 0) {
+			spdlog::error("svgEditor smoke: drop-open left no layers");
+			return false;
+		}
+		if (std::filesystem::exists(fixture)) {
+			if (!cmd->importPath(fixture) || doc.layerEntities().size() <= opened) {
+				spdlog::error("svgEditor smoke: SVG import-on-open failed");
+				return false;
+			}
+			vectorUi->undoStack().undo();
+			if (doc.layerEntities().size() != opened) {
+				spdlog::error("svgEditor smoke: SVG import undo failed");
+				return false;
+			}
+		}
+		if (std::filesystem::exists(dxfPath)) {
+			if (!cmd->importPath(dxfPath) || doc.layerEntities().size() <= opened) {
+				spdlog::error("svgEditor smoke: DXF import failed");
+				return false;
+			}
+			const auto after = doc.layerEntities();
+			const auto dxfLayer = after.back();
+			if (!doc.ecs().hasComponent<rigkit::ecs::CPaths>(dxfLayer)) {
+				spdlog::error("svgEditor smoke: DXF import left no paths");
+				return false;
+			}
+			const auto& bag = doc.ecs().getComponent<rigkit::ecs::CPaths>(dxfLayer);
+			if (bag.paths.size() != 1) {
+				spdlog::error("svgEditor smoke: DXF join failed ({} paths, want 1)",
+							  bag.paths.size());
+				return false;
+			}
+			float minX = 1e9f;
+			float minY = 1e9f;
+			float maxX = -1e9f;
+			float maxY = -1e9f;
+			for (const auto& path : bag.paths) {
+				for (const auto& cmdPath : path.commands) {
+					if (cmdPath.type == rigkit::ecs::CPath::Cmd::Close) {
+						continue;
+					}
+					minX = std::min(minX, cmdPath.p.x);
+					minY = std::min(minY, cmdPath.p.y);
+					maxX = std::max(maxX, cmdPath.p.x);
+					maxY = std::max(maxY, cmdPath.p.y);
+				}
+			}
+			if (minX < -0.05f || minY < -0.05f || minX > 0.5f || minY > 0.5f) {
+				spdlog::error("svgEditor smoke: DXF origin off page ({}, {})", minX, minY);
+				return false;
+			}
+			if (std::fabs((maxX - minX) - 40.f) > 0.5f || std::fabs((maxY - minY) - 30.f) > 0.5f) {
+				spdlog::error("svgEditor smoke: DXF size {}x{} (want 40x30)", maxX - minX,
+							  maxY - minY);
+				return false;
+			}
+			if (!doc.ecs().hasComponent<rigkit::ecs::CTexts>(dxfLayer) ||
+				doc.ecs().getComponent<rigkit::ecs::CTexts>(dxfLayer).items.size() != 1 ||
+				doc.ecs().getComponent<rigkit::ecs::CTexts>(dxfLayer).items[0].text != "Plate") {
+				spdlog::error("svgEditor smoke: DXF text missing");
+				return false;
+			}
+			vectorUi->undoStack().undo();
+			if (doc.layerEntities().size() != opened) {
+				spdlog::error("svgEditor smoke: DXF import undo failed");
+				return false;
+			}
+		} else {
+			spdlog::error("svgEditor smoke: fixtures/sample.dxf missing");
+			return false;
+		}
 	}
 
 	const std::string exportDir = AppPaths::joinPath(AppPaths::getDataDir(), "export");

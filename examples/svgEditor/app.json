@@ -12,6 +12,7 @@
     { "name": "rigColorspace", "url": "https://github.com/rigkid/rigColorspace.git", "ref": "main" },
     { "name": "rigCompositor", "url": "https://github.com/rigkid/rigCompositor.git", "ref": "main" },
     { "name": "rigSvg", "url": "https://github.com/rigkid/rigSvg.git", "ref": "main" },
+    { "name": "rigDxf", "url": "https://github.com/rigkid/rigDxf.git", "ref": "main" },
     { "name": "rigVectorEditor", "url": "https://github.com/rigkid/rigVectorEditor.git", "ref": "main" },
     { "name": "rigPlotter", "url": "https://github.com/rigkid/rigPlotter.git", "ref": "main" },
     { "name": "rigArtboards", "url": "https://github.com/rigkid/rigArtboards.git", "ref": "main" },

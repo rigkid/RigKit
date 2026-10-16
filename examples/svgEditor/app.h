@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "core/U_core.h"
 
@@ -38,6 +39,7 @@ class SvgEditorApp : public rigkit::IApp {
 	float m_traceY = 0.f;
 	float m_traceW = 0.f;
 	float m_traceH = 0.f;
+	std::vector<unsigned int> m_traceApplied;
 	bool m_smoke = false;
 	bool m_smokeOk = false;
 };
