@@ -24,6 +24,8 @@ enum propTypes {
 	/// says "hosts may add prefixed ids"); this is that extension for rigImGui's
 	/// colour picker.
 	EPT_COLOR,
+	/// Action (Preferences button). `data` is `std::function<void()>*`. Not persisted.
+	EPT_BUTTON,
 	EPT_COUNT
 };
 
@@ -33,9 +35,10 @@ struct sProp {
 	std::string name;
 	propTypes type;
 	void* data;
-	/// Combo labels - required for EPT_ENUM (editors show a "misconfigured" state
-	/// without them rather than falling back to a raw draggable int). Lifetime
-	/// must outlive the editor draw.
+	/// Combo labels. Required for EPT_ENUM (editors show a "misconfigured" state
+	/// without them rather than falling back to a raw draggable int). Optional
+	/// for EPT_STRING: when set, the editor draws a combo and stores the selected
+	/// label. Lifetime must outlive the editor draw.
 	const char* const* enumNames = nullptr;
 	int enumCount = 0;
 };
