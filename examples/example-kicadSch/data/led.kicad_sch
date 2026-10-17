@@ -1,0 +1,53 @@
+(kicad_sch
+	(version 20250114)
+	(generator "example-kicadSch")
+	(uuid "11111111-1111-1111-1111-111111111111")
+	(paper "A4")
+	(lib_symbols
+		(symbol "example:R"
+			(symbol "R_0_1"
+				(rectangle
+					(start -1.016 -2.54)
+					(end 1.016 2.54)
+					(stroke (width 0.254) (type default))
+					(fill (type none))
+				)
+			)
+			(symbol "R_1_1"
+				(pin passive line
+					(at 0 3.81 270)
+					(length 1.27)
+					(name "~" (effects (font (size 1.27 1.27))))
+					(number "1" (effects (font (size 1.27 1.27))))
+				)
+				(pin passive line
+					(at 0 -3.81 90)
+					(length 1.27)
+					(name "~" (effects (font (size 1.27 1.27))))
+					(number "2" (effects (font (size 1.27 1.27))))
+				)
+			)
+		)
+	)
+	(wire
+		(pts (xy 40 43.81) (xy 70 43.81))
+		(stroke (width 0) (type solid))
+		(uuid "22222222-2222-2222-2222-222222222222")
+	)
+	(symbol
+		(lib_id "example:R")
+		(at 40 40 0)
+		(unit 1)
+		(uuid "33333333-3333-3333-3333-333333333333")
+		(property "Reference" "R1"
+			(at 42 40 0)
+			(effects (font (size 1.27 1.27)))
+		)
+		(property "Value" "10k"
+			(at 42 37 0)
+			(effects (font (size 1.27 1.27)))
+		)
+		(pin "1" (uuid "44444444-4444-4444-4444-444444444444"))
+		(pin "2" (uuid "55555555-5555-5555-5555-555555555555"))
+	)
+)

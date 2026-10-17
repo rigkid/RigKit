@@ -1,0 +1,7 @@
+{
+  "name": "example-kicadSch",
+  "version": "0.1.0",
+  "license": "MIT",
+  "description": "Thin KiCad schematic sheet - load, drag, grid snap that keeps wires",
+  "dependencies": []
+}

@@ -71,6 +71,32 @@ class IMui {
 	virtual bool getWindowVisibility(const std::string& windowName) const = 0;
 	virtual std::vector<std::string> getAllWindowNames() const = 0;
 
+	/**
+	 * @brief Save the current dock layout and window visibility as a named workspace.
+	 * @details Default no-op (headless / detached UI). rigImGui writes
+	 * `data/user/workspaces/<name>.ini`.
+	 */
+	virtual bool saveWorkspace(const std::string& name, bool notify = true) {
+		(void)name;
+		(void)notify;
+		return false;
+	}
+
+	/**
+	 * @brief Apply a named workspace at the next frame (docks + visibility).
+	 * @details When the file has `[RigVisibility]`, hide every registered window
+	 * then show only those marked visible. Visibility-only files (no `[Docking]`)
+	 * re-seed docks from the craft builder registered for that name.
+	 */
+	virtual bool loadWorkspace(const std::string& name, bool notify = true) {
+		(void)name;
+		(void)notify;
+		return false;
+	}
+
+	/** @brief Active workspace name, or empty when the session layout is unnamed. */
+	virtual std::string currentWorkspace() const { return {}; }
+
 	// Window management
 	virtual class MWindow* getWindowManager() = 0;
 	virtual const class MWindow* getWindowManager() const = 0;

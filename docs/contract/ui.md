@@ -56,7 +56,7 @@ No particular UI pack. No particular dock model. No GPU editor on light hosts.
 | `IMui::registerFileThumbnailDecoder` | Pack CPU decoders for file-browser Icons (e.g. **rigSvg** `.svg`) |
 | `IMui::addViewportOverlay` | Multi-subscriber draw over the GL bed (ImGui screen space). Packs use this so they do not steal the app gizmo slot. |
 | File > Open Recent | `IMui::noteRecentFile` + `setRecentFileOpenHandler`; persisted in `rigkit_settings.json` |
-| View > Workspace | Named dock layouts (`rigImGui`): save/load/delete `data/user/workspaces/<name>.ini` (docks + window visibility); active name in `rigkit_settings.json`; startup restores the session autosave, presets seed only the first session |
+| App > Workspace | Named dock layouts (`rigImGui` / `IMui::loadWorkspace`): save/load/delete `data/user/workspaces/<name>.ini` (docks + window visibility); active name in `rigkit_settings.json`; startup restores the session autosave, presets seed only the first session. A `[RigVisibility]` section hides every registered window, then shows only names marked visible. Visibility-only files (no `[Docking]`) re-seed docks from the craft builder for that name. |
 | [`IMui::progress()`](../../src/core/util/Progress.h) | Progress chrome (status bar or floating); null when UI detached |
 
 ### Progress

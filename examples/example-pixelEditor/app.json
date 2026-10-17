@@ -1,0 +1,19 @@
+{
+  "name": "example-pixelEditor",
+  "version": "0.1.0",
+  "license": "MIT",
+  "description": "Pixel editor shell - layers, paint, Rig brush packs, PSD IO, .rig",
+  "window": { "width": 1280, "height": 800, "title": "example-pixelEditor" },
+  "dependencies": [
+    { "name": "rigComponent", "url": "https://github.com/rigkid/rigComponent.git", "ref": "main" },
+    { "name": "rigSystems", "url": "https://github.com/rigkid/rigSystems.git", "ref": "main" },
+    { "name": "rigProject", "url": "https://github.com/rigkid/rigProject.git", "ref": "main" },
+    { "name": "rigColorspace", "url": "https://github.com/rigkid/rigColorspace.git", "ref": "main" },
+    { "name": "rigPsd", "url": "https://github.com/rigkid/rigPsd.git", "ref": "main" },
+    { "name": "rigImage", "url": "https://github.com/rigkid/rigImage.git", "ref": "main" },
+    { "name": "rigPixelPlotComponent", "url": "https://github.com/rigkid/rigPixelPlotComponent.git", "ref": "main" },
+    { "name": "rigPixelPlotter", "url": "https://github.com/rigkid/rigPixelPlotter.git", "ref": "main" },
+    { "name": "rigImGui", "url": "https://github.com/rigkid/rigImGui.git", "ref": "main" },
+    { "name": "rigPixelPlotterUi", "url": "https://github.com/rigkid/rigPixelPlotterUi.git", "ref": "main" }
+  ]
+}

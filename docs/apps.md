@@ -33,6 +33,8 @@ Examples already in this tree keep the id they have: `minimal`, `oscHost`, `glEd
 | `ufomat` | UFOMAT - UFO source editor (`rigFontComponent` + `rigFont` + `rigUfo`; `--smoke` / `--smoke-ttf`) |
 | `svgEditor` | Artboard Kit - toolbar, layers, SVG / DXF import (`--smoke`) |
 | `example-svgAnimator` | SVG path playback - `rigSvg` into `CPath`, `CTween` / `STweens` slides one path (`--smoke`) |
+| `example-pixelEditor` | Pixel layers, paint, Rig brush packs, PSD IO (`--smoke`) |
+| `example-studio` | Vector + Pixel crafts; App > Workspace switches chrome (`--smoke`) |
 
 Product apps (out of tree) live next to RigKit, not under `examples/`. `../app-svgAnimator` plays SVG paths. `../Relay` is [Relay](https://github.com/GitBruno/relayout), the book layout host.
 

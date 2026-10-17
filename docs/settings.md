@@ -83,7 +83,7 @@ JSON shape:
 }
 ```
 
-`recentFiles` is a top-level blob value (not a Preferences section) written by `IMui::noteRecentFile` / File > Open Recent. `workspace` is the last applied named dock layout (View > Workspace in `rigImGui`); the layout files themselves live under `data/user/workspaces/<name>.ini` (dock tree plus `[RigVisibility]`). Startup restores the session autosave (`imgui.ini`); the named file (or `Standard.ini`) only seeds the first session.
+`recentFiles` is a top-level blob value (not a Preferences section) written by `IMui::noteRecentFile` / File > Open Recent. `workspace` is the last applied named dock layout (App > Workspace in `rigImGui`); the layout files themselves live under `data/user/workspaces/<name>.ini` (dock tree plus `[RigVisibility]`). Startup restores the session autosave (`imgui.ini`); the named file (or `Standard.ini`) only seeds the first session. A `[RigVisibility]` section hides every registered window, then shows only names marked visible. Files without `[Docking]` re-seed the dock tree from the craft builder registered for that workspace name.
 
 Built-in section: `host.app` (`AppSettings` - debug, vsync, target FPS, Show FPS overlay, clear color, window size/fullscreen, Data Path). Window size, fullscreen, vsync, Show FPS, clear color, debug, and Data Path all apply **immediately** when changed. The corner readout is host present (`presentFpsOverlay`). It uses filled text when `rigVarFont` is attached, otherwise bitmap digits. `rigImGui` status/menu FPS is separate chrome.
 
