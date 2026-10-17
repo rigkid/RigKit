@@ -5,6 +5,7 @@
 #include <memory>
 #include <sstream>
 
+#include "CAnchor.h"
 #include "CAssetRef.h"
 #include "CCamera.h"
 #include "CCode.h"
@@ -77,8 +78,11 @@ void buildRoundTripScene(MEcs& ecs, const std::string& docPath) {
 	pageB.index = 1;
 	pageB.width = 1280.f;
 	pageB.height = 720.f;
-	pageB.originAnchor = 4;
-	ecs.addComponent<ecs::CPage>(ecs.createEntity("page-Look"), pageB);
+	auto look = ecs.createEntity("page-Look");
+	ecs.addComponent<ecs::CPage>(look, pageB);
+	ecs::CAnchor lookAnchor;
+	lookAnchor.point = ecs::CAnchor::kPointCenter;
+	ecs.addComponent<ecs::CAnchor>(look, lookAnchor);
 
 	auto parent =
 		rig::makeRect(ecs, 100.f, 200.f, 220.f, 280.f, rig::fill(0.30f, 0.55f, 0.90f), "card-Open");
@@ -113,7 +117,8 @@ void expectRoundTripScene(MEcs& ecs, const std::string& docPath) {
 	REQUIRE(ecs.hasComponent<ecs::CPage>(lookPage));
 	CHECK(ecs.entityName(openPage) == "page-Open");
 	CHECK(ecs.getComponent<ecs::CPage>(lookPage).width == doctest::Approx(1280.f));
-	CHECK(ecs.getComponent<ecs::CPage>(lookPage).originAnchor == 4);
+	REQUIRE(ecs.hasComponent<ecs::CAnchor>(lookPage));
+	CHECK(ecs.getComponent<ecs::CAnchor>(lookPage).point == ecs::CAnchor::kPointCenter);
 
 	auto parent = ecs.findEntity("card-Open");
 	auto child = ecs.findEntity("card-child");
@@ -226,7 +231,8 @@ TEST_CASE("rigProject Contract import maps rig.spatial.anchor onto the page") {
 	CHECK(result.skipped.empty());
 	auto view = ecs.view<ecs::CPage>();
 	REQUIRE(view.begin() != view.end());
-	CHECK(view.get<ecs::CPage>(*view.begin()).originAnchor == 6);
+	REQUIRE(ecs.hasComponent<ecs::CAnchor>(*view.begin()));
+	CHECK(ecs.getComponent<ecs::CAnchor>(*view.begin()).point == ecs::CAnchor::kPointBottomLeft);
 }
 
 TEST_CASE("rigProject Contract import maps rig.media.code to CCode") {
