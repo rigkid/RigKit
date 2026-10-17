@@ -40,10 +40,10 @@ Shared desktop chrome (open document, skipped keys) belongs in a pack (`rigDocum
 
 | Word | Means | Owner |
 |------|-------|-------|
-| **Document** | The portable `.rig` file - Contract JSON (`entities[].components` with `rig.*` ids). What Viewer presents and Player plays. | RigWorks schemas |
+| **Document** | Portable Contract JSON (`entities[].components` with `rig.*` ids). On disk a `.rig` file, or a `.rigz` ZIP (one `.rig` at the archive root, plus `data/` which may hold further `.rig` files) when sidecars travel with it. What Viewer presents and Player plays. | RigWorks schemas |
 | **Project** | The host-side working envelope (`CProject` / `CPage` PODs) inside a RigKit host session. | **rigProject** pack |
 
-One file word (**document**, `.rig`), one host word (**project**). The rigProject pack implements document IO for hosts and writes Contract JSON (`rig.*` component keys).
+One file word (**document**: `.rig`, or [`.rigz`](RigWorks/docs/interchange.md#package) when files travel with it), one host word (**project**). The rigProject pack writes Contract JSON (`rig.*` component keys) and packs a `.rigz` (`openPackage` / `writeRigz`). The archive root holds one `.rig`. `data/` may hold further `.rig` files.
 
 ## Documents in this folder
 

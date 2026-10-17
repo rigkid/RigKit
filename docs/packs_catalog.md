@@ -14,9 +14,9 @@ In-org packs are separate remotes in the [rigkid](https://github.com/rigkid) org
 
 | Pack | Remote | Role |
 |------|--------|------|
-| **rigComponent** | [rigkid/rigComponent](https://github.com/rigkid/rigComponent) | Data-only ECS components - no systems (includes general `CPath` / `rig.geometry.path`; `CScreenCast` / `CScreenCastReceive` / `CCastReceiver` for cast send/receive + discovery) |
+| **rigComponent** | [rigkid/rigComponent](https://github.com/rigkid/rigComponent) | Data-only generic sketch PODs - no systems (`CPath` / `rig.geometry.path`; `CScreenCast` / `CScreenCastReceive` / `CCastReceiver` for cast send/receive + discovery). Domain decks live in **rigShowComponent**, **rigCadComponent**, **rigMusicComponent**, **rigAnimComponent**. |
 | **rigSystems** | [rigkid/rigSystems](https://github.com/rigkid/rigSystems) | Update/Draw systems over that data |
-| **rigProject** | [rigkid/rigProject](https://github.com/rigkid/rigProject) | Host project envelope (`CProject`/`CPage`) + `.rig` document IO (document = portable `.rig`) |
+| **rigProject** | [rigkid/rigProject](https://github.com/rigkid/rigProject) | Host project envelope (`CProject`/`CPage`) + `.rig` document IO (document = portable `.rig`, or `.rigz` when files travel with it; this pack writes the JSON) |
 | **rigImGui** | [rigkid/rigImGui](https://github.com/rigkid/rigImGui) | UI fulfillment (`IMui`); host shell; Properties catalog; themes/fonts. Chrome labels apply TTF `kern` pairs (GPOS via `IMui::setChromeKernFn` / VarFont). |
 | **rigImTui** | [rigkid/rigImTui](https://github.com/rigkid/rigImTui) (local `packs/` until published) | GPU character-grid compositor `IMui` - cell chrome over a live GL present (Player/Viewer ImTui habit). Swap with **rigImGui** via Preferences > Interface (Chrome row) / `--tui` / `--imgui`. Not ggerganov/imtui. |
 
@@ -73,10 +73,11 @@ Integration app: `packs/rigPlotter/examples/plot`. SVG IO pack example: `packs/r
 
 | Pack | Remote | Role |
 |------|--------|------|
-| **rigPixelPlotComponent** | [rigkid/rigPixelPlotComponent](https://github.com/rigkid/rigPixelPlotComponent) | PixelPlotter PODs (source, canvas, effect chain, rasters). DATA ONLY |
+| **rigPixelPlotComponent** | [rigkid/rigPixelPlotComponent](https://github.com/rigkid/rigPixelPlotComponent) | PixelPlotter PODs (source, canvas, effect chain, rasters, `CPixelBrush`). DATA ONLY |
 | **rigPainty** | [rigkid/rigPainty](https://github.com/rigkid/rigPainty) (local `packs/` until published) | Painterly ETF / flow-based DoG / Hertzmann canvas SBR. CODE. Native `paintPicture` does not use finders or DoG. Optional lindemeier/painty submodule. Links **rigPlotFinders** (**GPL-2.0-or-later**) |
 | **rigPixelPlotter** | [rigkid/rigPixelPlotter](https://github.com/rigkid/rigPixelPlotter) | PixelDoc pipeline (IMAGE/DRAW, GPU, layers, PNG) |
-| **rigPixelPlotterUi** | [rigkid/rigPixelPlotterUi](https://github.com/rigkid/rigPixelPlotterUi) | Kit UI panels (Main View, Canvas, Resources, Layers) |
+| **rigPixelPlotterUi** | [rigkid/rigPixelPlotterUi](https://github.com/rigkid/rigPixelPlotterUi) | Kit UI panels (Main View, Canvas, Resources, Layers, Brushes) |
+| **rigPsd** | [rigkid/rigPsd](https://github.com/rigkid/rigPsd) (local `packs/` until published) | Layered 8-bit RGB PSD read/write. Format model only. **Leaf.** |
 
 Product app **PixelPlotter** lives out of tree (e.g. next to RigKit), not under `examples/`. See [apps.md](apps.md). Thin host - packs own pipeline + UI.
 
@@ -99,8 +100,11 @@ Product app **RigSlicer** lives out of tree (e.g. next to RigKit), not under `ex
 
 | Pack | Remote | Role |
 |------|--------|------|
+| **rigShowComponent** | [rigkid/rigShowComponent](https://github.com/rigkid/rigShowComponent) (local `packs/` until published) | Show deck + analysis PODs (`CVisualizer` / `CAudioAnalysis` / `CPictureAnalysis`). DATA ONLY. Codecs file from **rigMilk**. |
+| **rigMusicComponent** | [rigkid/rigMusicComponent](https://github.com/rigkid/rigMusicComponent) (local `packs/` until published) | Music clock / transport PODs (`CMusicClock` / `CMusicTransport`). DATA ONLY. Speaks `rig.music.*`. Codecs file from **rigAudio**. |
+| **rigAnimComponent** | [rigkid/rigAnimComponent](https://github.com/rigkid/rigAnimComponent) (local `packs/` until published) | Tween / LFO / binding PODs (`CTween` / `CModLfo` / `CModBinding`). DATA ONLY. Advance and codecs are **rigSystems**. `CCurve` stays on **rigComponent**. |
 | **rigAudio** | [rigkid/rigAudio](https://github.com/rigkid/rigAudio) | Audio in and out (miniaudio). Capture analysis to node `AudioBus`; playback `Mixer` renders `ISynth` sources, `AudioFile` voices (WAV/FLAC/MP3), `ISendFx` sends (pass / schroeder / bitcrush); `XyScopeSynth` traces polylines as stereo XY on the mix or a second sound card; polled `BeatClock` follows `CMusicTransport` |
-| **rigMilk** | [rigkid/rigMilk](https://github.com/rigkid/rigMilk) (local `packs/` until published) | MilkDrop1-class `.milk` visualizer. GLES2 warp mesh over `CVisualizer` (in **rigComponent**); equations via MIT projectm-eval; switching policy from **rigAudio**. Shader presets skipped. **Leaf.** |
+| **rigMilk** | [rigkid/rigMilk](https://github.com/rigkid/rigMilk) (local `packs/` until published) | MilkDrop1-class `.milk` present over `CVisualizer` (playlist / `output` in **rigShowComponent**). Mesh size and hardcut live on `CMilk` here. Equations via MIT projectm-eval; `switchOn` reads **rigAudio**. Shader presets skipped. **Leaf.** |
 | **rigOpen303** | [rigkid/rigOpen303](https://github.com/rigkid/rigOpen303) (local `packs/` until published) | TB-303 bassline `ISynth` - Open303 DSP (MIT) fetched pinned; accent / slide, normalized params. **Leaf.** |
 | **rigDexed** | [rigkid/rigDexed](https://github.com/rigkid/rigDexed) (local `packs/` until published) | Dexed DX7 FM `ISynth` - MSFA + MkI / OPL engines, DX7 `.syx` cartridges. **Leaf. GPL-3.0-or-later.** |
 | **rigAudioUi** | [rigkid/rigAudioUi](https://github.com/rigkid/rigAudioUi) | ImGui widgets over **rigAudio**: time rulers, playhead, ClipPool, Sampler (arm/record/stop of the mixer output tap) |
@@ -159,6 +163,7 @@ Art-Net is a **planned leaf** on **rigDmx**. Do not stuff it into **rigSacn**.
 | **rigAcp** | [rigkid/rigAcp](https://github.com/rigkid/rigAcp) | [ACP](https://agentclientprotocol.com) client - stdio JSON-RPC, `CCode` fs bridge, live `_rigkit.*` ECS tools (opt-in; no UI) |
 | **rigAgentty** | [rigkid/rigAgentty](https://github.com/rigkid/rigAgentty) | ACP session panel over **rigAcp** - any agent binary (default [agentty](https://agentty.org/docs/)) + Code Editor sync (opt-in) |
 | **rigPython** | [rigkid/rigPython](https://github.com/rigkid/rigPython) | Embedded Python host for artist sketches (`eval` when CPython embed found) |
+| **rigCadComponent** | [rigkid/rigCadComponent](https://github.com/rigkid/rigCadComponent) (local `packs/` until published) | CAD solid / datum PODs (`CCad*`). DATA ONLY. Speaks `rig.cad.*`. Bake and codecs **rigManifold**. Draw **rigCad**. Solve **rigSolveSpace**. |
 | **rigManifold** | [rigkid/rigManifold](https://github.com/rigkid/rigManifold) | Manifold CSG to `CMesh` (FetchContent kernel; Pi floor - bake in Setup) |
 | **rigCad** | [rigkid/rigCad](https://github.com/rigkid/rigCad) | Live-scripted 3D CAD (`rigcad` sketch module when Python + Manifold available) |
 | **rigSolveSpace** | [rigkid/rigSolveSpace](https://github.com/rigkid/rigSolveSpace) (local `packs/` until published) | Driving `CCadDimension` to `CTransform`. Point-distance apply always; SolveSpace `slvs` optional FetchContent. Pi: solve on edit. |
@@ -197,8 +202,6 @@ Not remotes yet. Scaffold only when the seam is real - survey Known first; prefe
 | **ImTui as chrome** | User face: ImGui / **ImTui** in Interface Chrome (not a color scheme). Mechanism stays an `IMui` / present swap (or later ImGui to cells), not `ImGuiStyle`. Folding it into the theme list ships after **rigImTui** coverage is real. |
 | **Node anim / channels** | Broader timeline/channel products - grow **rigNodeComponent** / **rigNodeEditor** (or a thin companion) when product need is clear |
 | **rigFontUi** | Font view / glyph edit / text view on **rigImGui** |
-| **rigMusicComponent** | Transport / clock / sequencer / pattern / step PODs - [Rig music schemas](https://github.com/rigkid/RigWorks/tree/main/schemas/music); data only |
-| **rigAnimComponent** | *(folded into `rigComponent` + `rigSystems` for now - `CTween`/`CModLfo`/`CModBinding` + `STweens`/`SModulators`)* |
 | **rigLedComponent** | UV map / LED sample PODs - Pi install path |
 | **rigArtnet** | Art-Net UDP. Depends on **rigDmx**. Add `rig.io.artnet` when the pack is real; do not stuff it into sACN |
 | **rigNet** | Shared IP / interface helpers. Extract from **rigNetScan** only when a second pack would copy them. Not LAN, not a WAN twin |

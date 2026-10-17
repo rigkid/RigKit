@@ -10,6 +10,11 @@ packs/*
 !packs/rigFontComponent
 !packs/rigUfo
 !packs/rigFont
+!packs/rigPsd
+!packs/rigShowComponent
+!packs/rigCadComponent
+!packs/rigMusicComponent
+!packs/rigAnimComponent
 
 # Host examples not ready for the first private land (keep local; do not stage).
 examples/example-lowpoly/

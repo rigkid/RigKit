@@ -23,6 +23,11 @@
       "name": "rigSvg",
       "url": "https://github.com/rigkid/rigSvg.git",
       "ref": "main"
+    },
+    {
+      "name": "rigAnimComponent",
+      "url": "https://github.com/rigkid/rigAnimComponent.git",
+      "ref": "main"
     }
   ]
 }

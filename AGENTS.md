@@ -107,6 +107,10 @@ See [docs/authoring.md](docs/authoring.md).
 |-------|------|
 | Host runtime | `src/` (not a pack) |
 | Generic POD components | **rigComponent** - DATA ONLY |
+| Show deck + analysis PODs | **rigShowComponent** - DATA ONLY (`CVisualizer`, `CAudioAnalysis`, `CPictureAnalysis`) |
+| CAD solid / datum PODs | **rigCadComponent** - DATA ONLY (`CCad*`, `rig.cad.*`) |
+| Music clock / transport PODs | **rigMusicComponent** - DATA ONLY (`CMusicClock`, `CMusicTransport`) |
+| Tween / LFO / binding PODs | **rigAnimComponent** - DATA ONLY (`CTween`, `CModLfo`, `CModBinding`) |
 | Update/Draw systems over that data | **rigSystems** - CODE ONLY |
 | GLES mesh present (`CCamera` + `CMesh`) | **rigRender3D** - CODE ONLY |
 | Wavefront OBJ / `CMesh` | **rigObj** - CODE / IO (tinyobjloader) |
@@ -116,7 +120,7 @@ See [docs/authoring.md](docs/authoring.md).
 | Ginger CLI + Z compression | **rigSlice** - CODE / IO, **leaf**, desktop FGF (**Pi risk**) |
 | Mesh edit TRS on selection | **rigMeshEdit** - CODE (needs **rigImGui**) |
 | Properties / themes / fonts | **rigImGui** (catalog-driven Properties; style kit) |
-| Host project envelope + `.rig` document IO | **rigProject** (document = portable `.rig`; project = host session) |
+| Host project envelope + `.rig` document IO | **rigProject** (document = portable `.rig`, or `.rigz` when files travel with it; this pack writes the JSON; project = host session) |
 | Node graph PODs | **rigNodeComponent** |
 | Node graph editor UI | **rigNodeEditor** |
 | Color model, swatches, grey value / harmony / separation tools | **rigColorspace** - DATA + pure helpers |

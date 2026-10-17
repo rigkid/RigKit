@@ -1,0 +1,53 @@
+---
+# RigKit — format with: tools/format.bat  or  tools/format.sh
+BasedOnStyle: LLVM
+Language: Cpp
+Standard: c++20
+
+IndentWidth: 4
+TabWidth: 4
+UseTab: Always
+ContinuationIndentWidth: 4
+
+ColumnLimit: 100
+PointerAlignment: Left
+ReferenceAlignment: Left
+DerivePointerAlignment: false
+
+AllowShortFunctionsOnASingleLine: Inline
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+BreakBeforeBraces: Attach
+CompactNamespaces: false
+
+SortIncludes: true
+IncludeBlocks: Preserve
+IncludeCategories:
+  - Regex: '^<(windows|glad)/'
+    Priority: -1
+  - Regex: '^"rendering/U_gladGlfw\.h"'
+    Priority: 0
+  - Regex: '^<glm/'
+    Priority: 1
+  - Regex: '^[<"]imgui\.h[>"]'
+    Priority: 2
+  - Regex: '^<'
+    Priority: 3
+  - Regex: '^"(core|ecs|rendering)/'
+    Priority: 4
+  - Regex: '^"packs/'
+    Priority: 5
+  - Regex: '^"'
+    Priority: 6
+
+SpaceAfterCStyleCast: false
+SpaceBeforeCpp11BracedList: false
+SpaceBeforeParens: ControlStatements
+SpaceBeforeRangeBasedForLoopColon: true
+SpacesInAngles: false
+SpacesInParentheses: false
+SpacesInSquareBrackets: false
+
+PenaltyBreakAssignment: 2
+PenaltyReturnTypeOnItsOwnLine: 200
+---

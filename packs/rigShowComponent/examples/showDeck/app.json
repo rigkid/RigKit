@@ -1,0 +1,24 @@
+{
+  "name": "showDeck",
+  "version": "0.1.0",
+  "license": "MIT",
+  "description": "rigShowComponent example - one CVisualizer deck",
+  "window": { "width": 800, "height": 600, "title": "rigShowComponent - showDeck" },
+  "dependencies": [
+    {
+      "name": "rigComponent",
+      "url": "https://github.com/rigkid/rigComponent.git",
+      "ref": "main"
+    },
+    {
+      "name": "rigProject",
+      "url": "https://github.com/rigkid/rigProject.git",
+      "ref": "main"
+    },
+    {
+      "name": "rigShowComponent",
+      "url": "https://github.com/rigkid/rigShowComponent.git",
+      "ref": "main"
+    }
+  ]
+}

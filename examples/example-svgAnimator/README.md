@@ -21,6 +21,7 @@ cmake --build examples/example-svgAnimator/build --target example-svgAnimator
 
 ## Packs
 
-- **rigComponent** - `CPath`, `CTransform`, `CDrawStyle`, `CTween`
+- **rigComponent** - `CPath`, `CTransform`, `CDrawStyle`
+- **rigAnimComponent** - `CTween`
 - **rigSystems** - `STweens` plus shape present
 - **rigSvg** - SVG file to path commands (`rigPlotComponent` comes in with it)

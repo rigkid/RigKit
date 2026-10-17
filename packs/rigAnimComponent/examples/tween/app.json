@@ -1,0 +1,29 @@
+{
+  "name": "tween",
+  "version": "0.1.0",
+  "license": "MIT",
+  "description": "rigAnimComponent example - CTween slides a rect",
+  "window": { "width": 800, "height": 600, "title": "rigAnimComponent - tween" },
+  "dependencies": [
+    {
+      "name": "rigComponent",
+      "url": "https://github.com/rigkid/rigComponent.git",
+      "ref": "main"
+    },
+    {
+      "name": "rigProject",
+      "url": "https://github.com/rigkid/rigProject.git",
+      "ref": "main"
+    },
+    {
+      "name": "rigAnimComponent",
+      "url": "https://github.com/rigkid/rigAnimComponent.git",
+      "ref": "main"
+    },
+    {
+      "name": "rigSystems",
+      "url": "https://github.com/rigkid/rigSystems.git",
+      "ref": "main"
+    }
+  ]
+}

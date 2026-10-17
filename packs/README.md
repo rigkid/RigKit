@@ -53,7 +53,7 @@ A **data pack** owns portable entity meaning. It is **not** “only `.h` structs
 | Document codecs that serialize those PODs | GPU / window / socket handles in components |
 | Pure helpers over POD (catalog tables, eval, flatten) | Second scene graph or manager trees |
 
-Examples: **rigComponent**, **rigPlotComponent**, **rigNodeComponent** (PODs + catalog/eval helpers + `.rig` codecs), **rigPixelPlotComponent**. **rigProject** is the host project envelope + `.rig` document IO (data + codecs; document = portable `.rig`). Engines that *run* pipelines (`rigPlotter`, `rigPixelPlotter`) and editors/UI (`rigNodeEditor`, `rigPlotterUi`) are **code packs**.
+Examples: **rigComponent**, **rigPlotComponent**, **rigNodeComponent** (PODs + catalog/eval helpers + `.rig` codecs), **rigPixelPlotComponent**. **rigProject** is the host project envelope + `.rig` document IO (data + codecs; the document is portable Contract JSON, a `.rig` file or a `.rigz` ZIP when sidecars travel with it; this pack writes the JSON). Engines that *run* pipelines (`rigPlotter`, `rigPixelPlotter`) and editors/UI (`rigNodeEditor`, `rigPlotterUi`) are **code packs**.
 
 See [docs/packs_using.md](../docs/packs_using.md) and [rigkit-data](../skills/rigkit-data/SKILL.md).
 
@@ -205,6 +205,6 @@ git -C packs/rigBlend2D submodule update --init --recursive
 
 ## Bootstrap order
 
-Register **rigComponent**, then **rigSystems**, then **rigImGui** (see `examples/oscHost` and `examples/minimal`). For 3D meshes: **rigComponent**, then **rigSystems**, then **rigRender3D** (+ **rigObj** / **rigMeshEdit** as needed; see `examples/lowpoly`). For node graphs: **rigComponent**, then **rigNodeComponent**, then **rigImGui**, then **rigNodeEditor** (see `packs/rigNodeEditor/examples/nodes`). For `.milk` visuals: **rigComponent**, then **rigAudio**, then **rigMilk** (see `packs/rigMilk/examples/visualizer`). Artist guide: [docs/nodes.md](../docs/nodes.md).
+Register **rigComponent**, then **rigSystems**, then **rigImGui** (see `examples/oscHost` and `examples/minimal`). For 3D meshes: **rigComponent**, then **rigSystems**, then **rigRender3D** (+ **rigObj** / **rigMeshEdit** as needed; see `examples/lowpoly`). For node graphs: **rigComponent**, then **rigNodeComponent**, then **rigImGui**, then **rigNodeEditor** (see `packs/rigNodeEditor/examples/nodes`). For `.milk` visuals: **rigComponent**, then **rigShowComponent**, then **rigAudio**, then **rigMilk** (`CMilk` on the `CVisualizer` deck; present draws into `output`). Artist guide: [docs/nodes.md](../docs/nodes.md).
 
 There is **no** runtime git updater in the host - only configure-time CPM and the tools above.

@@ -70,6 +70,9 @@ rig::makeLight(*ecs, {0.f, 0.f, 0.f});
 rig::makePalette(*ecs);
 rig::makeMeshGrid(*ecs);
 
+#include "rig/cad.h"   // CAD PODs - rigCadComponent
+#include "rig/show.h"  // visualizer / analysis - rigShowComponent
+
 // CAD solids (bake via rigManifold::bakeToMesh):
 rig::makeCadBox(*ecs, 2.f, 1.5f, 1.2f, true, "stock");
 rig::makeCadCylinder(*ecs, 0.4f, 2.f, true, "cutter");
@@ -80,11 +83,16 @@ rig::makeCadBoolean(*ecs, rigkit::ecs::CCadBoolean::Op::Difference, {"stock", "c
 rig::makeCadDimension(*ecs, rigkit::ecs::CCadDimension::Kind::Horizontal, "stock", "cutter",
 					  4.f, false, "span");
 
-// MilkDrop1 visualizer (needs rigMilk + rigAudio):
-rig::makeVisualizer(*ecs, "data/presets");
+// Preset deck (needs a present pack + rigAudio for switchOn):
+auto deck = rig::makeVisualizer(*ecs);
+rig::addVisualizerPreset(*ecs, deck, "data/presets/warm.vis");
+auto listen = rig::makeAudioAnalysis(*ecs);
+rig::makePictureAnalysis(*ecs, output);
+ecs->getComponent<rigkit::ecs::CVisualizer>(deck).output = output;
+ecs->getComponent<rigkit::ecs::CVisualizer>(deck).analysis = listen;
 ```
 
-These helpers only write POD (`CTransform` + shape / `CMesh` / `CCad*` / `COrbitDrive` / `COrthoView` + `CDrawStyle` / `CVisualizer`). `makeOrbitCamera` poses the eye; turn `COrbitDrive::enabled` on for a show-mode spin (`SOrbitDrive` yaws from `pitch`). `makeOrthoCamera` stays inactive so it never steals the main bed. `makeVisualizer` is presented by **rigMilk**.
+These helpers only write POD (`CTransform` + shape / `CMesh` / `CCad*` / `COrbitDrive` / `COrthoView` + `CDrawStyle` / `CVisualizer` / `CAudioAnalysis` / `CPictureAnalysis`). `makeOrbitCamera` poses the eye; turn `COrbitDrive::enabled` on for a show-mode spin (`SOrbitDrive` yaws from `pitch`). `makeOrthoCamera` stays inactive so it never steals the main bed. `makeVisualizer` is a playlist; a leaf pack (rigMilk, ...) presents entries it understands and draws into `output`. Live `color` / `temperature` are host cache on the audio and picture buses - not fields on the deck.
 
 ## Orbit nav (code) - `rigSystems`
 
@@ -130,20 +138,30 @@ Fill and stroke once, then spawn inspectable entities. `circle(x, y, r)` takes r
 
 ```cpp
 #include "rig/sketch.h"
+#include "rig/pages.h"
 
+rig::makePage(520.f, 380.f);
 rig::setFill(1.f, 0.4f, 0.2f);
 rig::circle(x, y, r);
+rig::setPage(0);
 rig::rect(40.f, 40.f, 220.f, 170.f);
+// view: rig::focusPage(0);
 ```
 
-`setFill` / `setStroke` are the retained-style setters. `fill` / `stroke` stay the `CDrawStyle` factories used by `make*`. Page placement is app-side (`setSketchEntityHook`); the sketch layer does not depend on rigProject.
+`setFill` / `setStroke` are the retained-style setters. `fill` / `stroke` stay the `CDrawStyle` factories used by `make*`. This layer does not know pages; rigProject parents later sketch entities to `currentPage()`. `setSketchEntityHook` replaces that. `setPage(index)` moves placement; `focusPage` pans the board and updates the placement page too.
 
-Python `sketch.py` is the same vocabulary (`fill`, `circle`, matrix, path) via the rigPython example bindings.
+Python `sketch.py` is the same vocabulary (`fill`, `circle`, `setPage`, matrix, path) via the rigPython example bindings.
 
 ## Node graphs
 
 Patch floats, vec2, colors, or any [standard datatype](contract/RigWorks/docs/properties.md) in the Node Editor.
 Artist guide: [nodes.md](nodes.md). Example: `packs/rigNodeEditor/examples/nodes`.
+
+## Crafts and workspaces
+
+One host can link more than one craft pack. **App > Workspace** shows the panels for the job (Vector / Pixel) and docks them on load. The `.rig` document stays. See [`examples/example-studio`](../examples/example-studio/) and [`examples/example-pixelEditor`](../examples/example-pixelEditor/).
+
+Brush packs are a folder with `brushes.json` plus optional tip PNGs - not Adobe ABR. Partner SKUs (True Grit Texture Supply) follow that format; see [partners/true-grit.md](partners/true-grit.md).
 
 ## Layers (mental model)
 

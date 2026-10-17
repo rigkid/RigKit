@@ -29,8 +29,9 @@ A **data pack** (`*Component`, plus project envelope **rigProject**) is **compon
 |------|----------------|
 | `C*` POD components + `GetProperties()` | `registerSystem` Update/Draw |
 | `registerComponent` in pack `setup()` | ImGui / `IWindow` panels |
-| Codecs that serialize those PODs on **rigProject** | GPU / window / socket handles in components |
-| Pure helpers over POD (catalog, eval, flatten) | Engines / second scene graphs |
+| Pure helpers over POD (catalog, eval, flatten) | `.rig` codecs (file from the **code** pack) |
+| | GPU / window / socket handles in components |
+| | Engines / second scene graphs |
 
 If the helper starts looking like a pipeline or UI, move it to a **code** pack (`*Editor`, `*Ui`, short IO name, product engine).
 
@@ -48,8 +49,8 @@ Also:
 
 - **Survey before a new pack** - read the pack table + Naming rules; grow an existing pack when the role already exists. Lock one camelCase spoken name for folder / manifests / CMake.
 - Keep **`rigComponent` thin** - domain weight goes in domain data packs, not a kitchen-sink core.
-- Domain types serialize by registering codecs on **`rigProject`** (or root extensions) from the **owning** pack - not by stuffing plot/MIDI/... types into `rigComponent`, and not by growing a kitchen-sink list inside **rigProject**. RigKit's `.rig` writer keys components by schema id; once it moves to Contract JSON fully, a host component with no Rig schema id should travel as `x.rigkit.<name>` - see [extension components](../../docs/contract/RigWorks/schemas/document.md#extension-components) - not as a reason to invent a fake `rig.*` id.
-- Naming: `C*` structs; files match type names; `GetProperties()` + `registerComponent` in the **owning** pack's `setup()`.
+- Domain types serialize from the **code** pack that fulfills them (`project::addSerializer` on **rigProject**'s registry) - not by stuffing plot/MIDI/... types into `rigComponent`, and not by growing a kitchen-sink list inside **rigProject**. RigKit's `.rig` writer keys components by schema id; once it moves to Contract JSON fully, a host component with no Rig schema id should travel as `x.rigkit.<name>` - see [extension components](../../docs/contract/RigWorks/schemas/document.md#extension-components) - not as a reason to invent a fake `rig.*` id.
+- Naming: `C*` structs; files match type names; `GetProperties()` + `registerComponent` in the **owning** data pack's `setup()`. The **code** pack that fulfills the POD calls `project::addSerializer` to file the `.rig` codec.
 - Engines (e.g. PlotDoc) are **code**, not components - they live in code packs and mutate domain PODs.
 
 Human mirror: [docs/packs_using.md](../../docs/packs_using.md).
@@ -62,7 +63,7 @@ Human mirror: [docs/packs_using.md](../../docs/packs_using.md).
 4. **`GetProperties()` when editor-visible** - return `std::vector<sProp>` with pointers into **member** fields (not locals). Types from `src/ecs/PropertyReflection.h` (`EPT_FLOAT`, `EPT_VEC3`, `EPT_COLOR`, ...) map to the portable [property datatypes](../../docs/contract/RigWorks/docs/properties.md). A named-choice `enum class` field is `EPT_ENUM` with `enumNames`/`enumCount` set - never `EPT_INT` (that silently draws a raw draggable integer instead of a combo). Wire the reader in the same change - a property row that nothing reads is a control that lies (Commandment 10). Settings rows follow the same rule as component fields.
 5. **Schema travel** - if Pi / ESP32 / another host must share meaning, prefer a small JSON or binary slice of POD fields; schema alignment matters more than identical ECS libraries ([docs/contract/rigkit.md](../../docs/contract/rigkit.md)).
 6. **Behavior elsewhere** - `rigSystems` / document systems via `registerSystem`; never inside data packs (`rigComponent`, `rigPlotComponent`, ...).
-7. **`registerComponent` in setup** - announce the type on `MEcs` so rigImGui Properties can discover it.
+7. **`registerComponent` in setup** - announce the type on `MEcs` so rigImGui Properties can discover it. The code pack files the codec with `project::addSerializer`.
 8. **Push back** - if the request starts with a new ImGui window or system, redefine it as data first, then the thinnest fulfillment.
 9. **Author path** - prefer short creators/helpers that write POD data (`makeRect`, `makeMesh*`, ...) over exposing `MEcs` first. Meshes are first-class (`CMesh`). See [docs/authoring.md](../../docs/authoring.md).
 
@@ -88,7 +89,7 @@ ecs->registerComponent<MyComponent>("MyComponent", true);
 
 ## Known gap
 
-`CEvent`'s payload is a type-erased `std::any` (needed for an in-process event bus) - it does not travel and is not meant to serialize. New work must not widen that gap by adding host types (window pointers, GPU handles, callbacks) to other components. Project serialize lives in **rigProject** (JSON registry walk + envelope; default `.rig`). Owning packs register their codecs onto that registry.
+`CEvent`'s payload is a type-erased `std::any` (needed for an in-process event bus) - it does not travel and is not meant to serialize. New work must not widen that gap by adding host types (window pointers, GPU handles, callbacks) to other components. Project serialize lives in **rigProject** (JSON registry walk + envelope; default `.rig`). Code packs file codecs onto that registry.
 
 ## Sources
 

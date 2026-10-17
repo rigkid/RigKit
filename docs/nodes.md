@@ -12,7 +12,10 @@ cmake --build packs/rigNodeEditor/examples/nodes/build --target nodes
 ```
 
 Packs: **rigNodeComponent** (data + catalog + eval + `.rig` codecs) + **rigNodeEditor**
-(window). Register **rigProject** for Open/Save Scene.
+(window). Register **rigProject** for Open/Save Scene. The pack opens one Node Editor
+and the Patch bay on the engine scene. A host with its own registries sets
+`rigNodeEditor::Options::registerWindows` to false and calls `makeEditor` per graph.
+Sound sources and the Properties drawer still register.
 
 Apps can still use **Float Out** / **Vec2 Out** / **Color Out** (eval fills
 `EvalResult::outputs` lists). Prefer **Ref** sinks to write scene properties by
@@ -84,8 +87,13 @@ A **group** is a node with a `nested` graph and `publishes` (outer pin to inner 
 | Dive | Double-click a group, or **Dive into group** in Properties |
 | Surface | **File > Up** |
 | Publish | Inside a group, select a pin, then **File > Publish pin** |
+| Save to library | Select a group, then **File > Save to library** (`user/nodes/*.node.json`) |
+| Add from library | **Add node > Library** spawns a copy |
+| Update library entry | Select that copy, then **File > Update library entry** |
 
 Eval runs nested graphs recursively. While diving, live preview injects published inputs from the parent canvas.
+
+A library node is a copy. Editing it leaves the file unchanged until **Update library entry**. Files use format 1; a newer format is rejected.
 
 ## Built-in catalog
 
@@ -122,6 +130,11 @@ Search in **Add node**. `typeId` is what `.rig` stores.
 | Envelope | `mod.envelope` | ADSR; `gate` input (level-driven - needs the gate held high) |
 | Decay | `mod.decay` | Trigger envelope, 0..1 out. A rising edge on `gate` loads the level, then it falls over `Decay` seconds. **Retrigger** reloads to `Load`; **Accumulate** stacks `Load` per hit (clamped at 1), so dense hits pile up and ebb away. Feed it Audio `onset` or Beat `edge` / `pulse` - those one-frame triggers are too short for the ADSR |
 | Beat | `mod.beat` | Musical clock (host tempo bus): `phase` / `bar` / `pulse` / `bpm` outs. `Cycle beats` sets the loop length (0.25 = 16ths, 4 = one bar). Free-runs at the BPM param when no clock source is active |
+| Audio | `mod.audio` | Live capture bus: level / bands / onset plus shared `color` (rgba from hue + energy) and `temperature` (0 cold, 1 warm; same as `warmth`) |
+| Note | `mod.note` | Live pitch from the same bus (`hz` / `midi` / `chroma`) |
+| Picture | `mod.picture` | Live frame analysis: `color` / `temperature` from a `CPictureAnalysis` source (same two names as Audio) |
+| Quantize | `mod.quantize` | Snap an incoming MIDI / unit value to a scale |
+| CV In | `mod.cv` | DC-coupled control voltage, one channel |
 
 ### MIDI
 

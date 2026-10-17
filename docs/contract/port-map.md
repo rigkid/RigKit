@@ -56,6 +56,14 @@ Schemas were cross-pollinated toward this reference host (v0.1). Data packs hold
 | `rig.media.asset_ref` | **rigComponent** - `CAssetRef` | `kind` / `path` / `loop`. Other schemas take an entity ref or compose this type on the same entity. |
 | `rig.media.code` | **rigComponent** - `CCode` | `text` / `language` / `readOnly`. Compose `CAssetRef` on the same entity for disk origin. `name` / `order` until `rig.meta.named`. `dirty` / `epoch` are editor cache - do not serialize. No `.rig` serializer: buffers are derived data. |
 | `rig.anim.curve` | **rigComponent** - `CCurve` | `points` / `interp` / `preset`. |
+| `rig.anim.tween` | **rigAnimComponent** - `CTween` | `target` / `propertyKey` / `from` / `to` / `duration` / `elapsed` / `easing` / `loop` / `playing`. Advance is **rigSystems** `STweens`. |
+| `rig.mod.lfo` | **rigAnimComponent** - `CModLfo` | `waveform` / `frequency` / `amplitude` / `offset` / `phase`. Advance is **rigSystems** `SModulators`. |
+| `rig.mod.binding` | **rigAnimComponent** - `CModBinding` | `source` / `target` / `propertyKey` / `depth` / `additive` / optional `min` / `max`. |
+| `rig.music.clock` | **rigMusicComponent** - `CMusicClock` | `ticksPerQuarter` / `phaseTicks` / swing / `externalSync` + sync fields. Writers: **rigAudio**, **rigAbletonLink**. |
+| `rig.music.transport` | **rigMusicComponent** - `CMusicTransport` | `playing` / `bpm` / time signature / `positionBeats` / loop window. |
+| `rig.visualizer.deck` | **rigShowComponent** - `CVisualizer` | Playlist + `switchOn` + `output`. Present is **rigMilk**. |
+| `rig.audio.analysis` | **rigShowComponent** - `CAudioAnalysis` | Authored request (`source` / `bandCount` / `features`). Live values stay on the bus. |
+| `rig.picture.analysis` | **rigShowComponent** - `CPictureAnalysis` | Authored request pointed at `source`. |
 | `rig.media.text` | **rigComponent** - `CText` (present **rigVarFont**) | `text` / `font` (`CAssetRef` kind font) / `fontSize` / `rgba` / `axes` / `features` / `useKerning`. Plot bake-to-path stays on `CTexts` (`TextItem` keeps `fontPath`; `sizeMm` / `baselineMm` plot-local). |
 
 ## Partial
@@ -71,21 +79,20 @@ Schemas were cross-pollinated toward this reference host (v0.1). Data packs hold
 | `rig.render.material` | - | Grow **rigComponent** + **rigRender3D**. |
 | `rig.media.*` (remaining) | - | Settings-only; decode in code packs. |
 | `rig.node.pin` / `link` / `param` | nested in `CNodeGraph` | Nested PODs; pin/param `type` = property datatype table. |
-| `rig.cad.box` / `cylinder` / `sphere` | **rigComponent** PODs; bake **rigManifold** | Fields match. `bakeToMesh` evaluates when the kernel is linked. Mesh on the same entity is a bake. Pi: bake in Setup. |
-| `rig.cad.boolean` | **rigComponent** - `CCadBoolean`; bake **rigManifold** | `op` + entity-name `operands`. Nested booleans recurse. Operand local TRS applies before the op. |
-| `rig.cad.fillet` / `chamfer` | **rigComponent** - `CCadFillet` / `CCadChamfer` | Authored intent (`radius`/`distance`, `{a,b}` edges or `allEdges`). Manifold is a triangle kernel - not evaluated as B-rep rounds. |
-| `rig.cad.extrude` / `revolve` | **rigComponent** PODs | Fields match. Profile entity + sweep; no kernel eval yet. |
-| `rig.cad.dimension` | **rigComponent** - `CCadDimension`; drive **rigSolveSpace** | `kind` / `a` / `b` / `value` / `measurement` / `offset`. Driving (`measurement` false) moves `b`'s `CTransform`. Measurement is label-only. Diameter / angle stored, not solved. Solve on edit, not every frame. |
-| `rig.cad.reference_line` / `reference_plane` | **rigComponent** - `CCadReferenceLine` / `CCadReferencePlane`; draw **rigCad** | Datums, not solids - kept out of the CSG bake. Coordinates place them; `a` / `b` anchor to entity names and win. Presented as line-mode `CMesh`, so `OrbitNav` framing skips them. Rebuilt on edit, not every frame. |
+| `rig.cad.box` / `cylinder` / `sphere` | **rigCadComponent** PODs; bake **rigManifold** | Fields match. `bakeToMesh` evaluates when the kernel is linked. Mesh on the same entity is a bake. Pi: bake in Setup. |
+| `rig.cad.boolean` | **rigCadComponent** - `CCadBoolean`; bake **rigManifold** | `op` + entity-name `operands`. Nested booleans recurse. Operand local TRS applies before the op. |
+| `rig.cad.fillet` / `chamfer` | **rigCadComponent** - `CCadFillet` / `CCadChamfer` | Authored intent (`radius`/`distance`, `{a,b}` edges or `allEdges`). Manifold is a triangle kernel - not evaluated as B-rep rounds. |
+| `rig.cad.extrude` / `revolve` | **rigCadComponent** PODs | Fields match. Profile entity + sweep; no kernel eval yet. |
+| `rig.cad.dimension` | **rigCadComponent** - `CCadDimension`; drive **rigSolveSpace** | `kind` / `a` / `b` / `value` / `measurement` / `offset`. Driving (`measurement` false) moves `b`'s `CTransform`. Measurement is label-only. Diameter / angle stored, not solved. Solve on edit, not every frame. |
+| `rig.cad.reference_line` / `reference_plane` | **rigCadComponent** - `CCadReferenceLine` / `CCadReferencePlane`; draw **rigCad** | Datums, not solids - kept out of the CSG bake. Coordinates place them; `a` / `b` anchor to entity names and win. Presented as line-mode `CMesh`, so `OrbitNav` framing skips them. Rebuilt on edit, not every frame. |
 
 ## Planned
 
 | Schema family | Planned pack |
 |---------------|--------------|
 | `rig.font.*` | **rigFontComponent** (UFO source PODs; local `packs/` until published). Chrome bind is host `x.rigkit.ui_face`, not a `rig.*` id. IO in **rigUfo**. Shape / reconstruct in **rigFont**. Host example `ufomat`. |
-| `rig.music.*` | **rigMusicComponent** (sequencer, then pattern, then steps) |
-| `rig.anim.curve` | **rigComponent** - `CCurve` | Close for curve POD + presets; tween/LFO still planned. |
-| `rig.anim.*` / `rig.mod.*` (remaining) | **rigAnimComponent** or grow **rigComponent** |
+| `rig.music.*` (sequencer / pattern / step) | **rigMusicComponent** - clock / transport are Close; grow this pack |
+| `rig.anim.*` / `rig.mod.*` (remaining) | **rigAnimComponent** - tween / LFO / binding are Close; grow this pack |
 | `rig.led.*` | **rigLedComponent** |
 | `rig.io.dmx` | **rigDmx** | Universe / direction / enabled. 512-slot buffer stays in the pack. No sockets, no USB. Transports (`rigSacn`, `rigArtnet`, `rigEnttec`) read this buffer. |
 | `rig.io.sacn` | **rigSacn** | E1.31 endpoint. Depends on **rigDmx**. Pack exists; schema still Planned until POD fields Close. |

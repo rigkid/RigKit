@@ -5,10 +5,11 @@
 #include "core/pack/MPack.h"
 #include "core/util/AppPaths.h"
 #include "core/util/CommandLineArgs.h"
+#include "packs/rigAnimComponent/src/CTween.h"
+#include "packs/rigAnimComponent/src/rigAnimComponent.h"
 #include "packs/rigComponent/src/CDrawStyle.h"
 #include "packs/rigComponent/src/CPath.h"
 #include "packs/rigComponent/src/CTransform.h"
-#include "packs/rigComponent/src/CTween.h"
 #include "packs/rigComponent/src/rigComponent.h"
 #include "packs/rigSvg/src/SvgLoader.h"
 #include "packs/rigSvg/src/rigSvg.h"
@@ -137,6 +138,7 @@ void SvgAnimatorApp::setup() {
 		return;
 	}
 	packs->registerPack<rigkit::rigComponent>();
+	packs->registerPack<rigkit::rigAnimComponent>();
 	packs->registerPack<rigkit::rigSystems>();
 	packs->registerPack<rigkit::rigSvg>();
 	packs->initAll();
