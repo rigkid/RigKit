@@ -42,10 +42,10 @@ bool writeIco(const std::string& path, const std::vector<IconImage>& icons);
 
 /**
  * @brief Deterministic fallback icon from the app name.
- * @details An FNV-1a hash of the name picks a curated palette (max 5 colours,
- * lightest as background) and draws a small mirrored block pattern
- * (identicon), so apps without a custom icon still look different in the
- * taskbar. Same name = same icon, every launch.
+ * @details An FNV-1a hash of the name seeds a hue. The background is that hue
+ * washed out and brightened; the mirrored block pattern uses darker steps
+ * around the same hue, so apps without a custom icon still look different
+ * in the taskbar. Same name = same icon, every launch.
  * @param appName App name from `app.json` (any string, empty is fine).
  * @return 16 / 32 / 48 px images for glfwSetWindowIcon / writeIco.
  */

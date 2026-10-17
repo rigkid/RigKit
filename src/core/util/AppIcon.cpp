@@ -1,5 +1,6 @@
 #include "core/util/AppIcon.h"
 
+#include <cmath>
 #include <cstdint>
 #include <cstring>
 #include <fstream>
@@ -124,37 +125,61 @@ uint32_t fnv1a(const std::string& s) {
 	return h;
 }
 
-// Curated identicon palettes, max 5 colours each. The name hash picks one;
-// the lightest colour becomes the background, the rest paint pattern rows.
-struct Palette {
-	uint32_t colors[5];
-	int count;
-};
-
-const Palette kPalettes[] = {
-	// Ocean ruby radiance
-	{{0xD8226C, 0xB2DAE4, 0xF86A38, 0x029456, 0x005BB3}, 5},
-	// Tropical jade sunrise
-	{{0xFCA47C, 0x23CED9, 0xF9D779, 0xA1CCA6, 0x097C87}, 5},
-	// Graphite
-	{{0xC1C0C2, 0xF5E9E7, 0x837D68, 0x8A9DB1, 0xECC5C6}, 5},
-	// Amethyst mint harmony
-	{{0x2A3F38, 0x8DF688, 0x562F54, 0x57585D, 0xF650BD}, 5},
-	// Seashell garnet afternoon
-	{{0xF6C992, 0x30525C, 0xACC0D3, 0xD396A6, 0x09A1A1}, 5},
-	// Pink triadic
-	{{0xFF8DA1, 0xA1FF8D, 0x8DA1FF, 0, 0}, 3},
-};
-
-void hexToRgb(uint32_t hex, unsigned char rgb[3]) {
-	rgb[0] = static_cast<unsigned char>((hex >> 16) & 0xFF);
-	rgb[1] = static_cast<unsigned char>((hex >> 8) & 0xFF);
-	rgb[2] = static_cast<unsigned char>(hex & 0xFF);
+// h in turns (1 = full circle), s and v in 0..1.
+void hsvToRgb(float h, float s, float v, unsigned char rgb[3]) {
+	h = h - std::floor(h);
+	if (h < 0.f) {
+		h += 1.f;
+	}
+	if (s < 0.f) {
+		s = 0.f;
+	} else if (s > 1.f) {
+		s = 1.f;
+	}
+	if (v < 0.f) {
+		v = 0.f;
+	} else if (v > 1.f) {
+		v = 1.f;
+	}
+	const float c = v * s;
+	const float x = c * (1.f - std::fabs(std::fmod(h * 6.f, 2.f) - 1.f));
+	const float m = v - c;
+	float r = 0.f;
+	float g = 0.f;
+	float b = 0.f;
+	int sector = static_cast<int>(h * 6.f);
+	if (sector > 5) {
+		sector = 5;
+	}
+	switch (sector) {
+	case 0: r = c; g = x; break;
+	case 1: r = x; g = c; break;
+	case 2: g = c; b = x; break;
+	case 3: g = x; b = c; break;
+	case 4: r = x; b = c; break;
+	default: r = c; b = x; break;
+	}
+	rgb[0] = static_cast<unsigned char>(std::lround((r + m) * 255.f));
+	rgb[1] = static_cast<unsigned char>(std::lround((g + m) * 255.f));
+	rgb[2] = static_cast<unsigned char>(std::lround((b + m) * 255.f));
 }
 
-// Rec. 601 luma - enough to rank palette entries light-to-dark.
-float luma(uint32_t hex) {
-	return 0.299f * ((hex >> 16) & 0xFF) + 0.587f * ((hex >> 8) & 0xFF) + 0.114f * (hex & 0xFF);
+// Name hash -> one hue. Background is that hue washed out and lifted.
+// Pattern colours are the same hue, stepped around the wheel and kept darker.
+void paletteFromName(uint32_t colorHash, unsigned char bg[3], unsigned char accents[4][3]) {
+	const float hue = static_cast<float>(colorHash % 360u) / 360.f;
+	const float sat = 0.55f + static_cast<float>((colorHash >> 9) & 31u) / 100.f;
+	const float jitter = static_cast<float>((colorHash >> 16) & 15u) / 360.f;
+	hsvToRgb(hue, sat * 0.22f, 0.94f, bg);
+	const float turns[4] = {0.02f, 0.09f, 0.42f, 0.55f};
+	const float values[4] = {0.74f, 0.50f, 0.60f, 0.36f};
+	float accentSat = sat + 0.28f;
+	if (accentSat > 1.f) {
+		accentSat = 1.f;
+	}
+	for (int i = 0; i < 4; ++i) {
+		hsvToRgb(hue + turns[i] + jitter, accentSat, values[i], accents[i]);
+	}
 }
 
 // 5x5 pattern with a 1-cell border on a 7x7 logical grid, nearest-scaled.
@@ -313,28 +338,16 @@ std::vector<IconImage> makeDefaultIcon(const std::string& appName) {
 	const uint32_t hash = fnv1a(appName);
 
 	const uint32_t colorHash = fnv1a(appName + "#palette");
-	const Palette& pal = kPalettes[colorHash % (sizeof(kPalettes) / sizeof(kPalettes[0]))];
-
-	// Lightest colour is the background; the rest paint pattern rows.
-	int bgIdx = 0;
-	for (int i = 1; i < pal.count; ++i) {
-		if (luma(pal.colors[i]) > luma(pal.colors[bgIdx])) {
-			bgIdx = i;
-		}
-	}
 	unsigned char bg[3];
-	hexToRgb(pal.colors[bgIdx], bg);
+	unsigned char accents[4][3];
+	paletteFromName(colorHash, bg, accents);
 
-	uint32_t fgColors[4];
-	int fgCount = 0;
-	for (int i = 0; i < pal.count; ++i) {
-		if (i != bgIdx) {
-			fgColors[fgCount++] = pal.colors[i];
-		}
-	}
 	unsigned char rowFg[5][3];
 	for (int y = 0; y < 5; ++y) {
-		hexToRgb(fgColors[(colorHash >> (y * 2)) % fgCount], rowFg[y]);
+		const unsigned char* src = accents[(colorHash >> (y * 2)) % 4u];
+		rowFg[y][0] = src[0];
+		rowFg[y][1] = src[1];
+		rowFg[y][2] = src[2];
 	}
 
 	// 15 hash bits fill 3 columns x 5 rows, mirrored to 5x5.
@@ -355,3 +368,4 @@ std::vector<IconImage> makeDefaultIcon(const std::string& appName) {
 }
 
 } // namespace AppIcon
+
