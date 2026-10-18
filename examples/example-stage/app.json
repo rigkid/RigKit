@@ -1,0 +1,38 @@
+{
+  "name": "example-stage",
+  "version": "0.1.0",
+  "license": "MIT",
+  "description": "Stage - dress a 3D scene, play it with Python, ship it without the editor.",
+  "window": {
+    "width": 1280,
+    "height": 720,
+    "title": "Stage"
+  },
+  "dependencies": [
+    {
+      "name": "rigRender3D",
+      "url": "https://github.com/rigkid/rigRender3D.git",
+      "ref": "main"
+    },
+    {
+      "name": "rigJolt",
+      "url": "https://github.com/rigkid/rigJolt.git",
+      "ref": "main"
+    },
+    {
+      "name": "rigAssimp",
+      "url": "https://github.com/rigkid/rigAssimp.git",
+      "ref": "main"
+    },
+    {
+      "name": "rigPython",
+      "url": "https://github.com/rigkid/rigPython.git",
+      "ref": "main"
+    },
+    {
+      "name": "rigMeshEdit",
+      "url": "https://github.com/rigkid/rigMeshEdit.git",
+      "ref": "main"
+    }
+  ]
+}
