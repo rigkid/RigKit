@@ -127,7 +127,7 @@ Folders stay flat. The tree is `pack.json` dependencies: an app lists a **leaf**
 
 | Pack | Remote | Role |
 |------|--------|------|
-| **rigOsc** | [rigkid/rigOsc](https://github.com/rigkid/rigOsc) | UDP OSC + network identity / show bus - `oscHost --smoke-osc`. Sibling of serial / DMX, not a child |
+| **rigOsc** | [rigkid/rigOsc](https://github.com/rigkid/rigOsc) | UDP OSC + network identity. Show-bus leaves are registered by the app under `/<appName>/<networkId>/`. `oscHost --smoke-osc`. Sibling of serial / DMX, not a child |
 | **rigGrbl** | [rigkid/rigGrbl](https://github.com/rigkid/rigGrbl) | GRBL lines. Depends on **rigSerial**. **Leaf.** |
 | **rigSacn** | [rigkid/rigSacn](https://github.com/rigkid/rigSacn) (local `packs/` until published) | sACN / E1.31 over UDP. Depends on **rigDmx**. Own cadence / memcmp. **Leaf.** |
 | **rigEnttec** | [rigkid/rigEnttec](https://github.com/rigkid/rigEnttec) (local `packs/` until published) | Enttec USB PRO. Depends on **rigDmx** + **rigSerial**. Universe 1, stub port, own cadence / memcmp. **Leaf.** |

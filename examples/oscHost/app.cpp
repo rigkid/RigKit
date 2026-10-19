@@ -6,14 +6,48 @@
 #include "packs/rigImGui/src/Mui.h"
 #include "packs/rigImGui/src/rigImGui.h"
 #include "packs/rigOsc/src/CNetworkIdentity.h"
-#include "packs/rigOsc/src/COscShowBus.h"
+#include "packs/rigOsc/src/COscEndpoint.h"
 #include "packs/rigOsc/src/rigOsc.h"
 #include "packs/rigSystems/src/rigSystems.h"
 #include "ToolControlWindow.h"
 
 #include <GLFW/glfw3.h>
+#include <algorithm>
 #include <iostream>
 #include <spdlog/spdlog.h>
+#include <variant>
+
+namespace {
+
+bool argFloat(const rigkit::osc::OscArg& a, float& out) {
+	if (const auto* f = std::get_if<float>(&a)) {
+		out = *f;
+		return true;
+	}
+	if (const auto* i = std::get_if<int32_t>(&a)) {
+		out = static_cast<float>(*i);
+		return true;
+	}
+	return false;
+}
+
+bool argBool(const rigkit::osc::OscArg& a, bool& out) {
+	if (const auto* b = std::get_if<bool>(&a)) {
+		out = *b;
+		return true;
+	}
+	if (const auto* i = std::get_if<int32_t>(&a)) {
+		out = *i != 0;
+		return true;
+	}
+	if (const auto* f = std::get_if<float>(&a)) {
+		out = *f >= 0.5f;
+		return true;
+	}
+	return false;
+}
+
+} // namespace
 
 OscHost::OscHost() {
 	// Compact default - two instances fit on one desktop.
@@ -98,40 +132,57 @@ void OscHost::setupAuthorUi() {
 	spdlog::info("Author UI: rigImGui host shell + Show Control");
 }
 
-void OscHost::syncOscBus() {
+void OscHost::registerShowBus() {
 	if (!m_osc) {
 		return;
 	}
-	auto& bus = m_osc->showBus();
-	if (bus.masterFromNet) {
-		m_masterLevel = bus.master;
-		bus.masterFromNet = false;
-	} else {
-		bus.master = m_masterLevel;
+	m_osc->addBusListener("master", [this](const rigkit::osc::OscRx& rx) {
+		float v = 0.f;
+		if (!rx.msg.args.empty() && argFloat(rx.msg.args[0], v)) {
+			m_masterLevel = std::clamp(v, 0.f, 1.f);
+		}
+	});
+	m_osc->addBusListener("blackout", [this](const rigkit::osc::OscRx& rx) {
+		bool v = false;
+		if (!rx.msg.args.empty() && argBool(rx.msg.args[0], v)) {
+			m_blackout = v;
+		}
+	});
+	m_osc->addBusListener("color", [this](const rigkit::osc::OscRx& rx) {
+		if (rx.msg.args.size() < 3) {
+			return;
+		}
+		float r = 0.f, g = 0.f, b = 0.f;
+		if (argFloat(rx.msg.args[0], r) && argFloat(rx.msg.args[1], g) &&
+			argFloat(rx.msg.args[2], b)) {
+			m_color[0] = std::clamp(r, 0.f, 1.f);
+			m_color[1] = std::clamp(g, 0.f, 1.f);
+			m_color[2] = std::clamp(b, 0.f, 1.f);
+		}
+	});
+	m_osc->addBusListener("status", [this](const rigkit::osc::OscRx& rx) {
+		if (rx.msg.args.empty()) {
+			return;
+		}
+		if (const auto* s = std::get_if<std::string>(&rx.msg.args[0])) {
+			m_showStatus = *s;
+		}
+	});
+	m_osc->addBusListener("heartbeat", [](const rigkit::osc::OscRx&) {
+		// Local counter is ours. A peer tick must not replace it.
+	});
+}
+
+void OscHost::publishShowBus() {
+	if (!m_osc || !m_osc->endpoint().sendEnabled) {
+		return;
 	}
-	if (bus.blackoutFromNet) {
-		m_blackout = bus.blackout;
-		bus.blackoutFromNet = false;
-	} else {
-		bus.blackout = m_blackout;
-	}
-	if (bus.colorFromNet) {
-		m_color[0] = bus.colorR;
-		m_color[1] = bus.colorG;
-		m_color[2] = bus.colorB;
-		bus.colorFromNet = false;
-	} else {
-		bus.colorR = m_color[0];
-		bus.colorG = m_color[1];
-		bus.colorB = m_color[2];
-	}
-	if (bus.statusFromNet) {
-		m_showStatus = bus.status;
-		bus.statusFromNet = false;
-	} else {
-		bus.status = m_showStatus;
-	}
-	bus.heartbeat = m_showHeartbeat;
+	const std::string& id = m_osc->identity().networkId;
+	m_osc->send(m_osc->makeAddress("heartbeat"), {static_cast<int32_t>(m_showHeartbeat), id});
+	m_osc->send(m_osc->makeAddress("status"), {m_showStatus, id});
+	m_osc->send(m_osc->makeAddress("master"), {m_masterLevel, id});
+	m_osc->send(m_osc->makeAddress("blackout"), {m_blackout, id});
+	m_osc->send(m_osc->makeAddress("color"), {m_color[0], m_color[1], m_color[2], id});
 }
 
 bool OscHost::runOscSmoke() {
@@ -168,7 +219,7 @@ void OscHost::setup() {
 		m_showStatus = "authoring";
 	}
 
-	syncOscBus();
+	registerShowBus();
 
 	if (m_smokeOsc) {
 		const bool ok = runOscSmoke();
@@ -191,9 +242,8 @@ void OscHost::update(float dt) {
 	if (m_heartbeatAccum >= 1.f) {
 		m_heartbeatAccum -= 1.f;
 		++m_showHeartbeat;
+		publishShowBus();
 	}
-
-	syncOscBus();
 }
 
 void OscHost::draw() {

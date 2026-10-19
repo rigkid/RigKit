@@ -86,8 +86,9 @@ void ToolControlWindow::renderContents() {
 		ImGui::EndPopup();
 	}
 
-	ImGui::TextWrapped("Directed: %s/<id>/master|blackout|color|...  "
-					   "Broadcast: %s/... (no id). Bus sends append sender id. "
-					   "Peer follows on the heartbeat tick (~1s).",
-					   ep.addressPrefix.c_str(), ep.addressPrefix.c_str());
+	ImGui::TextWrapped("Directed: %s  Broadcast: %s. "
+					   "Leaves (master, blackout, color, status, heartbeat) are this app. "
+					   "Sends append sender id. Peer follows on the heartbeat tick (~1s).",
+					   osc->makeAddress("master").c_str(),
+					   osc->makeBroadcastAddress("master").c_str());
 }

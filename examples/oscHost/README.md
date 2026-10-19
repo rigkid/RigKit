@@ -41,12 +41,12 @@ std::cout << rigkit::rigOsc::commandLineHelp();
 ./oscHost --show --network-id=box-b --listen-port=8001 --send-host=127.0.0.1 --send-port=8000
 ```
 
-Move Master or Color on A; within about a second B’s clear color follows (heartbeat tick pushes bus). Addresses: `/rigkit/<networkId>/master|blackout|color|...`; bare `/rigkit/...` is broadcast. `color` is three floats.
+Move Master or Color on A; within about a second B's clear color follows (heartbeat tick pushes the leaves this app registered). Addresses: `/<appName>/<networkId>/master|blackout|color|status|heartbeat`; bare `/<appName>/master` is broadcast. `color` is three floats. Sends append the sender network id.
 
 ## Dependencies
 
 - `rigImGui` - host shell (author mode only)
-- `rigOsc` - real UDP OSC + `CNetworkIdentity` / show bus
+- `rigOsc` - UDP OSC + `CNetworkIdentity`. This app registers the show leaves.
 
 ## Build
 

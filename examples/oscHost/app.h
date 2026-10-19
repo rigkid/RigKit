@@ -40,7 +40,8 @@ class OscHost : public rigkit::IApp {
   private:
 	void bootstrapPacks();
 	void setupAuthorUi();
-	void syncOscBus();
+	void registerShowBus();
+	void publishShowBus();
 	bool runOscSmoke();
 
 	bool m_showMode = false;
