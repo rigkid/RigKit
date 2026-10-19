@@ -2,7 +2,7 @@
 
 ![preview](img/preview.png)
 
-RigKit **OSC show host** - one binary, author + show modes, multi-instance via **network id** and UDP (`rigOsc`).
+RigKit **OSC show host** - one binary, author + show modes, multi-instance via **network id** (`rigOsc`: UDP, optional TCP, optional multicast).
 
 Default window is **640×400** so two instances fit on one desktop.
 
@@ -29,6 +29,10 @@ std::cout << rigkit::rigOsc::commandLineHelp();
 | `--send-host=HOST` | UDP peer host (default `127.0.0.1`) |
 | `--send-port=N` | UDP peer port (default `8001`) |
 | `--bind-address=ADDR` | Listen bind (default `0.0.0.0`) |
+| `--tcp` / `--tcp-port=N` | TCP listen (0 = listen port). Framing default is a 4-byte size |
+| `--slip` | TCP framing SLIP |
+| `--multicast=GROUP` | IPv4 multicast group |
+| `--multicast-ttl=N` | Multicast TTL (default 1) |
 | `--smoke-osc` | Bind, loopback master, exit (oscHost only) |
 
 `=` or a following value both work (`--id=box-a` or `--id box-a`).

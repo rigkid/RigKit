@@ -24,8 +24,16 @@ bool argFloat(const rigkit::osc::OscArg& a, float& out) {
 		out = *f;
 		return true;
 	}
+	if (const auto* d = std::get_if<double>(&a)) {
+		out = static_cast<float>(*d);
+		return true;
+	}
 	if (const auto* i = std::get_if<int32_t>(&a)) {
 		out = static_cast<float>(*i);
+		return true;
+	}
+	if (const auto* h = std::get_if<int64_t>(&a)) {
+		out = static_cast<float>(*h);
 		return true;
 	}
 	return false;

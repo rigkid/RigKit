@@ -69,6 +69,21 @@ void ToolControlWindow::renderContents() {
 	inputTextStd("Send Host", ep.sendHost);
 	ImGui::InputInt("Send Port", &ep.sendPort);
 	inputTextStd("Address Prefix", ep.addressPrefix);
+	ImGui::Checkbox("TCP Listen", &ep.tcpListen);
+	ImGui::SameLine();
+	ImGui::Checkbox("TCP Connect", &ep.tcpConnect);
+	ImGui::InputInt("TCP Port", &ep.tcpPort);
+	ImGui::TextUnformatted("Framing");
+	ImGui::SameLine();
+	if (ImGui::RadioButton("Size", ep.streamFraming == 0)) {
+		ep.streamFraming = 0;
+	}
+	ImGui::SameLine();
+	if (ImGui::RadioButton("Slip", ep.streamFraming == 1)) {
+		ep.streamFraming = 1;
+	}
+	inputTextStd("Multicast Group", ep.multicastGroup);
+	ImGui::InputInt("Multicast TTL", &ep.multicastTtl);
 
 	if (ImGui::Button("Apply Endpoint")) {
 		if (!osc->applyEndpoint()) {
