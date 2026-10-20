@@ -2,8 +2,6 @@
 
 #include <vector>
 
-#include "ecs/PropertyReflection.h"
-
 namespace rigkit {
 namespace ecs {
 

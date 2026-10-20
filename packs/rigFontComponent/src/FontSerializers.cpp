@@ -60,6 +60,14 @@ int sideFromId(const std::string& id) {
 	return ecs::CFontGroup::Unclassified;
 }
 
+// Entity refs are string | null. A null or missing key keeps the fallback.
+std::string jsonString(const ordered_json& j, const char* key, const std::string& fallback) {
+	if (!j.contains(key) || j[key].is_null() || !j[key].is_string()) {
+		return fallback;
+	}
+	return j[key].get<std::string>();
+}
+
 bool serializeFace(entt::registry& reg, entt::entity e, ordered_json& j) {
 	if (!reg.all_of<ecs::CFontFace>(e)) {
 		return false;
@@ -125,7 +133,7 @@ bool deserializeFace(entt::registry& reg, entt::entity e, const ordered_json& j)
 	f.licence = j.value("licence", f.licence);
 	f.licenceUrl = j.value("licenceUrl", f.licenceUrl);
 	f.note = j.value("note", f.note);
-	f.features = j.value("features", f.features);
+	f.features = jsonString(j, "features", f.features);
 	reg.emplace_or_replace<ecs::CFontFace>(e, std::move(f));
 	return true;
 }
@@ -210,7 +218,7 @@ bool serializeComponent(entt::registry& reg, entt::entity e, ordered_json& j) {
 
 bool deserializeComponent(entt::registry& reg, entt::entity e, const ordered_json& j) {
 	ecs::CFontComponent c;
-	c.glyph = j.value("glyph", c.glyph);
+	c.glyph = jsonString(j, "glyph", c.glyph);
 	c.scaleX = j.value("scaleX", c.scaleX);
 	c.xyScale = j.value("xyScale", c.xyScale);
 	c.yxScale = j.value("yxScale", c.yxScale);

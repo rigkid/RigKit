@@ -35,6 +35,7 @@ add_library(${PACK_NAME} STATIC
 	src/CFontFace.h
 	src/CFontLayer.h
 	src/CFontMaster.h
+	src/CFontMaster.cpp
 	src/CFontGlyph.h
 	src/CFontComponent.h
 	src/CFontAnchor.h

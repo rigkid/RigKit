@@ -2,4 +2,4 @@
 
 ![preview](img/preview.png)
 
-Seeds a `CFontFace` and one glyph so Properties / the glyph list can see `rig.font.*` PODs.
+Seeds a `CFontFace`, a `public.default` layer, and three glyphs. Scene lists the tree. Properties shows the face.

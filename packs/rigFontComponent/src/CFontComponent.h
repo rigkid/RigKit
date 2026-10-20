@@ -24,11 +24,10 @@ struct CFontComponent {
 	float offsetY = 0.f;
 
 	std::vector<sProp> GetProperties() {
-		return {{0, "Glyph", EPT_STRING, &glyph},
-				{1, "Scale X", EPT_FLOAT, &scaleX},
-				{2, "Scale Y", EPT_FLOAT, &scaleY},
-				{3, "Offset X", EPT_FLOAT, &offsetX},
-				{4, "Offset Y", EPT_FLOAT, &offsetY}};
+		return {{0, "Glyph", EPT_STRING, &glyph},	  {1, "Scale X", EPT_FLOAT, &scaleX},
+				{2, "XY Scale", EPT_FLOAT, &xyScale}, {3, "YX Scale", EPT_FLOAT, &yxScale},
+				{4, "Scale Y", EPT_FLOAT, &scaleY},	  {5, "Offset X", EPT_FLOAT, &offsetX},
+				{6, "Offset Y", EPT_FLOAT, &offsetY}};
 	}
 };
 

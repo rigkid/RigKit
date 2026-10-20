@@ -3,8 +3,6 @@
 #include <string>
 #include <vector>
 
-#include "ecs/PropertyReflection.h"
-
 namespace rigkit {
 namespace ecs {
 
@@ -26,25 +24,10 @@ struct CFontMaster {
 	std::vector<AxisValue> location;
 
 	/** @brief Design value for @p tag, or @p fallback when absent. */
-	float valueFor(const std::string& tag, float fallback = 0.f) const {
-		for (const auto& av : location) {
-			if (av.tag == tag) {
-				return av.value;
-			}
-		}
-		return fallback;
-	}
+	float valueFor(const std::string& tag, float fallback = 0.f) const;
 
 	/** @brief Set or append the design value for @p tag. */
-	void setValue(const std::string& tag, float value) {
-		for (auto& av : location) {
-			if (av.tag == tag) {
-				av.value = value;
-				return;
-			}
-		}
-		location.push_back({tag, value});
-	}
+	void setValue(const std::string& tag, float value);
 };
 
 } // namespace ecs
