@@ -2,7 +2,7 @@
   "name": "showDeck",
   "version": "0.1.0",
   "license": "MIT",
-  "description": "rigShowComponent example - one CVisualizer deck",
+  "description": "rigShowComponent example - CVisualizer",
   "window": { "width": 800, "height": 600, "title": "rigShowComponent - showDeck" },
   "dependencies": [
     {

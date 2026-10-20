@@ -20,6 +20,8 @@ struct CTween {
 	float elapsed = 0.f;
 	std::string easing = "linear"; ///< linear | ease-in | ease-out | ease-in-out
 	bool loop = false;
+	/** @brief Out and back (host). `loop` then repeats the trip. Not in `rig.anim.tween` yet. */
+	bool pingPong = false;
 	bool playing = true;
 
 	std::vector<sProp> GetProperties() {
@@ -27,7 +29,7 @@ struct CTween {
 				{2, "from", EPT_FLOAT, &from},		   {3, "to", EPT_FLOAT, &to},
 				{4, "duration", EPT_FLOAT, &duration}, {5, "elapsed", EPT_FLOAT, &elapsed},
 				{6, "easing", EPT_STRING, &easing},	   {7, "loop", EPT_BOOL, &loop},
-				{8, "playing", EPT_BOOL, &playing}};
+				{8, "pingPong", EPT_BOOL, &pingPong},  {9, "playing", EPT_BOOL, &playing}};
 	}
 };
 

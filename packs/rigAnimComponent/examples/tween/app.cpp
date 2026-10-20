@@ -41,5 +41,6 @@ void TweenApp::setup() {
 	tween.duration = 2.f;
 	tween.easing = "ease-in-out";
 	tween.loop = true;
+	tween.pingPong = true;
 	ecs->addComponent(ecs->createEntity("slide"), tween);
 }

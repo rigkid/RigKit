@@ -267,6 +267,54 @@ if [[ -d packs ]]; then
 	done
 fi
 
+# --- Catalog ids must appear in the port map ---------------------------------
+# Every table id in the vendored schema catalog is named in port-map.md, or
+# covered by a `rig.<domain>.*` family row. New schema ids fail here until
+# someone files them as Close, Partial, or Planned.
+if [[ -f docs/contract/RigWorks/schemas/README.md && -f docs/contract/port-map.md ]]; then
+	if command -v python3 >/dev/null 2>&1; then
+		PY=python3
+	elif command -v python >/dev/null 2>&1; then
+		PY=python
+	else
+		hit "schema coverage check needs python3"
+		PY=
+	fi
+	missing=""
+	if [[ -n "$PY" ]]; then
+	missing="$("$PY" - <<'PY'
+import re
+import pathlib
+
+readme = pathlib.Path("docs/contract/RigWorks/schemas/README.md").read_text(encoding="utf-8")
+port = pathlib.Path("docs/contract/port-map.md").read_text(encoding="utf-8")
+ids = []
+for line in readme.splitlines():
+	if not line.startswith("| `rig."):
+		continue
+	m = re.search(r"`(rig\.[a-z0-9_.]+)`", line)
+	if m:
+		ids.append(m.group(1))
+tokens = set(re.findall(r"`(rig\.[a-z0-9_.*]+)`", port))
+wild = {t for t in tokens if t.endswith(".*")}
+missing = []
+for schema_id in ids:
+	if schema_id in tokens:
+		continue
+	domain = schema_id.split(".")[1]
+	if f"rig.{domain}.*" in wild:
+		continue
+	missing.append(schema_id)
+print("\n".join(missing))
+PY
+)"
+	fi
+	if [[ -n "$missing" ]]; then
+		hit "schema id missing from docs/contract/port-map.md (add a Close, Partial, or Planned row)"
+		echo "$missing" >&2
+	fi
+fi
+
 if [[ "$FAIL" -ne 0 ]]; then
 	echo "" >&2
 	echo "Ten Commandments invariant check failed. See docs/contract/commandments.md" >&2

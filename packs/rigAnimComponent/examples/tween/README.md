@@ -1,3 +1,3 @@
 # tween
 
-One `CTween` slides a rect. Advance is **rigSystems** `STweens`.
+One `CTween` slides a rect out and back (`loop` + `pingPong`). Advance is **rigSystems** `STweens`.

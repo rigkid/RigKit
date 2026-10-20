@@ -1,3 +1,7 @@
+# Agent scratch: one-off pack clones and file dumps. Not a build product.
+.tmp-pack-clones/
+.tmp_pack_survey/
+
 # Pack checkouts under packs/ are ignored by default.
 # Only host-basic packs are git submodules (see .gitmodules / packs/README.md).
 # Everything else: local clone or CPM at app.json url+ref.

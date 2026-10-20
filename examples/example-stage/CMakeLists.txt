@@ -92,6 +92,7 @@ target_include_directories(example-stage-tests PRIVATE
 	"${RIGKIT_DIR}/src"
 	"${RIGKIT_DIR}/packs/rigComponent/src"
 	"${RIGKIT_DIR}/packs/rigSimComponent/src"
+	"${RIGKIT_DIR}/packs/rigRender3D/src"
 	"${RIGKIT_DIR}/third_party/doctest"
 )
 set_target_properties(example-stage-tests PROPERTIES

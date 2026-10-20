@@ -145,7 +145,7 @@ queue onto the selected output). Nodes still evaluate without that pack.
 |-------|--------|-------|
 | MIDI In | `midi.in` | Last note `gate` / `note` / `vel`, `pulse` on note-on, `cc` for the CC number param. `Channel` 0 = omni |
 | MIDI Note | `midi.note` | Rising `gate` sends Note On, falling sends Note Off. `note` / `vel` / `ch` are knobs or pins. `on` pulses the attack |
-| MIDI CC | `midi.cc` | `value` 0..1 → CC 0..127 when it changes. `cc` / `ch` knobs or pins |
+| MIDI CC | `midi.cc` | `value` 0..1 to CC 0..127 when it changes. `cc` / `ch` knobs or pins |
 
 Patch **Beat** `pulse` into **MIDI Note** `gate` to fire a note every cycle. Map
 a slider or `mod.audio` `level` into **MIDI CC** `value` to send a fader.

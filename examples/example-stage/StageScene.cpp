@@ -1,7 +1,11 @@
 #include "StageScene.h"
 
+#include "CAssetRef.h"
 #include "CDrawStyle.h"
 #include "CLight.h"
+#include "CMesh.h"
+#include "CRenderEnvironment.h"
+#include "CRenderMaterial.h"
 #include "CRigidbody.h"
 #include "CSimCloth.h"
 #include "CSimShape.h"
@@ -19,9 +23,29 @@ void registerComponents(rigkit::MEcs& ecs) {
 	ecs.registerComponent<CStageScript>("StageScript", false);
 }
 
+entt::entity addImage(rigkit::MEcs& ecs, const std::string& name, const std::string& path) {
+	auto entity = ecs.createEntity(name);
+	rigkit::ecs::CAssetRef ref;
+	ref.kind = rigkit::ecs::CAssetRef::Kind::Image;
+	ref.path = path;
+	ecs.addComponent(entity, ref);
+	return entity;
+}
+
 void addFeatureActors(rigkit::MEcs& ecs) {
 	rig::sim::makeWorld(ecs, {0.f, -9.81f, 0.f}, 4, "stage-world");
-	rig::sim::makePlane(ecs, {0.f, 1.f, 0.f}, 0.f, rig::sim::planeFill(), "stage-ground");
+	auto ground =
+		rig::sim::makePlane(ecs, {0.f, 1.f, 0.f}, 0.f, rig::sim::planeFill(), "stage-ground");
+	rigkit::ecs::CRenderMaterial groundMat;
+	groundMat.albedoR = 0.85f;
+	groundMat.albedoG = 0.82f;
+	groundMat.albedoB = 0.75f;
+	groundMat.roughness = 0.92f;
+	groundMat.metallic = 0.f;
+	groundMat.albedoMap = addImage(ecs, "stage-checker", "meshes/checker.png");
+	ecs.addComponent(ground, groundMat);
+	auto& groundMesh = ecs.getComponent<rigkit::ecs::CMesh>(ground);
+	groundMesh.texcoords = {{0.f, 0.f}, {6.f, 0.f}, {0.f, 6.f}, {6.f, 6.f}};
 	rig::sim::makeWind(ecs, {1.f, 0.f, 0.2f}, 1.5f, "stage-wind");
 	rig::sim::makeCloth(ecs, 8, 5, 0.18f, {-0.7f, 2.4f, -0.4f},
 						rigkit::ecs::CSimCloth::Pin::TopCorners, rig::sim::clothFill(),
@@ -30,7 +54,15 @@ void addFeatureActors(rigkit::MEcs& ecs) {
 	rigkit::ecs::CDrawStyle ball;
 	ball.setFillColor(0.95f, 0.45f, 0.18f);
 	ball.hasStroke = false;
-	rig::sim::makeSphere(ecs, {0.f, 2.6f, 0.6f}, 0.35f, 1.f, {0.4f, 0.f, 0.f}, ball, "ball");
+	auto ballEntity =
+		rig::sim::makeSphere(ecs, {0.f, 2.6f, 0.6f}, 0.35f, 1.f, {0.4f, 0.f, 0.f}, ball, "ball");
+	rigkit::ecs::CRenderMaterial ballMat;
+	ballMat.albedoR = 0.95f;
+	ballMat.albedoG = 0.45f;
+	ballMat.albedoB = 0.18f;
+	ballMat.metallic = 0.85f;
+	ballMat.roughness = 0.28f;
+	ecs.addComponent(ballEntity, ballMat);
 
 	auto camera = rig::makeCamera(ecs, {3.4f, 2.4f, 4.6f}, true, "stage-camera");
 	ecs.getComponent<rigkit::ecs::CTransform>(camera).setEulerRadians({-0.35f, 0.65f, 0.f});
@@ -53,6 +85,12 @@ void addFeatureActors(rigkit::MEcs& ecs) {
 	prefab.colorB = 0.95f;
 	ecs.addComponent(drop, prefab);
 	ecs.addComponent(drop, rigkit::ecs::CTransform{});
+
+	auto sky = ecs.createEntity("stage-sky");
+	rigkit::ecs::CRenderEnvironment environment;
+	environment.hdri = "env/sky.hdr";
+	environment.intensity = 1.f;
+	ecs.addComponent(sky, environment);
 
 	auto play = ecs.createEntity("play");
 	CStageScript script;
@@ -139,7 +177,15 @@ entt::entity spawn(rigkit::MEcs& ecs, const std::string& prefab, glm::vec3 at, g
 		name = spec.name + "-" + std::to_string(n++);
 	} while (ecs.findEntity(name) != entt::null);
 
-	return rig::sim::makeSphere(ecs, at, spec.radius, spec.mass, velocity, style, name);
+	auto spawned = rig::sim::makeSphere(ecs, at, spec.radius, spec.mass, velocity, style, name);
+	rigkit::ecs::CRenderMaterial material;
+	material.albedoR = spec.colorR;
+	material.albedoG = spec.colorG;
+	material.albedoB = spec.colorB;
+	material.metallic = 0.05f;
+	material.roughness = 0.4f;
+	ecs.addComponent(spawned, material);
+	return spawned;
 }
 
 int rigidbodyCount(rigkit::MEcs& ecs) {

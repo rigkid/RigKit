@@ -31,6 +31,16 @@ In-org packs are separate remotes in the [rigkid](https://github.com/rigkid) org
 | **rigMeshEdit** | [rigkid/rigMeshEdit](https://github.com/rigkid/rigMeshEdit) | ImGuizmo TRS, face pick/paint, extrude; OBJ + `.rig` scene |
 | **rigAtlas** | [rigkid/rigAtlas](https://github.com/rigkid/rigAtlas) (local `packs/` until published) | xatlas UV unwrap + chart packing over `CMesh` (writes `texcoords`, splits seam vertices). CPU bake in Setup. **Leaf.** |
 
+### Sim
+
+| Pack | Remote | Role |
+|------|--------|------|
+| **rigSimComponent** | [rigkid/rigSimComponent](https://github.com/rigkid/rigSimComponent) (local `packs/` until published) | Sim PODs. DATA ONLY. `CRigidbody` speaks `rig.sim.rigidbody`. Cloth, wind, plane, and shape are `x.rigkit.sim.*` |
+| **rigPhysics** | [rigkid/rigPhysics](https://github.com/rigkid/rigPhysics) (local `packs/` until published) | Sim step trunk. `ISimBackend` + `SPhysics`. No engine. A leaf registers during setup |
+| **rigJolt** | [rigkid/rigJolt](https://github.com/rigkid/rigJolt) (local `packs/` until published) | Jolt Physics leaf. Vendors Jolt, registers `JoltBackend` with **rigPhysics**. **Leaf.** Pi: soft bodies are single-threaded; keep grids small |
+
+Teaching app: `packs/rigJolt/examples/cloth`. Hosts list the leaf; the trunk and data pack come in through `pack.json`.
+
 ### Nodes
 
 | Pack | Remote | Role |
@@ -139,6 +149,13 @@ Folders stay flat. The tree is `pack.json` dependencies: an app lists a **leaf**
 | **rigEthereum** | [rigkid/rigEthereum](https://github.com/rigkid/rigEthereum) (local `packs/` until published) | On-chain art record (`COnChainArt`) + keccak256 / wallet submit intent (existing wallet). **Leaf.** No keys / no broadcast. |
 
 Art-Net is a **planned leaf** on **rigDmx**. Do not stuff it into **rigSacn**.
+
+### Assets
+
+| Pack | Remote | Role |
+|------|--------|------|
+| **rigAssetLib** | [rigkid/rigAssetLib](https://github.com/rigkid/rigAssetLib) (local `packs/` until published) | Offline asset catalog - ULID, roots, tags, favorites, rename / delete / relink. No UI. **Trunk.** |
+| **rigAssetUi** | [rigkid/rigAssetUi](https://github.com/rigkid/rigAssetUi) (local `packs/` until published) | Content browser chrome over **rigAssetLib**. One `AssetBrowser`; the host owns the window. **Leaf.** |
 
 ### Persistence
 

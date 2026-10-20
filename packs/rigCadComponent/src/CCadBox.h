@@ -7,7 +7,7 @@ namespace rigkit {
 namespace ecs {
 
 /**
- * @brief Axis-aligned box solid. Speaks `rig.cad.box`.
+ * @brief Axis-aligned box solid. Speaks `rig.cad.cuboid`.
  * @details CSG source of truth; `CMesh` on the same entity is an optional bake.
  */
 struct CCadBox {

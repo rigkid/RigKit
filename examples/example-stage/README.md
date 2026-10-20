@@ -4,9 +4,11 @@ Stage dresses a 3D scene and plays it. The editor executable is `example-stage`.
 
 ## What you see
 
-A lit stage: ground plane, a small cloth, an orange ball that drops, a green triangle imported from glTF, and a blue sphere spawned by `data/play.py` on the first update. The selected triangle has the Mesh Edit gizmo.
+A lit stage: a checkered ground, a small cloth, an orange metal ball that drops, a green triangle imported from glTF (base color, roughness, checker texture), and a blue sphere spawned by `data/play.py` on the first update. The selected triangle has the Mesh Edit gizmo.
 
-Shade is smooth Lambert from `CLight` through **rigRender3D**. Banded shade and Bayer dither are fields on that light. There is no PBR, image-based lighting, SSAO, shadow map, or HDR tonemap. Those do not exist on the GLES2 present, and Stage does not grow a second renderer.
+`CRenderMaterial` is shaded by **rigRender3D**: GGX, the albedo image, emissive, and ACES into the window. `data/env/sky.hdr` is the irradiance. The directional light casts a soft shadow map, and a half-resolution SSAO pass runs when the GL context has depth textures. Cloth stays on Lambert (no material component). Banded shade and Bayer dither remain fields on `CLight` for entities without a material.
+
+`--present` opens the window for a few frames and exits non-zero if the surface shader fails to compile or an albedo / HDRI path is missing.
 
 `CSimShape::Box` is reserved in **rigJolt** and is not spawned.
 
@@ -25,6 +27,7 @@ ctest --test-dir examples/example-stage/build --output-on-failure
 ./examples/example-stage/build/bin/example-stage --play
 ./examples/example-stage/build/bin/example-stage-play
 ./examples/example-stage/build/bin/example-stage --smoke
+./examples/example-stage/build/bin/example-stage-play --present
 ```
 
 `--play` on the editor executable skips editor chrome. `example-stage-play` is the build that does not link **rigImGui** or **rigMeshEdit**.

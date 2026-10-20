@@ -26,5 +26,5 @@ int main(int argc, char* argv[]) {
 	if (!headless) {
 		engine.run();
 	}
-	return raw->smokeFailed() ? 1 : 0;
+	return (raw->smokeFailed() || raw->presentFailed()) ? 1 : 0;
 }

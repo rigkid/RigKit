@@ -19,6 +19,7 @@
 #include "CProject.h"
 #include "CRectangle.h"
 #include "CRelationship.h"
+#include "CRenderMaterial.h"
 #include "CSelection.h"
 #include "CText.h"
 #include "CTransform.h"
@@ -319,10 +320,17 @@ TEST_CASE("rigProject Contract import maps rig.* geometry light material") {
 
 	auto meshView = ecs.view<ecs::CMesh, ecs::CDrawStyle>();
 	REQUIRE(meshView.begin() != meshView.end());
-	const auto& style = meshView.get<ecs::CDrawStyle>(*meshView.begin());
+	const auto meshEntity = *meshView.begin();
+	const auto& style = meshView.get<ecs::CDrawStyle>(meshEntity);
 	CHECK(style.hasFill);
 	CHECK(style.fillR == doctest::Approx(0.2f));
 	CHECK(style.fillB == doctest::Approx(0.8f));
+	REQUIRE(ecs.hasComponent<ecs::CRenderMaterial>(meshEntity));
+	const auto& material = ecs.getComponent<ecs::CRenderMaterial>(meshEntity);
+	CHECK(material.albedoR == doctest::Approx(0.2f));
+	CHECK(material.albedoB == doctest::Approx(0.8f));
+	CHECK(material.metallic == doctest::Approx(0.f));
+	CHECK(material.roughness == doctest::Approx(1.f));
 
 	auto camView = ecs.view<ecs::CCamera>();
 	REQUIRE(camView.begin() != camView.end());

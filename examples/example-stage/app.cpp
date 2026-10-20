@@ -13,11 +13,14 @@
 #include "packs/rigRender3D/src/rigRender3D.h"
 #include "packs/rigSimComponent/src/rigSimComponent.h"
 #include "packs/rigSystems/src/rigSystems.h"
+#include "CAssetRef.h"
 #include "CMesh.h"
+#include "CRenderMaterial.h"
 #include "CTransform.h"
 #include "StageBindings.h"
 #include "StageProp.h"
 #include "StageScene.h"
+#include "SurfacePass.h"
 
 #include <cmath>
 #include <spdlog/spdlog.h>
@@ -46,6 +49,10 @@ void StageApp::parseCommandLineArgs(const rigkit::CommandLineArgs& args) {
 		m_smoke = true;
 	}
 	if (args.hasFlag("play")) {
+		m_play = true;
+	}
+	if (args.hasFlag("present")) {
+		m_present = true;
 		m_play = true;
 	}
 }
@@ -105,6 +112,24 @@ bool StageApp::runSmoke() {
 	if (mesh.texcoords.size() != mesh.positions.size()) {
 		spdlog::error("stage smoke: prop UVs {} positions {}", mesh.texcoords.size(),
 					  mesh.positions.size());
+		return false;
+	}
+	const auto prop = stage::find(*ecs, "prop");
+	if (!ecs->hasComponent<rigkit::ecs::CRenderMaterial>(prop)) {
+		spdlog::error("stage smoke: prop has no material");
+		return false;
+	}
+	const auto& propMat = ecs->getComponent<rigkit::ecs::CRenderMaterial>(prop);
+	if (std::abs(propMat.roughness - 0.6f) > 0.02f || std::abs(propMat.albedoG - 0.75f) > 0.02f) {
+		spdlog::error("stage smoke: prop material albedo {:.2f} roughness {:.2f}", propMat.albedoG,
+					  propMat.roughness);
+		return false;
+	}
+	if (propMat.albedoMap == entt::null ||
+		!ecs->hasComponent<rigkit::ecs::CAssetRef>(propMat.albedoMap) ||
+		ecs->getComponent<rigkit::ecs::CAssetRef>(propMat.albedoMap).path.find("checker.png") ==
+			std::string::npos) {
+		spdlog::error("stage smoke: prop albedo is not checker.png");
 		return false;
 	}
 	if (stage::rigidbodyCount(*ecs) != 1) {
@@ -251,6 +276,19 @@ void StageApp::setup() {
 }
 
 void StageApp::update(float dt) {
+	if (m_present) {
+		if (++m_presentFrames >= 3) {
+			m_presentOk = !rigkit::ecs::surfacePresentFailed();
+			if (!m_presentOk) {
+				spdlog::error("stage present: surface shader or asset failed");
+			} else {
+				spdlog::info("stage present: surface ok");
+			}
+			if (auto* win = m_engine->getWindow()) {
+				glfwSetWindowShouldClose(win, GLFW_TRUE);
+			}
+		}
+	}
 	if (m_smoke || !m_python || !m_python->available()) {
 		return;
 	}

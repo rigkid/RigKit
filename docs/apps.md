@@ -35,7 +35,7 @@ Examples already in this tree keep the id they have: `minimal`, `oscHost`, `glEd
 | `example-svgAnimator` | SVG path playback - `rigSvg` into `CPath`, `CTween` / `STweens` slides one path (`--smoke`) |
 | `example-pixelEditor` | Pixel layers, paint, Rig brush packs, PSD IO (`--smoke`) |
 | `example-studio` | Vector + Pixel crafts; App > Workspace switches chrome (`--smoke`) |
-| `example-stage` | Stage - 3D scene, Jolt spheres/cloth, glTF prop, Python `stage` API. Editor target plus `example-stage-play` (`--smoke`, doctest) |
+| `example-stage` | Stage - 3D scene, materials, Jolt spheres/cloth, glTF prop, Python `stage` API. Editor target plus `example-stage-play` (`--smoke`, `--present`, doctest) |
 
 Product apps (out of tree) live next to RigKit, not under `examples/`. `../app-svgAnimator` plays SVG paths. `../Relay` is [Relay](https://github.com/GitBruno/relayout), the book layout host.
 

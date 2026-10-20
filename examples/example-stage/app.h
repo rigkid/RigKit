@@ -19,6 +19,7 @@ class StageApp : public rigkit::IApp {
 	void draw() override {}
 
 	bool smokeFailed() const { return m_smoke && !m_smokeOk; }
+	bool presentFailed() const { return m_present && !m_presentOk; }
 
   private:
 	bool runSmoke();
@@ -26,6 +27,9 @@ class StageApp : public rigkit::IApp {
 	bool m_smoke = false;
 	bool m_smokeOk = false;
 	bool m_play = false;
+	bool m_present = false;
+	bool m_presentOk = false;
+	int m_presentFrames = 0;
 	std::string m_scriptError;
 	std::shared_ptr<rigkit::rigPython> m_python;
 };

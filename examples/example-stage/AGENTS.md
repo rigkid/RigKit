@@ -10,7 +10,8 @@ Stage is the host example `examples/example-stage`. It is not a second engine. E
 |------|--------|
 | Entities, transform, camera, light, mesh, selection | **rigComponent** + host ECS |
 | Hierarchy, host systems | **rigSystems** |
-| Draw | **rigRender3D** (`SMeshPresent3D`) |
+| Draw | **rigRender3D** (`SMeshPresent3D`, surface pass for `CRenderMaterial`) |
+| Albedo image, HDRI decode | **rigImage** |
 | Gravity, plane, sphere, cloth recipes | **rigSimComponent** |
 | Step | **rigPhysics** `SPhysics` |
 | Solver | **rigJolt** |
@@ -21,19 +22,15 @@ Stage is the host example `examples/example-stage`. It is not a second engine. E
 
 Do not add a renderer, an ECS, a physics world, or a Lua runtime in this folder. A defect in a pack is fixed in that pack.
 
-## Present limits
+## Present
 
-**rigRender3D** lights one enabled `CLight`: directional or point, smooth Lambert or banded shade, optional Bayer dither. Albedo is `CMesh` face color, `CDrawStyle` fill, or an atlas. UVs on `CMesh::texcoords` are ignored until the scene has a `CIndexedAtlas`.
+**rigRender3D** lights one enabled `CLight`. A mesh or sphere with `CRenderMaterial` (`rig.render.material`) is shaded metallic-roughness: albedo color times the `albedoMap` image, GGX, emissive, ACES into the 8-bit framebuffer. `CRenderEnvironment.hdri` is a Radiance file projected to L2 irradiance (diffuse, and a soft specular lobe). The directional light also draws a 1024 shadow map with a 3 by 3 PCF filter, and a half-resolution SSAO pass, when the context can allocate a depth texture. Without that texture those two passes stay off and the surface shader still runs.
 
-Do not stub, and do not start, any of these inside Stage:
+Entities without `CRenderMaterial` stay on Lambert: face color, palette, or `CDrawStyle` fill, banded shade, optional Bayer dither. `CMesh::texcoords` on that path still need a `CIndexedAtlas`.
 
-- PBR metallic-roughness
-- IBL from Poly Haven HDRIs
-- Soft shadow maps
-- SSAO
-- HDR framebuffer and tonemapping
+Replace `data/env/sky.hdr` with a Poly Haven `.hdr` to change the irradiance. The file in the tree is a small generated sky so the feature runs with no download.
 
-They are not the GLES2 Pi path. A private desktop renderer would be a second present.
+There is no float framebuffer. Point lights are not shadowed. Specular from the HDR is the L2 lobe, not a prefiltered cubemap. Do not add a second present in this example. SSAO is an extra geometry pass plus a half-res fullscreen pass; this scene is small enough for the Pi floor, and a heavy scene should say so.
 
 `CSimShape::Kind::Box` is reserved. **rigJolt** logs and does not build it. Do not spawn boxes.
 
