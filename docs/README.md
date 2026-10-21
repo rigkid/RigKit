@@ -61,6 +61,7 @@ Portable Rig rules (with RigKit notes). Full intro: [contract/README.md](contrac
 | Path | Purpose |
 |------|---------|
 | [../AGENTS.md](../AGENTS.md) | Agent / contributor playbook |
+| [../CONTRIBUTORS.md](../CONTRIBUTORS.md) | People this host stands on |
 | [../skills/](../skills/) | Task skills (data, build, contract, ...) |
 | [../packs/](../packs/) | In-org pack checkouts |
 | [RigWorks](https://github.com/rigkid/RigWorks) | Portable framework (SUDE + ECS + schemas) |

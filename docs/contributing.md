@@ -116,3 +116,8 @@ Without the secret, workflows warn and continue. Jobs that only touch public rem
 - Packs: **rigComponent** (data) / **rigSystems** (code) / **rigProject** - see [packs_using.md](packs_using.md).
 
 Contract docs remain the source of truth under [contract/](contract/README.md).
+
+## Credits
+
+People this host stands on: [CONTRIBUTORS.md](../CONTRIBUTORS.md). 
+Add the person/peaple there when you vendor or fetch a library into this repo.

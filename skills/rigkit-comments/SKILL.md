@@ -1,13 +1,13 @@
 ---
 name: rigkit-comments
 description: >-
-  Write and revise RigKit comments and first-party docs in plain why-and-how,
-  no fluff. Public APIs use Doxygen-compatible tags (@brief, @param, @return,
+  Write and revise RigKit comments and first-party docs usage-first, with
+  clear limits and no fluff. Public APIs use Doxygen-compatible tags (@brief, @param, @return,
   ...). Use when adding header docs, editing contract/authoring Markdown,
   explaining present paths or pack boundaries, or cleaning prose.
 ---
 
-# RigKit comments (plain voice + Doxygen public API)
+# RigKit comments (usage first, clear limits, Doxygen on public API)
 
 Comments and first-party Markdown (`docs/`, `AGENTS.md`, pack READMEs) share the same voice - plain English, usage first, clear about what something does **not** do.
 
@@ -56,7 +56,7 @@ Prefer `/** ... */` or `///` with `@` commands (Javadoc-style; Doxygen accepts b
 | Tag | Use |
 |-----|-----|
 | `@brief` | One-line summary (required on public types/functions) |
-| `@details` | Optional longer why / does-not / usage (plain prose here) |
+| `@details` | Optional longer why, how to use it, and what it does not do |
 | `@param name` | Non-obvious parameters only; skip self-explanatory names when the brief is enough |
 | `@return` | When the return value carries meaning beyond the type |
 | `@note` / `@warning` | Pi, re-entrancy, ownership, pack bootstrap order |
