@@ -51,8 +51,11 @@ struct AppSettings : public ISettings {
 
 	/**
 	 * @brief Apply identity fields from a deployed `app.json` (next to the exe).
-	 * @details Reads `name`, `version`, `description`, `license`, and optional
-	 * `window`. Does not touch graphics / debug / dataPath.
+	 * @details Reads `name`, `version`, `description`, `license`, and `window`
+	 * (width, height, title, fullscreen, samples). `window` is the authored
+	 * default - do not also set it in the app constructor. Does not touch
+	 * graphics / debug / dataPath. Saved `host.app` prefs override `window`
+	 * after the first launch.
 	 */
 	void applyFromManifest(const json& j) {
 		if (j.contains("name") && j["name"].is_string()) {

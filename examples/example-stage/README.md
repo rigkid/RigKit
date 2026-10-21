@@ -6,7 +6,7 @@ Stage dresses a 3D scene and plays it. The editor executable is `example-stage`.
 
 A lit stage: a checkered ground, a small cloth, an orange metal ball that drops, a green triangle imported from glTF (base color, roughness, checker texture), and a blue sphere spawned by `data/play.py` on the first update. The selected triangle has the Mesh Edit gizmo.
 
-`CRenderMaterial` is shaded by **rigRender3D**: GGX, the albedo image, emissive, and ACES into the window. `data/env/sky.hdr` is the irradiance. The directional light casts a soft shadow map, and a half-resolution SSAO pass runs when the GL context has depth textures. Cloth stays on Lambert (no material component). Banded shade and Bayer dither remain fields on `CLight` for entities without a material.
+`CRenderMaterial` is shaded by **rigRender3D**: GGX, the albedo image, emissive, and ACES into the window. `data/env/sky.hdr` is the irradiance, on the `CAssetRef` that `CRenderEnvironment.hdri` names. The directional light casts a soft shadow map, and a half-resolution SSAO pass runs when the GL context has depth textures. Cloth stays on Lambert (no material component). Banded shade and Bayer dither remain fields on `CLight` for entities without a material.
 
 `--present` opens the window for a few frames and exits non-zero if the surface shader fails to compile or an albedo / HDRI path is missing.
 

@@ -191,7 +191,7 @@ Then start from **[rigTemplate](../templates/rigTemplate/)** (`https://github.co
 
 ## Optional / external packs
 
-Gitignored under `packs/*` except in-org packs and this README:
+Gitignored under `packs/*` except the four host-basic submodules (`rigComponent`, `rigSystems`, `rigProject`, `rigImGui`) and this README. Any other checkout stays a local clone or a CPM fetch at `app.json` `url` + `ref`.
 
 | Pack | Role |
 |-------|------|

@@ -11,7 +11,6 @@ class rigProject;
 
 class PixelEditorApp : public rigkit::IApp {
   public:
-	PixelEditorApp();
 	void parseCommandLineArgs(const rigkit::CommandLineArgs& args) override;
 	void setup() override;
 	void update(float) override {}

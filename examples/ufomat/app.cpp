@@ -1927,12 +1927,7 @@ class PreviewPanel : public rigkit::IWindow {
 
 } // namespace
 
-UfomatApp::UfomatApp() {
-	window().width = 1100;
-	window().height = 720;
-	window().title = "UFOMAT";
-	settings().appName = "ufomat";
-}
+UfomatApp::UfomatApp() { settings().appName = "ufomat"; }
 
 void UfomatApp::parseCommandLineArgs(const rigkit::CommandLineArgs& args) {
 	IApp::parseCommandLineArgs(args);

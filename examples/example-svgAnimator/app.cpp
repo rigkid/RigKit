@@ -44,12 +44,6 @@ rigkit::ecs::CDrawStyle styleFor(const rigkit::plot::PathSourceLayer& layer,
 
 } // namespace
 
-SvgAnimatorApp::SvgAnimatorApp() {
-	window().width = 800;
-	window().height = 600;
-	window().title = "example-svgAnimator";
-}
-
 void SvgAnimatorApp::parseCommandLineArgs(const rigkit::CommandLineArgs& args) {
 	IApp::parseCommandLineArgs(args);
 	if (args.hasFlag("smoke")) {

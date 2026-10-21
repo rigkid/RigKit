@@ -57,13 +57,7 @@ bool argBool(const rigkit::osc::OscArg& a, bool& out) {
 
 } // namespace
 
-OscHost::OscHost() {
-	// Compact default - two instances fit on one desktop.
-	window().width = 640;
-	window().height = 400;
-	window().title = "RigKit - oscHost";
-	settings().appName = "oscHost";
-}
+OscHost::OscHost() { settings().appName = "oscHost"; }
 
 void OscHost::parseCommandLineArgs(const rigkit::CommandLineArgs& args) {
 	rigkit::IApp::parseCommandLineArgs(args);

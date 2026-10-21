@@ -36,7 +36,9 @@ TEST_CASE("feature actors, pose guard, and prefab spawn") {
 
 	auto sky = stage::find(ecs, "stage-sky");
 	REQUIRE(ecs.hasComponent<rigkit::ecs::CRenderEnvironment>(sky));
-	CHECK(ecs.getComponent<rigkit::ecs::CRenderEnvironment>(sky).hdri == "env/sky.hdr");
+	const auto skyMap = ecs.getComponent<rigkit::ecs::CRenderEnvironment>(sky).hdri;
+	REQUIRE(ecs.hasComponent<rigkit::ecs::CAssetRef>(skyMap));
+	CHECK(ecs.getComponent<rigkit::ecs::CAssetRef>(skyMap).path == "env/sky.hdr");
 
 	CHECK(stage::find(ecs, "ball") != entt::null);
 	CHECK(stage::find(ecs, "drop") != entt::null);

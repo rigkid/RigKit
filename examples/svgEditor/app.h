@@ -14,7 +14,6 @@ class rigTraceUi;
 
 class SvgEditorApp : public rigkit::IApp {
   public:
-	SvgEditorApp();
 	void parseCommandLineArgs(const rigkit::CommandLineArgs& args) override;
 	void setup() override;
 	void update(float) override;

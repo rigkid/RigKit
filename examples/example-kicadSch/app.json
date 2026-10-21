@@ -3,5 +3,6 @@
   "version": "0.1.0",
   "license": "MIT",
   "description": "Thin KiCad schematic sheet - load, drag, grid snap that keeps wires",
+  "window": { "width": 1280, "height": 800, "title": "example-kicadSch" },
   "dependencies": []
 }

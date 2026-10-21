@@ -4,7 +4,6 @@
 
 class SvgAnimatorApp : public rigkit::IApp {
   public:
-	SvgAnimatorApp();
 	void parseCommandLineArgs(const rigkit::CommandLineArgs& args) override;
 	void setup() override;
 	void update(float) override {}

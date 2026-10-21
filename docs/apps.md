@@ -63,18 +63,13 @@ For a product app outside this repo, see [apps_creating.md](apps_creating.md).
 
 ## Minimal skeleton
 
+Default size, title, and MSAA sample count live in `app.json` `window` (the OS title is the app name, not the open document). The constructor does not set them. A saved `host.app` size overrides that default after the first launch.
+
 ```cpp
 #include "core/U_core.h"
 
 class MyApp : public rigkit::IApp {
 public:
-    MyApp() {
-        window().title = "My Sketch"; // GLFW OS title = app name (not document name)
-        window().width = 800;
-        window().height = 600;
-        window().samples = 4; // MSAA at window create; Canvas FBOs inherit unless CanvasSettings.samples is set
-    }
-
     void setup()  override {
         // Sketches (clean canvas until Ctrl+E): m_engine->enableEditMode(true);
     }

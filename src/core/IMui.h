@@ -344,7 +344,12 @@ class IMui {
 		(void)action;
 	}
 
-	/** @brief Gizmo / tool op for Tools menu (Select V, Move W, Rotate E, Scale R). */
+	/**
+	 * @brief Gizmo op (Select V, Move W, Rotate E, Scale R).
+	 * @details The Tools rows show when Edit Mode is on or a gizmo drawer is set.
+	 * Registered tool actions replace them. Rulers and 2D handles show for a
+	 * bound content view or Edit Mode.
+	 */
 	enum class GizmoOp { Select, Translate, Rotate, Scale };
 	virtual void setGizmoOp(GizmoOp op) { (void)op; }
 	virtual GizmoOp gizmoOp() const { return GizmoOp::Select; }

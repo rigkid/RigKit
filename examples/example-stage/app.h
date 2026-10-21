@@ -11,7 +11,6 @@ class rigPython;
 
 class StageApp : public rigkit::IApp {
   public:
-	StageApp();
 	~StageApp() override;
 	void parseCommandLineArgs(const rigkit::CommandLineArgs& args) override;
 	void setup() override;

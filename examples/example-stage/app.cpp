@@ -35,12 +35,6 @@
 #include "packs/rigMeshEdit/src/rigMeshEdit.h"
 #endif
 
-StageApp::StageApp() {
-	window().width = 1280;
-	window().height = 720;
-	window().title = "Stage";
-}
-
 StageApp::~StageApp() = default;
 
 void StageApp::parseCommandLineArgs(const rigkit::CommandLineArgs& args) {

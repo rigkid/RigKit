@@ -96,6 +96,7 @@ Every id in the vendored catalog ([schemas/README.md](RigWorks/schemas/README.md
 | `rig.paint.gradient` | **rigPlotComponent** - `CGradient` | Wire `kind` / stops `t`/`rgba`. `interp` / `spread` / `intensity` / `angle`/`center`/radii are host stand-ins for `p0`/`p1`. |
 | `rig.paint.library` | **rigPlotComponent** - `CPaintLibrary` / **rigColorspace** - `CSwatchLibrary` | Still index-based gradients/swatches - not entity paint lists yet. |
 | `rig.render.material` | **rigComponent** `CRenderMaterial`; shaded by **rigRender3D** | Import writes albedo, metal, roughness, emissive, albedo-map entity. No schema writer. |
+| `rig.render.environment` | **rigComponent** `CRenderEnvironment`; shaded by **rigRender3D** | `hdri` is a `rig.media.asset_ref` entity (lat-long radiance). `intensity` scales; absent is 1. Decode stays in the present pack. |
 | `rig.media.*` | - | Remaining media ids. Settings-only; decode in code packs. |
 | `rig.ui.action` | **rigProject** import list | `panel` / `group` / `order` / `actionId` / `enabled` collected on import. Not an ECS component. |
 | `rig.interact.selected` | **rigComponent** - `CSelection` | Live `selectionIndex`. The document snapshot (`order`) is not read or written. |

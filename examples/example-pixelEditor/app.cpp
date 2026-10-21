@@ -22,12 +22,6 @@
 #include <filesystem>
 #include <spdlog/spdlog.h>
 
-PixelEditorApp::PixelEditorApp() {
-	window().width = 1280;
-	window().height = 800;
-	window().title = "example-pixelEditor";
-}
-
 void PixelEditorApp::parseCommandLineArgs(const rigkit::CommandLineArgs& args) {
 	IApp::parseCommandLineArgs(args);
 	if (args.hasFlag("smoke")) {

@@ -241,6 +241,38 @@ if [[ -d packs ]]; then
 	done
 fi
 
+# --- Default window lives in app.json ------------------------------------------
+# applyFromManifest overwrites constructor width/height/title. A second copy drifts.
+# Host examples, templates, and the four submodule packs only. Other packs/ are
+# local clones; their constructors belong to those repos.
+window_hits=""
+window_paths=()
+[[ -d examples ]] && window_paths+=(examples)
+[[ -d templates ]] && window_paths+=(templates)
+for pack in packs/rigComponent packs/rigSystems packs/rigProject packs/rigImGui; do
+	[[ -d "$pack/examples" ]] && window_paths+=("$pack/examples")
+done
+if [[ ${#window_paths[@]} -gt 0 ]]; then
+	window_hits="$(grep -RInE --include='*.h' --include='*.cpp' \
+		'window\(\)\.(width|height)[[:space:]]*=|window\(\)\.title[[:space:]]*=[[:space:]]*"' \
+		"${window_paths[@]}" 2>/dev/null || true)"
+fi
+window_hits="$(printf '%s\n' "$window_hits" | grep -vE '/build/' | grep -v '^$' || true)"
+if [[ -n "$window_hits" ]]; then
+	filtered=""
+	while IFS= read -r line; do
+		[[ -z "$line" ]] && continue
+		file="${line%%:*}"
+		git check-ignore -q -- "$file" && continue
+		filtered="${filtered}${line}"$'\n'
+	done <<< "$window_hits"
+	window_hits="$filtered"
+fi
+if [[ -n "$window_hits" ]]; then
+	hit "default window size/title belong in app.json \"window\", not the app constructor"
+	echo "$window_hits" >&2
+fi
+
 # --- Every pack: Pack example + README screenshot ------------------------------
 # packs/<name>/examples/<name>/CMakeLists.txt and examples/<name>/img/preview.png
 # Pack README must embed preview.png. Host examples/ do not count.

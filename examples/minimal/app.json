@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "license": "MIT",
   "description": "Minimal example app - creators + meshes + hierarchy",
+  "window": { "width": 800, "height": 600, "title": "RigKit Minimal" },
   "dependencies": [
     {
       "name": "rigComponent",

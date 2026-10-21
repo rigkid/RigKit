@@ -88,7 +88,7 @@ void addFeatureActors(rigkit::MEcs& ecs) {
 
 	auto sky = ecs.createEntity("stage-sky");
 	rigkit::ecs::CRenderEnvironment environment;
-	environment.hdri = "env/sky.hdr";
+	environment.hdri = addImage(ecs, "stage-sky-hdri", "env/sky.hdr");
 	environment.intensity = 1.f;
 	ecs.addComponent(sky, environment);
 

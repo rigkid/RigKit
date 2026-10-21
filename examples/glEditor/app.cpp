@@ -36,12 +36,6 @@ std::string readFileOrEmpty(const std::string& path) {
 
 } // namespace
 
-GlEditorApp::GlEditorApp() {
-	window().width = 1200;
-	window().height = 720;
-	window().title = "glEditor";
-}
-
 void GlEditorApp::parseCommandLineArgs(const rigkit::CommandLineArgs& args) {
 	IApp::parseCommandLineArgs(args);
 	if (args.hasFlag("smoke")) {

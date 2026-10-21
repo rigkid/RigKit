@@ -7,18 +7,10 @@
 # Everything else: local clone or CPM at app.json url+ref.
 packs/*
 !packs/README.md
-!packs/rigComponent
-!packs/rigImGui
-!packs/rigProject
-!packs/rigSystems
-!packs/rigFontComponent
-!packs/rigUfo
-!packs/rigFont
-!packs/rigPsd
-!packs/rigShowComponent
-!packs/rigCadComponent
-!packs/rigMusicComponent
-!packs/rigAnimComponent
+!packs/rigComponent/
+!packs/rigImGui/
+!packs/rigProject/
+!packs/rigSystems/
 
 # Host examples not ready for the first private land (keep local; do not stage).
 examples/example-lowpoly/

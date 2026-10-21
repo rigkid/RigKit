@@ -30,12 +30,6 @@
 
 #include <spdlog/spdlog.h>
 
-StudioApp::StudioApp() {
-	window().width = 1440;
-	window().height = 900;
-	window().title = "example-studio";
-}
-
 void StudioApp::parseCommandLineArgs(const rigkit::CommandLineArgs& args) {
 	IApp::parseCommandLineArgs(args);
 	if (args.hasFlag("smoke")) {

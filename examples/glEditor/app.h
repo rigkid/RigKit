@@ -11,7 +11,6 @@ class ShaderPreviewWindow;
 
 class GlEditorApp : public rigkit::IApp {
   public:
-	GlEditorApp();
 	void parseCommandLineArgs(const rigkit::CommandLineArgs& args) override;
 	void setup() override;
 	void update(float dt) override;

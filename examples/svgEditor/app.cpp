@@ -60,12 +60,6 @@ std::string tracePlateLayerName(const rigkit::trace::TracePlate& plate) {
 
 } // namespace
 
-SvgEditorApp::SvgEditorApp() {
-	window().width = 800;
-	window().height = 600;
-	window().title = "svgEditor";
-}
-
 void SvgEditorApp::parseCommandLineArgs(const rigkit::CommandLineArgs& args) {
 	IApp::parseCommandLineArgs(args);
 	if (args.hasFlag("smoke")) {

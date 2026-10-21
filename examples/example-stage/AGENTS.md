@@ -24,7 +24,7 @@ Do not add a renderer, an ECS, a physics world, or a Lua runtime in this folder.
 
 ## Present
 
-**rigRender3D** lights one enabled `CLight`. A mesh or sphere with `CRenderMaterial` (`rig.render.material`) is shaded metallic-roughness: albedo color times the `albedoMap` image, GGX, emissive, ACES into the 8-bit framebuffer. `CRenderEnvironment.hdri` is a Radiance file projected to L2 irradiance (diffuse, and a soft specular lobe). The directional light also draws a 1024 shadow map with a 3 by 3 PCF filter, and a half-resolution SSAO pass, when the context can allocate a depth texture. Without that texture those two passes stay off and the surface shader still runs.
+**rigRender3D** lights one enabled `CLight`. A mesh or sphere with `CRenderMaterial` (`rig.render.material`) is shaded metallic-roughness: albedo color times the `albedoMap` image, GGX, emissive, ACES into the 8-bit framebuffer. `CRenderEnvironment` (`rig.render.environment`) points `hdri` at a `CAssetRef` lat-long Radiance image, which **rigRender3D** projects to L2 irradiance (diffuse, and a soft specular lobe). The directional light also draws a 1024 shadow map with a 3 by 3 PCF filter, and a half-resolution SSAO pass, when the context can allocate a depth texture. Without that texture those two passes stay off and the surface shader still runs.
 
 Entities without `CRenderMaterial` stay on Lambert: face color, palette, or `CDrawStyle` fill, banded shade, optional Bayer dither. `CMesh::texcoords` on that path still need a `CIndexedAtlas`.
 

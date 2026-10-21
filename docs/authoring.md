@@ -6,14 +6,12 @@ RigKit is data-first and still friendly to write.
 
 ## Happy path
 
+Default window size, OS title, and MSAA `samples` live in `app.json` `window`. The title is the app name, not the open document. The constructor does not set them.
+
 ```cpp
 class MyApp : public rigkit::IApp {
 public:
 	MyApp() {
-		window().width = 800;
-		window().height = 600;
-		window().title = "My piece"; // GLFW OS title = app name (never overwrite with document name)
-		window().samples = 4; // default-framebuffer MSAA (create-time). Canvas and compositor bake FBOs inherit this.
 		settings().graphics.showFps = true; // host corner overlay (Preferences > Show FPS)
 	}
 	void setup() override {

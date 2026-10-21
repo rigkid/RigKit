@@ -7,7 +7,7 @@ description: >-
   explaining present paths or pack boundaries, or cleaning prose.
 ---
 
-# RigKit comments (Weissflog voice + Doxygen public API)
+# RigKit comments (plain voice + Doxygen public API)
 
 Comments and first-party Markdown (`docs/`, `AGENTS.md`, pack READMEs) share the same voice - plain English, usage first, clear about what something does **not** do.
 
@@ -23,7 +23,7 @@ Also: no emoji in comments or UI text ([AGENTS.md](../../AGENTS.md)). No unicode
 - **Why and how to use**, not a narration of the next line (`// increment i`).
 - **Plain prose.** Short sentences. Prefer “does not” lists over marketing claims.
 - **Clear limits.** Stubs, Pi/GLES constraints, “Blend2D is optional pack” - say it.
-- **No “honest”.** Ban the word: not “honest subset”, “an honest...”, “honesty model”, “Weissflog-honest”. Say the fact (“ESP32 subset”, “same model as third_party”) - don’t soft-sell it.
+- **No “honest”.** Ban the word: not “honest subset”, “an honest...”, “honesty model”. Say the fact (“ESP32 subset”, “same model as third_party”) - don’t soft-sell it.
 - **Put docs at the decision.** File/header block for module role; one line on non-obvious call sites.
 - **No AI sludge:** “This function ensures that...”, “In order to...”, “Leverages...”, restating types already in the signature.
 - **No ceremony:** no banners of `====`, no author/date stamps, no commented-out code as history.
@@ -56,7 +56,7 @@ Prefer `/** ... */` or `///` with `@` commands (Javadoc-style; Doxygen accepts b
 | Tag | Use |
 |-----|-----|
 | `@brief` | One-line summary (required on public types/functions) |
-| `@details` | Optional longer why / does-not / usage (Weissflog prose here) |
+| `@details` | Optional longer why / does-not / usage (plain prose here) |
 | `@param name` | Non-obvious parameters only; skip self-explanatory names when the brief is enough |
 | `@return` | When the return value carries meaning beyond the type |
 | `@note` / `@warning` | Pi, re-entrancy, ownership, pack bootstrap order |

@@ -34,6 +34,7 @@ class IApp {
 	AppSettings& settings() { return m_settings; }
 	const AppSettings& settings() const { return m_settings; }
 
+	/** @brief Live window. Default size and title come from `app.json` `window`. */
 	WindowSettings& window() { return m_settings.window; }
 	const WindowSettings& window() const { return m_settings.window; }
 

@@ -12,7 +12,6 @@ class rigProject;
 
 class StudioApp : public rigkit::IApp {
   public:
-	StudioApp();
 	void parseCommandLineArgs(const rigkit::CommandLineArgs& args) override;
 	void setup() override;
 	void update(float) override {}

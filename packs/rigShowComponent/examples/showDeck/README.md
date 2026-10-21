@@ -1,3 +1,0 @@
-# showDeck
-
-One `CVisualizer` playlist.

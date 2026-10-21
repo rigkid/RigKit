@@ -58,7 +58,7 @@ Wayland and macOS take the icon from the `.desktop` entry / app bundle - a distr
 Use the thin starter under [`templates/app`](../templates/app/) - not an in-repo example:
 
 1. Copy `templates/app` to your new app repo (or clone and rename). The folder name is the id, and it starts with `app-` (for example `app-svgAnimator`).
-2. Edit `app.json` so `"name"` matches that folder, plus SPDX `license` and pack `dependencies`.
+2. Edit `app.json` so `"name"` matches that folder, plus SPDX `license`, `window` (width, height, title), and pack `dependencies`. Do not also set the window in the app constructor.
 3. Add RigKit as a submodule at `rigkit/` (or set `-DRIGKIT_DIR=`).
 4. Configure from the **product** root - it `add_subdirectory`s RigKit and calls `add_rigkit_application(SOURCE_DIR ...)` on itself.
 

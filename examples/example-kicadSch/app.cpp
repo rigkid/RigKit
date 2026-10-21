@@ -16,11 +16,7 @@ namespace {
 const float kGrids[] = {0.254f, 1.27f, 2.54f};
 }
 
-KicadSchApp::KicadSchApp() : m_doc(new SchDoc) {
-	window().width = 1280;
-	window().height = 800;
-	window().title = "example-kicadSch";
-}
+KicadSchApp::KicadSchApp() : m_doc(new SchDoc) {}
 
 KicadSchApp::~KicadSchApp() {
 	delete m_doc;
