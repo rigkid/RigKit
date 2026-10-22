@@ -250,6 +250,6 @@ Example binding: Vec2 Out sets orbit radius (x) and height (y).
 - Wiring outputs into transforms/materials is the **app’s** job each Update.
 - **Ctrl-P** toggles the Patch bay only. The Node Editor stays. Both edit the same links.
 
-Host MIDI (KidVJ): devices and clock sync are **Preferences > Audio > MIDI**.
+Host MIDI: devices and clock sync are **Preferences > Audio > MIDI**.
 Map Mix sliders with right-click **MIDI Learn** (View > MIDI Map for the table).
 `mod.beat` follows incoming MIDI clock when Clock Sync is on.
