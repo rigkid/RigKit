@@ -19,7 +19,16 @@ Every id in the vendored catalog ([schemas/README.md](RigWorks/schemas/README.md
 | `rig.spatial.group` | **rigComponent** - `CGroup` | Marker only (empty). Children use `CRelationship::parent`. |
 | `rig.spatial.camera` | **rigComponent** - `CCamera` (present **rigRender3D**) | Matches projection set (`active`, `projection`, clips, FOV, aspect). |
 | `rig.spatial.layer` | **rigComponent** - `CLayer` | `order` / `locked` / tint (`rgba`). Hide bit is `rig.render.visibility` when present; otherwise `x.rigkit.layer_visible`. |
+| `rig.spatial.instance` | **rigComponent** - `CInstance` | Exact `source`. Pose is `rig.spatial.transform` on this entity. |
 | `rig.paint.fill_stroke` | **rigComponent** - `CDrawStyle` | Core fill/stroke; caps/joins/dash are host extensions. |
+| `rig.paint.order` | **rigComponent** - `CPaintOrder` | `layers` permutation of fill / stroke / markers. |
+| `rig.paint.clip` | **rigComponent** - `CPaintClip` | Exact `path`. |
+| `rig.paint.mask` | **rigComponent** - `CPaintMask` | `source` + `channel` (`luminance` / `alpha`). |
+| `rig.paint.markers` | **rigComponent** - `CPaintMarkers` | `start` / `mid` / `end` marker entities. |
+| `rig.paint.marker` | **rigComponent** - `CPaintMarker` | Tile `width` / `height` / `ref` / `orient` / `units`. |
+| `rig.paint.pattern` | **rigComponent** - `CPaintPattern` | Tile `width` / `height` / `units` / `contentUnits`. Pose is transform. |
+| `rig.paint.filter` | **rigComponent** - `CPaintFilter` | `filter` entity + `primitiveUnits`. Steps are children. |
+| `rig.paint.filter_step` | **rigComponent** - `CPaintFilterStep` | Kind plus the shared step fields. Present may skip a kind. |
 | `rig.geometry.mesh` | **rigComponent** - `CMesh` | positions / optional normals / indices / optional n-gon `loops`+`loopSizes` / texcoords / mode / optional face colours. Edges are consecutive loop pairs (no parallel edge table). |
 | `rig.geometry.spline` | **rigComponent** - `CSpline` | NURBS curve in the plane. |
 | `rig.geometry.spline3d` | **rigComponent** - `CSpline3d` | NURBS curve in 3-space. |

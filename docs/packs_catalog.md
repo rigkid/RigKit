@@ -59,6 +59,7 @@ Artist guide: [nodes.md](nodes.md).
 | **rigCompositor** | [rigkid/rigCompositor](https://github.com/rigkid/rigCompositor) | FBO layer compositor - SVG blend modes + path masks |
 | **rigSvg** | [rigkid/rigSvg](https://github.com/rigkid/rigSvg) | SVG import/export / `ParsedPathDoc` / paints |
 | **rigPdf** | [rigkid/rigPdf](https://github.com/rigkid/rigPdf) (local `packs/` until published) | PDF emit from `CPage` / paths / text; Separation / overprint / PDF/X. Shapes `CText` via ImVarFont `varfont_core` (+ optional system HarfBuzz). **Leaf.** |
+| **rigPdfRead** | [rigkid/rigPdfRead](https://github.com/rigkid/rigPdfRead) (local `packs/` until published) | PDF page boxes and RGBA rasters for an outside file. **Leaf. BSD-3-Clause.** Pins [pdfium-binaries](https://github.com/bblanchon/pdfium-binaries) (no in-tree compile). **Pi:** glibc `linux-arm64` / `linux-arm` prebuilt — a device with an older glibc will not load it. |
 | **rigStoryComponent** | [rigkid/rigStoryComponent](https://github.com/rigkid/rigStoryComponent) (local `packs/` until published) | Story PODs - `rig.story.flow` / paragraph / table / named styles. DATA ONLY |
 | **rigLayoutComponent** | [rigkid/rigLayoutComponent](https://github.com/rigkid/rigLayoutComponent) (local `packs/` until published) | Layout PODs - master / facing / visual paragraph+character styles / frame chain. DATA ONLY |
 | **rigLayout** | [rigkid/rigLayout](https://github.com/rigkid/rigLayout) (local `packs/` until published) | Paginate story onto `CPage` + `CText` (Setup bake). Product host **Relay** ([GitBruno/relayout](https://github.com/GitBruno/relayout)) lives out of tree |
@@ -168,7 +169,7 @@ Art-Net is a **planned leaf** on **rigDmx**. Do not stuff it into **rigSacn**.
 | Pack | Remote | Role |
 |------|--------|------|
 | **rigImage** | [rigkid/rigImage](https://github.com/rigkid/rigImage) (local `packs/` until published) | Raster decode + GLES upload (stb_image). CPU buffer is `rig::pixel::Raster` (`rig.pixel.raster`). Path POD stays `CAssetRef` in **rigComponent**. Example `image --smoke-image`. |
-| **rigVideo** | [rigkid/rigVideo](https://github.com/rigkid/rigVideo) (local `packs/` until published) | Video IO - webcam (MF/V4L2), file decode (FFmpeg / Media Foundation), filmstrip / still, ffmpeg CLI trim/extract. **Leaf.** |
+| **rigVideo** | [rigkid/rigVideo](https://github.com/rigkid/rigVideo) (local `packs/` until published) | Video IO - webcam (MF/V4L2), file decode (FFmpeg / Media Foundation), filmstrip / still, ffmpeg CLI trim/extract, page URLs via pinned yt-dlp + qjs copied beside the executable. **Leaf.** |
 | **rigOpenCV** | [rigkid/rigOpenCV](https://github.com/rigkid/rigOpenCV) (local `packs/` until published) | Optional OpenCV Raster bridge (`toMat` / `fromMat`). FetchContent OpenCV 4.10.0 `core`+`imgproc` - does not use a machine / openFrameworks copy. **Leaf.** **Pi / rebuild risk** (first configure compiles OpenCV). |
 
 ### Scripting / CAD

@@ -160,6 +160,17 @@ class IMui {
 	}
 
 	/**
+	 * @brief Request a folder path (async; callback on confirm).
+	 * @param startDir Directory the browser opens in. Empty keeps the last one.
+	 */
+	virtual void openFolderDialog(const std::string& title, FileDialogCallback onSelected,
+								  const std::string& startDir = {}) {
+		(void)title;
+		(void)onSelected;
+		(void)startDir;
+	}
+
+	/**
 	 * @brief User-pinned Quick access folders (UTF-8).
 	 * @details Host persists these. Pack-owned file browsers seed from here
 	 * and push back through setFileDialogPinnedFolders.

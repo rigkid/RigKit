@@ -443,11 +443,16 @@ TEST_CASE("rigProject round-trips path layer asset text curve via pack codecs") 
 	pathPod.commands = {move, line};
 	ecs.addComponent<ecs::CPath>(stroke, pathPod);
 
+	ecs::CCurve straight;
+	curve::applyPreset(straight, ecs::CCurve::Preset::Linear);
+	CHECK(straight.interp == ecs::CCurve::Interp::Linear);
+	CHECK(curve::eval(straight, 0.25f) == doctest::Approx(0.25f));
+
 	auto ramp = ecs.createEntity("ramp");
 	ecs::CCurve curve;
 	curve.preset = ecs::CCurve::Preset::EaseInOut;
 	curve::applyPreset(curve, curve.preset);
-	curve.interp = ecs::CCurve::Interp::Smooth;
+	CHECK(curve.interp == ecs::CCurve::Interp::Smooth);
 	ecs.addComponent<ecs::CCurve>(ramp, curve);
 
 	REQUIRE(docPack->serializer().save(ecs, path));
