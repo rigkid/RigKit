@@ -46,6 +46,10 @@ uniform vec3 iResolution;
 uniform float iTime;
 uniform vec4 iMouse;
 )";
+	// Without this, compile errors count the wrapper lines above and point
+	// at the wrong line in the editor. Line 1 is the first line of the file
+	// being edited.
+	src += "#line 1\n";
 	src += userSource;
 	src += R"(
 void main() {
@@ -64,6 +68,8 @@ uniform float iTime;
 uniform vec4 iMouse;
 out vec4 FragColor;
 )";
+	// See the GLES branch: keep error line numbers in editor lines.
+	src += "#line 1\n";
 	src += userSource;
 	src += R"(
 void main() {

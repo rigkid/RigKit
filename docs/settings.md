@@ -89,6 +89,8 @@ Built-in section: `host.app` (`AppSettings` - debug, vsync, target FPS, Show FPS
 
 `rigImGui.ui` also includes chrome prefs: **Show Status Bar**, **FPS Display** (Status Bar / Menu Bar / Off), progress placement, theme, fonts, rulers.
 
+Pack section example: `rigNodeEditor.editor` (label **Node Editor**, POD `NodeEditorPrefs` in `packs/rigNodeEditor/src/NodeEditorPrefs.h`) - wheel zoom range, **Inline Edit Min Zoom** (below this, on-node fields hide and values are edited in Properties), on-node field scale, and loose row drop. The pack registers it in `setup()` / unregisters in `cleanup()`; editor windows read the live POD at draw time, so edits apply next frame and every editor (pack-opened or host-opened) shares the same values.
+
 Access: `engine->getSettingsManager()` returns `MSettings*`.
 
 Paths: `AppPaths::getUserSettingsFile()` under `getUserDataDir()`.

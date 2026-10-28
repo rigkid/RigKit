@@ -200,13 +200,14 @@ git clone --recurse-submodules https://github.com/rigkid/rigBlend2D.git packs/ri
 
 | Pack | Remote | Role |
 |------|--------|------|
-| **rigVarFont** | [rigkid/rigVarFont](https://github.com/rigkid/rigVarFont) | Optional VF / FreeType fulfillment of `CText` + `IRenderer` filled text (ImVarFont `varfont_core` + `varfont_gl`). Axis values on POD; Face/atlas in the pack. GLES2 falls back to CPU FreeType. **HarfBuzz** = optional system lib behind ImVarFont (GPOS / OT features), not a pack. |
+| **rigTrueType** | [rigkid/rigTrueType](https://github.com/rigkid/rigTrueType) (local `packs/` until published) | CPU TTF load / stamp / glyph vertices via stb_truetype. CODE trunk. No ImGui, no GL, no `IRenderer`. Leaves: **rigSvg** (SVG thumbnail text), **rigVectorEditor** (text to outline paths), **rigImTui** (Roboto atlas bake). Not **rigVarFont** (present / FreeType / atlas) and not **rigFont** (UFO). |
+| **rigVarFont** | [rigkid/rigVarFont](https://github.com/rigkid/rigVarFont) | Optional VF / FreeType fulfillment of `CText` + `IRenderer` filled text (ImVarFont `varfont_core` + `varfont_gl`). Axis values on POD; Face/atlas in the pack. `CText` present prefers the pack-owned **SlugRenderer** (true Slug dual-ray Bezier evaluation in a shader, curve texture, no atlas; desktop GL 3.3+) with atlas fallback per run. GLES2: Slug unavailable, falls back to CPU FreeType. **HarfBuzz** = optional system lib behind ImVarFont (GPOS / OT features), not a pack. |
 
 `CText` lives in **rigComponent** and speaks `rig.media.text` (`font` is a `CAssetRef` kind font; `axes` / `features` / `useKerning` on the schema). Screen present (**rigVarFont**) and PDF emit (**rigPdf**) both shape through ImVarFont `varfont_core` - same Face / features / kerning path; PDF does not link `varfont_gl` / OpenGL. Chrome labels are a separate present: **rigImGui** applies TTF `kern` pairs on ImGui `RenderText` (atlas = glyph cache). GPOS / live UFO pairs plug in through `IMui::setChromeKernFn` (VarFont `GetGposPairExtraPx`). Editable UFO source is `rig.font.*` (**rigFontComponent** + **rigUfo**; host example **ufomat** / UFOMAT), not `CText`.
 
 | Pack | Remote | Role |
 |------|--------|------|
-| **rigFontComponent** | local `packs/rigFontComponent` until published | UFO source PODs - `CFontFace` / glyph / kern / axis / cell / ... Data only. |
+| **rigFontComponent** | local `packs/rigFontComponent` until published | UFO source PODs - `CFontFaceSource` / glyph / kern / axis / cell / ... Data only. |
 | **rigUfo** | local `packs/rigUfo` until published | `.ufo` / `.ufoz` read/write into those PODs; static TTF via fontmake (code / IO) |
 | **rigFont** | local `packs/rigFont` until published | Shape / reconstruct over `rig.font.*` source PODs (code). Not **rigVarFont**. |
 

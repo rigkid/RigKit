@@ -21,6 +21,19 @@ ShaderPreviewWindow::ShaderPreviewWindow() : IWindow("Shader Preview") {
 	setCategory("glEditor");
 }
 
+void ShaderPreviewWindow::setPreviewEntity(entt::entity e) {
+	if (e == m_entity) {
+		return;
+	}
+	m_entity = e;
+	// Forget the old buffer's fingerprint, or auto-compile may think the
+	// new buffer is unchanged and never compile it.
+	m_seenEpoch = 0;
+	m_seenDirty = false;
+	m_seenTextHash.clear();
+	m_debounce = 0.f;
+}
+
 bool ShaderPreviewWindow::compileNow(const std::string& forceSource) {
 	auto* engine = getEngine();
 	rigkit::MEcs* ecs = engine ? engine->getECSManager() : nullptr;
@@ -157,6 +170,13 @@ void ShaderPreviewWindow::renderContents() {
 	}
 	ImGui::SameLine();
 	ImGui::Text("FPS %.0f", static_cast<double>(m_preview.fps()));
+
+	ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled));
+	ImGui::TextWrapped("Pick an example here or in the Code Editor tabs - both show the same "
+					   "shader. Edit the code and the picture updates as you type. Each file "
+					   "starts with TRY THIS ideas. Red error text? The last good picture "
+					   "stays on screen - fix the line the error names and it comes back.");
+	ImGui::PopStyleColor();
 
 	if (m_preview.hasError()) {
 		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.f, 0.45f, 0.35f, 1.f));

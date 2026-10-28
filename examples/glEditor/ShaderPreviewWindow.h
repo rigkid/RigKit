@@ -17,7 +17,8 @@ class ShaderPreviewWindow : public rigkit::IWindow {
 	ShaderPreview& preview() { return m_preview; }
 	const ShaderPreview& preview() const { return m_preview; }
 
-	void setPreviewEntity(entt::entity e) { m_entity = e; }
+	/** @brief Point the preview at a `CCode` buffer (restarts auto-compile watch). */
+	void setPreviewEntity(entt::entity e);
 	entt::entity previewEntity() const { return m_entity; }
 
 	bool autoCompile() const { return m_autoCompile; }

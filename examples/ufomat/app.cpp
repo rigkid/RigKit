@@ -31,7 +31,7 @@
 #include "CCode.h"
 #include "CFontAnchor.h"
 #include "CFontAxis.h"
-#include "CFontFace.h"
+#include "CFontFaceSource.h"
 #include "CFontGlyph.h"
 #include "CFontGroup.h"
 #include "CFontKern.h"
@@ -188,8 +188,8 @@ class GlyphListPanel : public rigkit::IWindow {
 			m_grid = !m_grid;
 		}
 		ImGui::Separator();
-		for (auto e : ecs->registry().view<rigkit::ecs::CFontFace>()) {
-			const auto& face = ecs->registry().get<rigkit::ecs::CFontFace>(e);
+		for (auto e : ecs->registry().view<rigkit::ecs::CFontFaceSource>()) {
+			const auto& face = ecs->registry().get<rigkit::ecs::CFontFaceSource>(e);
 			std::string label = face.family.empty() ? "Face" : face.family;
 			if (!face.style.empty()) {
 				label += " " + face.style;
@@ -288,8 +288,8 @@ class GlyphListPanel : public rigkit::IWindow {
 		float upm = 1000.f;
 		float asc = 800.f;
 		float desc = -200.f;
-		for (auto e : ecs.registry().view<rigkit::ecs::CFontFace>()) {
-			const auto& f = ecs.registry().get<rigkit::ecs::CFontFace>(e);
+		for (auto e : ecs.registry().view<rigkit::ecs::CFontFaceSource>()) {
+			const auto& f = ecs.registry().get<rigkit::ecs::CFontFaceSource>(e);
 			upm = f.unitsPerEm;
 			asc = f.ascender;
 			desc = f.descender;
@@ -350,9 +350,9 @@ class LayersPanel : public rigkit::IWindow {
 			return;
 		}
 		entt::entity face = m_app->selectedFace();
-		if (face == entt::null || !ecs->hasComponent<rigkit::ecs::CFontFace>(face)) {
+		if (face == entt::null || !ecs->hasComponent<rigkit::ecs::CFontFaceSource>(face)) {
 			face = entt::null;
-			for (auto e : ecs->registry().view<rigkit::ecs::CFontFace>()) {
+			for (auto e : ecs->registry().view<rigkit::ecs::CFontFaceSource>()) {
 				face = e;
 				break;
 			}
@@ -615,7 +615,7 @@ std::string autoVersion(const std::string& cur) {
 	return buf;
 }
 
-std::string autoCopyright(const rigkit::ecs::CFontFace& f) {
+std::string autoCopyright(const rigkit::ecs::CFontFaceSource& f) {
 	const std::string owner = firstNonEmpty(f.designer, f.manufacturer, f.family);
 	char buf[256];
 	std::snprintf(buf, sizeof(buf), "Copyright %d %s. All rights reserved.", currentYear(),
@@ -623,7 +623,7 @@ std::string autoCopyright(const rigkit::ecs::CFontFace& f) {
 	return buf;
 }
 
-std::string autoTrademark(const rigkit::ecs::CFontFace& f) {
+std::string autoTrademark(const rigkit::ecs::CFontFaceSource& f) {
 	const std::string owner = firstNonEmpty(f.manufacturer, f.designer, f.family);
 	char buf[256];
 	std::snprintf(buf, sizeof(buf), "%s is a trademark of %s.",
@@ -635,7 +635,7 @@ constexpr const char* kOflNotice =
 	"This Font Software is licensed under the SIL Open Font License, Version 1.1.";
 constexpr const char* kOflUrl = "https://openfontlicense.org";
 
-/** @brief Face metadata editor - fontinfo.plist fields on `CFontFace`. */
+/** @brief Face metadata editor - fontinfo.plist fields on `CFontFaceSource`. */
 class FontInfoPanel : public rigkit::IWindow {
   public:
 	explicit FontInfoPanel(UfomatApp* app) : IWindow("Font Info"), m_app(app) {}
@@ -647,8 +647,8 @@ class FontInfoPanel : public rigkit::IWindow {
 			return;
 		}
 		entt::entity face = m_app->selectedFace();
-		if (face == entt::null || !ecs->hasComponent<rigkit::ecs::CFontFace>(face)) {
-			for (auto e : ecs->registry().view<rigkit::ecs::CFontFace>()) {
+		if (face == entt::null || !ecs->hasComponent<rigkit::ecs::CFontFaceSource>(face)) {
+			for (auto e : ecs->registry().view<rigkit::ecs::CFontFaceSource>()) {
 				face = e;
 				break;
 			}
@@ -657,7 +657,7 @@ class FontInfoPanel : public rigkit::IWindow {
 			ImGui::TextUnformatted("No face");
 			return;
 		}
-		auto& f = ecs->getComponent<rigkit::ecs::CFontFace>(face);
+		auto& f = ecs->getComponent<rigkit::ecs::CFontFaceSource>(face);
 
 		auto textField = [](const char* label, std::string& value) {
 			char buf[256];
@@ -778,16 +778,16 @@ class GlyphSurfacePanel : public rigkit::IWindow {
 		float cap = 700.f;
 		float xh = 500.f;
 		entt::entity faceEnt = m_app->selectedFace();
-		if (faceEnt == entt::null || !ecs->hasComponent<rigkit::ecs::CFontFace>(faceEnt)) {
+		if (faceEnt == entt::null || !ecs->hasComponent<rigkit::ecs::CFontFaceSource>(faceEnt)) {
 			faceEnt = entt::null;
-			for (auto e : ecs->registry().view<rigkit::ecs::CFontFace>()) {
+			for (auto e : ecs->registry().view<rigkit::ecs::CFontFaceSource>()) {
 				faceEnt = e;
 				break;
 			}
 		}
-		rigkit::ecs::CFontFace* facePod = nullptr;
-		if (faceEnt != entt::null && ecs->hasComponent<rigkit::ecs::CFontFace>(faceEnt)) {
-			facePod = &ecs->getComponent<rigkit::ecs::CFontFace>(faceEnt);
+		rigkit::ecs::CFontFaceSource* facePod = nullptr;
+		if (faceEnt != entt::null && ecs->hasComponent<rigkit::ecs::CFontFaceSource>(faceEnt)) {
+			facePod = &ecs->getComponent<rigkit::ecs::CFontFaceSource>(faceEnt);
 			upm = facePod->unitsPerEm;
 			asc = facePod->ascender;
 			desc = facePod->descender;
@@ -1485,8 +1485,8 @@ std::string shortGroupName(const std::string& name) {
 void drawShapedPreview(rigkit::MEcs& ecs, const rigkit::font::ShapedRun& run, float sizePx,
 					   float heightPx = 0.f) {
 	float upm = 1000.f;
-	for (auto e : ecs.registry().view<rigkit::ecs::CFontFace>()) {
-		upm = ecs.registry().get<rigkit::ecs::CFontFace>(e).unitsPerEm;
+	for (auto e : ecs.registry().view<rigkit::ecs::CFontFaceSource>()) {
+		upm = ecs.registry().get<rigkit::ecs::CFontFaceSource>(e).unitsPerEm;
 		break;
 	}
 	const ImVec2 canvasPos = ImGui::GetCursorScreenPos();
@@ -1927,7 +1927,9 @@ class PreviewPanel : public rigkit::IWindow {
 
 } // namespace
 
-UfomatApp::UfomatApp() { settings().appName = "ufomat"; }
+UfomatApp::UfomatApp() {
+	settings().appName = "ufomat";
+}
 
 void UfomatApp::parseCommandLineArgs(const rigkit::CommandLineArgs& args) {
 	IApp::parseCommandLineArgs(args);
@@ -1965,8 +1967,8 @@ void UfomatApp::syncBoardFromFace() {
 	float asc = 800.f;
 	float desc = -200.f;
 	if (ecs) {
-		for (auto e : ecs->registry().view<rigkit::ecs::CFontFace>()) {
-			const auto& f = ecs->registry().get<rigkit::ecs::CFontFace>(e);
+		for (auto e : ecs->registry().view<rigkit::ecs::CFontFaceSource>()) {
+			const auto& f = ecs->registry().get<rigkit::ecs::CFontFaceSource>(e);
 			upm = f.unitsPerEm;
 			asc = f.ascender;
 			desc = f.descender;
@@ -2120,8 +2122,8 @@ entt::entity UfomatApp::ensureFeatures() {
 	code.name = "features.fea";
 	code.language = "fea";
 	ecs->addComponent(fea, code);
-	for (auto e : ecs->registry().view<rigkit::ecs::CFontFace>()) {
-		ecs->getComponent<rigkit::ecs::CFontFace>(e).features = "features.fea";
+	for (auto e : ecs->registry().view<rigkit::ecs::CFontFaceSource>()) {
+		ecs->getComponent<rigkit::ecs::CFontFaceSource>(e).features = "features.fea";
 		break;
 	}
 	return fea;
