@@ -285,15 +285,24 @@ class IMui {
 	 * @param shortcut Optional chord shown in the menu (display only unless also bound).
 	 * @param isActive Optional; when set, menu item shows a check mark.
 	 * @param action Invoked when the item is chosen.
+	 * @param icon Optional icon glyph for the Toolbar rail (e.g. an IconFont
+	 *        codepoint such as `ICON_FA_PEN`). Empty draws the label text.
+	 * @param group Optional flyout group (e.g. "pen"). Toolbar rows sharing a
+	 *        group collapse to one rail button: click arms the remembered /
+	 *        active member, hold or right-click opens the member flyout.
+	 *        The Tools menu always lists every member flat.
 	 */
 	virtual void registerToolAction(const std::string& id, const std::string& label,
 									const std::string& shortcut, std::function<bool()> isActive,
-									std::function<void()> action) {
+									std::function<void()> action, const std::string& icon = {},
+									const std::string& group = {}) {
 		(void)id;
 		(void)label;
 		(void)shortcut;
 		(void)isActive;
 		(void)action;
+		(void)icon;
+		(void)group;
 	}
 
 	/**
