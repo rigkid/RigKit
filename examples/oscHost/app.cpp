@@ -110,10 +110,11 @@ void OscHost::setupLook() {
 
 void OscHost::setupLookPanel() {
 	auto* ecs = getEngine()->getECSManager();
-	const auto panel = rig::makeUiPanel(*ecs, "show.look", rigkit::ecs::kUiSurfaceTool, "Look");
+	using Surface = rigkit::ecs::CUiPanel::Surface;
+	using Widget = rigkit::ecs::CUiControl::Widget;
+	const auto panel = rig::makeUiPanel(*ecs, "show.look", Surface::Tool, "Look");
 	auto bindSlider = [&](const char* key, int order, const char* name) {
-		const auto e =
-			rig::makeUiControl(*ecs, panel, m_look, key, order, rigkit::ecs::kUiWidgetSlider, name);
+		const auto e = rig::makeUiControl(*ecs, panel, m_look, key, order, Widget::Slider, name);
 		auto& c = ecs->getComponent<rigkit::ecs::CUiControl>(e);
 		c.min = 0.f;
 		c.max = 1.f;

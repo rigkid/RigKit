@@ -87,20 +87,20 @@ TEST_CASE("rigComponent GetProperties pointers land in component storage") {
 TEST_CASE("rig::makeUi* writes portable panel data") {
 	SpineFixture f;
 	auto target = f.ecs().createEntity("knob");
-	auto panel = rig::makeUiPanel(f.ecs(), "mod.lfo", ecs::kUiSurfaceHud, "LFO");
-	auto ctrl = rig::makeUiControl(f.ecs(), panel, target, "frequency", 0, ecs::kUiWidgetSlider,
-								  "Rate");
+	auto panel = rig::makeUiPanel(f.ecs(), "mod.lfo", ecs::CUiPanel::Surface::Hud, "LFO");
+	auto ctrl = rig::makeUiControl(f.ecs(), panel, target, "frequency", 0,
+								  ecs::CUiControl::Widget::Slider, "Rate");
 	auto act = rig::makeUiAction(f.ecs(), panel, "lfo.resetPhase", 1, "Reset");
 
 	REQUIRE(f.ecs().hasComponent<ecs::CUiPanel>(panel));
 	CHECK(f.ecs().getComponent<ecs::CUiPanel>(panel).role == "mod.lfo");
-	CHECK(f.ecs().getComponent<ecs::CUiPanel>(panel).surface == ecs::kUiSurfaceHud);
+	CHECK(f.ecs().getComponent<ecs::CUiPanel>(panel).surface == ecs::CUiPanel::Surface::Hud);
 
 	REQUIRE(f.ecs().hasComponent<ecs::CUiControl>(ctrl));
 	CHECK(f.ecs().getComponent<ecs::CUiControl>(ctrl).panel == entt::to_integral(panel));
 	CHECK(f.ecs().getComponent<ecs::CUiControl>(ctrl).target == entt::to_integral(target));
 	CHECK(f.ecs().getComponent<ecs::CUiControl>(ctrl).propertyKey == "frequency");
-	CHECK(f.ecs().getComponent<ecs::CUiControl>(ctrl).widget == ecs::kUiWidgetSlider);
+	CHECK(f.ecs().getComponent<ecs::CUiControl>(ctrl).widget == ecs::CUiControl::Widget::Slider);
 
 	REQUIRE(f.ecs().hasComponent<ecs::CUiAction>(act));
 	CHECK(f.ecs().getComponent<ecs::CUiAction>(act).actionId == "lfo.resetPhase");

@@ -95,12 +95,15 @@ These helpers only write POD (`CTransform` + shape / `CMesh` / `CCad*` / `COrbit
 **Portable tool panels** (`CUiPanel` / `CUiGroup` / `CUiControl` / `CUiAction`) are the same kind of data. **rigImGui** presents every visible panel. Controls bind `target` + `propertyKey`. Actions fire `SEvent` ids from `IApp::registerUIActions`. Unknown action ids stay hidden.
 
 ```cpp
-auto panel = rig::makeUiPanel("mod.lfo", rigkit::ecs::kUiSurfaceTool, "LFO");
-rig::makeUiControl(panel, lfo, "frequency", 0, rigkit::ecs::kUiWidgetSlider, "Rate");
+using Surface = rigkit::ecs::CUiPanel::Surface;
+using Widget = rigkit::ecs::CUiControl::Widget;
+
+auto panel = rig::makeUiPanel("mod.lfo", Surface::Tool, "LFO");
+rig::makeUiControl(panel, lfo, "frequency", 0, Widget::Slider, "Rate");
 rig::makeUiAction(panel, "lfo.resetPhase", 1, "Reset phase");
 ```
 
-A play overlay is the same panel with `kUiSurfaceHud`. Custom `IWindow` subclasses stay the exception for chrome that cannot be a bound field. `examples/oscHost --author` ships a Look panel on the `look` entity (master + fill). [seams.md](contract/seams.md).
+A play overlay is the same panel with `Surface::Hud`. Custom `IWindow` subclasses stay the exception for chrome that cannot be a bound field. `examples/oscHost --author` ships a Look panel on the `look` entity (master + fill). [seams.md](contract/seams.md).
 
 ## Orbit nav (code) - `rigSystems`
 

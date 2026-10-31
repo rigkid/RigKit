@@ -526,17 +526,17 @@ TEST_CASE("Contract import writes CUi* with resolved entity refs") {
 
 	REQUIRE(ecs.hasComponent<ecs::CUiPanel>(panel));
 	CHECK(ecs.getComponent<ecs::CUiPanel>(panel).role == "led.install");
-	CHECK(ecs.getComponent<ecs::CUiPanel>(panel).surface == ecs::kUiSurfaceTool);
+	CHECK(ecs.getComponent<ecs::CUiPanel>(panel).surface == ecs::CUiPanel::Surface::Tool);
 
 	REQUIRE(ecs.hasComponent<ecs::CUiControl>(colour));
 	CHECK(ecs.getComponent<ecs::CUiControl>(colour).panel == entt::to_integral(panel));
 	CHECK(ecs.getComponent<ecs::CUiControl>(colour).target == entt::to_integral(fill));
-	CHECK(ecs.getComponent<ecs::CUiControl>(colour).widget == ecs::kUiWidgetColor);
+	CHECK(ecs.getComponent<ecs::CUiControl>(colour).widget == ecs::CUiControl::Widget::Color);
 
 	REQUIRE(ecs.hasComponent<ecs::CUiControl>(rate));
 	CHECK(ecs.getComponent<ecs::CUiControl>(rate).target == entt::to_integral(pulse));
 	CHECK(ecs.getComponent<ecs::CUiControl>(rate).propertyKey == "frequency");
-	CHECK(ecs.getComponent<ecs::CUiControl>(rate).widget == ecs::kUiWidgetSlider);
+	CHECK(ecs.getComponent<ecs::CUiControl>(rate).widget == ecs::CUiControl::Widget::Slider);
 
 	REQUIRE(ecs.hasComponent<ecs::CUiAction>(reset));
 	CHECK(ecs.getComponent<ecs::CUiAction>(reset).panel == entt::to_integral(panel));
