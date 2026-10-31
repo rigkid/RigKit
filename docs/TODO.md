@@ -13,7 +13,7 @@ Add the PNG. Lead the pack README with `![preview](examples/<name>/img/preview.p
 | rigAgentty | `examples/agenttyDemo` |
 | rigAcp | `examples/acpDemo` |
 | rigAbletonLink | `examples/link` |
-| rigPdf | `examples/pdf` |
+| rigPdfWrite | `examples/pdf` |
 | rigSQLite | `examples/sqlite` |
 | rigMarkdown | `examples/markdown` |
 | rigImage | `examples/image` (README already links the missing file) |

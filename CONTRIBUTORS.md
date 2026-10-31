@@ -44,7 +44,7 @@ RigKit is a vision of tools after years of playing with code of others. Most hea
 - **Balazs Jako** | ImGuiColorTextEdit. Thank you for the code editor. **rigCodeEditor**.
 - **Angus Johnson** | Clipper2. Thank you for polygon clipping. **rigVectorEditor**.
 - **Emmanuel Julien** | stb_image_write. Thank you for the file IO callback.
-- **Gal Kahana** | PDF-Writer. Thank you. **rigPdf** fetches it.
+- **Gal Kahana** | PDF-Writer. Thank you. **rigPdfWrite** fetches it.
 - **Baldur Karlsson** | stb_image_write. Thank you for HDR.
 - **Kari Karstila** | Industry Foundation Classes, buildingSMART Model Support Group. Thank you. `rig.bim.*` speaks that model.
 - **Tim Kelsey** | stb_image_write. Thank you for the miscellaneous enhancements.

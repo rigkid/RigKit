@@ -10,7 +10,7 @@
 | **rigSystems** | Update/Draw systems that register on `MEcs` |
 | **rigRender3D** | GLES mesh present when an active `CCamera` exists |
 | **rigObj** | Wavefront OBJ load/save for `CMesh` (tinyobjloader) |
-| **rigPdf** | PDF emit from `CPage` / paths / shaped `CText` (PDF-Writer + ImVarFont core; leaf) |
+| **rigPdfWrite** | PDF emit from `CPage` / paths / shaped `CText` (PDF-Writer + ImVarFont core; leaf) |
 | **rigStoryComponent** | Story PODs (`CStoryFlow`, paragraph, table, named styles) - DATA ONLY |
 | **rigLayoutComponent** | Layout PODs (master, facing, visual styles, frame chain) - DATA ONLY |
 | **rigLayout** | Compose engine - story to placed `CText` on pages (Setup bake) |
@@ -42,7 +42,7 @@ Pick a home before writing systems or UI. Agents: [rigkit-data](../skills/rigkit
 | Host `src/ecs/components/` | Host-bound leftovers only - do not grow for new portable meaning | `CEvent` (menu/UI action data; `std::any` payload keeps it host-only) |
 | **rigComponent** | Generic reusable PODs - grow here; keep thin | `CTransform`, `CCanvas`, `CCamera`, `CLight`, `CPalette`, `CIndexedAtlas`, `CFaceSelection`, `CEdgeSelection`, `CShape`, `CMesh`, `CSpline3d`, `CNurbsSurface`, `CDrawStyle`, `CSelection`, `CScreenCast`, `CScreenCastReceive`, `CCastReceiver` |
 | Domain data pack | Product-specific PODs (+ codecs / pure helpers over that POD) | `rigProject` (`CProject`, `CPage`); `rigShowComponent` (`CVisualizer`, analysis); `rigCadComponent` (`CCad*`); `rigMusicComponent` (`CMusicClock` / `CMusicTransport`); `rigAnimComponent` (`CTween` / `CModLfo` / `CModBinding`); `rigPlotComponent` (`CPaths`, ...); `rigNodeComponent` (`CNodeGraph`) |
-| Code pack | Systems / I/O / UI - not portable component homes | `rigSystems`, `rigRender3D`, `rigObj`, `rigAssimp` (leaf), `rigOpenCV` (leaf), `rigPdf` (leaf), `rigEthereum` (leaf), `rigScreenCast` (leaf), `rigMeshEdit`, `rigNodeEditor`, `rigPlotter`, `rigPlotFinders`, `rigTrace`, `rigSvg`, `rigImGui` |
+| Code pack | Systems / I/O / UI - not portable component homes | `rigSystems`, `rigRender3D`, `rigObj`, `rigAssimp` (leaf), `rigOpenCV` (leaf), `rigPdfWrite` (leaf), `rigEthereum` (leaf), `rigScreenCast` (leaf), `rigMeshEdit`, `rigNodeEditor`, `rigPlotter`, `rigPlotFinders`, `rigTrace`, `rigSvg`, `rigImGui` |
 | App | Prototypes until promotion to `rigComponent` or a domain data pack | one-off app structs |
 
 A data pack is **components-first**, not “literally only `struct` files.” Allowed: `C*` PODs, `GetProperties`, `registerComponent`, pure helpers (catalog, eval, flatten). Forbidden: Update/Draw systems, ImGui panels, document codecs, GPU/window handles in components. Engines (e.g. PlotDoc), editors, and `.rig` serializers stay in **code** packs.

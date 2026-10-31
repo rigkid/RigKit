@@ -1,4 +1,4 @@
-# Shared ImVarFont core (FreeType layout). One static lib so rigPdf and
+# Shared ImVarFont core (FreeType layout). One static lib so rigPdfWrite and
 # rigLayout do not both compile varfont_core.cpp into the same exe.
 #
 # GL fulfillment is a separate lib so interactive hosts can use the real
@@ -67,10 +67,10 @@ if(NOT TARGET imvarfont_core)
 endif()
 
 set(_stub "")
-if(DEFINED RIGKIT_ROOT AND EXISTS "${RIGKIT_ROOT}/packs/rigPdf/src/PdfVarFontGlStub.cpp")
-	set(_stub "${RIGKIT_ROOT}/packs/rigPdf/src/PdfVarFontGlStub.cpp")
-elseif(EXISTS "${CMAKE_CURRENT_LIST_DIR}/../packs/rigPdf/src/PdfVarFontGlStub.cpp")
-	set(_stub "${CMAKE_CURRENT_LIST_DIR}/../packs/rigPdf/src/PdfVarFontGlStub.cpp")
+if(DEFINED RIGKIT_ROOT AND EXISTS "${RIGKIT_ROOT}/packs/rigPdfWrite/src/PdfVarFontGlStub.cpp")
+	set(_stub "${RIGKIT_ROOT}/packs/rigPdfWrite/src/PdfVarFontGlStub.cpp")
+elseif(EXISTS "${CMAKE_CURRENT_LIST_DIR}/../packs/rigPdfWrite/src/PdfVarFontGlStub.cpp")
+	set(_stub "${CMAKE_CURRENT_LIST_DIR}/../packs/rigPdfWrite/src/PdfVarFontGlStub.cpp")
 endif()
 
 if(NOT TARGET imvarfont_gl_stub AND NOT _stub STREQUAL "")
