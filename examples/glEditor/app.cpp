@@ -154,8 +154,8 @@ void GlEditorApp::syncPreviewWithEditor() {
 	if (!m_previewWin) {
 		return;
 	}
-	auto* ui = m_engine->getUiManager();
-	auto* wm = ui ? ui->getWindowManager() : nullptr;
+	auto* mui = dynamic_cast<rigkit::Mui*>(m_engine->getUiManager());
+	auto* wm = mui ? mui->getWindowManager() : nullptr;
 	if (!wm) {
 		return;
 	}
@@ -299,38 +299,36 @@ void GlEditorApp::setup() {
 		}
 	}
 
-	auto* ui = m_engine->getUiManager();
-	if (ui && ui->getWindowManager()) {
-		auto win = ui->getWindowManager()->createWindow<ShaderPreviewWindow>();
+	auto* mui = dynamic_cast<rigkit::Mui*>(m_engine->getUiManager());
+	if (mui && mui->getWindowManager()) {
+		auto win = mui->getWindowManager()->createWindow<ShaderPreviewWindow>();
 		m_previewWin = win.get();
-		ui->getWindowManager()->showWindow("Shader Preview");
-		ui->getWindowManager()->showWindow("Code Editor");
+		mui->getWindowManager()->showWindow("Shader Preview");
+		mui->getWindowManager()->showWindow("Code Editor");
 
-		if (auto* mui = dynamic_cast<rigkit::Mui*>(ui)) {
-			// First-run: preview fills the central dock; code editor on the right.
-			// No-ops once imgui.ini has restored a split.
-			mui->setDockLayoutBuilder([mui](ImGuiID dockspaceId) {
-				ImGuiDockNode* node = ImGui::DockBuilderGetNode(dockspaceId);
-				if (!node) {
-					return;
-				}
-				if (node->IsSplitNode()) {
-					mui->setDockLayoutBuilder(nullptr);
-					return;
-				}
-				const ImGuiViewport* vp = ImGui::GetMainViewport();
-				ImGui::DockBuilderRemoveNode(dockspaceId);
-				ImGui::DockBuilderAddNode(dockspaceId, ImGuiDockNodeFlags_DockSpace);
-				ImGui::DockBuilderSetNodeSize(dockspaceId, vp->WorkSize);
-
-				ImGuiID right = 0, center = 0;
-				ImGui::DockBuilderSplitNode(dockspaceId, ImGuiDir_Right, 0.38f, &right, &center);
-				ImGui::DockBuilderDockWindow("Shader Preview", center);
-				ImGui::DockBuilderDockWindow("Code Editor", right);
-				ImGui::DockBuilderFinish(dockspaceId);
+		// First-run: preview fills the central dock; code editor on the right.
+		// No-ops once imgui.ini has restored a split.
+		mui->setDockLayoutBuilder([mui](ImGuiID dockspaceId) {
+			ImGuiDockNode* node = ImGui::DockBuilderGetNode(dockspaceId);
+			if (!node) {
+				return;
+			}
+			if (node->IsSplitNode()) {
 				mui->setDockLayoutBuilder(nullptr);
-			});
-		}
+				return;
+			}
+			const ImGuiViewport* vp = ImGui::GetMainViewport();
+			ImGui::DockBuilderRemoveNode(dockspaceId);
+			ImGui::DockBuilderAddNode(dockspaceId, ImGuiDockNodeFlags_DockSpace);
+			ImGui::DockBuilderSetNodeSize(dockspaceId, vp->WorkSize);
+
+			ImGuiID right = 0, center = 0;
+			ImGui::DockBuilderSplitNode(dockspaceId, ImGuiDir_Right, 0.38f, &right, &center);
+			ImGui::DockBuilderDockWindow("Shader Preview", center);
+			ImGui::DockBuilderDockWindow("Code Editor", right);
+			ImGui::DockBuilderFinish(dockspaceId);
+			mui->setDockLayoutBuilder(nullptr);
+		});
 
 		// Start on the first example; sync keeps the editor tab with it.
 		if (firstShader != entt::null) {

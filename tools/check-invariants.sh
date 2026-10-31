@@ -218,6 +218,24 @@ else
 	fi
 fi
 
+# --- Pack versions SemVer ------------------------------------------------------
+# pack.json "version" is the pack release line rigpack updates against
+# (docs/versioning.md). Same SemVer shape as the host, per pack.
+check_pack_semver() {
+	local pj="$1"
+	[[ -f "$pj" ]] || return 0
+	if ! grep -qE '"version"[[:space:]]*:[[:space:]]*"[0-9]+\.[0-9]+\.[0-9]+"' "$pj"; then
+		hit "pack.json version must be MAJOR.MINOR.PATCH ($pj)"
+	fi
+}
+if [[ -d packs ]]; then
+	for pj in packs/*/pack.json; do
+		[[ -f "$pj" ]] || continue
+		check_pack_semver "$pj"
+	done
+fi
+check_pack_semver "templates/rigTemplate/pack.json"
+
 # --- Pack constructors must not re-author pack.json identity --------------------
 # description / license / url / version / dependencies live in pack.json; MPack applies them.
 # Flag ctor-era setters so scaffolds and local packs cannot reintroduce a second copy.

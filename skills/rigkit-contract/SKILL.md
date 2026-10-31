@@ -4,7 +4,8 @@ description: >-
   RigKit Contract and Host boundaries. Use when working on the SUDE loop
   (Setup/Update/Draw/Exit), ECS conventions, UI / IMui, Raspberry Pi full
   host, ESP32 subset, packs, distribution vs Contract, or
-  parallel hosts when cross-host Contract work applies.
+  parallel hosts when cross-host Contract work applies, or when adding an
+  I* host interface, moving chrome onto IMui, or wrapping an M* manager.
 ---
 
 # RigKit contract
@@ -19,7 +20,7 @@ The Contract itself - Terms, SUDE, ECS, UI, property datatypes - is defined once
 - [ui.md](../../docs/contract/RigWorks/docs/ui.md) - Rig + UI (optional layer)
 - [properties.md](../../docs/contract/RigWorks/docs/properties.md) - portable property datatypes
 
-RigKit's own short working copies under [docs/contract/](../../docs/contract/) (`sude-loop.md`, `rigkit.md`, `ui.md`, `port-map.md`) restate the same rules with RigKit specifics folded in - keep both in sync when a rule changes upstream. This skill holds only what is RigKit-specific: pack vocabulary, pillar mapping, the target ladder, and hard boundaries in this host's code.
+RigKit's own short working copies under [docs/contract/](../../docs/contract/) (`sude-loop.md`, `rigkit.md`, `ui.md`, `seams.md`, `port-map.md`) restate the same rules with RigKit specifics folded in - keep both in sync when a rule changes upstream. This skill holds only what is RigKit-specific: pack vocabulary, pillar mapping, the target ladder, and hard boundaries in this host's code.
 
 Data layer is mandatory before Contract work that touches entities - see [rigkit-data](../rigkit-data/SKILL.md).
 
@@ -49,9 +50,13 @@ Data layer is mandatory before Contract work that touches entities - see [rigkit
 
 `Canvas` in code = render surface / FBO (`MCanvas`) - not the Host pillar.
 
+## Host seams
+
+Floor is concrete (`RigKitEngine`, `M*`, GLFW, default OpenGL). Seams are `IApp`, `IPack`, `IMui`, `IRenderer`, `ISettings`. Unknown apps attach as POD + register, not a new vtable. Add a host `I*` only when a second fulfillment exists or is a known next pack. Do not wrap managers. Toolkit chrome stays on `Mui`. Full tablet: [seams.md](../../docs/contract/seams.md).
+
 ## Hard boundaries (RigKit-specific)
 
-- **UI / ImGui:** no Dear ImGui in `src/`; attach via `IMui`. Default UI fulfillment = `rigImGui`. Chrome rules (DPI, work rect, prefs): [packs/rigImGui/README.md](../../packs/rigImGui/README.md#chrome-rules).
+- **UI / ImGui:** no Dear ImGui in `src/`; attach via `IMui`. Default UI fulfillment = `rigImGui`. Chrome rules (DPI, work rect, prefs): [packs/rigImGui/README.md](../../packs/rigImGui/README.md#chrome-rules). Toolkit-shaped API (`IWindow`, dock builders, `drawContents` menus) stays on **rigImGui** / `Mui`, not on `IMui`.
 - **GPU / UI types:** stay out of Contract-facing components; host packs may hold resources keyed by opaque ids.
 - **Registry:** app owns logical scene/document; host may hold a pointer and run systems - no second hidden registry for app entities.
 - **Systems:** simulation in `Update(dt)`; present in `Draw()`. Host always calls Draw after Update (empty body OK; skip is not SUDE). Draw can be LEDs / GPIO, not only GPU.

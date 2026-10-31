@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "core/IManager.h"
 #include "core/ISettings.h"
 #include "ecs/ComponentCatalog.h"
 #include "ecs/SystemRegistry.h"
@@ -28,12 +27,12 @@ void warnComponentHasNoProperties(const std::string& name);
  * non-owning IRenderer* set for the current Draw pass.
  * @see ComponentCatalog, SystemRegistry, rigComponent, rigSystems
  */
-class MEcs : public IManager, public ISettings {
+class MEcs : public ISettings {
   public:
 	MEcs();
 	~MEcs();
-	void init() override {}
-	void shutdown() override {}
+	void init() {}
+	void shutdown() {}
 
 	entt::entity createEntity(const std::string& name = "");
 	void destroyEntity(entt::entity entity);

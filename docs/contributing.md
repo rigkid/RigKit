@@ -78,7 +78,7 @@ Details: [tools/contract_smoke/README.md](../tools/contract_smoke/README.md).
 
 ## Versioning
 
-Host SemVer is [`cmake/VERSION`](../cmake/VERSION). Bump rules and History: [versioning.md](versioning.md). App and pack versions stay in `app.json` / `pack.json`. The Contract number is [`contract/RigWorks/VERSION`](contract/RigWorks/VERSION).
+Host SemVer is [`cmake/VERSION`](../cmake/VERSION). Bump rules and History: [versioning.md](versioning.md). App and pack versions stay in `app.json` / `pack.json`. Product apps that freeze pack `ref`s use [`tools/rigpack.py`](../tools/rigpack.py) `update --pin` then `check --pinned`; examples keep `"ref": "main"` and `update --latest --sync`. Pack bump and tag rules live under [versioning.md](versioning.md#pack-versions). The Contract number is [`contract/RigWorks/VERSION`](contract/RigWorks/VERSION).
 
 ## Pull requests
 
@@ -107,7 +107,7 @@ Without the secret, workflows warn and continue. Jobs that only touch public rem
 
 - **[contract/commandments.md](contract/commandments.md)** - constitution (start here).
 - **[AGENTS.md](../AGENTS.md)** - commandments + commentary (**NO CODE JUST DATA**, **Pi floor**, **fast rebuilds**, **author friendliness**).
-- **[`tools/check-invariants`](../tools/check-invariants.sh)** - machine gates for ImGui-in-`src/`, data/code pack shape, banned vocabulary, archaeology phrasing.
+- **[`tools/check-invariants`](../tools/check-invariants.sh)** - machine gates for ImGui-in-`src/`, data/code pack shape, pack `pack.json` SemVer, banned vocabulary, archaeology phrasing.
 - **[`tools/check-docs`](../tools/check-docs.sh)** - the Doxygen warning log must be empty. Run it after `cmake --build build --target docs`; the Docs workflow fails on any warning. A warning means text is missing from the HTML, not merely untidy.
 - **`.cursor/rules/rigkit-core.mdc`** - Cursor's always-on hard-invariants reminder. Gitignored (local, not repo content) - see [AGENTS.md#tool-specific-folders-are-local-not-shared](../AGENTS.md#tool-specific-folders-are-local-not-shared).
 - **[authoring.md](authoring.md)** - how users should code (helpers / creators, not manager ceremony).

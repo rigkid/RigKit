@@ -5,13 +5,9 @@
 #include <string>
 #include <vector>
 
-#include "core/json.h"
-#include "ecs/MEcs.h"
-
 // Forward declarations
 namespace rigkit {
 class RigKitEngine;
-class MWindow;
 class Progress;
 class UndoStack;
 } // namespace rigkit
@@ -25,6 +21,7 @@ enum class NotificationType { Info, Success, Warning, Error };
  * @brief Host seam for Rig + UI (no UI toolkit in core).
  * @details Surfaces edit ECS/schemas through this seam. Default UI pack is
  * rigImGui. Show/headless/embedded hosts omit UI and remain Rig-compliant.
+ * @see docs/contract/seams.md
  * @see docs/contract/ui.md
  * @see https://github.com/rigkid/RigWorks/blob/main/docs/ui.md
  */
@@ -60,7 +57,7 @@ class IMui {
 	 * @details Host may swap fulfillments via RigKitEngine::requestUiChrome.
 	 * Not an ImGuiStyle theme - a compositor / toolkit choice.
 	 */
-	virtual const char* chromeId() const { return "imgui"; }
+	virtual const char* chromeId() const { return "none"; }
 
 	// Engine access
 	virtual RigKitEngine* getRigKitEngine() const = 0;
@@ -96,10 +93,6 @@ class IMui {
 
 	/** @brief Active workspace name, or empty when the session layout is unnamed. */
 	virtual std::string currentWorkspace() const { return {}; }
-
-	// Window management
-	virtual class MWindow* getWindowManager() = 0;
-	virtual const class MWindow* getWindowManager() const = 0;
 
 	/**
 	 * @brief When true, dock central node shows the GL framebuffer (plot bed).

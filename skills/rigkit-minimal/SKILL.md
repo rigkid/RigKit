@@ -26,7 +26,7 @@ Capability units are **packs** - never “addon”. Spoken name = folder id = `p
 
 Stop at the first rung that holds:
 
-1. **Does this need to exist?** Speculative need: skip; say so in one line.
+1. **Does this need to exist?** Speculative need: skip; say so in one line. A new host `I*` needs a second fulfillment (or a known next pack). One implementor stays on the concrete type. [seams.md](../../docs/contract/seams.md).
 2. **Can it be data on an existing or new plain component / schema?** Prefer fields + `GetProperties()` + `registerComponent` in **rigComponent** (or app data) over a new system or panel. ([rigkit-data](../rigkit-data/SKILL.md))
 3. **Already in this codebase?** Reuse managers, components, pack patterns - look before writing. Survey the pack table before a new pack; grow an existing seam when the role fits.
 4. **C++20 / stdlib?** Use it.

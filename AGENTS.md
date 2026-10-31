@@ -125,7 +125,6 @@ See [docs/authoring.md](docs/authoring.md).
 | Node graph editor UI | **rigNodeEditor** |
 | Color model, swatches, grey value / harmony / separation tools | **rigColorspace** - DATA + pure helpers |
 | FBO layer compositor + masks | **rigCompositor** |
-| MilkDrop1-class `.milk` visualizer | **rigMilk** - CODE (projectm-eval + GLES2; **rigAudio** beat policy) |
 | Serial port + monitor | **rigSerial** - CODE / IO (`CSerial` / `rig.io.serial`; trunk for GRBL / Enttec) |
 | DMX512 universe buffer | **rigDmx** - CODE / IO (trunk; no sockets, no USB) |
 | sACN / E1.31 | **rigSacn** - CODE / IO (**leaf** on **rigDmx**) |
@@ -137,7 +136,7 @@ Never put systems in data packs (`rigComponent`, `rigPlotComponent`, ...).
 ## Read order
 
 1. [docs/contract/commandments.md](docs/contract/commandments.md) - Ten Commandments
-2. [RigWorks](https://github.com/rigkid/RigWorks) - [honors](https://github.com/rigkid/RigWorks/blob/main/docs/honors.md) (grammar floor); then [docs/contract/README.md](docs/contract/README.md) (RigKit floor = SUDE + ECS), then [sude-loop.md](docs/contract/sude-loop.md), [rigkit.md](docs/contract/rigkit.md), [ui.md](docs/contract/ui.md), [port-map.md](docs/contract/port-map.md), [pi-host.md](docs/contract/pi-host.md)
+2. [RigWorks](https://github.com/rigkid/RigWorks) - [honors](https://github.com/rigkid/RigWorks/blob/main/docs/honors.md) (grammar floor); then [docs/contract/README.md](docs/contract/README.md) (RigKit floor = SUDE + ECS), then [sude-loop.md](docs/contract/sude-loop.md), [rigkit.md](docs/contract/rigkit.md), [ui.md](docs/contract/ui.md), [seams.md](docs/contract/seams.md), [port-map.md](docs/contract/port-map.md), [pi-host.md](docs/contract/pi-host.md)
 3. [docs/authoring.md](docs/authoring.md) - user coding surface
 4. [docs/nodes.md](docs/nodes.md) - node graphs for artists (catalog + editor)
 5. [docs/contributing.md](docs/contributing.md)
@@ -161,9 +160,9 @@ If you are an agent whose tool needs its own project-level rule or skill folder 
 
 ## Other hard invariants
 
-- **No UI toolkit in `src/`** - UI via `IMui`; **rigImGui** is the default UI pack ([docs/contract/ui.md](docs/contract/ui.md)). **Rig** (RigWorks) = entity/component POD + schemas you support; **RigKit** = SUDE + ECS (this host’s floor); **Rig + UI** when author chrome is attached. Rig = rules; RigKit packs = fulfillments.
+- **No UI toolkit in `src/`** - UI via `IMui`; **rigImGui** is the default UI pack ([docs/contract/ui.md](docs/contract/ui.md)). **Rig** (RigWorks) = entity/component POD + schemas you support; **RigKit** = SUDE + ECS (this host’s floor); **Rig + UI** when author chrome is attached. Rig = rules; RigKit packs = fulfillments. Host floor vs seams, and when to add an `I*`: [seams.md](docs/contract/seams.md).
 - **Format:** tabs, clang-format; exactly one blank line at EOF; `tools/format.*` on first-party code only - never `third_party/` (including pack vendored trees).
-- **In-org packs:** Basics as submodules - `rigComponent`, `rigSystems`, `rigProject`, `rigImGui`. Optional packs: local clone or CPM at `app.json` **`ref`**. New pack scaffold: [`templates/rigTemplate`](templates/rigTemplate/). No runtime git update in the host - `tools/update-packs` / `tools/publish-template` ([packs/README.md](packs/README.md)).
+- **In-org packs:** Basics as submodules - `rigComponent`, `rigSystems`, `rigProject`, `rigImGui`. Optional packs: local clone or CPM at `app.json` **`ref`**. New pack scaffold: [`templates/rigTemplate`](templates/rigTemplate/). No runtime git update in the host - `tools/rigpack.py` (developer / configure-time pin manager) / `tools/publish-template` ([packs/README.md](packs/README.md#pinning)).
 - **Fix shared code where it lives** (Commandment 7). A defect in `src/`, a pack, or a vendored tree (`packs/<pack>/third_party/`, a submodule) is fixed there and the app rebuilds against it; an app-side copy or workaround leaves the bug in every other RigKit app and forks the API. App-only behaviour still belongs in the app. Submodule: commit inside the submodule, then bump the pointer in the host; push both (pack CI runs from the pack repo).
 - **Naming:** interfaces `I*`, managers often `M*`; files match type names. Capability unit = **pack** (`packs/`, `pack.json`, `IPack` / `MPack`) - never “addon”. **One id:** spoken name = folder = `pack.json` `"name"` = `app.json` `"name"` = CMake target. A new host example id starts with `example-`. A new product app id starts with `app-`. In-tree examples already shipped (`minimal`, `oscHost`, `glEditor`, `calendar`, `svgEditor`, `ufomat`) keep those ids. Pack demos under `packs/<id>/examples/<short>/` stay a short id. Survey [docs/packs_catalog.md](docs/packs_catalog.md) before scaffolding a new pack. Suffixes: `*Component` = data, `*Edit` = CODE ops, `*Ui` = IMui chrome (named after the engine or domain). Historical `*Editor` ids stay. [packs/README.md](packs/README.md#naming). **Host** = runtime pillar; **Canvas** = render surface / FBO type. See [docs/apps_creating.md](docs/apps_creating.md).
 - **UI text:** no emoji in UI or comments (IconFont ok in `rigImGui`). No unicode arrows in Markdown - write “to”, “then”, or “>” for menus ([rigkit-comments](skills/rigkit-comments/SKILL.md)).
@@ -175,7 +174,7 @@ If you are an agent whose tool needs its own project-level rule or skill folder 
 | Skill | Use when |
 |-------|----------|
 | [rigkit-data](skills/rigkit-data/SKILL.md) | Components, properties, schemas, data vs code, **which pack owns a component** |
-| [rigkit-contract](skills/rigkit-contract/SKILL.md) | SUDE-ECS-UI Contract, Host, IMui, Pi/ESP32, packs |
+| [rigkit-contract](skills/rigkit-contract/SKILL.md) | SUDE-ECS-UI Contract, Host, IMui, host seams / `I*`, Pi/ESP32, packs |
 | [rigkit-build](skills/rigkit-build/SKILL.md) | CMake, format, hooks, Pi verify, fast rebuild habits, **local CI before commit**, git commits (no trailers), **PRs against `main`** |
 | [rigkit-minimal](skills/rigkit-minimal/SKILL.md) | Avoid over-build; data before code; Pi-light; rebuild-cheap |
 | [rigkit-deslop](skills/rigkit-deslop/SKILL.md) | `deslop` / clean AI or migration leftovers; finish vs delete |

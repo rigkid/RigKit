@@ -72,7 +72,7 @@ List it under `dependencies` in `examples/<name>/app.json`:
 }
 ```
 
-SPDX `"license"` is required on `app.json` as well (CI / `check-invariants`).
+SPDX `"license"` is required on `app.json` as well (CI / `check-invariants`). In-tree examples keep `"ref": "main"` as the integration canary (`python tools/rigpack.py update <app.json> --latest --sync` pulls without rewriting). Product apps that need a freeze snapshot with `--pin`, then `check --pinned` — [packs/README.md](../packs/README.md#pinning).
 
 In the app, register the pack in `bootstrapPacks()` / `setup()` (see `examples/oscHost`).
 

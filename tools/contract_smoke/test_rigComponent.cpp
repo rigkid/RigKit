@@ -4,7 +4,9 @@
 #include "CRectangle.h"
 #include "CStar.h"
 #include "CTransform.h"
+#include "CUiPanel.h"
 #include "fixture.h"
+#include "rig/create.h"
 
 using namespace rigkit;
 using namespace rigkit::smoke;
@@ -51,6 +53,10 @@ TEST_CASE("rigComponent registers portable spine types") {
 	requireType(f, "Code", true);
 	requireType(f, "Text", true);
 	requireType(f, "Canvas", false);
+	requireType(f, "UiPanel", true);
+	requireType(f, "UiGroup", true);
+	requireType(f, "UiControl", true);
+	requireType(f, "UiAction", true);
 }
 
 TEST_CASE("rigComponent GetProperties pointers land in component storage") {
@@ -70,4 +76,32 @@ TEST_CASE("rigComponent GetProperties pointers land in component storage") {
 
 	const auto* drawStyle = requireType(f, "DrawStyle", true);
 	checkPropertiesPointIntoMember<ecs::CDrawStyle>(ecs, *drawStyle);
+
+	const auto* uiPanel = requireType(f, "UiPanel", true);
+	checkPropertiesPointIntoMember<ecs::CUiPanel>(ecs, *uiPanel);
+
+	const auto* uiAction = requireType(f, "UiAction", true);
+	checkPropertiesPointIntoMember<ecs::CUiAction>(ecs, *uiAction);
+}
+
+TEST_CASE("rig::makeUi* writes portable panel data") {
+	SpineFixture f;
+	auto target = f.ecs().createEntity("knob");
+	auto panel = rig::makeUiPanel(f.ecs(), "mod.lfo", ecs::kUiSurfaceHud, "LFO");
+	auto ctrl = rig::makeUiControl(f.ecs(), panel, target, "frequency", 0, ecs::kUiWidgetSlider,
+								  "Rate");
+	auto act = rig::makeUiAction(f.ecs(), panel, "lfo.resetPhase", 1, "Reset");
+
+	REQUIRE(f.ecs().hasComponent<ecs::CUiPanel>(panel));
+	CHECK(f.ecs().getComponent<ecs::CUiPanel>(panel).role == "mod.lfo");
+	CHECK(f.ecs().getComponent<ecs::CUiPanel>(panel).surface == ecs::kUiSurfaceHud);
+
+	REQUIRE(f.ecs().hasComponent<ecs::CUiControl>(ctrl));
+	CHECK(f.ecs().getComponent<ecs::CUiControl>(ctrl).panel == entt::to_integral(panel));
+	CHECK(f.ecs().getComponent<ecs::CUiControl>(ctrl).target == entt::to_integral(target));
+	CHECK(f.ecs().getComponent<ecs::CUiControl>(ctrl).propertyKey == "frequency");
+	CHECK(f.ecs().getComponent<ecs::CUiControl>(ctrl).widget == ecs::kUiWidgetSlider);
+
+	REQUIRE(f.ecs().hasComponent<ecs::CUiAction>(act));
+	CHECK(f.ecs().getComponent<ecs::CUiAction>(act).actionId == "lfo.resetPhase");
 }

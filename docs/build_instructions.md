@@ -111,4 +111,4 @@ git pull
 git submodule update --init --recursive
 ```
 
-In-org packs are first-party packs in the rigkid org (own remotes), checked out under `packs/` as submodules or local clones. `git submodule update --init --recursive` covers them when tracked as submodules. Optional packs: pin with `"ref"` in `app.json`; refresh with `tools/update-packs`. New pack scaffold: `templates/rigTemplate` (see [packs/README.md](../packs/README.md)).
+In-org packs are first-party packs in the rigkid org (own remotes), checked out under `packs/` as submodules or local clones. `git submodule update --init --recursive` covers them when tracked as submodules. Optional packs: pin with `"ref"` in `app.json`; refresh with `python tools/rigpack.py sync <app.json>` (see [packs/README.md](../packs/README.md#pinning)). New pack scaffold: `templates/rigTemplate` (see [packs/README.md](../packs/README.md)).

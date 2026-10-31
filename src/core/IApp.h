@@ -16,7 +16,7 @@ class SEvent;
  * @brief Application entry surface - setup / update / draw / exit.
  * @details Override setup/update/draw/exit. Do not override rigSetup/rigUpdate/
  * rigDraw/rigExit - those are host template methods (SUDE + present).
- * @see RigKitEngine, docs/contract/sude-loop.md, docs/authoring.md
+ * @see RigKitEngine, docs/contract/sude-loop.md, docs/contract/seams.md, docs/authoring.md
  */
 class IApp {
   public:

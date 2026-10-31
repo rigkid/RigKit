@@ -13,7 +13,7 @@ Say and write the same camelCase token (e.g. **rigImGui** is `packs/rigImGui/`).
 | `*Component` | **Data pack** - domain POD components | `rigComponent`, `rigPlotComponent`, `rigNodeComponent`, `rigPixelPlotComponent`, `rigColorspace` |
 | `*Edit` | CODE **ops** over existing POD. No dock, no product menus. Headless callers can link it. | `rigMeshEdit` |
 | `*Ui` | IMui **chrome** - one panel or a Kit. Named after the engine or domain, never a file format. | `rigPlotterUi`, `rigTraceUi`, `rigVectorUi` |
-| Short / verb name | Single-purpose code, I/O, present, or transport | `rigSvg`, `rigObj`, `rigMilk`, `rigSystems`, `rigRender3D`, `rigSerial`, `rigGrbl`, `rigOsc`, `rigCompositor` |
+| Short / verb name | Single-purpose code, I/O, present, or transport | `rigSvg`, `rigObj`, `rigSystems`, `rigRender3D`, `rigSerial`, `rigGrbl`, `rigOsc`, `rigCompositor` |
 | Product engine name | Orchestration that mutates domain PODs | `rigPlotter`, `rigPixelPlotter` |
 
 Rules:
@@ -70,8 +70,25 @@ Each dependency uses a git **`ref`** (tag, branch, or commit SHA):
 ```
 
 - **`ref`** is canonical. **`branch`** still works as an alias (CMake warns once).
-- If `packs/<name>/` exists (submodule or local clone), that tree is used. Refresh with [`tools/update-packs`](../tools/update-packs.sh).
+- The **root manifest wins**: an `app.json` pin overrides the same pack's nested `pack.json` requests, and CMake says so when they differ. Conflicting nested requests with no root pin warn at configure — pin the pack in the app to settle them.
+- If `packs/<name>/` exists (submodule or local clone), that tree is used, even when it does not match the pin (pack development). Configure warns when a local checkout drifts from a pinned tag or SHA.
 - If missing, CPM clones `url` at `ref`.
+
+Manage pins with [`tools/rigpack.py`](../tools/rigpack.py) (Python + git only; version and bump rules: [docs/versioning.md](../docs/versioning.md#pack-versions)):
+
+```bash
+python tools/rigpack.py status examples/oscHost/app.json   # resolved graph, checkout state
+python tools/rigpack.py status                             # every local pack checkout
+python tools/rigpack.py outdated <app.json>                # tracks vs remotes; floats say pull --sync
+python tools/rigpack.py update <app.json> --latest --sync  # pull origin/main; keep "ref": "main"
+python tools/rigpack.py update <app.json> --pin            # snapshot floats to SHAs / tags
+python tools/rigpack.py update <app.json> --float          # unpin: write main
+python tools/rigpack.py sync <app.json>                    # clone / check out at current refs
+python tools/rigpack.py check <app.json>                   # conflicts + SemVer; floating refs are allowed
+python tools/rigpack.py check <app.json> --pinned          # product release: floats fail
+```
+
+`"ref": "main"` is a track: `update` does not rewrite it to a SHA. `--pin` is the snapshot. `--float` goes the other way. `update` also works on a `pack.json` (preparing a pack release: bump nested pins, then bump `version`, commit, tag `v<version>`, push both).
 
 ## In-org packs
 
@@ -93,25 +110,15 @@ Everything else under `packs/` is optional: local clone or CPM at `app.json` `ur
 
 Pin basics = submodule SHA in the host. Pin optional packs = `ref` in `app.json` (CPM) or a local checkout.
 
-Refresh checkouts:
+Refresh checkouts to an app's pins, or see what is checked out, dirty, or behind:
 
 ```bash
-./tools/update-packs.sh
+python tools/rigpack.py sync examples/oscHost/app.json
+python tools/rigpack.py status examples/oscHost/app.json --strict   # non-zero if anything needs attention
+python tools/rigpack.py status --build examples/svgEditor/build     # RIGKIT_DIR drift for a build tree
 ```
 
-See what is checked out, dirty, or behind a pin:
-
-```bash
-./tools/pack-status.sh
-./tools/pack-status.sh --app examples/svgEditor/app.json --build examples/svgEditor/build
-./tools/pack-status.sh --strict   # non-zero if anything needs attention
-```
-
-In-tree examples configure with `RIGKIT_DIR=${CMAKE_CURRENT_SOURCE_DIR}/../..` so they always build against this checkout. Sibling product apps should point at the same tree (e.g. `../RigKit`).
-
-```bash
-./tools/update-packs.sh --app examples/oscHost/app.json
-```
+In-tree examples configure with `RIGKIT_DIR=${CMAKE_CURRENT_SOURCE_DIR}/../..` so they always build against this checkout. Sibling product apps should point at the same tree (e.g. `../RigKit`) and run rigpack from that RigKit checkout (`--rigkit` defaults to the tool's own repo).
 
 ## Pack example (README screenshot)
 
@@ -205,6 +212,6 @@ git -C packs/rigBlend2D submodule update --init --recursive
 
 ## Bootstrap order
 
-Register **rigComponent**, then **rigSystems**, then **rigImGui** (see `examples/oscHost` and `examples/minimal`). For 3D meshes: **rigComponent**, then **rigSystems**, then **rigRender3D** (+ **rigObj** / **rigMeshEdit** as needed; see `examples/lowpoly`). For node graphs: **rigComponent**, then **rigNodeComponent**, then **rigImGui**, then **rigNodeEditor** (see `packs/rigNodeEditor/examples/nodes`). For `.milk` visuals: **rigComponent**, then **rigShowComponent**, then **rigAudio**, then **rigMilk** (`CMilk` on the `CVisualizer` deck; present draws into `output`). Artist guide: [docs/nodes.md](../docs/nodes.md).
+Register **rigComponent**, then **rigSystems**, then **rigImGui** (see `examples/oscHost` and `examples/minimal`). For 3D meshes: **rigComponent**, then **rigSystems**, then **rigRender3D** (+ **rigObj** / **rigMeshEdit** as needed; see `examples/lowpoly`). For node graphs: **rigComponent**, then **rigNodeComponent**, then **rigImGui**, then **rigNodeEditor** (see `packs/rigNodeEditor/examples/nodes`). For a preset deck: **rigComponent**, then **rigShowComponent**, then **rigProject**, then **rigSystems** (`examples/visualizer` loads `.rig` presets). Artist guide: [docs/nodes.md](../docs/nodes.md).
 
 There is **no** runtime git updater in the host - only configure-time CPM and the tools above.

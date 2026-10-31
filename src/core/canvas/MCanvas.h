@@ -5,7 +5,6 @@
 #include <string>
 #include <vector>
 
-#include "core/IManager.h"
 #include "core/ISettings.h"
 #include "Canvas.h"
 
@@ -17,12 +16,12 @@ class RigKitEngine;
  * @brief Owns named Canvas instances and the active-canvas selection.
  * @see Canvas
  */
-class MCanvas : public IManager, public ISettings {
+class MCanvas : public ISettings {
   public:
 	MCanvas(RigKitEngine* engine);
 	~MCanvas();
-	void init() override {}
-	void shutdown() override {}
+	void init() {}
+	void shutdown() {}
 
 	std::shared_ptr<Canvas> createCanvas(const CanvasSettings& settings,
 										 const std::string& name = "");

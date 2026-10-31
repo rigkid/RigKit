@@ -29,7 +29,6 @@ RigKit is a vision of tools after years of playing with code of others. Most hea
 - **Dave Gandy** | Font Awesome Free (`fa-solid-900.ttf`), Fonticons, Inc. Thank you for the icons in the chrome. Fonts are SIL OFL, icons CC BY.
 - **Pascal Gauthier** | Dexed. Thank you for the DX7 instrument. The MSFA core underneath is copyright Google. **rigDexed**.
 - **Marcus Geelnard** | [GLFW](https://github.com/glfw/glfw). Thank you for starting the window library Camilla carried on.
-- **Ryan Geiss** | MilkDrop and ns-eel. Thank you. **rigMilk** runs those presets through projectm-eval, the projectM team's MIT reimplementation of ns-eel2.
 - **Rich Geldreich** | [miniz](https://github.com/richgel999/miniz). Thank you for deflate. **rigUfo** and **rigProject** fetch it.
 - **Alexander Gessler** | Assimp, with Kim Kulling and the assimp team. Thank you. **rigAssimp** fetches it.
 - **Daniel Gibson** | stb. Thank you for the JPEG writer integration, and for 16-bit TGA.

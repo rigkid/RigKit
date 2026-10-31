@@ -91,11 +91,10 @@ Details: [docs/build_instructions.md](../../docs/build_instructions.md), [tools/
 
 ## Pack pins and remotes
 
-- Manifest pin: `"ref": "v0.1.0"` (tag / branch / SHA). Deprecated alias: `"branch"`.
+- Manifest `ref`: tag or SHA (pin) or branch such as `main` (track). Deprecated alias: `"branch"`.
 - In-org packs (rigkid GitHub org remotes) live under `packs/`.
-- Local `packs/<name>/` (submodule or clone) wins; else CPM clones at `ref`.
-- Refresh: `./tools/update-packs.sh` (optional `--app examples/.../app.json`).
-- Status: `./tools/pack-status.sh` (optional `--app`, `--build`, `--strict`) — dirty/ahead/behind and `RIGKIT_DIR` drift.
+- Local `packs/<name>/` (submodule or clone) wins; else CPM clones at `ref`. Root `app.json` pin wins over nested `pack.json` requests; conflicts and local drift from a pinned tag/SHA warn at configure.
+- Pack manager: `python tools/rigpack.py status|check|outdated|update|sync <app.json>`. `"ref": "main"` is a track (`update --latest --sync` pulls, does not SHA-ify). `--pin` snapshots to SHAs/tags; `--float` unpins; `check --pinned` is the product release gate. Pack bump/release rules: [docs/versioning.md](../../docs/versioning.md#pack-versions).
 - New pack: survey [packs/README.md](../../packs/README.md) (table + Naming) before scaffolding; prefer growing an existing pack. Then [`templates/rigTemplate`](../../templates/rigTemplate/); publish template with `./tools/publish-template.sh`.
 - Details: [packs/README.md](../../packs/README.md).
 
@@ -161,7 +160,7 @@ When changing an in-org pack, also build that pack’s examples (same as the pac
 | rigImGui | `host_shell` | `packs/rigImGui/examples/host_shell` |
 | rigManifold | `csg` | `packs/rigManifold/examples/csg` |
 | rigMeshEdit | `gizmo` | `packs/rigMeshEdit/examples/gizmo` |
-| rigMilk | `visualizer` | `packs/rigMilk/examples/visualizer` |
+| rigShowComponent | `visualizer` | `packs/rigShowComponent/examples/visualizer` |
 | rigPlotter (integration) | `plot` + `*_smoke` | `packs/rigPlotter/examples/plot` |
 | Every other pack | its `examples/<name>/` | see pack README (`img/preview.png` required) |
 

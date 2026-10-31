@@ -13,10 +13,12 @@
 # Local packs/<name>/ under RIGKIT_ROOT wins; otherwise CPM clones at ref.
 # Requires RIGKIT_ROOT (set by RigKit's CMakeLists).
 #
-# Nested pack.json dependencies are loaded depth-first before the pack itself.
-# First resolution wins: a pack already in RIGKIT_PROCESSED_PACKS (or an existing
-# CMake target of that name) is skipped - app.json order and nested edges may
-# both name the same dep without double add_subdirectory.
+# Pin model (tools/rigpack.py): the root manifest (app.json) pin wins over
+# nested pack.json requests. Without a root pin, first resolution wins: a
+# pack already in RIGKIT_PROCESSED_PACKS (or an existing CMake target of
+# that name) is skipped - app.json order and nested edges may both name the
+# same dep without double add_subdirectory. Conflicting requests warn
+# instead of passing silently; pin the pack in app.json to settle them.
 #
 # Requires CMake >= 3.19 for string(JSON ...)
 #
@@ -27,6 +29,9 @@
 # Drop legacy cache keys from older RigKitPacks (harmless if absent).
 unset(RIGKIT_PROCESSED_PACKS CACHE)
 unset(RIGKIT_GLOBAL_PACK_INCLUDE_PATHS CACHE)
+
+# Optional: used only to report local-checkout vs pin drift.
+find_package(Git QUIET)
 
 # Read optional JSON string member; sets OUT_VAR to "" if missing.
 function(rigkit_json_get_string JSON_TEXT OUT_VAR)
@@ -50,6 +55,30 @@ function(rigkit_ensure_pack depName depUrl depRef OUT_APPENDED)
 
 	if(NOT DEFINED RIGKIT_ROOT OR RIGKIT_ROOT STREQUAL "")
 		message(FATAL_ERROR "[RigKitPacks] RIGKIT_ROOT is not set (include RigKit via add_subdirectory)")
+	endif()
+
+	# Root manifest pin wins over nested pack.json requests.
+	get_property(_hasPin GLOBAL PROPERTY "RIGKIT_PIN_REF_${depName}" SET)
+	if(_hasPin)
+		get_property(_pinRef GLOBAL PROPERTY "RIGKIT_PIN_REF_${depName}")
+		get_property(_pinUrl GLOBAL PROPERTY "RIGKIT_PIN_URL_${depName}")
+		if(NOT "${depRef}" STREQUAL "" AND NOT "${depRef}" STREQUAL "${_pinRef}")
+			message(STATUS "[RigKitPacks] ${depName}: root pin ${_pinRef} wins over nested request ${depRef}")
+		endif()
+		set(depRef "${_pinRef}")
+		if(NOT "${_pinUrl}" STREQUAL "")
+			set(depUrl "${_pinUrl}")
+		endif()
+	else()
+		# No root pin: a second, different request is a conflict. First wins,
+		# but say so (rigpack check turns this into a gate for apps).
+		get_property(_hasReq GLOBAL PROPERTY "RIGKIT_REQ_REF_${depName}" SET)
+		if(_hasReq)
+			get_property(_reqRef GLOBAL PROPERTY "RIGKIT_REQ_REF_${depName}")
+			if(NOT "${depRef}" STREQUAL "" AND NOT "${depRef}" STREQUAL "${_reqRef}")
+				message(WARNING "[RigKitPacks] ${depName}: conflicting requests ${_reqRef} (first, wins) vs ${depRef}. Pin ${depName} in app.json to settle it")
+			endif()
+		endif()
 	endif()
 
 	get_property(_processed GLOBAL PROPERTY RIGKIT_PROCESSED_PACKS)
@@ -128,6 +157,7 @@ function(rigkit_ensure_pack depName depUrl depRef OUT_APPENDED)
 	# Mark processed before recursion / add so cycles keep the first visit.
 	list(APPEND _processed ${depName})
 	set_property(GLOBAL PROPERTY RIGKIT_PROCESSED_PACKS "${_processed}")
+	set_property(GLOBAL PROPERTY "RIGKIT_REQ_REF_${depName}" "${depRef}")
 
 	# Nested pack.json dependencies - depth-first, first wins.
 	set(PACK_JSON_PATH "${PACK_DIR}/pack.json")
@@ -160,6 +190,30 @@ function(rigkit_ensure_pack depName depUrl depRef OUT_APPENDED)
 		set(${OUT_APPENDED} "${depName}" PARENT_SCOPE)
 		message(STATUS "[RigKitPacks] Keep first: ${depName} (created while loading nested deps)")
 		return()
+	endif()
+
+	# A local checkout wins over the pin at build time (pack development);
+	# report drift from a pinned tag / SHA so it is never silent.
+	set(_pinnedRef FALSE)
+	if(depRef MATCHES "^v?[0-9]+\.[0-9]+\.[0-9]+$")
+		set(_pinnedRef TRUE)
+	elseif(depRef MATCHES "^[0-9a-fA-F]+$")
+		string(LENGTH "${depRef}" _pinLen)
+		if(_pinLen GREATER_EQUAL 7)
+			set(_pinnedRef TRUE)
+		endif()
+	endif()
+	if(_pinnedRef AND GIT_FOUND AND EXISTS "${PACK_DIR}/.git")
+		execute_process(COMMAND ${GIT_EXECUTABLE} -C "${PACK_DIR}" rev-parse HEAD
+			OUTPUT_VARIABLE _headSha OUTPUT_STRIP_TRAILING_WHITESPACE
+			ERROR_QUIET RESULT_VARIABLE _headRc)
+		execute_process(COMMAND ${GIT_EXECUTABLE} -C "${PACK_DIR}" rev-parse --verify "${depRef}^{commit}"
+			OUTPUT_VARIABLE _pinSha OUTPUT_STRIP_TRAILING_WHITESPACE
+			ERROR_QUIET RESULT_VARIABLE _pinRc)
+		if(_headRc EQUAL 0 AND _pinRc EQUAL 0 AND NOT _headSha STREQUAL _pinSha)
+			# No semicolon: CMake treats `;` as a list separator inside message().
+			message(WARNING "[RigKitPacks] ${depName}: local checkout ${_headSha} does not match pinned ${depRef} (${_pinSha}). Local wins. Run 'rigpack sync' to match, or keep for pack development")
+		endif()
 	endif()
 
 	message(STATUS "[RigKitPacks] Using local pack: ${depName} at ${PACK_DIR} (pin metadata ref=${depRef})")
@@ -217,6 +271,26 @@ function(rigkit_load_packs MANIFEST_PATH OUT_VAR)
 	endif()
 
 	message(STATUS "[RigKitPacks] Dependencies length: ${_depsLen}")
+
+	# Register root manifest pins before any nested resolution: app pins
+	# win over pack.json requests (see rigkit_ensure_pack).
+	math(EXPR _pinLast "${_depsLen}-1")
+	foreach(idx RANGE 0 ${_pinLast})
+		rigkit_json_get_string("${_manifest}" _pinName dependencies ${idx} name)
+		rigkit_json_get_string("${_manifest}" _pinUrl dependencies ${idx} url)
+		rigkit_json_get_string("${_manifest}" _pinRef dependencies ${idx} ref)
+		rigkit_json_get_string("${_manifest}" _pinBranch dependencies ${idx} branch)
+		if("${_pinRef}" STREQUAL "" AND NOT "${_pinBranch}" STREQUAL "")
+			set(_pinRef "${_pinBranch}")
+		endif()
+		if("${_pinRef}" STREQUAL "")
+			set(_pinRef "main")
+		endif()
+		if(NOT "${_pinName}" STREQUAL "")
+			set_property(GLOBAL PROPERTY "RIGKIT_PIN_REF_${_pinName}" "${_pinRef}")
+			set_property(GLOBAL PROPERTY "RIGKIT_PIN_URL_${_pinName}" "${_pinUrl}")
+		endif()
+	endforeach()
 
 	set(_pack_libs "")
 	math(EXPR _lastIdx "${_depsLen}-1")

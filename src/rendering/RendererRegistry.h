@@ -5,6 +5,8 @@
 #include <vector>
 #include "rendering/U_rendering.h"
 
+namespace rigkit {
+
 class RendererRegistry {
   public:
 	using Factory = std::function<std::shared_ptr<IRenderer>()>;
@@ -40,3 +42,5 @@ class RendererRegistry {
   private:
 	std::unordered_map<RendererType, Factory> factories;
 };
+
+} // namespace rigkit

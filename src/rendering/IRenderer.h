@@ -5,8 +5,7 @@
 #include <string>
 #include <vector>
 
-class Canvas;
-class Graphics;
+namespace rigkit {
 
 enum class RendererType { OpenGL, Blend2D };
 
@@ -49,7 +48,7 @@ struct Paint {
  * Paint; the matrix stack and the active gradient are the only retained
  * drawing state. Pixel export and rich text may be no-ops until a pack
  * (e.g. Blend2D) implements them. Does not create a window or swap buffers.
- * @see OpenGLRenderer, createRenderer, Graphics, Paint
+ * @see OpenGLRenderer, createRenderer, Graphics, Paint, docs/contract/seams.md
  */
 class IRenderer {
   public:
@@ -160,3 +159,5 @@ class IRenderer {
  * @brief Create a renderer via RendererRegistry (nullptr if type unregistered).
  */
 std::shared_ptr<IRenderer> createRenderer(RendererType type);
+
+} // namespace rigkit

@@ -81,16 +81,26 @@ rig::makeCadBoolean(*ecs, rigkit::ecs::CCadBoolean::Op::Difference, {"stock", "c
 rig::makeCadDimension(*ecs, rigkit::ecs::CCadDimension::Kind::Horizontal, "stock", "cutter",
 					  4.f, false, "span");
 
-// Preset deck (needs a present pack + rigAudio for switchOn):
-auto deck = rig::makeVisualizer(*ecs);
-rig::addVisualizerPreset(*ecs, deck, "data/presets/warm.vis");
+// Preset deck. examples/visualizer loads each .rig; rigSystems draws it.
+auto deck = rig::makeVisualizer(*ecs, "data/presets");
+rig::addVisualizerPreset(*ecs, deck, "data/presets/warm.rig");
 auto listen = rig::makeAudioAnalysis(*ecs);
 rig::makePictureAnalysis(*ecs, output);
 ecs->getComponent<rigkit::ecs::CVisualizer>(deck).output = output;
 ecs->getComponent<rigkit::ecs::CVisualizer>(deck).analysis = listen;
 ```
 
-These helpers only write POD (`CTransform` + shape / `CMesh` / `CCad*` / `COrbitDrive` / `COrthoView` + `CDrawStyle` / `CVisualizer` / `CAudioAnalysis` / `CPictureAnalysis`). `makeOrbitCamera` poses the eye; turn `COrbitDrive::enabled` on for a show-mode spin (`SOrbitDrive` yaws from `pitch`). `makeOrthoCamera` stays inactive so it never steals the main bed. `makeVisualizer` is a playlist; a leaf pack (rigMilk, ...) presents entries it understands and draws into `output`. Live `color` / `temperature` are host cache on the audio and picture buses - not fields on the deck.
+These helpers only write POD (`CTransform` + shape / `CMesh` / `CCad*` / `COrbitDrive` / `COrthoView` + `CDrawStyle` / `CVisualizer` / `CAudioAnalysis` / `CPictureAnalysis` / `CUi*`). `makeOrbitCamera` poses the eye; turn `COrbitDrive::enabled` on for a show-mode spin (`SOrbitDrive` yaws from `pitch`). `makeOrthoCamera` stays inactive so it never steals the main bed. `makeVisualizer` is a playlist of preset assets. `packs/rigShowComponent/examples/visualizer` loads `.rig` entries into the world. Live `color` / `temperature` are host cache on the audio and picture buses - not fields on the deck.
+
+**Portable tool panels** (`CUiPanel` / `CUiGroup` / `CUiControl` / `CUiAction`) are the same kind of data. **rigImGui** presents every visible panel. Controls bind `target` + `propertyKey`. Actions fire `SEvent` ids from `IApp::registerUIActions`. Unknown action ids stay hidden.
+
+```cpp
+auto panel = rig::makeUiPanel("mod.lfo", rigkit::ecs::kUiSurfaceTool, "LFO");
+rig::makeUiControl(panel, lfo, "frequency", 0, rigkit::ecs::kUiWidgetSlider, "Rate");
+rig::makeUiAction(panel, "lfo.resetPhase", 1, "Reset phase");
+```
+
+A play overlay is the same panel with `kUiSurfaceHud`. Custom `IWindow` subclasses stay the exception for chrome that cannot be a bound field. `examples/oscHost --author` ships a Look panel on the `look` entity (master + fill). [seams.md](contract/seams.md).
 
 ## Orbit nav (code) - `rigSystems`
 
@@ -163,9 +173,9 @@ Brush packs are a folder with `brushes.json` plus optional tip PNGs - not Adobe 
 
 ## Layers (mental model)
 
-1. **Author API** - `IApp`, entity creators (`makeRect` / `makeMesh*`), optional `rig::` sketch helpers
-2. **Data** - `rigComponent` PODs (`CShape`, `CMesh`, `CSelection`, ...) + catalog
-3. **Fulfillment** - `rigSystems` Draw systems + host OpenGL `IRenderer`
+1. **Author API** - `IApp`, entity creators (`makeRect` / `makeMesh*` / `makeUi*`), optional `rig::` sketch helpers
+2. **Data** - `rigComponent` PODs (`CShape`, `CMesh`, `CSelection`, `CUi*`, ...) + catalog
+3. **Fulfillment** - `rigSystems` Draw systems + host OpenGL `IRenderer`; **rigImGui** presents `CUi*`
 4. **Host** - `RigKitEngine`, `AppPaths` (`<exeDir>/data`)
 
-Agents changing APIs start at layer 1 and push weight down - never force artists to start at layer 3.
+Agents changing APIs start at layer 1 and push weight down - never force artists to start at layer 3. New host `I*` and panel surfaces: [contract/seams.md](contract/seams.md).

@@ -14,10 +14,45 @@ App versions live in `app.json`. Pack versions live in `pack.json`. The Contract
 
 When you bump `cmake/VERSION`, add a History row below (release notes, not a second source of truth). A removed or renamed public symbol must appear there with its replacement (callers update; no forever shim — [contributing.md](contributing.md#api-changes)). Tag releases `v1.0.0`, `v1.1.0`, .... `tools/check-invariants` requires `cmake/VERSION` to be SemVer.
 
+## Pack versions
+
+Each pack versions itself in its own `pack.json` `"version"` — that field is the pack's source of truth, and `tools/check-invariants` requires it to be SemVer. The host number above does not version packs.
+
+| Pack change | Bump |
+|-------------|------|
+| Breaking public pack API, or a POD / wire change (field or token removed, renamed, or re-meaned; migration in the owning codec does not make it additive) | `MAJOR` (on `0.x`: `MINOR`) |
+| Additive API or POD field with a safe default | `MINOR` (on `0.x`: `PATCH`) |
+| Fix with no API, POD, or wire shape change | `PATCH` |
+
+Release a pack from its own repo: bump `pack.json`, commit, tag that commit `vMAJOR.MINOR.PATCH`, then push the commit and the tag. The tag and the `pack.json` version at that commit must match; `rigpack check` flags a checkout whose exact tag disagrees with its `pack.json`.
+
+## Pins and updates (rigpack)
+
+Apps and packs declare intent in `app.json` / `pack.json` dependencies (`name` + `url` + `ref`). The root manifest's pin wins over nested `pack.json` requests; `cmake/RigKitPacks.cmake` says so at configure time when they differ, and warns on conflicting requests no root pin settles. A local `packs/<name>/` checkout wins over the pin at build time (pack development); configure warns when it does not match a pinned tag or SHA.
+
+Manage pins with `tools/rigpack.py` (Python + git, no registry):
+
+```bash
+python tools/rigpack.py status examples/oscHost/app.json
+python tools/rigpack.py outdated <app.json>
+python tools/rigpack.py update <app.json> --latest --sync   # pull origin/main; keep floating refs
+python tools/rigpack.py update <app.json> --pin             # snapshot floats to SHAs / tags
+python tools/rigpack.py update <app.json> --float           # rewrite pins back to main
+python tools/rigpack.py check <app.json>                    # conflicts + SemVer; floating refs are allowed
+python tools/rigpack.py check <app.json> --pinned           # product release: fail on floating refs
+```
+
+A `"ref": "main"` (or any branch) is a **track**, not a pin: `update` leaves it alone and `--latest --sync` fast-forwards the checkout. A tag or SHA is a **pin**: `update` moves tags to the newest compatible SemVer (same `MAJOR`; on `0.x` also same `MINOR`; `--latest` / `--allow-breaking` cross). `--pin` snapshots a track to a SHA (or a tag when the pack has them). `--float` is the reverse. Product apps that need a reproducible install pin, then `check --pinned`. In-tree examples stay on `main`. Details: [packs/README.md](../packs/README.md#pinning).
+
 ## History
 
 | Version | Notes |
 |---------|-------|
+| unreleased | `CUiPanel` / `CUiGroup` / `CUiControl` / `CUiAction` match `rig.ui.*`. Creators: `rig::makeUiPanel` / `makeUiControl` / `makeUiAction`. Contract import writes the POD (refs from document ids). **rigImGui** presents visible panels. Actions fire `SEvent`. `oscHost --author` Look panel binds the `look` entity. |
+| unreleased | `IMui::getWindowManager` removed. Create and show panels through `Mui::getWindowManager` (include rigImGui). `IMui::chromeId()` default is `"none"`; `Mui` returns `"imgui"`. |
+| unreleased | Removed `IStrokeUI`. Removed `IManager`; `MEcs` / `MPack` / `MRendering` / `MCanvas` / `MSettings` keep `init` / `shutdown` as ordinary methods. |
+| unreleased | `IRenderer`, `Paint`, `RendererType`, `GradientType`, `GradientStop`, `createRenderer`, and `ISettings` live in `namespace rigkit`. |
+| unreleased | Pack version management: `tools/rigpack.py` (`status` / `check` / `outdated` / `update` / `sync`). `"ref": "main"` is a track (`update --latest --sync` pulls without SHA-ifying); `--pin` / `--float` switch snapshot vs track; `check --pinned` is the product release gate. Root `app.json` pins win over nested `pack.json` requests in `RigKitPacks.cmake`. Pack `pack.json` versions are SemVer-gated by `check-invariants`. Replaces `tools/pack-status.sh` and `tools/update-packs.sh`. |
 | unreleased | `CCompositePass::BlendMode` ordinals match `CRenderBlend` (`add`=6, `color-dodge`=12, `disabled`=18). Tokens unchanged; raw ints in old documents remap. |
 | unreleased | `CPlotLayer` no longer owns mask; `CCompositePass` does. Wire: `x.rigkit.composite_pass`. Old `plot_layer` mask keys migrate on load. |
 | unreleased | Removed `IMui::registerFontAtlasHook`. Packs that add fonts call `Mui::registerFontAtlasHook`. |

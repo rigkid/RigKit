@@ -64,7 +64,7 @@ Human mirror: [docs/packs_using.md](../../docs/packs_using.md).
 5. **Schema travel** - if Pi / ESP32 / another host must share meaning, prefer a small JSON or binary slice of POD fields; schema alignment matters more than identical ECS libraries ([docs/contract/rigkit.md](../../docs/contract/rigkit.md)).
 6. **Behavior elsewhere** - `rigSystems` / document systems via `registerSystem`; never inside data packs (`rigComponent`, `rigPlotComponent`, ...).
 7. **`registerComponent` in setup** - announce the type on `MEcs` so rigImGui Properties can discover it. The code pack files the codec with `project::addSerializer`.
-8. **Push back** - if the request starts with a new ImGui window or system, redefine it as data first, then the thinnest fulfillment.
+8. **Push back** - if the request starts with a new ImGui window or system, redefine it as data first, then the thinnest fulfillment. A portable tool surface is `CUiPanel` / `CUiGroup` / `CUiControl` / `CUiAction` (`rig.ui.*`), not a new host `I*` and not `IWindow` in `src/`. Creators: `rig::makeUiPanel` / `makeUiControl` / `makeUiAction`. Present: **rigImGui** `presentUiPanels`. [seams.md](../../docs/contract/seams.md).
 9. **Author path** - prefer short creators/helpers that write POD data (`makeRect`, `makeMesh*`, ...) over exposing `MEcs` first. Meshes are first-class (`CMesh`). See [docs/authoring.md](../../docs/authoring.md).
 
 ## Pattern

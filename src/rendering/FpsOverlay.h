@@ -1,8 +1,8 @@
 #pragma once
 
-class IRenderer;
-
 namespace rigkit {
+
+class IRenderer;
 
 /**
  * @brief Corner FPS readout on the host 2D present path.

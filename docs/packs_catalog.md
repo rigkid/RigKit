@@ -14,10 +14,10 @@ In-org packs are separate remotes in the [rigkid](https://github.com/rigkid) org
 
 | Pack | Remote | Role |
 |------|--------|------|
-| **rigComponent** | [rigkid/rigComponent](https://github.com/rigkid/rigComponent) | Data-only generic sketch PODs - no systems (`CPath` / `rig.geometry.path`; `CScreenCast` / `CScreenCastReceive` / `CCastReceiver` for cast send/receive + discovery). Domain decks live in **rigShowComponent**, **rigCadComponent**, **rigMusicComponent**, **rigAnimComponent**. |
+| **rigComponent** | [rigkid/rigComponent](https://github.com/rigkid/rigComponent) | Data-only generic sketch PODs - no systems (`CPath` / `rig.geometry.path`; `CUiPanel` / `CUiGroup` / `CUiControl` / `CUiAction` for `rig.ui.*`; `CScreenCast` / `CScreenCastReceive` / `CCastReceiver` for cast send/receive + discovery). Domain decks live in **rigShowComponent**, **rigCadComponent**, **rigMusicComponent**, **rigAnimComponent**. |
 | **rigSystems** | [rigkid/rigSystems](https://github.com/rigkid/rigSystems) | Update/Draw systems over that data |
 | **rigProject** | [rigkid/rigProject](https://github.com/rigkid/rigProject) | Host project envelope (`CProject`/`CPage`) + `.rig` document IO (document = portable `.rig`, or `.rigz` when files travel with it; this pack writes the JSON) |
-| **rigImGui** | [rigkid/rigImGui](https://github.com/rigkid/rigImGui) | UI fulfillment (`IMui`); host shell; Properties catalog; themes/fonts. Chrome labels apply TTF `kern` pairs (GPOS via `IMui::setChromeKernFn` / VarFont). |
+| **rigImGui** | [rigkid/rigImGui](https://github.com/rigkid/rigImGui) | UI fulfillment (`IMui`); host shell; Properties catalog; presents visible `CUiPanel` surfaces; themes/fonts. Chrome labels apply TTF `kern` pairs (GPOS via `IMui::setChromeKernFn` / VarFont). |
 | **rigImTui** | [rigkid/rigImTui](https://github.com/rigkid/rigImTui) (local `packs/` until published) | GPU character-grid compositor `IMui` - cell chrome over a live GL present (Player/Viewer ImTui habit). Swap with **rigImGui** via Preferences > Interface (Chrome row) / `--tui` / `--imgui`. Not ggerganov/imtui. |
 
 ### 3D / mesh
@@ -111,11 +111,10 @@ Product app **RigSlicer** lives out of tree (e.g. next to RigKit), not under `ex
 
 | Pack | Remote | Role |
 |------|--------|------|
-| **rigShowComponent** | [rigkid/rigShowComponent](https://github.com/rigkid/rigShowComponent) (local `packs/` until published) | Show deck + analysis PODs (`CVisualizer` / `CAudioAnalysis` / `CPictureAnalysis`). DATA ONLY. Codecs file from **rigMilk**. |
+| **rigShowComponent** | [rigkid/rigShowComponent](https://github.com/rigkid/rigShowComponent) (local `packs/` until published) | Show deck + analysis PODs (`CVisualizer` / `CAudioAnalysis` / `CPictureAnalysis`). DATA ONLY. Files `rig.visualizer.deck`, `rig.audio.analysis`, and `rig.picture.analysis`. `examples/visualizer` plays `.rig` presets. |
 | **rigMusicComponent** | [rigkid/rigMusicComponent](https://github.com/rigkid/rigMusicComponent) (local `packs/` until published) | Music clock / transport PODs (`CMusicClock` / `CMusicTransport`). DATA ONLY. Speaks `rig.music.*`. Codecs file from **rigAudio**. |
 | **rigAnimComponent** | [rigkid/rigAnimComponent](https://github.com/rigkid/rigAnimComponent) (local `packs/` until published) | Tween / LFO / binding PODs (`CTween` / `CModLfo` / `CModBinding`). DATA ONLY. Advance and codecs are **rigSystems**. `CCurve` stays on **rigComponent**. |
 | **rigAudio** | [rigkid/rigAudio](https://github.com/rigkid/rigAudio) | Audio in and out (miniaudio). Capture analysis to node `AudioBus`; playback `Mixer` renders `ISynth` sources, `AudioFile` voices (WAV/FLAC/MP3), `ISendFx` sends (pass / schroeder / bitcrush); `XyScopeSynth` traces polylines as stereo XY on the mix or a second sound card; polled `BeatClock` follows `CMusicTransport` |
-| **rigMilk** | [rigkid/rigMilk](https://github.com/rigkid/rigMilk) (local `packs/` until published) | MilkDrop1-class `.milk` present over `CVisualizer` (playlist / `output` in **rigShowComponent**). Mesh size and hardcut live on `CMilk` here. Equations via MIT projectm-eval; `switchOn` reads **rigAudio**. Shader presets skipped. **Leaf.** |
 | **rigOpen303** | [rigkid/rigOpen303](https://github.com/rigkid/rigOpen303) (local `packs/` until published) | TB-303 bassline `ISynth` - Open303 DSP (MIT) fetched pinned; accent / slide, normalized params. **Leaf.** |
 | **rigDexed** | [rigkid/rigDexed](https://github.com/rigkid/rigDexed) (local `packs/` until published) | Dexed DX7 FM `ISynth` - MSFA + MkI / OPL engines, DX7 `.syx` cartridges. **Leaf. GPL-3.0-or-later.** |
 | **rigAudioUi** | [rigkid/rigAudioUi](https://github.com/rigkid/rigAudioUi) | ImGui widgets over **rigAudio**: time rulers, playhead, ClipPool, Sampler (arm/record/stop of the mixer output tap) |

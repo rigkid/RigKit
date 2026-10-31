@@ -68,13 +68,14 @@ Every id in the vendored catalog ([schemas/README.md](RigWorks/schemas/README.md
 | `rig.meta.named` | **rigComponent** - `CName` + `MEcs::entityName` | Display name / `stableId`. `ProjectSerializer` writes this from `entityName` — do not register a second codec. |
 | `rig.render.visibility` | **rigComponent** - `CRenderVisibility` | `visible`. Absent = shown. |
 | `rig.render.blend` | **rigComponent** - `CRenderBlend` | Compositing-1 tokens + `add` / `subtract` / `disabled`, plus `opacity`. Defaults omitted. |
-| `rig.ui.panel` | **rigComponent** - `CUiPanel` | Portable tool surface. ImGui docks are fulfillment. |
-| `rig.ui.group` | **rigComponent** - `CUiGroup` | Group inside a panel. |
-| `rig.ui.control` | **rigComponent** - `CUiControl` | Control bound to a property. PixelPlotter emits `pixel.source` / `pixel.layers` / `pixel.canvas`. |
 | `rig.node.graph` | **rigNodeComponent** - `CNodeGraph` / `NodeGraphData` | `nodes` / `links` / `nextId`. Also used as `nested` on group nodes. |
 | `rig.node.node` | nested in graph | Supports `nested` + `publishes` for nestable groups (`typeId` e.g. `group`). |
 | `rig.node.publish` | `NodePublish` on `GraphNode` | `pin` / `innerNode` / `innerPin`. |
 | `rig.interact.selectable` | **rigComponent** - `CSelectable` | Exact `enabled`. Selection *state* stays on `CSelection` (host). Pick honors flag when present; absence = legacy selectable. |
+| `rig.ui.panel` | **rigComponent** - `CUiPanel`; present **rigImGui** | `role` / `surface` (`tool` / `hud`) / `order` / `visible` / preferred size. Labels compose `rig.meta.named`. |
+| `rig.ui.group` | **rigComponent** - `CUiGroup`; present **rigImGui** | `panel` / `parent` / `order` / `orientation` / `collapsed`. |
+| `rig.ui.control` | **rigComponent** - `CUiControl`; present **rigImGui** | `target` + `propertyKey` bind a live `GetProperties` field. `widget` / `min` / `max` / `step` / `options` are advisory. |
+| `rig.ui.action` | **rigComponent** - `CUiAction`; present **rigImGui** | `panel` / `group` / `order` / `actionId` / `enabled`. Fires `SEvent`. Unknown ids stay hidden. |
 | `rig.media.asset_ref` | **rigComponent** - `CAssetRef` | `kind` / `path` / `loop`. Other schemas take an entity ref or compose this type on the same entity. |
 | `rig.media.code` | **rigComponent** - `CCode` | `text` / `language` / `readOnly`. Compose `CAssetRef` on the same entity for disk origin. `name` / `order` until `rig.meta.named`. `dirty` / `epoch` are editor cache - do not serialize. No `.rig` serializer: buffers are derived data. |
 | `rig.anim.curve` | **rigComponent** - `CCurve` | `points` / `interp` / `preset`. |
@@ -83,7 +84,7 @@ Every id in the vendored catalog ([schemas/README.md](RigWorks/schemas/README.md
 | `rig.mod.binding` | **rigAnimComponent** - `CModBinding` | `source` / `target` / `propertyKey` / `depth` / `additive` / optional `min` / `max`. |
 | `rig.music.clock` | **rigMusicComponent** - `CMusicClock` | `ticksPerQuarter` / `phaseTicks` / swing / `externalSync` + sync fields. Writers: **rigAudio**, **rigAbletonLink**. |
 | `rig.music.transport` | **rigMusicComponent** - `CMusicTransport` | `playing` / `bpm` / time signature / `positionBeats` / loop window. |
-| `rig.visualizer.deck` | **rigShowComponent** - `CVisualizer` | Playlist + `switchOn` + `output`. Present is **rigMilk**. |
+| `rig.visualizer.deck` | **rigShowComponent** - `CVisualizer` | Playlist + `switchOn` + `output`. `examples/visualizer` loads `.rig` entries. |
 | `rig.audio.analysis` | **rigShowComponent** - `CAudioAnalysis` | Authored request (`source` / `bandCount` / `features`). Live values stay on the bus. |
 | `rig.picture.analysis` | **rigShowComponent** - `CPictureAnalysis` | Authored request pointed at `source`. |
 | `rig.media.text` | **rigComponent** - `CText` (present **rigVarFont**) | `text` / `font` (`CAssetRef` kind font) / `fontSize` / `rgba` / `axes` / `features` / `useKerning`. Plot bake-to-path stays on `CTexts` (`TextItem` keeps `fontPath`; `sizeMm` / `baselineMm` plot-local). |
@@ -107,7 +108,6 @@ Every id in the vendored catalog ([schemas/README.md](RigWorks/schemas/README.md
 | `rig.render.material` | **rigComponent** `CRenderMaterial`; shaded by **rigRender3D** | Import writes albedo, metal, roughness, emissive, albedo-map entity. No schema writer. |
 | `rig.render.environment` | **rigComponent** `CRenderEnvironment`; shaded by **rigRender3D** | `hdri` is a `rig.media.asset_ref` entity (lat-long radiance). `intensity` scales; absent is 1. Decode stays in the present pack. |
 | `rig.media.*` | - | Remaining media ids. Settings-only; decode in code packs. |
-| `rig.ui.action` | **rigProject** import list | `panel` / `group` / `order` / `actionId` / `enabled` collected on import. Not an ECS component. |
 | `rig.interact.selected` | **rigComponent** - `CSelection` | Live `selectionIndex`. The document snapshot (`order`) is not read or written. |
 | `rig.node.pin` | nested in `CNodeGraph` | `type` is a property datatype id. |
 | `rig.node.link` | nested in `CNodeGraph` | Link between pins. |

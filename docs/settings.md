@@ -100,12 +100,16 @@ Paths: `AppPaths::getUserSettingsFile()` under `getUserDataDir()`.
 Any class that supports settings export/import can inherit `ISettings`:
 
 ```cpp
+namespace rigkit {
+
 class ISettings {
-public:
+  public:
 	virtual ~ISettings() = default;
-	virtual rigkit::json getSettings() const = 0;
-	virtual void setSettings(const rigkit::json& settings) = 0;
+	virtual json getSettings() const = 0;
+	virtual void setSettings(const json& settings) = 0;
 };
+
+} // namespace rigkit
 ```
 
 Example manual save/load of an object blob:

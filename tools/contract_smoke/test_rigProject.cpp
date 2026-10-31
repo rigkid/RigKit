@@ -23,6 +23,7 @@
 #include "CSelection.h"
 #include "CText.h"
 #include "CTransform.h"
+#include "CUiPanel.h"
 #include "ContractImport.h"
 #include "ProjectSerializer.h"
 #include "fixture.h"
@@ -494,4 +495,50 @@ TEST_CASE("rigProject round-trips path layer asset text curve via pack codecs") 
 	CHECK(ecs.getComponent<ecs::CCurve>(rampE).interp == ecs::CCurve::Interp::Smooth);
 
 	std::filesystem::remove(path);
+}
+
+TEST_CASE("Contract import writes CUi* with resolved entity refs") {
+	SpineFixture f;
+	const std::string path =
+		std::string(RIGKIT_SOURCE_ROOT) + "/docs/contract/RigWorks/examples/ui-panel.json";
+	std::ifstream in(path, std::ios::binary);
+	REQUIRE(in);
+	std::ostringstream text;
+	text << in.rdbuf();
+	const auto result = importWithPackCodecs(f, text.str().c_str(), "ui-panel.json");
+	REQUIRE(result.ok);
+	REQUIRE(result.panels.size() == 1);
+	CHECK(result.panels[0].role == "led.install");
+
+	auto& ecs = f.ecs();
+	const auto panel = ecs.findEntity("Install");
+	const auto colour = ecs.findEntity("Colour");
+	const auto rate = ecs.findEntity("Pulse rate");
+	const auto reset = ecs.findEntity("Reset phase");
+	const auto fill = ecs.findEntity("fill");
+	const auto pulse = ecs.findEntity("pulse");
+	REQUIRE(panel != entt::null);
+	REQUIRE(colour != entt::null);
+	REQUIRE(rate != entt::null);
+	REQUIRE(reset != entt::null);
+	REQUIRE(fill != entt::null);
+	REQUIRE(pulse != entt::null);
+
+	REQUIRE(ecs.hasComponent<ecs::CUiPanel>(panel));
+	CHECK(ecs.getComponent<ecs::CUiPanel>(panel).role == "led.install");
+	CHECK(ecs.getComponent<ecs::CUiPanel>(panel).surface == ecs::kUiSurfaceTool);
+
+	REQUIRE(ecs.hasComponent<ecs::CUiControl>(colour));
+	CHECK(ecs.getComponent<ecs::CUiControl>(colour).panel == entt::to_integral(panel));
+	CHECK(ecs.getComponent<ecs::CUiControl>(colour).target == entt::to_integral(fill));
+	CHECK(ecs.getComponent<ecs::CUiControl>(colour).widget == ecs::kUiWidgetColor);
+
+	REQUIRE(ecs.hasComponent<ecs::CUiControl>(rate));
+	CHECK(ecs.getComponent<ecs::CUiControl>(rate).target == entt::to_integral(pulse));
+	CHECK(ecs.getComponent<ecs::CUiControl>(rate).propertyKey == "frequency");
+	CHECK(ecs.getComponent<ecs::CUiControl>(rate).widget == ecs::kUiWidgetSlider);
+
+	REQUIRE(ecs.hasComponent<ecs::CUiAction>(reset));
+	CHECK(ecs.getComponent<ecs::CUiAction>(reset).panel == entt::to_integral(panel));
+	CHECK(ecs.getComponent<ecs::CUiAction>(reset).actionId == "lfo.resetPhase");
 }
