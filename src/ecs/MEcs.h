@@ -22,6 +22,18 @@ class MRendering;
 void warnComponentHasNoProperties(const std::string& name);
 
 /**
+ * @brief One parked entity world.
+ * @details The registry, `createEntity` names, and the entity list move
+ * together. The component catalog, systems, and the event bus stay on `MEcs`.
+ * Dropping this object runs component destructors for the parked world.
+ */
+struct EcsDocument {
+	entt::registry registry;
+	std::unordered_map<std::string, entt::entity> names;
+	std::vector<entt::entity> entities;
+};
+
+/**
  * @brief Host ECS wrapper: entities, component catalog, system registry.
  * @details Packs register data types and Update/Draw systems. Present uses a
  * non-owning IRenderer* set for the current Draw pass.
@@ -84,6 +96,14 @@ class MEcs : public ISettings {
 	template <typename... Components> auto view();
 
 	void clear();
+
+	/**
+	 * @brief Swap the live entity world with a parked one.
+	 * @details Does not touch systems, the component catalog, or the event bus.
+	 * Use `clear()` on the live world to destroy its entities.
+	 */
+	void exchangeDocument(EcsDocument& parked);
+
 	size_t getEntityCount() const;
 	std::vector<entt::entity> getAllEntities() const;
 

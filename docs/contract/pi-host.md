@@ -42,7 +42,7 @@ Desktop `--smoke` is not a Pi pass. Fill the verify-log row only when a board ru
 
 ### Plot pack family (optional product path)
 
-Integration app: `packs/rigPlotter/examples/plot`. Each plot pack also has its own thin example under `packs/<pack>/examples/<name>/` (README screenshot). Headless unit smokes live under each pack’s `tools/*_smoke.cpp` and build with the plot tree (`plot_unit_smokes` target).
+Integration app: `packs/rigPlotter/examples/plot`. Plot code packs should have a thin example under `packs/<pack>/examples/<name>/` (README screenshot when the window is the picture). Data packs in the family do not need one. Headless unit smokes live under each pack’s `tools/*_smoke.cpp` and build with the plot tree (`plot_unit_smokes` target).
 
 ```bash
 cmake -S packs/rigPlotter/examples/plot -B packs/rigPlotter/examples/plot/build -DCMAKE_BUILD_TYPE=Release

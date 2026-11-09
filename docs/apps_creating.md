@@ -17,6 +17,8 @@ Examples already in this tree keep the id they have (`minimal`, `oscHost`, `glEd
 
 Every folder under `examples/` is a full example app (`IApp` + `main` + `app.json` + `CMakeLists.txt`). Product apps belong in their own repositories.
 
+`examples/example-esp32` is the MCU sample: PlatformIO flashes the board, and CMake builds a native self-test of the same Setup / Update / Draw. It does not call `add_rigkit_application` and it is not a GLFW app.
+
 ```bash
 cp -r examples/minimal examples/example-myNewApp
 ```

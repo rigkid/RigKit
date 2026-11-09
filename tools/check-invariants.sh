@@ -291,28 +291,26 @@ if [[ -n "$window_hits" ]]; then
 	echo "$window_hits" >&2
 fi
 
-# --- Every pack: Pack example + README screenshot ------------------------------
-# packs/<name>/examples/<name>/CMakeLists.txt and examples/<name>/img/preview.png
-# Pack README must embed preview.png. Host examples/ do not count.
+# --- Pack README screenshot, when the README claims one -----------------------
+# Code packs should ship an example; data packs (*Component, plus rigProject,
+# rigColorspace, rigComposition) do not need one. See packs/README.md.
+# Missing examples are not a failure. A README that embeds preview.png must
+# have examples/<name>/img/preview.png. Host examples/ do not count.
 if [[ -d packs ]]; then
 	for pj in packs/*/pack.json; do
 		[[ -f "$pj" ]] || continue
 		pack_dir="$(dirname "$pj")"
 		pack_name="$(basename "$pack_dir")"
-		example_ok=
-		while IFS= read -r -d '' example_cmake; do
-			example_dir="$(dirname "$example_cmake")"
-			if [[ -f "$example_dir/img/preview.png" ]]; then
-				example_ok=1
-				break
-			fi
-		done < <(find "$pack_dir/examples" -mindepth 2 -maxdepth 2 -name CMakeLists.txt -print0 2>/dev/null)
-		if [[ -z "$example_ok" ]]; then
-			hit "pack $pack_name needs examples/<name>/ with CMakeLists.txt and img/preview.png"
-		fi
 		readme="$pack_dir/README.md"
-		if [[ -f "$readme" ]] && ! grep -q 'preview\.png' "$readme"; then
-			hit "pack $pack_name README.md must embed examples/<name>/img/preview.png"
+		[[ -f "$readme" ]] || continue
+		grep -q 'preview\.png' "$readme" || continue
+		preview_ok=
+		while IFS= read -r -d '' preview; do
+			preview_ok=1
+			break
+		done < <(find "$pack_dir/examples" -mindepth 3 -maxdepth 3 -name preview.png -path '*/img/preview.png' -print0 2>/dev/null)
+		if [[ -z "$preview_ok" ]]; then
+			hit "pack $pack_name README.md embeds preview.png but examples/<name>/img/preview.png is missing"
 		fi
 	done
 fi

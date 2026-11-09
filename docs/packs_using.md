@@ -45,7 +45,7 @@ Pick a home before writing systems or UI. Agents: [rigkit-data](../skills/rigkit
 | Code pack | Systems / I/O / UI - not portable component homes | `rigSystems`, `rigRender3D`, `rigObj`, `rigAssimp` (leaf), `rigOpenCV` (leaf), `rigPdfWrite` (leaf), `rigEthereum` (leaf), `rigScreenCast` (leaf), `rigMeshEdit`, `rigNodeEditor`, `rigPlotter`, `rigPlotFinders`, `rigTrace`, `rigSvg`, `rigImGui` |
 | App | Prototypes until promotion to `rigComponent` or a domain data pack | one-off app structs |
 
-A data pack is **components-first**, not “literally only `struct` files.” Allowed: `C*` PODs, `GetProperties`, `registerComponent`, pure helpers (catalog, eval, flatten). Forbidden: Update/Draw systems, ImGui panels, document codecs, GPU/window handles in components. Engines (e.g. PlotDoc), editors, and `.rig` serializers stay in **code** packs.
+A data pack is **components-first**, not “literally only `struct` files.” Allowed: `C*` PODs, `GetProperties`, `registerComponent`, pure helpers (catalog, eval, flatten). Forbidden: Update/Draw systems, ImGui panels, document codecs, GPU/window handles in components. Engines (e.g. PlotDoc), editors, and `.rig` serializers stay in **code** packs. New data packs end in `Component`. **rigProject**, **rigColorspace**, and **rigComposition** are the shipped data packs that do not. A data pack does not ship a host example.
 
 Serialize from the **code** pack that fulfills the POD: `project::addSerializer<T>(...)` in that pack's `setup()`. Data packs announce the type (`ecs->registerComponent`). **rigProject** walks the registry and owns the document envelope (`CPage`). Floor sketch codecs live in **rigSystems**. Do not grow a kitchen-sink serializer list inside **rigProject**.
 

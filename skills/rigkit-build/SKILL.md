@@ -162,7 +162,7 @@ When changing an in-org pack, also build that pack’s examples (same as the pac
 | rigMeshEdit | `gizmo` | `packs/rigMeshEdit/examples/gizmo` |
 | rigShowComponent | `visualizer` | `packs/rigShowComponent/examples/visualizer` |
 | rigPlotter (integration) | `plot` + `*_smoke` | `packs/rigPlotter/examples/plot` |
-| Every other pack | its `examples/<name>/` | see pack README (`img/preview.png` required) |
+| Code pack you touched | its `examples/<name>/` when it has one | data packs (`*Component`) have no required example; [packs/README.md](../../packs/README.md#pack-example-readme-screenshot) |
 
 ```bash
 cmake -S packs/<pack>/examples/<name> -B packs/<pack>/examples/<name>/build -G Ninja -DCMAKE_BUILD_TYPE=Release

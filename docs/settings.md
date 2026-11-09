@@ -138,3 +138,4 @@ out << canvasJson.dump(4);
 - No Dear ImGui in `src/` - Preferences UI is `rigImGui` only.
 - Headless hosts still load/save the preference file; they simply have no Preferences panel.
 - Pack `IPack::parameters` / `customSettings` remain for pack-internal config; user-facing knobs should use `registerPreferences`.
+- [`examples/example-esp32`](../examples/example-esp32/) keeps the same `{ "sections": { "<id>": { ... } } }` envelope in NVS. Section `host.radio` uses `rig.io.wifi` field names. It does not link `MSettings`. The STA password is not a section field.

@@ -61,6 +61,9 @@ Every id in the vendored catalog ([schemas/README.md](RigWorks/schemas/README.md
 | `rig.render.light` | **rigComponent** - `CLight` | Dir/point + colour / intensity / banded shade. Spot not in v0.1. |
 | `rig.io.osc` | **rigOsc** - `COscEndpoint` | Listen/send ports + prefix. |
 | `rig.io.serial` | **rigSerial** - `CSerial` | `port` / `baud` / `enabled`. Byte buffers and handles stay in the pack. |
+| `rig.io.wifi` | **example-esp32** - `host.radio` | `mode` / `apSsid` / `staSsid` / `channel`. Password, link, address, and RSSI stay host cache. The sample stores the section in NVS, not on a scene entity. |
+| `rig.io.espnow` | **rigEspnow** - `Endpoint` | `enabled` / `peer` / `channel` / `payload`. `espnow.send` queues one frame. `pending` and `lastResult` stay in `Cache`. |
+| `rig.io.bluetooth` | **firmware/esp** A2DP sink | `enabled`. The name is `rig.meta.named`. Classic Bluetooth on the original ESP32 only. ESP32-S3 omits the component. Pairing and PCM stay cache. |
 | `rig.pixel.effect_chain` | **rigPixelPlotComponent** - `CPixelEffectChain` | `stage` image/draw/generate + `effectId` / `enabled` + step `id` / `parentStep` / chain `nextId`. Step `blendMode` / `opacity` / `options` travel as `x.rigkit.pixel_effect_step`. |
 | `rig.pixel.canvas` | **rigPixelPlotComponent** - `CPixelCanvas` | `width` / `height` / `clearRgba` only. Title is `rig.meta.named` on the scene. `exportWithTimestamp` / `preferGpu` on `x.rigkit.pixel_canvas_meta`. |
 | `rig.pixel.source` | **rigPixelPlotComponent** - `CPixelSource` | Contract `kind` + `asset` / `generatorName` / sequence / webcam / `videoTime`. Label is `rig.meta.named`. Loop extras + `cast-receive` stay on `x.rigkit.pixel_source_ext`. |

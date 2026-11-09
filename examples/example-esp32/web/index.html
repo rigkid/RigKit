@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RigKit</title>
+<style>
+body { margin: 0; background: #f4f1ea; color: #1c1915; font: 16px/1.45 "Segoe UI", sans-serif; }
+main { max-width: 36rem; margin: 0 auto; padding: 1rem 1rem 2rem; }
+header { padding: 1rem 1rem 0; max-width: 36rem; margin: 0 auto; }
+h1 { font-size: 1.25rem; margin: 0 0 0.25rem; }
+h2 { font-size: 1rem; margin: 0 0 0.75rem; }
+#status { margin: 0; color: #5c564c; }
+section { background: #fff; border: 1px solid #ddd6c8; padding: 0.9rem 1rem 0.2rem; margin: 0 0 0.8rem; }
+label { display: grid; gap: 0.2rem; margin: 0 0 0.75rem; }
+input, select, button { font: inherit; padding: 0.35rem 0.45rem; }
+button { margin: 0 0 0.75rem; }
+.row { display: flex; gap: 0.5rem; align-items: end; }
+.row label { flex: 1; }
+.hint { color: #5c564c; font-size: 0.9rem; margin: 0 0 1rem; }
+</style>
+</head>
+<body>
+<header>
+<h1 id="title">RigKit</h1>
+<p id="status">loading</p>
+</header>
+<main>
+<section id="prefs"></section>
+<div id="panels"></div>
+<p class="hint">When the radio is off this page is gone. On the serial port, send radio ap.</p>
+</main>
+<script>
+const statusEl = document.getElementById("status");
+const prefsEl = document.getElementById("prefs");
+const panelsEl = document.getElementById("panels");
+let doc = null;
+
+function fieldOwner(entity, key) {
+  const comps = entity.components || {};
+  for (const comp of Object.values(comps)) {
+    if (comp && Object.prototype.hasOwnProperty.call(comp, key)) return comp;
+  }
+  return null;
+}
+
+function byId(id) {
+  return (doc.entities || []).find((e) => e.id === id) || null;
+}
+
+function orderOf(entity, schema) {
+  const c = entity.components && entity.components[schema];
+  return c && typeof c.order === "number" ? c.order : 0;
+}
+
+function labelOf(entity) {
+  const named = entity.components && entity.components["rig.meta.named"];
+  return (named && named.name) || entity.id;
+}
+
+async function sendJson(url, method, body) {
+  const res = await fetch(url, {
+    method,
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body)
+  });
+  const text = await res.text();
+  let json = {};
+  try { json = text ? JSON.parse(text) : {}; } catch (e) { json = { error: text }; }
+  if (!res.ok) throw new Error(json.error || res.statusText);
+  return json;
+}
+
+function setStatus(cache) {
+  if (!cache) return;
+  const radio = cache.radio || {};
+  const now = cache.espnow || {};
+  const parts = [];
+  parts.push(radio.mode || "radio");
+  parts.push(radio.connected ? (radio.ip || "up") : "down");
+  if (typeof radio.rssi === "number" && radio.mode && radio.mode.indexOf("sta") >= 0) {
+    parts.push(radio.rssi + " dBm");
+  }
+  if (now.lastResult) parts.push(now.lastResult);
+  if (cache.audio && cache.audio.note) parts.push(cache.audio.note);
+  statusEl.textContent = parts.join(" · ");
+}
+
+function addField(parent, label, control) {
+  const wrap = document.createElement("label");
+  wrap.textContent = label;
+  wrap.appendChild(control);
+  parent.appendChild(wrap);
+  return control;
+}
+
+function renderPrefs(prefs) {
+  prefsEl.replaceChildren();
+  const sections = (prefs && prefs.sections) || {};
+  for (const [id, section] of Object.entries(sections)) {
+    const h = document.createElement("h2");
+    h.textContent = section.label || id;
+    prefsEl.appendChild(h);
+    for (const field of section.fields || []) {
+      const values = section.values || {};
+      const current = values[field.key];
+      let input;
+      if (field.type === "enum") {
+        input = document.createElement("select");
+        for (const opt of field.options || []) {
+          const o = document.createElement("option");
+          o.value = opt;
+          o.textContent = opt;
+          if (opt === current) o.selected = true;
+          input.appendChild(o);
+        }
+      } else if (field.type === "bool") {
+        input = document.createElement("input");
+        input.type = "checkbox";
+        input.checked = !!current;
+      } else if (field.type === "int") {
+        input = document.createElement("input");
+        input.type = "number";
+        input.value = current ?? "";
+        if (field.min != null) input.min = field.min;
+        if (field.max != null) input.max = field.max;
+      } else {
+        input = document.createElement("input");
+        input.type = "text";
+        input.value = current ?? "";
+      }
+      input.addEventListener("change", async () => {
+        let value = input.value;
+        if (field.type === "bool") value = input.checked;
+        if (field.type === "int") value = Number(input.value);
+        const body = { sections: {} };
+        body.sections[id] = {};
+        body.sections[id][field.key] = value;
+        try {
+          await sendJson("/api/preferences", "PATCH", body);
+        } catch (err) {
+          statusEl.textContent = err.message;
+        }
+      });
+      addField(prefsEl, field.label || field.key, input);
+    }
+    if (id === "host.radio") {
+      const row = document.createElement("div");
+      row.className = "row";
+      const pass = document.createElement("input");
+      pass.type = "password";
+      pass.autocomplete = "off";
+      const button = document.createElement("button");
+      button.type = "button";
+      button.textContent = "Save";
+      button.addEventListener("click", async () => {
+        try {
+          await sendJson("/api/sta-pass", "POST", { pass: pass.value });
+          pass.value = "";
+          statusEl.textContent = "password stored";
+        } catch (err) {
+          statusEl.textContent = err.message;
+        }
+      });
+      addField(row, "STA password", pass);
+      row.appendChild(button);
+      prefsEl.appendChild(row);
+    }
+  }
+}
+
+function bindControl(parent, controlEntity) {
+  const spec = controlEntity.components["rig.ui.control"];
+  if (!spec || spec.enabled === false) return;
+  const target = byId(spec.target);
+  const owner = target && fieldOwner(target, spec.propertyKey);
+  if (!owner) return;
+  const key = spec.propertyKey;
+  const widget = spec.widget || "auto";
+  if (widget === "color" || (spec.type === "vec4" && key === "rgba")) {
+    const rgba = owner[key] || [1, 1, 1, 1];
+    const color = document.createElement("input");
+    color.type = "color";
+    const hex = (v) => Math.max(0, Math.min(255, Math.round(v * 255))).toString(16).padStart(2, "0");
+    color.value = "#" + hex(rgba[0]) + hex(rgba[1]) + hex(rgba[2]);
+    const alpha = document.createElement("input");
+    alpha.type = "range";
+    alpha.min = "0";
+    alpha.max = "1";
+    alpha.step = "0.01";
+    alpha.value = rgba[3] ?? 1;
+    const commit = async () => {
+      const n = (i) => parseInt(color.value.slice(i, i + 2), 16) / 255;
+      owner[key] = [n(1), n(3), n(5), Number(alpha.value)];
+      try {
+        const state = await sendJson("/api/state", "PATCH", doc);
+        doc = state.document;
+        setStatus(state.cache);
+      } catch (err) {
+        statusEl.textContent = err.message;
+      }
+    };
+    color.addEventListener("change", commit);
+    alpha.addEventListener("change", commit);
+    addField(parent, labelOf(controlEntity), color);
+    addField(parent, "Alpha", alpha);
+    return;
+  }
+  let input;
+  if (spec.type === "bool" || widget === "toggle") {
+    input = document.createElement("input");
+    input.type = "checkbox";
+    input.checked = !!owner[key];
+  } else if (spec.type === "int" || spec.type === "float") {
+    input = document.createElement("input");
+    input.type = "number";
+    input.value = owner[key] ?? "";
+    if (spec.min != null) input.min = spec.min;
+    if (spec.max != null) input.max = spec.max;
+    if (spec.step != null) input.step = spec.step;
+  } else {
+    input = document.createElement("input");
+    input.type = "text";
+    input.value = owner[key] ?? "";
+  }
+  if (spec.readOnly) input.disabled = true;
+  input.addEventListener("change", async () => {
+    if (spec.type === "bool" || widget === "toggle") owner[key] = input.checked;
+    else if (spec.type === "int" || spec.type === "float") owner[key] = Number(input.value);
+    else owner[key] = input.value;
+    try {
+      const state = await sendJson("/api/state", "PATCH", doc);
+      doc = state.document;
+      setStatus(state.cache);
+    } catch (err) {
+      statusEl.textContent = err.message;
+    }
+  });
+  addField(parent, labelOf(controlEntity), input);
+}
+
+function bindAction(parent, actionEntity) {
+  const spec = actionEntity.components["rig.ui.action"];
+  if (!spec || !spec.actionId || spec.enabled === false) return;
+  const button = document.createElement("button");
+  button.type = "button";
+  button.textContent = labelOf(actionEntity);
+  button.addEventListener("click", async () => {
+    try {
+      const cache = await sendJson("/api/action", "POST", { actionId: spec.actionId });
+      setStatus(cache);
+    } catch (err) {
+      statusEl.textContent = err.message;
+    }
+  });
+  parent.appendChild(button);
+}
+
+function renderPanels() {
+  panelsEl.replaceChildren();
+  const entities = doc.entities || [];
+  const panels = entities.filter((e) => e.components && e.components["rig.ui.panel"] && e.components["rig.ui.panel"].visible !== false);
+  panels.sort((a, b) => orderOf(a, "rig.ui.panel") - orderOf(b, "rig.ui.panel"));
+  for (const panel of panels) {
+    const section = document.createElement("section");
+    const h = document.createElement("h2");
+    h.textContent = labelOf(panel);
+    section.appendChild(h);
+    const children = entities.filter((e) => {
+      const c = e.components && (e.components["rig.ui.control"] || e.components["rig.ui.action"]);
+      return c && c.panel === panel.id;
+    });
+    children.sort((a, b) => {
+      const as = a.components["rig.ui.control"] ? "rig.ui.control" : "rig.ui.action";
+      const bs = b.components["rig.ui.control"] ? "rig.ui.control" : "rig.ui.action";
+      return orderOf(a, as) - orderOf(b, bs);
+    });
+    for (const child of children) {
+      if (child.components["rig.ui.control"]) bindControl(section, child);
+      else bindAction(section, child);
+    }
+    panelsEl.appendChild(section);
+  }
+}
+
+async function boot() {
+  const prefs = await (await fetch("/api/preferences")).json();
+  const state = await (await fetch("/api/state")).json();
+  doc = state.document;
+  const title = doc && doc.document && doc.document.title;
+  if (title) document.getElementById("title").textContent = title;
+  renderPrefs(prefs);
+  renderPanels();
+  setStatus(state.cache);
+}
+
+boot().then(() => {
+  setInterval(async () => {
+    try {
+      const cache = await (await fetch("/api/cache")).json();
+      setStatus(cache);
+    } catch (err) {
+      statusEl.textContent = "page lost the radio";
+    }
+  }, 500);
+}).catch((err) => { statusEl.textContent = err.message; });
+</script>
+</body>
+</html>
