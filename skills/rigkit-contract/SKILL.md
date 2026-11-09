@@ -56,7 +56,7 @@ Floor is concrete (`RigKitEngine`, `M*`, GLFW, default OpenGL). Seams are `IApp`
 
 ## Hard boundaries (RigKit-specific)
 
-- **UI / ImGui:** no Dear ImGui in `src/`; attach via `IMui`. Default UI fulfillment = `rigImGui`. Chrome rules (DPI, work rect, prefs): [packs/rigImGui/README.md](../../packs/rigImGui/README.md#chrome-rules). Toolkit-shaped API (`IWindow`, dock builders, `drawContents` menus) stays on **rigImGui** / `Mui`, not on `IMui`.
+- **UI / ImGui:** no Dear ImGui in `src/`; attach via `IMui` (named surfaces). Default UI fulfillment = `rigImGui`. Chrome rules (DPI, work rect, prefs): [packs/rigImGui/README.md](../../packs/rigImGui/README.md#chrome-rules). Toolkit panel base is `ImGuiPanel` (not a host `I*`); dock builders / `drawContents` menus stay on **rigImGui** / `Mui`. Do not grow `IMui` with `getWindowManager` / `createWindow`.
 - **GPU / UI types:** stay out of Contract-facing components; host packs may hold resources keyed by opaque ids.
 - **Registry:** app owns logical scene/document; host may hold a pointer and run systems - no second hidden registry for app entities.
 - **Systems:** simulation in `Update(dt)`; present in `Draw()`. Host always calls Draw after Update (empty body OK; skip is not SUDE). Draw can be LEDs / GPIO, not only GPU.

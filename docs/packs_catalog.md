@@ -130,7 +130,7 @@ Folders stay flat. The tree is `pack.json` dependencies: an app lists a **leaf**
 
 | Pack | Remote | Role |
 |------|--------|------|
-| **rigSerial** | [rigkid/rigSerial](https://github.com/rigkid/rigSerial) (local `packs/` until published) | Serial medium - `CSerial` / `rig.io.serial` (`port` / `baud` / `enabled`) + OS port + serial monitor `IWindow`. Same shape as **rigOsc** / `COscEndpoint`. Not GRBL, not DMX. GPIO / presence stay out |
+| **rigSerial** | [rigkid/rigSerial](https://github.com/rigkid/rigSerial) (local `packs/` until published) | Serial medium - `CSerial` / `rig.io.serial` (`port` / `baud` / `enabled`) + OS port + serial monitor `ImGuiPanel`. Same shape as **rigOsc** / `COscEndpoint`. Not GRBL, not DMX. GPIO / presence stay out |
 | **rigDmx** | [rigkid/rigDmx](https://github.com/rigkid/rigDmx) (local `packs/` until published) | DMX512 universe buffer + `rig.io.dmx` / `rig.dmx.fixture`. No sockets, no USB. Transports read this buffer. **Trunk, not a leaf.** |
 
 **Protocol leaves** (one wire format each)
@@ -138,6 +138,7 @@ Folders stay flat. The tree is `pack.json` dependencies: an app lists a **leaf**
 | Pack | Remote | Role |
 |------|--------|------|
 | **rigOsc** | [rigkid/rigOsc](https://github.com/rigkid/rigOsc) | OSC (UDP, optional TCP, optional multicast) + network identity. Show-bus leaves are registered by the app under `/<appName>/<networkId>/`. `oscHost --smoke-osc`. Sibling of serial / DMX, not a child |
+| **rigEspnow** | local `packs/` until published | ESP-NOW peer send. `Endpoint` / `rig.io.espnow`. Action `espnow.send`. Sibling of **rigOsc** / **rigSerial**, not a Wi-Fi child. No window type. The browser page and desktop `presentUiPanels` both draw the `rig.ui.panel` on the entity. Transport compiles when `RIGKIT_ESP_ESPNOW` is set |
 | **rigGrbl** | [rigkid/rigGrbl](https://github.com/rigkid/rigGrbl) | GRBL lines. Depends on **rigSerial**. **Leaf.** |
 | **rigSacn** | [rigkid/rigSacn](https://github.com/rigkid/rigSacn) (local `packs/` until published) | sACN / E1.31 over UDP. Depends on **rigDmx**. Own cadence / memcmp. **Leaf.** |
 | **rigEnttec** | [rigkid/rigEnttec](https://github.com/rigkid/rigEnttec) (local `packs/` until published) | Enttec USB PRO. Depends on **rigDmx** + **rigSerial**. Universe 1, stub port, own cadence / memcmp. **Leaf.** |

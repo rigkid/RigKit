@@ -154,8 +154,7 @@ void GlEditorApp::syncPreviewWithEditor() {
 	if (!m_previewWin) {
 		return;
 	}
-	auto* mui = dynamic_cast<rigkit::Mui*>(m_engine->getUiManager());
-	auto* wm = mui ? mui->getWindowManager() : nullptr;
+	auto* wm = rigkit::windowManager(m_engine->getUiManager());
 	if (!wm) {
 		return;
 	}
@@ -299,12 +298,13 @@ void GlEditorApp::setup() {
 		}
 	}
 
-	auto* mui = dynamic_cast<rigkit::Mui*>(m_engine->getUiManager());
-	if (mui && mui->getWindowManager()) {
-		auto win = mui->getWindowManager()->createWindow<ShaderPreviewWindow>();
+	auto* mui = rigkit::asMui(m_engine->getUiManager());
+	auto* wm = rigkit::windowManager(m_engine->getUiManager());
+	if (mui && wm) {
+		auto win = wm->createWindow<ShaderPreviewWindow>();
 		m_previewWin = win.get();
-		mui->getWindowManager()->showWindow("Shader Preview");
-		mui->getWindowManager()->showWindow("Code Editor");
+		wm->showWindow("Shader Preview");
+		wm->showWindow("Code Editor");
 
 		// First-run: preview fills the central dock; code editor on the right.
 		// No-ops once imgui.ini has restored a split.

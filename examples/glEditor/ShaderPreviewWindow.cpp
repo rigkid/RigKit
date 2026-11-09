@@ -17,7 +17,7 @@ std::string shortHash(const std::string& s) {
 
 } // namespace
 
-ShaderPreviewWindow::ShaderPreviewWindow() : IWindow("Shader Preview") {
+ShaderPreviewWindow::ShaderPreviewWindow() : ImGuiPanel("Shader Preview") {
 	setCategory("glEditor");
 }
 

@@ -15,7 +15,7 @@
 #include "packs/rigComponent/src/rigComponent.h"
 #include "packs/rigFont/src/rigFont.h"
 #include "packs/rigFontComponent/src/rigFontComponent.h"
-#include "packs/rigImGui/src/IWindow.h"
+#include "packs/rigImGui/src/ImGuiPanel.h"
 #include "packs/rigImGui/src/Mui.h"
 #include "packs/rigImGui/src/Rulers.h"
 #include "packs/rigImGui/src/UiDpi.h"
@@ -166,9 +166,9 @@ void drawGlyphThumb(ImDrawList* dl, const ImVec2& pos, float size, const rigkit:
 	}
 }
 
-class GlyphListPanel : public rigkit::IWindow {
+class GlyphListPanel : public rigkit::ImGuiPanel {
   public:
-	explicit GlyphListPanel(UfomatApp* app) : IWindow("Glyphs"), m_app(app) {}
+	explicit GlyphListPanel(UfomatApp* app) : ImGuiPanel("Glyphs"), m_app(app) {}
 
 	void renderContents() override {
 		auto* engine = getEngine();
@@ -339,9 +339,9 @@ class GlyphListPanel : public rigkit::IWindow {
  * @details Layers speak `rig.font.layer`; a master is a layer composing
  * `rig.font.master` with its design-space location on the face's axes.
  */
-class LayersPanel : public rigkit::IWindow {
+class LayersPanel : public rigkit::ImGuiPanel {
   public:
-	explicit LayersPanel(UfomatApp* app) : IWindow("Layers"), m_app(app) {}
+	explicit LayersPanel(UfomatApp* app) : ImGuiPanel("Layers"), m_app(app) {}
 
 	void renderContents() override {
 		auto* engine = getEngine();
@@ -636,9 +636,9 @@ constexpr const char* kOflNotice =
 constexpr const char* kOflUrl = "https://openfontlicense.org";
 
 /** @brief Face metadata editor - fontinfo.plist fields on `CFontFaceSource`. */
-class FontInfoPanel : public rigkit::IWindow {
+class FontInfoPanel : public rigkit::ImGuiPanel {
   public:
-	explicit FontInfoPanel(UfomatApp* app) : IWindow("Font Info"), m_app(app) {}
+	explicit FontInfoPanel(UfomatApp* app) : ImGuiPanel("Font Info"), m_app(app) {}
 
 	void renderContents() override {
 		auto* engine = getEngine();
@@ -742,10 +742,10 @@ class FontInfoPanel : public rigkit::IWindow {
 	UfomatApp* m_app = nullptr;
 };
 
-class GlyphSurfacePanel : public rigkit::IWindow {
+class GlyphSurfacePanel : public rigkit::ImGuiPanel {
   public:
 	explicit GlyphSurfacePanel(UfomatApp* app)
-		: IWindow("Glyph", ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar |
+		: ImGuiPanel("Glyph", ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar |
 							   ImGuiWindowFlags_NoScrollWithMouse),
 		  m_app(app) {}
 
@@ -1665,9 +1665,9 @@ void drawKernMetricsTable(rigkit::MEcs& ecs, const rigkit::font::ShapedRun& run,
 	ImGui::EndTable();
 }
 
-class KernPanel : public rigkit::IWindow {
+class KernPanel : public rigkit::ImGuiPanel {
   public:
-	explicit KernPanel(UfomatApp* app) : IWindow("Kern"), m_app(app) {}
+	explicit KernPanel(UfomatApp* app) : ImGuiPanel("Kern"), m_app(app) {}
 
 	void renderContents() override {
 		auto* engine = getEngine();
@@ -1848,9 +1848,9 @@ class KernPanel : public rigkit::IWindow {
 	char m_wrap[8]{"n"};
 };
 
-class FeaturesPanel : public rigkit::IWindow {
+class FeaturesPanel : public rigkit::ImGuiPanel {
   public:
-	explicit FeaturesPanel(UfomatApp* app) : IWindow("Features"), m_app(app) {}
+	explicit FeaturesPanel(UfomatApp* app) : ImGuiPanel("Features"), m_app(app) {}
 
 	void renderContents() override {
 		auto* engine = getEngine();
@@ -1885,9 +1885,9 @@ class FeaturesPanel : public rigkit::IWindow {
 	std::vector<char> m_buf;
 };
 
-class PreviewPanel : public rigkit::IWindow {
+class PreviewPanel : public rigkit::ImGuiPanel {
   public:
-	explicit PreviewPanel(UfomatApp* app) : IWindow("Preview"), m_app(app) {}
+	explicit PreviewPanel(UfomatApp* app) : ImGuiPanel("Preview"), m_app(app) {}
 
 	void renderContents() override {
 		auto* engine = getEngine();
@@ -2302,7 +2302,7 @@ void UfomatApp::setup() {
 
 	loadContractDemo();
 
-	if (auto* mui = dynamic_cast<rigkit::Mui*>(m_engine->getUiManager())) {
+	if (auto* mui = rigkit::asMui(m_engine->getUiManager())) {
 		mui->setUndoStack(&m_undo);
 		mui->registerFileAction("Open...", [this] { promptOpen(); }, "Ctrl+O");
 		mui->registerFileAction("Save...", [this] { promptSave(); }, "Ctrl+S");
@@ -2312,7 +2312,7 @@ void UfomatApp::setup() {
 				openUfo(path);
 			}
 		});
-		if (auto* wm = mui->getWindowManager()) {
+		if (auto* wm = rigkit::windowManager(mui)) {
 			wm->createWindow<GlyphListPanel>(this);
 			wm->createWindow<GlyphSurfacePanel>(this);
 			wm->createWindow<KernPanel>(this);

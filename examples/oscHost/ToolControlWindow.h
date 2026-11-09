@@ -1,9 +1,9 @@
 #pragma once
 
-#include "packs/rigImGui/src/IWindow.h"
+#include "packs/rigImGui/src/ImGuiPanel.h"
 class OscHost;
 
-class ToolControlWindow : public rigkit::IWindow {
+class ToolControlWindow : public rigkit::ImGuiPanel {
   public:
 	explicit ToolControlWindow(OscHost* app);
 

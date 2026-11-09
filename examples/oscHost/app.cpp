@@ -183,7 +183,7 @@ void OscHost::setupAuthorUi() {
 		return;
 	}
 
-	auto* mui = dynamic_cast<rigkit::Mui*>(ui);
+	auto* mui = rigkit::asMui(ui);
 	if (!mui) {
 		return;
 	}
@@ -192,7 +192,7 @@ void OscHost::setupAuthorUi() {
 	mui->setWindowVisibility("Debug", true);
 	mui->showNotification("Author mode - oscHost");
 
-	auto* wm = mui->getWindowManager();
+	auto* wm = rigkit::windowManager(ui);
 	if (!wm) {
 		return;
 	}

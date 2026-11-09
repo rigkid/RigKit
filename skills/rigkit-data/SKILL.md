@@ -25,10 +25,14 @@ Before writing a system or panel: name the fields the entity needs.
 
 A **data pack** (`*Component`, plus project envelope **rigProject**) is **components-first**, not "only structs and nothing else."
 
+New data packs end in `Component`. Do not add `*Data` or `*Pod`. Three shipped data packs do not use the suffix and stay as they are: **rigProject**, **rigColorspace**, **rigComposition**.
+
+A data pack does not ship a host example. Teach the POD from the code pack that fulfills it, or from a `.rig` document. An example already in the pack may stay. Code packs should ship one example when there is something to show. [packs/README.md](../../packs/README.md#pack-example-readme-screenshot).
+
 | Owns | Does not own |
 |------|----------------|
 | `C*` POD components + `GetProperties()` | `registerSystem` Update/Draw |
-| `registerComponent` in pack `setup()` | ImGui / `IWindow` panels |
+| `registerComponent` in pack `setup()` | ImGui / `ImGuiPanel` docks |
 | Pure helpers over POD (catalog, eval, flatten) | `.rig` codecs (file from the **code** pack) |
 | | GPU / window / socket handles in components |
 | | Engines / second scene graphs |
@@ -64,8 +68,9 @@ Human mirror: [docs/packs_using.md](../../docs/packs_using.md).
 5. **Schema travel** - if Pi / ESP32 / another host must share meaning, prefer a small JSON or binary slice of POD fields; schema alignment matters more than identical ECS libraries ([docs/contract/rigkit.md](../../docs/contract/rigkit.md)).
 6. **Behavior elsewhere** - `rigSystems` / document systems via `registerSystem`; never inside data packs (`rigComponent`, `rigPlotComponent`, ...).
 7. **`registerComponent` in setup** - announce the type on `MEcs` so rigImGui Properties can discover it. The code pack files the codec with `project::addSerializer`.
-8. **Push back** - if the request starts with a new ImGui window or system, redefine it as data first, then the thinnest fulfillment. A portable tool surface is `CUiPanel` / `CUiGroup` / `CUiControl` / `CUiAction` (`rig.ui.*`), not a new host `I*` and not `IWindow` in `src/`. Creators: `rig::makeUiPanel` / `makeUiControl` / `makeUiAction`. Present: **rigImGui** `presentUiPanels`. [seams.md](../../docs/contract/seams.md).
-9. **Author path** - prefer short creators/helpers that write POD data (`makeRect`, `makeMesh*`, ...) over exposing `MEcs` first. Meshes are first-class (`CMesh`). See [docs/authoring.md](../../docs/authoring.md).
+8. **Push back** - if the request starts with a new ImGui window or system, redefine it as data first, then the thinnest fulfillment. A portable tool surface is `CUiPanel` / `CUiGroup` / `CUiControl` / `CUiAction` (`rig.ui.*`), not a new host `I*` and not `ImGuiPanel` in `src/`. Creators: `rig::makeUiPanel` / `makeUiControl` / `makeUiAction`. Present: **rigImGui** `presentUiPanels`. [seams.md](../../docs/contract/seams.md).
+9. **Instanced** - scene / document / graph / selection state lives on ECS entities and components. A process-wide static for live scene data is a smell; `MSettings` chrome prefs are session chrome, not the scene.
+10. **Author path** - prefer short creators/helpers that write POD data (`makeRect`, `makeMesh*`, ...) over exposing `MEcs` first. Meshes are first-class (`CMesh`). See [docs/authoring.md](../../docs/authoring.md).
 
 ## Pattern
 

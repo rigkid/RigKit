@@ -10,7 +10,7 @@ Say and write the same camelCase token (e.g. **rigImGui** is `packs/rigImGui/`).
 
 | Pattern | Role | Examples |
 |---------|------|----------|
-| `*Component` | **Data pack** - domain POD components | `rigComponent`, `rigPlotComponent`, `rigNodeComponent`, `rigPixelPlotComponent`, `rigColorspace` |
+| `*Component` | **Data pack** - domain POD components | `rigComponent`, `rigPlotComponent`, `rigNodeComponent`, `rigPixelPlotComponent` |
 | `*Edit` | CODE **ops** over existing POD. No dock, no product menus. Headless callers can link it. | `rigMeshEdit` |
 | `*Ui` | IMui **chrome** - one panel or a Kit. Named after the engine or domain, never a file format. | `rigPlotterUi`, `rigTraceUi`, `rigVectorUi` |
 | Short / verb name | Single-purpose code, I/O, present, or transport | `rigSvg`, `rigObj`, `rigSystems`, `rigRender3D`, `rigSerial`, `rigGrbl`, `rigOsc`, `rigCompositor` |
@@ -23,6 +23,7 @@ Rules:
 3. `*Ui` means chrome on **rigImGui** / `IMui` over a separate engine or data pack - not where `C*` types live. Name it after that engine or domain, never a file format. Do not fold chrome into the engine under `gui/` (engines must stay linkable without `IMui`; one engine may have more than one Kit).
 4. Mesh **data** stays in **rigComponent** (`CMesh`); mesh **tools** are **rigMeshEdit**. Same idea as `rigSvg` (IO) vs **rigVectorUi** (artboard Kit).
 5. `*Shell` is not a suffix family. **rigDocumentShell** is a one-off product-host pack (Viewer / Player File Open, Pages, skipped keys). Do not grow `rigOscShell` / `rigPlotterShell`.
+6. New data packs end in `Component` (`rigCadComponent`). Do not add a second suffix (`*Data`, `*Pod`). Three shipped data packs do not use the suffix and stay as they are: **rigProject** (host envelope + document IO), **rigColorspace** (color POD + pure helpers), **rigComposition** (composition analysis POD + pure helpers). Do not copy those ids for a new domain.
 
 ## Branch, trunk, leaf
 
@@ -40,7 +41,7 @@ Create from the **leaf the app needs**. Extract a trunk when a second leaf would
 
 Name packs by meaning (medium / domain / protocol), not by routing geography. There is no `rigWan`. LAN vs WAN is not a seam.
 
-I/O target tree: **rigSerial** (medium) and **rigDmx** (universe domain) are trunks. Protocol leaves: **rigGrbl** and **rigEnttec** on serial; **rigSacn**, **rigArtnet**, and **rigEnttec** on DMX. **rigOsc** and **rigNetScan** are siblings, not children of DMX. **rigNet** exists only after two packs would copy IP/interface helpers. See [docs/packs_catalog.md](../docs/packs_catalog.md).
+I/O target tree: **rigSerial** (medium) and **rigDmx** (universe domain) are trunks. Protocol leaves: **rigGrbl** and **rigEnttec** on serial; **rigSacn**, **rigArtnet**, and **rigEnttec** on DMX. **rigOsc** and **rigNetScan** are siblings, not children of DMX. **rigEspnow** is a sibling of **rigOsc** and **rigSerial**, not a child of Wi-Fi. **rigNet** exists only after two packs would copy IP/interface helpers. See [docs/packs_catalog.md](../docs/packs_catalog.md).
 
 ## Data pack
 
@@ -49,11 +50,11 @@ A **data pack** owns portable entity meaning. It is **not** “only `.h` structs
 | Allowed | Forbidden |
 |---------|-----------|
 | `C*` POD components + `GetProperties()` | Update/Draw `registerSystem` |
-| `registerComponent` in pack `setup()` | Dear ImGui / `IWindow` panels |
+| `registerComponent` in pack `setup()` | Dear ImGui / `ImGuiPanel` docks |
 | Document codecs that serialize those PODs | GPU / window / socket handles in components |
 | Pure helpers over POD (catalog tables, eval, flatten) | Second scene graph or manager trees |
 
-Examples: **rigComponent**, **rigPlotComponent**, **rigNodeComponent** (PODs + catalog/eval helpers + `.rig` codecs), **rigPixelPlotComponent**. **rigProject** is the host project envelope + `.rig` document IO (data + codecs; the document is portable Contract JSON, a `.rig` file or a `.rigz` ZIP when sidecars travel with it; this pack writes the JSON). Engines that *run* pipelines (`rigPlotter`, `rigPixelPlotter`) and editors/UI (`rigNodeEditor`, `rigPlotterUi`) are **code packs**.
+Examples: **rigComponent**, **rigPlotComponent**, **rigNodeComponent** (PODs + catalog/eval helpers + `.rig` codecs), **rigPixelPlotComponent**, **rigColorspace**, **rigComposition**. **rigProject** is the host project envelope + `.rig` document IO (data + codecs; the document is portable Contract JSON, a `.rig` file or a `.rigz` ZIP when sidecars travel with it; this pack writes the JSON). Engines that *run* pipelines (`rigPlotter`, `rigPixelPlotter`) and editors/UI (`rigNodeEditor`, `rigPlotterUi`) are **code packs**. A data pack does not ship a host example.
 
 See [docs/packs_using.md](../docs/packs_using.md) and [rigkit-data](../skills/rigkit-data/SKILL.md).
 
@@ -106,7 +107,7 @@ python tools/rigpack.py check <app.json> --pinned          # product release: fl
 
 Everything else under `packs/` is optional: local clone or CPM at `app.json` `url` + `ref`. Survey [docs/packs_catalog.md](../docs/packs_catalog.md) before scaffolding a new pack.
 
-**Plot family:** `packs/rigPlotter/examples/plot` remains the **integration** app (full Kit) when that pack is checked out. Every plot pack also ships its own thin example under `examples/<name>/` plus `img/preview.png`. Headless `tools/*_smoke` stay as unit gates.
+**Plot family:** `packs/rigPlotter/examples/plot` remains the **integration** app (full Kit) when that pack is checked out. Plot code packs should ship a thin example under `examples/<name>/` (and `img/preview.png` when the window is the picture). **rigPlotComponent** does not need one; `examples/paths` may stay. Headless `tools/*_smoke` stay as unit gates.
 
 Pin basics = submodule SHA in the host. Pin optional packs = `ref` in `app.json` (CPM) or a local checkout.
 
@@ -122,7 +123,13 @@ In-tree examples configure with `RIGKIT_DIR=${CMAKE_CURRENT_SOURCE_DIR}/../..` s
 
 ## Pack example (README screenshot)
 
-**Every** in-org pack ships **one** example under `examples/<name>/` - a tiny RigKit app that teaches how to use the pack. The window is the pack README screenshot (`examples/<name>/img/preview.png`). Lead the pack README with `![preview](examples/<name>/img/preview.png)`. End the pack README with the Pages link for that pack id:
+A **code** pack should ship one example under `examples/<name>/` when there is a window, a mesh, or a transport worth teaching. That app is how someone learns the pack. When the window is the picture, save it as `examples/<name>/img/preview.png` and lead the pack README with `![preview](examples/<name>/img/preview.png)`. A headless pack (CLI, smoke, library with nothing to draw) may ship `tools/*_smoke` and skip the screenshot.
+
+A **data** pack does not need an example. That is every `*Component` pack, plus **rigProject**, **rigColorspace**, and **rigComposition**. Show the POD from the code pack that fulfills it, or from a `.rig` document. An example already in a data pack may stay; do not add one to satisfy a checklist.
+
+This is a preference, not a missing-example failure. `tools/check-invariants` fails only when a README embeds `preview.png` and the file is not there. Backlog: [docs/TODO.md](../docs/TODO.md).
+
+End every pack README with the Pages link for that pack id:
 
 ```md
 [API/docs](https://rigkid.github.io/<packName>/)
@@ -142,9 +149,7 @@ cmake -S packs/<pack>/examples/<name> -B packs/<pack>/examples/<name>/build
 cmake --build packs/<pack>/examples/<name>/build --target <name>
 ```
 
-Screenshot workflow: build and run the example, capture the main window, save as `examples/<name>/img/preview.png` (no emoji chrome), commit with the example. Host `examples/` stay Contract/product apps; they do **not** replace a pack example.
-
-Packs still missing a preview or example: [docs/TODO.md](../docs/TODO.md).
+Screenshot workflow, when the pack has a window: build and run the example, capture the main window, save as `examples/<name>/img/preview.png` (no emoji chrome), commit with the example. Host `examples/` stay Contract/product apps; they do not replace a pack example.
 
 ## Style
 
@@ -161,7 +166,7 @@ That installs the host pre-commit hook and copies the pack hook into every `pack
 
 ## Pack CI
 
-Each in-org pack remote runs its own GitHub Actions workflow (`.github/workflows/ci.yml` in the pack repo): checkout the pack under test, clone the RigKit host + submodules, overlay the pack into `packs/<name>/`, then compile the pack example. Commit and push CI changes from the pack submodule (not only the host).
+Each in-org pack remote runs its own GitHub Actions workflow (`.github/workflows/ci.yml` in the pack repo): checkout the pack under test, clone the RigKit host + submodules, overlay the pack into `packs/<name>/`, then compile the pack example when it has one. A data pack with no example still compiles the static library in that workflow. Commit and push CI changes from the pack submodule (not only the host).
 
 Private host/pack remotes need org (or per-repo) secret **`RIGKIT_CI_TOKEN`** - a fine-grained PAT with Contents:read on `rigkid/RigKit` and the in-org packs. Default `GITHUB_TOKEN` cannot clone sibling private repos. See [docs/contributing.md](../docs/contributing.md).
 
@@ -192,8 +197,8 @@ Then start from **[rigTemplate](../templates/rigTemplate/)** (`https://github.co
 
 1. Lock the spoken name (one camelCase id). Copy `templates/rigTemplate` to `packs/<id>/` (or clone the template remote).
 2. Rename `pack.json`, sources, class, and `PackRegistry` factory string to that same id. Set `license` in `pack.json` to `MIT Rigkid Contributors` (or `GPL-2.0-or-later Rigkid Contributors`; required by CI / `check-invariants`). Keep `description`, `url`, and `dependencies` accurate there - that file owns About / `IPack` identity and runtime init order ([docs/packs.md](../docs/packs.md)). The pack constructor is only `IPack("<id>")` - no `setDescription` / `addDependency`.
-3. Add `url` + `ref` to the app `app.json` dependencies (`"name"` must match the id). Set SPDX `license` on the example `app.json` too (`MIT` is fine for apps).
-4. Fill `examples/demo/` (example + `img/preview.png` for the README).
+3. Add `url` + `ref` to the app `app.json` dependencies (`"name"` must match the id).
+4. Code packs: fill `examples/demo/`. Set SPDX `license` on that `app.json` (`MIT` is fine for apps). Add `img/preview.png` when the window is the README picture. Data packs: delete `examples/`. They do not need a demo or a screenshot.
 5. Publish the pack remote when ready (own repo push, or `./tools/publish-template.sh` for the template itself).
 
 ## Optional / external packs

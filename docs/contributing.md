@@ -48,7 +48,9 @@ If you use VS Code, install `ms-vscode.cpptools`, `ms-vscode.cmake-tools`, and `
 - **Language:** modern C++20; prefer clear code over cleverness.
 - **Includes:** clang-format `SortIncludes` only ([includes.md](includes.md)). Do not auto-strip; a missing include is worse than an extra one.
 - **Casts:** prefer explicit casts for narrowing and enums.
-- **Naming:** interfaces `I*` (`IApp`, `IMui`); managers often `M*` (`MEcs`); files match type names.
+- **Naming:** host interfaces `I*` live in RigKit `src/` (`IApp`, `IMui`); managers `M*` (`MEcs`, `MWindow`); pack panel bases are plain types (`ImGuiPanel`), not fake host `I*`. Files match type names.
+- **DRY:** one function owns one behavior; do not copy-paste drawers or spawn paths between files.
+- **Instanced:** scene / document / graph / selection state lives on ECS entities and components — no process-wide static for live scene data. Host user prefs may sit on `MSettings` (session chrome).
 - **ECS:** core components live in `src/ecs/components/`; packs may define their own.
 - **Data over hardcoding:** prefer config / properties where it keeps Canvas flexible.
 - **UI:** no Dear ImGui includes in `src/` - see [contract/ui.md](contract/ui.md). Complete Contract = SUDE-ECS-UI.

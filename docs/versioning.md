@@ -48,6 +48,7 @@ A `"ref": "main"` (or any branch) is a **track**, not a pin: `update` leaves it 
 
 | Version | Notes |
 |---------|-------|
+| unreleased | `IWindow` renamed to `ImGuiPanel` (rigImGui panel base — not a host `I*`). `MWindow` stays the dock manager. Packs use `asMui` / `windowManager(IMui*)` or held pointers; do not grow `IMui` with a panel factory. Named surfaces on `IMui` remain the portable show/hide agreement; ESP web fulfills POD without `IMui`. |
 | unreleased | `CUiPanel` / `CUiGroup` / `CUiControl` / `CUiAction` match `rig.ui.*`. Creators: `rig::makeUiPanel` / `makeUiControl` / `makeUiAction`. Contract import writes the POD (refs from document ids). **rigImGui** presents visible panels. Actions fire `SEvent`. `oscHost --author` Look panel binds the `look` entity. |
 | unreleased | `IMui::getWindowManager` removed. Create and show panels through `Mui::getWindowManager` (include rigImGui). `IMui::chromeId()` default is `"none"`; `Mui` returns `"imgui"`. |
 | unreleased | Removed `IStrokeUI`. Removed `IManager`; `MEcs` / `MPack` / `MRendering` / `MCanvas` / `MSettings` keep `init` / `shutdown` as ordinary methods. |

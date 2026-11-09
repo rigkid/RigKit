@@ -40,6 +40,7 @@ Stop at the first rung that holds:
 
 - No unrequested abstractions (one-impl interfaces, factories for one product, config for a constant).
 - Deletion over addition. Bug fix = root cause (shared function once), not a guard per caller.
+- **DRY** - one function owns one behavior; do not copy-paste drawers, spawn paths, or inspectors between files.
 - Question complex asks: ship the lazy version and note what was skipped.
 - Do not widen data-layer impurity for convenience.
 
@@ -81,7 +82,7 @@ The name stays: it is the entry's identity, so re-running a pack's `setup()` rep
 
 2. **A manager plus something reachable through it.** `SShapeRendering(MEcs&)` reads `MEcs::getPresentRenderer()`; taking an extra `IRenderer*` would make callers pull it off the ECS only to hand it back, and let a caller pass a renderer that is not the one presenting.
 
-3. **A stored collaborator passed in again.** A method never takes what `m_*` already holds. `IApp::rigSetup()` takes nothing - the engine wired itself with `setEngine` before the call, same as `IPack::rigSetup()`. `ShaderPreviewWindow::tick(dt)` reads the ECS through `IWindow::getEngine()` rather than taking an `MEcs&`.
+3. **A stored collaborator passed in again.** A method never takes what `m_*` already holds. `IApp::rigSetup()` takes nothing - the engine wired itself with `setEngine` before the call, same as `IPack::rigSetup()`. `ShaderPreviewWindow::tick(dt)` reads the ECS through `ImGuiPanel::getEngine()` rather than taking an `MEcs&`.
 
 4. **A second pointer to one owner.** One owner, one pointer. `Canvas` keeps `m_engine` and reads `m_engine->getECSManager()`; a parallel `m_ecs` plus `setECSManager` would let the two disagree - null or stale on one side while the other is fine.
 

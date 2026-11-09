@@ -230,7 +230,7 @@ void StageApp::setup() {
 
 #if STAGE_WITH_EDITOR
 	if (!m_play && !m_smoke) {
-		if (auto* mui = dynamic_cast<rigkit::Mui*>(m_engine->getUiManager())) {
+		if (auto* mui = rigkit::asMui(m_engine->getUiManager())) {
 			dockEditor(mui);
 		}
 	}

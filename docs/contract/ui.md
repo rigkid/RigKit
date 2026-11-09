@@ -9,10 +9,11 @@ This file adds **RigKit** fulfillment notes. UI packs are not Rig. Host floor vs
 | Layer | What |
 |-------|------|
 | **Rig + UI** | Host seam; panels edit ECS/schemas; SUDE phases; no toolkit in Contract-facing components |
-| **rigImGui** | Default RigKit UI pack: dock layout, windows, Properties |
-| **rigImTui** | Alternate `IMui`: GPU character-grid compositor (cell chrome over the live GL bed). Same Player/Viewer habit - not a terminal / ggerganov backend. Switch via Preferences > Interface (Chrome row - offered only when the pack is linked) or `--tui` / `--imgui` (`ui.chrome` in settings). `IWindow` panels are **rigImGui**-only. |
+| **rigImGui** | Default RigKit UI pack: dock layout, `ImGuiPanel` / `MWindow`, Properties |
+| **rigImTui** | Alternate `IMui`: GPU character-grid compositor (cell chrome over the live GL bed). Same Player/Viewer habit - not a terminal / ggerganov backend. Switch via Preferences > Interface (Chrome row - offered only when the pack is linked) or `--tui` / `--imgui` (`ui.chrome` in settings). `ImGuiPanel` docks are **rigImGui**-only. |
+| **ESP web** | MCU author surface: browser over the same document / POD ([example-esp32](../../examples/example-esp32)). Does not link the desktop engine or implement `IMui` / `ImGuiPanel`. |
 
-Portable UI description is **data** (sections bound to ECS / property paths). Toolkits (`rigImGui`, `rigImTui`, a future Web UI pack) are **fulfillments** of that map through `IMui` - not a second scene graph and not per-window packs.
+Portable UI description is **data** (sections bound to ECS / property paths). Toolkits (`rigImGui`, `rigImTui`, ESP web) are **fulfillments** of that map - not a second scene graph and not per-window packs. Desktop/Pi chrome attaches through `IMui`; web speaks the document.
 
 Another UI pack may honor the same Rig + UI rules. Dock chrome is layout, not entity meaning.
 
@@ -51,7 +52,7 @@ No particular UI pack. No particular dock model. No GPU editor on light hosts.
 | `attachUiManager` / `detachUiManager` | Attach or omit UI |
 | `requestUiChrome` / `registerUiChrome` | Deferred ImGui / ImTui (or other) swap |
 | `IApp::setWindowVisibility*` | Show windows by name |
-| `IWindow` + `MWindow` | Pack/app panels in the dock layout (`Mui::getWindowManager`) |
+| `ImGuiPanel` + `MWindow` | Pack/app ImGui dock panels (`Mui::getWindowManager` / `windowManager(ui)`) — fulfillment only, not a host `I*` |
 | `IMui::dockPassthroughCentral` | Central node shows GL bed vs solid fill |
 | File / export / undo / gizmo hooks | Author chrome |
 | `IMui::registerFileThumbnailDecoder` | Pack CPU decoders for file-browser Icons (e.g. **rigSvg** `.svg`) |

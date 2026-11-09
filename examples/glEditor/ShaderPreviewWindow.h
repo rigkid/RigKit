@@ -4,13 +4,13 @@
 #include <entt/entt.hpp>
 #include <string>
 
-#include "IWindow.h"
+#include "ImGuiPanel.h"
 #include "ShaderPreview.h"
 
 /**
  * @brief Live shader preview panel - compile / auto / pause / FPS / errors.
  */
-class ShaderPreviewWindow : public rigkit::IWindow {
+class ShaderPreviewWindow : public rigkit::ImGuiPanel {
   public:
 	ShaderPreviewWindow();
 
