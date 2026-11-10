@@ -179,6 +179,8 @@ Status: pixel family done locally (consumer matrix: only `rigPixelPlotter` and i
 
 Gate: every item above ends in a move or a written decision. No item ends in "leave it" without a reason in the docs.
 
+Status: done locally. IO PODs stay with their transport packs and cast PODs stay on the floor (reasons in `packs_using.md`); `CGuide` moved into `rigComponent`; no durable bake components exist - the three `kNoProperties` bake markers are no longer catalog-registered, and `CLayoutTextVariable` keeps its registration for artist editing; `rigColorspace` / `rigComposition` keep their shipped ids.
+
 ### Phase 6: Guardrails
 
 1. Extend `tools/check-invariants` on the host side: fail when `rigProject` sources include domain component headers, when `rigProject` CMake adds sibling domain include directories, and when the string `rig.cad.box` appears in first-party sources.

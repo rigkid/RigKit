@@ -24,7 +24,7 @@ Add an entry when you find something outside the change you are making. Do not f
 
 - `contractRunAction` was removed from `rigProject` Contract import in Phase 1: it had no caller in this repo, and the live UI path triggers actions through the ECS event system (`SEvent` / `triggerAction`). Out-of-tree hosts that called it should register the action with the event system and trigger it there.
 - `packs/rigManifold/examples/cad` does not build against the current host: `rigMeshEdit` and the cad app call `IMui` / `Mui` members that no longer exist (`getWindowManager`, `registerViewSubmenu`). Pack and host UI APIs have drifted; reconcile in the packs where the calls live.
-- The `Mui` API dropped the free `windowManager(IMui*)` helper without a caller sweep: `rigNodeEditor` (pack + `PatchBayWindow`) and the node examples failed to compile against current `rigImGui` until Phase 2 fixed them locally (`dynamic_cast<Mui*>` then `getWindowManager()`). Other packs may carry the same stale call; grep before trusting a pack build.
+- The `Mui` API dropped the free `windowManager(IMui*)` helper without a caller sweep: `rigNodeEditor` (pack + `PatchBayWindow`) and the node examples failed to compile against current `rigImGui` until Phase 2 fixed them locally (`dynamic_cast<Mui*>` then `getWindowManager()`). Worst remaining case: `rigPlotterUi` (`rigPlotterUi.cpp` calls removed `IMui` members dozens of times, including the renamed `register*Submenu` family). Other packs may carry the same stale calls; grep before trusting a pack build.
 - `rigNode` is a new pack repo, local only. Create `rigkid/rigNode` on GitHub and push before any pack CI run that fetches `rigNode` by URL (`rigNodeEditor`, `rigAudio`, `rigMidi`, `rigPixelPlotter` manifests now name it).
 - `rigProjectComponent` is a new pack repo, local only. Create `rigkid/rigProjectComponent` on GitHub and push before pack CI fetches it by URL (`rigProject` manifest and the document example now name it).
 - `packs/rigComponent/examples/pixel/app.cpp` does not compile against current headers: it calls `MEcs` template members with only a forward declaration in scope (`rigProject.h` no longer pulls `ecs/MEcs.h` transitively, if it ever did). `PixelDoc.cpp`, the TU that actually consumes `CPage`, compiles fine. Fix the example's includes where it lives; not caused by the Phase 3 header move (the headers are byte-identical, only their home changed).
@@ -37,5 +37,5 @@ Add an entry when you find something outside the change you are making. Do not f
 ## Decisions still open inside the plan
 
 - Font codec home decided in Phase 4: the `rig.font.*` codecs live in `rigFont` (the font engine). `rigUfo` stays UFO format IO; its round-trip example never touches `.rig`, so nothing lost IO in the move.
-- Cast PODs (`CScreenCast`, `CScreenCastReceive`, `CCastReceiver`) get a floor-or-domain decision in Phase 5.
-- `rigColorspace` and `rigComposition` do not follow the `Component` naming convention. Audit in Phase 5 with consumers first; do not rename for symmetry alone.
+- Cast PODs decided in Phase 5: floor (`rigComponent`) - generic scene data, two independent consumers. Written in `packs_using.md`.
+- `rigColorspace` and `rigComposition` keep their shipped ids (Phase 5 audit: both are domain data homes; rename cost is every consumer manifest, benefit is symmetry). Written in `packs_using.md`.
