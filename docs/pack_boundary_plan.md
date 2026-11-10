@@ -144,6 +144,8 @@ Gate: the basics-only tree from Phase 0 now builds; contract smoke passes in the
 
 Gate: an app that evaluates graphs loads `rigNode` explicitly; the editor preview still evaluates; `rigNodeComponent` contains no `registerSystem`.
 
+Status: done locally. The buses (`AudioBus`, `MidiBus`, quantize) moved with the engine - they are runtime value plumbing between producers (`rigAudio`, `rigMidi`) and graph consumers, not PODs. Pure graph construction helpers (`NodeGraph.h`: `makeGraph`, `addNode`, links) stay in the data pack, same exception class as `rigComponent` creators. The `rigNode` repo is local-only until published under `rigkid/`; pack CI that fetches it by URL stays red until then (see `notes.md`).
+
 ### Phase 3: `rigProject` split
 
 1. Scaffold `rigProjectComponent`; move `CProject`, `CPage`, and `FaceInsets`. Its setup registers the two components.

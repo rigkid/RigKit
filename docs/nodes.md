@@ -11,7 +11,8 @@ cmake --build packs/rigNodeEditor/examples/nodes/build --target nodes
 ./packs/rigNodeEditor/examples/nodes/build/bin/nodes
 ```
 
-Packs: **rigNodeComponent** (data + catalog + eval + `.rig` codecs) + **rigNodeEditor**
+Packs: **rigNodeComponent** (PODs + pure graph helpers) + **rigNode**
+(catalog + eval + `SGraphEval` + `.rig` codecs) + **rigNodeEditor**
 (window). Register **rigProject** for Open/Save Scene. The pack opens one Node Editor
 and the Patch bay on the engine scene. A host with its own registries sets
 `rigNodeEditor::Options::registerWindows` to false and calls `makeEditor` per graph.
@@ -190,7 +191,7 @@ a slider or `mod.audio` `level` into **MIDI CC** `value` to send a fader.
 | Color Ref | `ref.color` | Writes Color R/G/B (optional name prefix) |
 
 Call `applyRefWrites` is no longer required in app `update` - `SGraphEval`
-(registered by **rigNodeComponent**) evaluates every `CNodeGraph` and applies Ref
+(registered by **rigNode**) evaluates every `CNodeGraph` and applies Ref
 writes each Update. Ref `entity` + `prop` is the same addressing as `rig.mod.binding`
 (`target` + `propertyKey`). Contract modulators / tweens use `CModLfo` /
 `CModBinding` / `CTween` + `SModulators` / `STweens`. Orbit framing uses

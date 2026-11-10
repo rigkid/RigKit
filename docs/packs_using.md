@@ -18,7 +18,8 @@
 | **rigAssimp** | Optional Assimp multi-format to `CMesh` (leaf; app opt-in only) |
 | **rigOpenCV** | Optional OpenCV Raster bridge (leaf; FetchContent core+imgproc; app opt-in only) |
 | **rigMeshEdit** | ImGuizmo TRS edit for selected `CTransform` |
-| **rigNodeComponent** | Generic node-graph PODs (`CNodeGraph`) - DATA + catalog/eval helpers. Artist guide: [nodes.md](nodes.md) |
+| **rigNodeComponent** | Generic node-graph PODs (`CNodeGraph`) + pure graph helpers - DATA ONLY. Artist guide: [nodes.md](nodes.md) |
+| **rigNode** | Node graph code - evaluation, `SGraphEval`, catalog, buses, `.rig` codecs over `CNodeGraph` |
 | **rigNodeEditor** | ImGui editor over `CNodeGraph` ([nodes.md](nodes.md)) |
 | **rigProject** | Host project envelope + `.rig` document IO (document = portable `.rig`, or `.rigz` when files travel with it; this pack writes the JSON; project = host session) |
 | **rigImGui** | Properties/Debug read the **component catalog** |
