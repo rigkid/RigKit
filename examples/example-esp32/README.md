@@ -4,7 +4,7 @@ ESP32-S3 sample. A browser page is the author surface. The desktop engine is not
 
 The scene is a Rig document: status colour is [`rig.paint.solid`](../../docs/contract/RigWorks/schemas/paint/solid.md), ESP-NOW is [`rig.io.espnow`](../../docs/contract/RigWorks/schemas/io/espnow.md) with the action `espnow.send`. [`device.rig`](device.rig) is that scene. Wi-Fi is not an entity here. It is the preference section `host.radio`, same fields as [`rig.io.wifi`](../../docs/contract/RigWorks/schemas/io/wifi.md), stored in NVS. The STA password is a separate write-only key. GET never returns it.
 
-The page lists preference sections and `rig.ui.panel` rows. It does not hard-code an ESP-NOW form. rigEspnow owns the panel data. rigImGui does not run on the board.
+The page lists preference sections and `rig.ui.panel` / `rig.ui.control` / `rig.ui.action` rows from the scene document. It does not hard-code an ESP-NOW form. rigEspnow owns the panel data. `rig.ui.group` is not rendered yet. There is no `IMui` / rigImGui on the board — the browser fulfills the same POD by reading `device.rig` over HTTP.
 
 ## Run on a PC
 

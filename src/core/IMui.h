@@ -203,22 +203,16 @@ class IMui {
 	 * @param action Invoked when the item is chosen.
 	 * @param shortcut Optional chord shown in the menu (display only unless the
 	 *        pack also binds it on the fulfillment shortcut manager).
+	 * @param group Optional submenu label. Empty = top-level row; non-empty nests
+	 *        under that label. Registrars supply hooks only; chrome draws.
 	 */
 	virtual void registerFileAction(const std::string& label, std::function<void()> action,
-									const std::string& shortcut = {}) {
+									const std::string& shortcut = {},
+									const std::string& group = {}) {
 		(void)label;
 		(void)action;
 		(void)shortcut;
-	}
-
-	/**
-	 * @brief Register a File menu submenu (e.g. Open to Resource to ...).
-	 * @details @p drawContents runs inside an open `BeginMenu` - emit `MenuItem`s /
-	 * nested menus. Drawn each frame the parent File menu is open so lists can be live.
-	 */
-	virtual void registerFileSubmenu(const std::string& label, std::function<void()> drawContents) {
-		(void)label;
-		(void)drawContents;
+		(void)group;
 	}
 
 	/**
@@ -226,22 +220,15 @@ class IMui {
 	 * @param label Menu label (e.g. "Import Options...").
 	 * @param action Invoked when the item is chosen.
 	 * @param shortcut Optional chord shown in the menu (display only unless also bound).
+	 * @param group Optional submenu label. Empty = top-level; non-empty nests under it.
 	 */
 	virtual void registerAppAction(const std::string& label, std::function<void()> action,
-								   const std::string& shortcut = {}) {
+								   const std::string& shortcut = {},
+								   const std::string& group = {}) {
 		(void)label;
 		(void)action;
 		(void)shortcut;
-	}
-
-	/**
-	 * @brief Register an app-menu submenu (e.g. Import to Resource...).
-	 * @details @p drawContents runs inside an open `BeginMenu` - emit `MenuItem`s /
-	 * nested menus. Drawn each frame the parent app menu is open so lists can be live.
-	 */
-	virtual void registerAppSubmenu(const std::string& label, std::function<void()> drawContents) {
-		(void)label;
-		(void)drawContents;
+		(void)group;
 	}
 
 	/**
@@ -304,42 +291,32 @@ class IMui {
 	 * @param shortcut Optional chord shown in the menu (display only unless also bound).
 	 * @param isEnabled Optional; when set, disables the item when false.
 	 * @param action Invoked when the item is chosen.
+	 * @param group Optional submenu label. Empty = top-level; non-empty nests under it.
 	 */
 	virtual void registerEditAction(const std::string& label, const std::string& shortcut,
-									std::function<bool()> isEnabled, std::function<void()> action) {
+									std::function<bool()> isEnabled, std::function<void()> action,
+									const std::string& group = {}) {
 		(void)label;
 		(void)shortcut;
 		(void)isEnabled;
 		(void)action;
+		(void)group;
 	}
 
 	/**
-	 * @brief Register an Edit menu submenu (e.g. Rotate to 90 / 180).
-	 * @details @p drawContents runs inside an open `BeginMenu`. @p isEnabled
-	 * disables the submenu when set and false.
+	 * @brief Register a View menu row (e.g. Pages, or Camera faces under @p group).
+	 * @param label Menu label.
+	 * @param action Invoked when the item is chosen.
+	 * @param shortcut Optional chord shown in the menu (display only unless also bound).
+	 * @param group Optional submenu label. Empty = top-level; non-empty nests under it.
 	 */
-	virtual void registerEditSubmenu(const std::string& label, std::function<void()> drawContents,
-									 std::function<bool()> isEnabled = {}) {
-		(void)label;
-		(void)drawContents;
-		(void)isEnabled;
-	}
-
-	/**
-	 * @brief Register a View menu submenu (e.g. Camera to Top / Left).
-	 * @details @p drawContents runs inside an open `BeginMenu`.
-	 */
-	virtual void registerViewSubmenu(const std::string& label, std::function<void()> drawContents) {
-		(void)label;
-		(void)drawContents;
-	}
-
-	/** @brief Register a View menu row (e.g. Pages). */
 	virtual void registerViewAction(const std::string& label, std::function<void()> action,
-									const std::string& shortcut = {}) {
+									const std::string& shortcut = {},
+									const std::string& group = {}) {
 		(void)label;
 		(void)action;
 		(void)shortcut;
+		(void)group;
 	}
 
 	/**
@@ -366,23 +343,6 @@ class IMui {
 	enum class GizmoOp { Select, Translate, Rotate, Scale };
 	virtual void setGizmoOp(GizmoOp op) { (void)op; }
 	virtual GizmoOp gizmoOp() const { return GizmoOp::Select; }
-
-	/**
-	 * @brief Extra advance (pixels at `sizePx`) for a chrome label pair.
-	 * @details 0 = no kern. Bind VarFont `GetKernTablePairPx` /
-	 * `GetGposPairExtraPx` here. Absent = TTF `kern` table when present.
-	 */
-	using ChromeKernFn = float (*)(unsigned left, unsigned right, float sizePx, void* user);
-
-	/** @brief When true, chrome labels apply pair kerning (default on). */
-	virtual void setChromeKerning(bool enabled) { (void)enabled; }
-	virtual bool chromeKerning() const { return false; }
-	virtual void setChromeKernFn(ChromeKernFn fn, void* user) {
-		(void)fn;
-		(void)user;
-	}
-	/** @brief Loaded `kern` pairs, or 0 when using a custom fn / none. */
-	virtual int chromeKernPairCount() const { return 0; }
 
 	/**
 	 * @brief Optional About dialog intro (Help to About). Empty = default blurb + app.json.

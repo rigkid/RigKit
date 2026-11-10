@@ -203,6 +203,8 @@ Every id in the vendored catalog ([schemas/README.md](RigWorks/schemas/README.md
 
 **rigImGui** fulfills **Rig + UI** (seam `IMui`). Show mode detaches it - Rig only. Pick helpers (`EntityPick`) live here; `CSelectable` data lives in **rigComponent**. **rigNodeEditor** dives nestable groups and publishes pins.
 
+**examples/example-esp32** presents `rig.ui.panel` / `rig.ui.control` / `rig.ui.action` from the scene document in a browser page (no `IMui`, no rigImGui). Preference sections come from NVS / `host.*`, not from those UI entities. `rig.ui.group` is not honored on that page yet.
+
 ## Checklist
 
 RigKit **is Rig**: SUDE + ECS. Author path is **Rig + UI**. See [Rig honors](https://github.com/rigkid/RigWorks/blob/main/docs/honors.md).

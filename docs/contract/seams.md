@@ -41,13 +41,13 @@ Trunk-pack seams (`ISynth` on **rigAudio**, `ISimBackend` on **rigPhysics**) sta
 
 ## `IMui` stays thin (named surfaces, no panel factory)
 
-Keep on `IMui` what every chrome must honor: `init` / `shutdown` / `handleInput` / `render`, `chromeId`, **named surface** visibility (show / hide / list by name), file and folder dialogs (path in, path out), named menu **actions**, shortcuts, recent files, named workspaces, edit mode, undo bind, progress.
+Keep on `IMui` what every chrome must honor: `init` / `shutdown` / `handleInput` / `render`, `chromeId`, **named surface** visibility (show / hide / list by name), file and folder dialogs (path in, path out), named menu **actions** (optional `group` nests under a submenu label — hooks only; chrome draws), shortcuts, recent files, named workspaces, edit mode, undo bind, progress.
 
-That named-surface API is the portable “window” agreement on the host. Do **not** add `getWindowManager`, `createWindow`, or typed dock panels to `IMui` — that moves ImGui bloat onto the seam every chrome (TUI, ESP web) would have to fake.
+That named-surface API is the portable “window” agreement on the host. Do **not** add `getWindowManager`, `createWindow`, or typed dock panels to `IMui` — that moves ImGui bloat onto the seam every chrome (TUI, ESP web) would have to fake. Do **not** register menu rows as fulfillment draw callbacks (`ImGui::MenuItem` inside a registrar lambda).
 
-Keep on **`Mui`** (rigImGui) what assumes Dear ImGui: `register*Submenu` `drawContents` callbacks, tool-rail icon / group, dock passthrough and central-node rect, chrome kerning, `addHostPanel`, `setDockLayoutBuilder`, notifications, `ImGuiPanel` / `MWindow`, viewport overlays. Packs that need typed panels already link **rigImGui** and use `windowManager(ui)` / held `shared_ptr`s.
+Keep on **`Mui`** (rigImGui) what assumes Dear ImGui: tool-rail icon glyphs, dock passthrough and central-node rect presentation details, chrome kerning (`setChromeKerning` / `setChromeKernFn`), `addHostPanel`, `setDockLayoutBuilder`, preferences drawers, notifications, `ImGuiPanel` / `MWindow`, viewport overlays. Packs that need typed panels already link **rigImGui** and use `windowManager(ui)` / held `shared_ptr`s.
 
-Some toolkit-shaped methods still sit on `IMui`. New work does not add more. When you touch one of those methods, move it to `Mui` in the same change.
+New work does not grow `IMui` with toolkit-shaped methods. When you touch one that still sits on the seam by accident, move it to `Mui` in the same change.
 
 ESP author UI is **web** over the same POD / document ([example-esp32](../../examples/example-esp32)); it does not implement `IMui` or `ImGuiPanel`. `#ifdef RIGKIT_MCU` may strip desktop weight — it does not license a dock factory in `src/`.
 
