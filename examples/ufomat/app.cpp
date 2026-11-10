@@ -746,7 +746,7 @@ class GlyphSurfacePanel : public rigkit::ImGuiPanel {
   public:
 	explicit GlyphSurfacePanel(UfomatApp* app)
 		: ImGuiPanel("Glyph", ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar |
-							   ImGuiWindowFlags_NoScrollWithMouse),
+								  ImGuiWindowFlags_NoScrollWithMouse),
 		  m_app(app) {}
 
 	void renderContents() override {

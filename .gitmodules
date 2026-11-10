@@ -34,3 +34,7 @@
 	path = docs/contract/RigWorks
 	url = https://github.com/rigkid/RigWorks.git
 	branch = master
+
+[submodule "packs/rigProjectComponent"]
+	path = packs/rigProjectComponent
+	url = https://github.com/rigkid/rigProjectComponent.git

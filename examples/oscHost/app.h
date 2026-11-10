@@ -72,4 +72,3 @@ class OscHost : public rigkit::IApp {
 	rigkit::CommandLineArgs m_cliArgs;
 	std::shared_ptr<rigkit::rigOsc> m_osc;
 };
-

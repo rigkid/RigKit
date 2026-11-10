@@ -360,8 +360,8 @@ void RigKitEngine::run() {
 		if (m_deltaTime > 0.1f) {
 			static int clampCount = 0;
 			if (++clampCount == 1 || clampCount % 300 == 0) {
-				spdlog::warn("[RigKitEngine] frame gap {:.3f}s clamped to 0.1s (x{})",
-							 m_deltaTime, clampCount);
+				spdlog::warn("[RigKitEngine] frame gap {:.3f}s clamped to 0.1s (x{})", m_deltaTime,
+							 clampCount);
 			}
 			m_deltaTime = 0.1f;
 		}

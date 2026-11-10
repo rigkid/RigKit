@@ -331,4 +331,3 @@ void OscHost::draw() {
 void OscHost::exit() {
 	spdlog::info("oscHost exit");
 }
-

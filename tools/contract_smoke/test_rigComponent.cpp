@@ -89,7 +89,7 @@ TEST_CASE("rig::makeUi* writes portable panel data") {
 	auto target = f.ecs().createEntity("knob");
 	auto panel = rig::makeUiPanel(f.ecs(), "mod.lfo", ecs::CUiPanel::Surface::Hud, "LFO");
 	auto ctrl = rig::makeUiControl(f.ecs(), panel, target, "frequency", 0,
-								  ecs::CUiControl::Widget::Slider, "Rate");
+								   ecs::CUiControl::Widget::Slider, "Rate");
 	auto act = rig::makeUiAction(f.ecs(), panel, "lfo.resetPhase", 1, "Reset");
 
 	REQUIRE(f.ecs().hasComponent<ecs::CUiPanel>(panel));

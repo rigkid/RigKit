@@ -6,11 +6,11 @@
 #include <string>
 #include <vector>
 
-#include "SmokeApp.h"
 #include "core/RigKitEngine.h"
 #include "core/pack/MPack.h"
 #include "ecs/MEcs.h"
 #include "ecs/PropertyReflection.h"
+#include "SmokeApp.h"
 #include "rigComponent.h"
 #include "rigProject.h"
 #include "rigProjectComponent.h"
@@ -33,8 +33,8 @@ struct SpineFixture {
 	std::unique_ptr<RigKitEngine> engine;
 
 	SpineFixture() {
-		engine = std::make_unique<RigKitEngine>(std::make_unique<SmokeApp>(), json{}, 0, nullptr,
-												true);
+		engine =
+			std::make_unique<RigKitEngine>(std::make_unique<SmokeApp>(), json{}, 0, nullptr, true);
 		auto* packs = engine->getPackManager();
 		REQUIRE(packs != nullptr);
 

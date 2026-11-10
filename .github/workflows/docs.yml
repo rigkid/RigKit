@@ -27,6 +27,15 @@ jobs:
         with:
           submodules: recursive
           fetch-depth: 0
+          token: ${{ secrets.RIGKIT_CI_TOKEN || github.token }}
+
+      - name: Auth private pack remotes for CPM
+        env:
+          RIGKIT_CI_TOKEN: ${{ secrets.RIGKIT_CI_TOKEN }}
+        run: |
+          if [ -n "$RIGKIT_CI_TOKEN" ]; then
+            git config --global url."https://x-access-token:${RIGKIT_CI_TOKEN}@github.com/".insteadOf "https://github.com/"
+          fi
 
       - name: Fetch optional pack remotes for aggregate docs
         env:
