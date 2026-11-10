@@ -36,6 +36,7 @@ Portable Rig rules (with RigKit notes). Full intro: [contract/README.md](contrac
 | [packs.md](packs.md) | What a pack is; layout and naming |
 | [packs_using.md](packs_using.md) | Using ECS packs from apps and other packs |
 | [pack_boundary_plan.md](pack_boundary_plan.md) | Pack data/code boundary repair: decisions and phased work |
+| [rigplotterui_mui_plan.md](rigplotterui_mui_plan.md) | rigPlotterUi Mui API repair: grouped actions, Fit Curves preference |
 | [../packs/README.md](../packs/README.md) | pinning, examples, CI, scaffold |
 
 ## Apps and examples
