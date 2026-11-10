@@ -155,6 +155,8 @@ Status: done locally. The buses (`AudioBus`, `MidiBus`, quantize) moved with the
 
 Gate: contract smoke passes; document save and load round-trip through the Update tick as before.
 
+Status: done locally. `rig/pages.h` stays in `rigProject`: beyond creators it carries board navigation with input polling, which is code, not POD help. The `rigProjectComponent` repo is local-only until published under `rigkid/` (see `notes.md`).
+
 ### Phase 4: Codec migrations
 
 One family per change, in this order: pixel plot, layout and story, node (rides Phase 2), font (after its home decision). Each migration:

@@ -15,6 +15,11 @@
 			"ref": "main"
 		},
 		{
+			"name": "rigProjectComponent",
+			"url": "https://github.com/rigkid/rigProjectComponent.git",
+			"ref": "main"
+		},
+		{
 			"name": "rigProject",
 			"url": "https://github.com/rigkid/rigProject.git",
 			"ref": "main"

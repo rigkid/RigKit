@@ -21,7 +21,8 @@
 | **rigNodeComponent** | Generic node-graph PODs (`CNodeGraph`) + pure graph helpers - DATA ONLY. Artist guide: [nodes.md](nodes.md) |
 | **rigNode** | Node graph code - evaluation, `SGraphEval`, catalog, buses, `.rig` codecs over `CNodeGraph` |
 | **rigNodeEditor** | ImGui editor over `CNodeGraph` ([nodes.md](nodes.md)) |
-| **rigProject** | Host project envelope + `.rig` document IO (document = portable `.rig`, or `.rigz` when files travel with it; this pack writes the JSON; project = host session) |
+| **rigProjectComponent** | Project envelope PODs (`CProject`, `CPage`, `FaceInsets`) - DATA ONLY |
+| **rigProject** | `.rig` document IO + host session (document = portable `.rig`, or `.rigz` when files travel with it; this pack writes the JSON; project = host session) |
 | **rigImGui** | Properties/Debug read the **component catalog** |
 | **rigNetScan** | LAN TCP connect scan over `CNetScan` / `CNetHost`; `IpScannerWindow` on rigImGui |
 | **rigSerial** | Serial medium (`CSerial` / `rig.io.serial`) + port + optional monitor. Trunk for **rigGrbl** / **rigEnttec** |
@@ -42,7 +43,7 @@ Pick a home before writing systems or UI. Agents: [rigkit-data](../skills/rigkit
 |------|------|----------|
 | Host `src/ecs/components/` | Host-bound leftovers only - do not grow for new portable meaning | `CEvent` (menu/UI action data; `std::any` payload keeps it host-only) |
 | **rigComponent** | Generic reusable PODs - grow here; keep thin | `CTransform`, `CCanvas`, `CCamera`, `CLight`, `CPalette`, `CIndexedAtlas`, `CFaceSelection`, `CEdgeSelection`, `CShape`, `CMesh`, `CSpline3d`, `CNurbsSurface`, `CDrawStyle`, `CSelection`, `CScreenCast`, `CScreenCastReceive`, `CCastReceiver` |
-| Domain data pack | Product-specific PODs (+ codecs / pure helpers over that POD) | `rigProject` (`CProject`, `CPage`); `rigShowComponent` (`CVisualizer`, analysis); `rigCadComponent` (`CCad*`); `rigMusicComponent` (`CMusicClock` / `CMusicTransport`); `rigAnimComponent` (`CTween` / `CModLfo` / `CModBinding`); `rigPlotComponent` (`CPaths`, ...); `rigNodeComponent` (`CNodeGraph`) |
+| Domain data pack | Product-specific PODs (+ codecs / pure helpers over that POD) | `rigProjectComponent` (`CProject`, `CPage`); `rigShowComponent` (`CVisualizer`, analysis); `rigCadComponent` (`CCad*`); `rigMusicComponent` (`CMusicClock` / `CMusicTransport`); `rigAnimComponent` (`CTween` / `CModLfo` / `CModBinding`); `rigPlotComponent` (`CPaths`, ...); `rigNodeComponent` (`CNodeGraph`) |
 | Code pack | Systems / I/O / UI - not portable component homes | `rigSystems`, `rigRender3D`, `rigObj`, `rigAssimp` (leaf), `rigOpenCV` (leaf), `rigPdfWrite` (leaf), `rigEthereum` (leaf), `rigScreenCast` (leaf), `rigMeshEdit`, `rigNodeEditor`, `rigPlotter`, `rigPlotFinders`, `rigTrace`, `rigSvg`, `rigImGui` |
 | App | Prototypes until promotion to `rigComponent` or a domain data pack | one-off app structs |
 

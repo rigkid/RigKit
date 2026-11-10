@@ -16,7 +16,8 @@ In-org packs are separate remotes in the [rigkid](https://github.com/rigkid) org
 |------|--------|------|
 | **rigComponent** | [rigkid/rigComponent](https://github.com/rigkid/rigComponent) | Data-only generic sketch PODs - no systems (`CPath` / `rig.geometry.path`; `CUiPanel` / `CUiGroup` / `CUiControl` / `CUiAction` for `rig.ui.*`; `CScreenCast` / `CScreenCastReceive` / `CCastReceiver` for cast send/receive + discovery). Domain decks live in **rigShowComponent**, **rigCadComponent**, **rigMusicComponent**, **rigAnimComponent**. |
 | **rigSystems** | [rigkid/rigSystems](https://github.com/rigkid/rigSystems) | Update/Draw systems over that data |
-| **rigProject** | [rigkid/rigProject](https://github.com/rigkid/rigProject) | Host project envelope (`CProject`/`CPage`) + `.rig` document IO (document = portable `.rig`, or `.rigz` when files travel with it; this pack writes the JSON) |
+| **rigProjectComponent** | [rigkid/rigProjectComponent](https://github.com/rigkid/rigProjectComponent) | Project envelope PODs (`CProject`, `CPage`, `FaceInsets`) - data pack |
+| **rigProject** | [rigkid/rigProject](https://github.com/rigkid/rigProject) | `.rig` document IO + deferred load/save (document = portable `.rig`, or `.rigz` when files travel with it; this pack writes the JSON) |
 | **rigImGui** | [rigkid/rigImGui](https://github.com/rigkid/rigImGui) | UI fulfillment (`IMui`); host shell; Properties catalog; presents visible `CUiPanel` surfaces; themes/fonts. Chrome labels apply TTF `kern` pairs (GPOS via `Mui::setChromeKernFn` / VarFont). |
 | **rigImTui** | [rigkid/rigImTui](https://github.com/rigkid/rigImTui) (local `packs/` until published) | GPU character-grid compositor `IMui` - cell chrome over a live GL present (Player/Viewer ImTui habit). Swap with **rigImGui** via Preferences > Interface (Chrome row) / `--tui` / `--imgui`. Not ggerganov/imtui. |
 
