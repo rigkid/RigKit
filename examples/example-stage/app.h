@@ -8,7 +8,7 @@
 namespace rigkit {
 class Mui;
 class rigPython;
-}
+} // namespace rigkit
 
 class StageApp : public rigkit::IApp {
   public:

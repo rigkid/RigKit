@@ -60,6 +60,13 @@ jobs:
         with:
           submodules: recursive
           token: ${{ secrets.RIGKIT_CI_TOKEN || github.token }}
+      - name: Auth private pack remotes for CPM
+        env:
+          RIGKIT_CI_TOKEN: ${{ secrets.RIGKIT_CI_TOKEN }}
+        run: |
+          if [ -n "$RIGKIT_CI_TOKEN" ]; then
+            git config --global url."https://x-access-token:${RIGKIT_CI_TOKEN}@github.com/".insteadOf "https://github.com/"
+          fi
       - name: Install build dependencies
         run: |
           sudo apt-get update
