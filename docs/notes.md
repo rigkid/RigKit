@@ -36,6 +36,6 @@ Add an entry when you find something outside the change you are making. Do not f
 
 ## Decisions still open inside the plan
 
-- Font codec home (`rigFont` or `rigUfo`) is decided in Phase 4 from consumer evidence, per the hybrid codec policy.
+- Font codec home decided in Phase 4: the `rig.font.*` codecs live in `rigFont` (the font engine). `rigUfo` stays UFO format IO; its round-trip example never touches `.rig`, so nothing lost IO in the move.
 - Cast PODs (`CScreenCast`, `CScreenCastReceive`, `CCastReceiver`) get a floor-or-domain decision in Phase 5.
 - `rigColorspace` and `rigComposition` do not follow the `Component` naming convention. Audit in Phase 5 with consumers first; do not rename for symmetry alone.
