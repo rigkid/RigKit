@@ -363,6 +363,60 @@ PY
 	fi
 fi
 
+# --- 1/4. rigProject codec boundary (docs/pack_boundary_plan.md, Phase 1) ------
+# rigProject writes portable documents; it must not see domain PODs. Every bare
+# "C*.h" include in its sources must resolve in an allowed home: its own src,
+# the envelope data pack (rigProjectComponent), the floor data pack
+# (rigComponent), or the host (src/). A domain header means the Phase 1 fault
+# is back.
+if [[ -d packs/rigProject/src ]]; then
+	while IFS= read -r inc; do
+		found=0
+		for home in packs/rigProject/src packs/rigProjectComponent/src \
+			packs/rigComponent/src src; do
+			if [[ -f "$home/$inc" ]]; then
+				found=1
+				break
+			fi
+		done
+		if [[ "$found" -eq 0 ]]; then
+			hit "rigProject includes domain header \"$inc\" — codecs own domain PODs, rigProject owns the registry (see docs/pack_boundary_plan.md)"
+		fi
+	done < <(grep -rhoE '#[[:space:]]*include[[:space:]]*"C[A-Za-z0-9_]+\.h"' \
+		packs/rigProject/src --include='*.cpp' --include='*.h' 2>/dev/null \
+		| sed -E 's/.*"([^"]+)".*/\1/' | sort -u)
+fi
+# Its CMake must not reach for sibling domain packs either.
+if [[ -f packs/rigProject/CMakeLists.txt ]]; then
+	domain_refs="$(grep -nE 'rig(Cad|Anim|Music|Show|Node|Pixel|Layout|Story|Font|Plot)(Component|Editor)?\b' \
+		packs/rigProject/CMakeLists.txt || true)"
+	if [[ -n "$domain_refs" ]]; then
+		hit "rigProject CMake references a sibling domain pack — the basics-only tree must configure (see docs/pack_boundary_plan.md)"
+		echo "$domain_refs" >&2
+	fi
+fi
+# The Contract id is rig.cad.cuboid; rig.cad.box was never a schema.
+box_refs="$(search 'rig\.cad\.box' src packs examples tools templates)"
+if [[ -n "$box_refs" ]]; then
+	hit "rig.cad.box in first-party code — the Contract id is rig.cad.cuboid"
+	echo "$box_refs" >&2
+fi
+
+# --- 1/4. Data packs register components, never systems -------------------------
+# Host-side sweep covers packs that are checked out; each pack's own CI runs
+# the same guard for itself (templates/rigTemplate workflow).
+for data_pack in rigNodeComponent rigProjectComponent rigPixelPlotComponent \
+	rigLayoutComponent rigStoryComponent rigFontComponent rigCadComponent \
+	rigAnimComponent rigMusicComponent rigShowComponent rigPlotComponent; do
+	if [[ -d "packs/$data_pack/src" ]]; then
+		sys_refs="$(search 'registerSystem' "packs/$data_pack/src")"
+		if [[ -n "$sys_refs" ]]; then
+			hit "system registered in data pack $data_pack — systems live in code packs"
+			echo "$sys_refs" >&2
+		fi
+	fi
+done
+
 if [[ "$FAIL" -ne 0 ]]; then
 	echo "" >&2
 	echo "Ten Commandments invariant check failed. See docs/contract/commandments.md" >&2

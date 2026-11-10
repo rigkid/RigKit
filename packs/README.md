@@ -51,10 +51,12 @@ A **data pack** owns portable entity meaning. It is **not** “only `.h` structs
 |---------|-----------|
 | `C*` POD components + `GetProperties()` | Update/Draw `registerSystem` |
 | `registerComponent` in pack `setup()` | Dear ImGui / `ImGuiPanel` docks |
-| Document codecs that serialize those PODs | GPU / window / socket handles in components |
-| Pure helpers over POD (catalog tables, eval, flatten) | Second scene graph or manager trees |
+| Pure helpers over POD (graph build, catalog shapes, flatten) | GPU / window / socket handles in components |
+| | Second scene graph or manager trees |
 
-Examples: **rigComponent**, **rigPlotComponent**, **rigNodeComponent** (PODs + catalog/eval helpers + `.rig` codecs), **rigPixelPlotComponent**, **rigColorspace**, **rigComposition**. **rigProject** is the host project envelope + `.rig` document IO (data + codecs; the document is portable Contract JSON, a `.rig` file or a `.rigz` ZIP when sidecars travel with it; this pack writes the JSON). Engines that *run* pipelines (`rigPlotter`, `rigPixelPlotter`) and editors/UI (`rigNodeEditor`, `rigPlotterUi`) are **code packs**. A data pack does not ship a host example.
+`.rig` codecs are filed by the **code** pack that fulfills the PODs (exceptions: `rigPlotComponent`, `rigShowComponent`, `rigColorspace`) - see [docs/packs_using.md](../docs/packs_using.md#component-authority-where-types-live).
+
+Examples: **rigComponent**, **rigPlotComponent**, **rigNodeComponent** (PODs + pure graph helpers), **rigPixelPlotComponent**, **rigColorspace**, **rigComposition**. The project envelope is **rigProjectComponent** (PODs); **rigProject** is `.rig` document IO (the document is portable Contract JSON, a `.rig` file or a `.rigz` ZIP when sidecars travel with it; this pack writes the JSON). Engines that *run* pipelines (`rigPlotter`, `rigPixelPlotter`) and editors/UI (`rigNodeEditor`, `rigPlotterUi`) are **code packs**. A data pack does not ship a host example.
 
 See [docs/packs_using.md](../docs/packs_using.md) and [rigkit-data](../skills/rigkit-data/SKILL.md).
 

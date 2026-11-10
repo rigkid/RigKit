@@ -189,6 +189,8 @@ Status: done locally. IO PODs stay with their transport packs and cast PODs stay
 
 Gate: reintroducing the Phase 1 fault in a test branch fails the invariant check.
 
+Status: done locally. `tools/check-invariants.sh` gained the rigProject boundary section (include resolution, CMake sibling reach, `rig.cad.box`) plus a data-pack `registerSystem` sweep; the pack template workflow and the two data packs created or split in this plan carry the same guard as a CI job. Policy text now agrees in `packs_using.md`, `packs/README.md`, the `rigkit-data` skill, and `AddSerializer.h`. Note the invariant script still exits non-zero for the pre-existing baseline recorded in `notes.md`; the new checks add no failures on the current tree.
+
 ## Separate workstreams
 
 These cause red CI today but are not boundary work. They stay out of this plan so its success criteria stay readable:

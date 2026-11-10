@@ -8,6 +8,7 @@ Add an entry when you find something outside the change you are making. Do not f
 
 - `tools/check-invariants` is red before any boundary work: three pack READMEs embed a missing `preview.png` (also tracked in [TODO.md](TODO.md)), and `docs/contract/port-map.md` has no rows for the RigWorks `rig.synth.*` and `rig.modular.*` schema ids. Treat this as the red baseline until each is fixed where it lives.
 - Host `develop` pins submodule commits that are not on the pack remotes (`docs/contract/RigWorks` `f279bfe`, `packs/rigComponent` `8d98451`, and likely the other basics). A fresh `git submodule update --init` fails with "not our ref". The pack commits must be pushed in the pack repos before the host pointer bumps can land; do not let host pins run ahead of pack remotes again.
+- `AGENTS.md` cites `tools\check-invariants.bat` on Windows, but the `.bat` files were deleted in a "no bats" commit and never replaced. Either restore a Windows entry point or fix the citation. The `.sh` also dies on machines without `rg` or `python` on PATH (the unicode-arrow fallback shells to `python` unguarded under `set -e`).
 
 - `rigImGui` style CI fails on clang-format across many `src/` and `examples/` files. Separate formatting workstream; do not mix it into boundary changes.
 - Actions secret `RIGKIT_CI_TOKEN` is present for some pack repos and missing for others (for example `rigRender3D` failed at the token gate). Verify per repository in repository settings; there is no code fix.

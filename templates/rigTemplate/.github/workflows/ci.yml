@@ -33,6 +33,26 @@ jobs:
             echo "No source files to check."
           fi
 
+  boundary:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Data packs register components, never systems
+        run: |
+          NAME=$(sed -n 's/.*"name"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' pack.json | head -1)
+          case "$NAME" in
+            *Component)
+              if grep -rn 'registerSystem' src/ 2>/dev/null; then
+                echo "::error::Data pack $NAME registers a system - systems live in code packs."
+                exit 1
+              fi
+              echo "$NAME: no systems registered."
+              ;;
+            *)
+              echo "$NAME is a code pack - system registration allowed."
+              ;;
+          esac
+
   example:
     runs-on: ubuntu-latest
     steps:

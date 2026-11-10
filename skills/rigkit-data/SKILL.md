@@ -25,7 +25,7 @@ Before writing a system or panel: name the fields the entity needs.
 
 A **data pack** (`*Component`, plus project envelope **rigProject**) is **components-first**, not "only structs and nothing else."
 
-New data packs end in `Component`. Do not add `*Data` or `*Pod`. Three shipped data packs do not use the suffix and stay as they are: **rigProject**, **rigColorspace**, **rigComposition**.
+New data packs end in `Component`. Do not add `*Data` or `*Pod`. Two shipped data packs do not use the suffix and stay as they are: **rigColorspace**, **rigComposition**. The project envelope is **rigProjectComponent** (data) beside **rigProject** (document IO).
 
 A data pack does not ship a host example. Teach the POD from the code pack that fulfills it, or from a `.rig` document. An example already in the pack may stay. Code packs should ship one example when there is something to show. [packs/README.md](../../packs/README.md#pack-example-readme-screenshot).
 
@@ -33,7 +33,7 @@ A data pack does not ship a host example. Teach the POD from the code pack that 
 |------|----------------|
 | `C*` POD components + `GetProperties()` | `registerSystem` Update/Draw |
 | `registerComponent` in pack `setup()` | ImGui / `ImGuiPanel` docks |
-| Pure helpers over POD (catalog, eval, flatten) | `.rig` codecs (file from the **code** pack) |
+| Pure helpers over POD (graph build, catalog shapes, flatten) | `.rig` codecs (file from the **code** pack; exceptions: `rigPlotComponent`, `rigShowComponent`, `rigColorspace`) |
 | | GPU / window / socket handles in components |
 | | Engines / second scene graphs |
 
