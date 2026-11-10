@@ -11,7 +11,8 @@ cmake --build packs/rigNodeEditor/examples/nodes/build --target nodes
 ./packs/rigNodeEditor/examples/nodes/build/bin/nodes
 ```
 
-Packs: **rigNodeComponent** (data + catalog + eval + `.rig` codecs) + **rigNodeEditor**
+Packs: **rigNodeComponent** (PODs + pure graph helpers) + **rigNode**
+(catalog + eval + `SGraphEval` + `.rig` codecs) + **rigNodeEditor**
 (window). Register **rigProject** for Open/Save Scene. The pack opens one Node Editor
 and the Patch bay on the engine scene. A host with its own registries sets
 `rigNodeEditor::Options::registerWindows` to false and calls `makeEditor` per graph.
@@ -123,7 +124,7 @@ Search in **Add node**. `typeId` is what `.rig` stores.
 
 | Title | typeId | Notes |
 |-------|--------|-------|
-| LFO | `mod.lfo` | Wave: Sine / Triangle / Saw / Square. `Run`: **Loop** free-runs (a rising edge on the optional `gate` hard-syncs the cycle); **One shot** rests until a `gate` trigger, plays a single cycle at `Frequency`, then rests at the cycle-start value. Feed `gate` from Audio `onset` or Beat `edge` |
+| LFO | `mod.lfo` | Wave: Sine / Triangle / Saw / Square. `Run`: **Loop** free-runs (a rising edge on the optional `gate` hard-syncs the cycle); **One shot** rests until a `gate` trigger, plays a single cycle at `Frequency`, then rests at the cycle-start value. Feed `gate` from Audio `onset` or Beat `edge`. **BPM** locks the loop to the live clock: Frequency becomes cycles per beat (1 = one wave per beat, 0.25 = one wave per bar) and shares the downbeat. Off keeps Frequency in Hz |
 | Noise | `mod.noise` | Smooth noise |
 | Random | `mod.random` | Stepped random |
 | Ramp | `mod.ramp` | Looping ramp |
@@ -190,7 +191,7 @@ a slider or `mod.audio` `level` into **MIDI CC** `value` to send a fader.
 | Color Ref | `ref.color` | Writes Color R/G/B (optional name prefix) |
 
 Call `applyRefWrites` is no longer required in app `update` - `SGraphEval`
-(registered by **rigNodeComponent**) evaluates every `CNodeGraph` and applies Ref
+(registered by **rigNode**) evaluates every `CNodeGraph` and applies Ref
 writes each Update. Ref `entity` + `prop` is the same addressing as `rig.mod.binding`
 (`target` + `propertyKey`). Contract modulators / tweens use `CModLfo` /
 `CModBinding` / `CTween` + `SModulators` / `STweens`. Orbit framing uses
@@ -252,4 +253,6 @@ Example binding: Vec2 Out sets orbit radius (x) and height (y).
 
 Host MIDI: devices and clock sync are **Preferences > Audio > MIDI**.
 Map Mix sliders with right-click **MIDI Learn** (View > MIDI Map for the table).
-`mod.beat` follows incoming MIDI clock when Clock Sync is on.
+`mod.beat` follows the host tempo bus. In RigVJ that bus is tap tempo, or
+beat detection while **Beat Detect** is ticked. The MIDI clock stays on screen
+and does not take the bus.

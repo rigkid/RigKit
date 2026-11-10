@@ -13,6 +13,7 @@
 #include "ecs/PropertyReflection.h"
 #include "rigComponent.h"
 #include "rigProject.h"
+#include "rigProjectComponent.h"
 #include "rigSystems.h"
 
 namespace rigkit {
@@ -41,6 +42,7 @@ struct SpineFixture {
 		// self-registration object files when nothing references them.
 		packs->registerPack<rigComponent>();
 		packs->registerPack<rigSystems>();
+		packs->registerPack<rigProjectComponent>();
 		packs->registerPack<rigProject>();
 		REQUIRE(packs->initAll());
 		packs->setupAll();

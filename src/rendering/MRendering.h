@@ -4,7 +4,6 @@
 #include <memory>
 #include <unordered_map>
 
-#include "core/IManager.h"
 #include "core/ISettings.h"
 #include "rendering/Graphics.h"
 #include "rendering/IRenderer.h"
@@ -14,12 +13,12 @@
  * instances. All renderer creation, switching, and access should go through here.
  */
 namespace rigkit {
-class MRendering : public IManager, public ISettings {
+class MRendering : public ISettings {
   public:
 	MRendering();
 	~MRendering();
-	void init() override {}
-	void shutdown() override {}
+	void init() {}
+	void shutdown() {}
 
 	// Main renderer management
 	void setMainRenderer(std::shared_ptr<IRenderer> renderer);
@@ -48,17 +47,9 @@ class MRendering : public IManager, public ISettings {
 	std::unordered_map<entt::entity, std::shared_ptr<IRenderer>> m_renderers;
 	std::unordered_map<entt::entity, std::shared_ptr<Graphics>> m_graphics;
 };
-} // namespace rigkit
 
-// -----------------------------------------------------------------------------
-// Free helpers (create / parse renderer type) - not registry methods.
-
-// Factory helper - remains a free function so callers can create a renderer
-// without dealing with the registry directly.
 std::shared_ptr<IRenderer> createRenderer(RendererType type);
-
-// Convert a user-friendly string to a RendererType enum value.
 RendererType getRendererTypeFromString(const std::string& name);
-
-// Return the list of human-readable renderer names supported by the engine.
 std::vector<std::string> getAvailableRendererNames();
+
+} // namespace rigkit

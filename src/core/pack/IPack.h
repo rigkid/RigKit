@@ -10,6 +10,12 @@ namespace rigkit {
 // Forward declaration for engine access
 class RigKitEngine;
 
+/**
+ * @brief Pack lifecycle seam - init / setup / update / draw / cleanup.
+ * @details Override the hooks. Do not override rigInit / rigSetup / rigUpdate /
+ * rigDraw / rigCleanup. Identity comes from pack.json.
+ * @see MPack, docs/contract/seams.md
+ */
 class IPack : public ISettings {
   public:
 	IPack(const std::string& name);

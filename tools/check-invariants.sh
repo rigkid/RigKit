@@ -218,6 +218,24 @@ else
 	fi
 fi
 
+# --- Pack versions SemVer ------------------------------------------------------
+# pack.json "version" is the pack release line rigpack updates against
+# (docs/versioning.md). Same SemVer shape as the host, per pack.
+check_pack_semver() {
+	local pj="$1"
+	[[ -f "$pj" ]] || return 0
+	if ! grep -qE '"version"[[:space:]]*:[[:space:]]*"[0-9]+\.[0-9]+\.[0-9]+"' "$pj"; then
+		hit "pack.json version must be MAJOR.MINOR.PATCH ($pj)"
+	fi
+}
+if [[ -d packs ]]; then
+	for pj in packs/*/pack.json; do
+		[[ -f "$pj" ]] || continue
+		check_pack_semver "$pj"
+	done
+fi
+check_pack_semver "templates/rigTemplate/pack.json"
+
 # --- Pack constructors must not re-author pack.json identity --------------------
 # description / license / url / version / dependencies live in pack.json; MPack applies them.
 # Flag ctor-era setters so scaffolds and local packs cannot reintroduce a second copy.
@@ -273,28 +291,26 @@ if [[ -n "$window_hits" ]]; then
 	echo "$window_hits" >&2
 fi
 
-# --- Every pack: Pack example + README screenshot ------------------------------
-# packs/<name>/examples/<name>/CMakeLists.txt and examples/<name>/img/preview.png
-# Pack README must embed preview.png. Host examples/ do not count.
+# --- Pack README screenshot, when the README claims one -----------------------
+# Code packs should ship an example; data packs (*Component, plus rigProject,
+# rigColorspace, rigComposition) do not need one. See packs/README.md.
+# Missing examples are not a failure. A README that embeds preview.png must
+# have examples/<name>/img/preview.png. Host examples/ do not count.
 if [[ -d packs ]]; then
 	for pj in packs/*/pack.json; do
 		[[ -f "$pj" ]] || continue
 		pack_dir="$(dirname "$pj")"
 		pack_name="$(basename "$pack_dir")"
-		example_ok=
-		while IFS= read -r -d '' example_cmake; do
-			example_dir="$(dirname "$example_cmake")"
-			if [[ -f "$example_dir/img/preview.png" ]]; then
-				example_ok=1
-				break
-			fi
-		done < <(find "$pack_dir/examples" -mindepth 2 -maxdepth 2 -name CMakeLists.txt -print0 2>/dev/null)
-		if [[ -z "$example_ok" ]]; then
-			hit "pack $pack_name needs examples/<name>/ with CMakeLists.txt and img/preview.png"
-		fi
 		readme="$pack_dir/README.md"
-		if [[ -f "$readme" ]] && ! grep -q 'preview\.png' "$readme"; then
-			hit "pack $pack_name README.md must embed examples/<name>/img/preview.png"
+		[[ -f "$readme" ]] || continue
+		grep -q 'preview\.png' "$readme" || continue
+		preview_ok=
+		while IFS= read -r -d '' preview; do
+			preview_ok=1
+			break
+		done < <(find "$pack_dir/examples" -mindepth 3 -maxdepth 3 -name preview.png -path '*/img/preview.png' -print0 2>/dev/null)
+		if [[ -z "$preview_ok" ]]; then
+			hit "pack $pack_name README.md embeds preview.png but examples/<name>/img/preview.png is missing"
 		fi
 	done
 fi
@@ -346,6 +362,60 @@ PY
 		echo "$missing" >&2
 	fi
 fi
+
+# --- 1/4. rigProject codec boundary (docs/pack_boundary_plan.md, Phase 1) ------
+# rigProject writes portable documents; it must not see domain PODs. Every bare
+# "C*.h" include in its sources must resolve in an allowed home: its own src,
+# the envelope data pack (rigProjectComponent), the floor data pack
+# (rigComponent), or the host (src/). A domain header means the Phase 1 fault
+# is back.
+if [[ -d packs/rigProject/src ]]; then
+	while IFS= read -r inc; do
+		found=0
+		for home in packs/rigProject/src packs/rigProjectComponent/src \
+			packs/rigComponent/src src; do
+			if [[ -f "$home/$inc" ]]; then
+				found=1
+				break
+			fi
+		done
+		if [[ "$found" -eq 0 ]]; then
+			hit "rigProject includes domain header \"$inc\" — codecs own domain PODs, rigProject owns the registry (see docs/pack_boundary_plan.md)"
+		fi
+	done < <(grep -rhoE '#[[:space:]]*include[[:space:]]*"C[A-Za-z0-9_]+\.h"' \
+		packs/rigProject/src --include='*.cpp' --include='*.h' 2>/dev/null \
+		| sed -E 's/.*"([^"]+)".*/\1/' | sort -u)
+fi
+# Its CMake must not reach for sibling domain packs either.
+if [[ -f packs/rigProject/CMakeLists.txt ]]; then
+	domain_refs="$(grep -nE 'rig(Cad|Anim|Music|Show|Node|Pixel|Layout|Story|Font|Plot)(Component|Editor)?\b' \
+		packs/rigProject/CMakeLists.txt || true)"
+	if [[ -n "$domain_refs" ]]; then
+		hit "rigProject CMake references a sibling domain pack — the basics-only tree must configure (see docs/pack_boundary_plan.md)"
+		echo "$domain_refs" >&2
+	fi
+fi
+# The Contract id is rig.cad.cuboid; rig.cad.box was never a schema.
+box_refs="$(search 'rig\.cad\.box' src packs examples tools templates)"
+if [[ -n "$box_refs" ]]; then
+	hit "rig.cad.box in first-party code — the Contract id is rig.cad.cuboid"
+	echo "$box_refs" >&2
+fi
+
+# --- 1/4. Data packs register components, never systems -------------------------
+# Host-side sweep covers packs that are checked out; each pack's own CI runs
+# the same guard for itself (templates/rigTemplate workflow).
+for data_pack in rigNodeComponent rigProjectComponent rigPixelPlotComponent \
+	rigLayoutComponent rigStoryComponent rigFontComponent rigCadComponent \
+	rigAnimComponent rigMusicComponent rigShowComponent rigPlotComponent; do
+	if [[ -d "packs/$data_pack/src" ]]; then
+		sys_refs="$(search 'registerSystem' "packs/$data_pack/src")"
+		if [[ -n "$sys_refs" ]]; then
+			hit "system registered in data pack $data_pack — systems live in code packs"
+			echo "$sys_refs" >&2
+		fi
+	fi
+done
 
 if [[ "$FAIL" -ne 0 ]]; then
 	echo "" >&2

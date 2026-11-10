@@ -89,6 +89,8 @@ Built-in section: `host.app` (`AppSettings` - debug, vsync, target FPS, Show FPS
 
 `rigImGui.ui` also includes chrome prefs: **Show Status Bar**, **FPS Display** (Status Bar / Menu Bar / Off), progress placement, theme, fonts, rulers.
 
+Pack section example: `rigNodeEditor.editor` (label **Node Editor**, POD `NodeEditorPrefs` in `packs/rigNodeEditor/src/NodeEditorPrefs.h`) - wheel zoom range, **Inline Edit Min Zoom** (below this, on-node fields hide and values are edited in Properties), on-node field scale, and loose row drop. The pack registers it in `setup()` / unregisters in `cleanup()`; editor windows read the live POD at draw time, so edits apply next frame and every editor (pack-opened or host-opened) shares the same values.
+
 Access: `engine->getSettingsManager()` returns `MSettings*`.
 
 Paths: `AppPaths::getUserSettingsFile()` under `getUserDataDir()`.
@@ -98,12 +100,16 @@ Paths: `AppPaths::getUserSettingsFile()` under `getUserDataDir()`.
 Any class that supports settings export/import can inherit `ISettings`:
 
 ```cpp
+namespace rigkit {
+
 class ISettings {
-public:
+  public:
 	virtual ~ISettings() = default;
-	virtual rigkit::json getSettings() const = 0;
-	virtual void setSettings(const rigkit::json& settings) = 0;
+	virtual json getSettings() const = 0;
+	virtual void setSettings(const json& settings) = 0;
 };
+
+} // namespace rigkit
 ```
 
 Example manual save/load of an object blob:
@@ -132,3 +138,4 @@ out << canvasJson.dump(4);
 - No Dear ImGui in `src/` - Preferences UI is `rigImGui` only.
 - Headless hosts still load/save the preference file; they simply have no Preferences panel.
 - Pack `IPack::parameters` / `customSettings` remain for pack-internal config; user-facing knobs should use `registerPreferences`.
+- [`examples/example-esp32`](../examples/example-esp32/) keeps the same `{ "sections": { "<id>": { ... } } }` envelope in NVS. Section `host.radio` uses `rig.io.wifi` field names. It does not link `MSettings`. The STA password is not a section field.

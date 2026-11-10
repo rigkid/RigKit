@@ -290,7 +290,7 @@ void KicadSchApp::present() {
 	if (!m_engine || !m_engine->getECSManager()) {
 		return;
 	}
-	IRenderer* renderer = m_engine->getECSManager()->getPresentRenderer();
+	rigkit::IRenderer* renderer = m_engine->getECSManager()->getPresentRenderer();
 	if (!renderer) {
 		return;
 	}

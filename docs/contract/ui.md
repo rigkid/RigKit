@@ -2,17 +2,18 @@
 
 **Rig + UI** sits on top of Rig (SUDE + ECS). Portable rules: [Rig UI](https://github.com/rigkid/RigWorks/blob/main/docs/ui.md).
 
-This file adds **RigKit** fulfillment notes. UI packs are not Rig.
+This file adds **RigKit** fulfillment notes. UI packs are not Rig. Host floor vs `IMui` vs pack chrome: [seams.md](seams.md).
 
 ## Contract vs fulfillment
 
 | Layer | What |
 |-------|------|
 | **Rig + UI** | Host seam; panels edit ECS/schemas; SUDE phases; no toolkit in Contract-facing components |
-| **rigImGui** | Default RigKit UI pack: dock layout, windows, Properties |
-| **rigImTui** | Alternate `IMui`: GPU character-grid compositor (cell chrome over the live GL bed). Same Player/Viewer habit - not a terminal / ggerganov backend. Switch via Preferences > Interface (Chrome row - offered only when the pack is linked) or `--tui` / `--imgui` (`ui.chrome` in settings). `IWindow` panels are **rigImGui**-only. |
+| **rigImGui** | Default RigKit UI pack: dock layout, `ImGuiPanel` / `MWindow`, Properties |
+| **rigImTui** | Alternate `IMui`: GPU character-grid compositor (cell chrome over the live GL bed). Same Player/Viewer habit - not a terminal / ggerganov backend. Switch via Preferences > Interface (Chrome row - offered only when the pack is linked) or `--tui` / `--imgui` (`ui.chrome` in settings). `ImGuiPanel` docks are **rigImGui**-only. |
+| **ESP web** | MCU keeps **SUDE + POD**; author surface is a browser over the same document ([example-esp32](../../examples/example-esp32)). Does not implement `IMui` / `ImGuiPanel`. |
 
-Portable UI description is **data** (sections bound to ECS / property paths). Toolkits (`rigImGui`, `rigImTui`, a future Web UI pack) are **fulfillments** of that map through `IMui` - not a second scene graph and not per-window packs.
+Portable UI description is **data** (sections bound to ECS / property paths). Toolkits (`rigImGui`, `rigImTui`, ESP web) are **fulfillments** of that map - not a second scene graph and not per-window packs. Desktop/Pi: engine stores `IMui` for the loop; **author apps hold `Mui*`** from **rigImGui** (`mui()` / `authorMui`). ESP web speaks the document on its SUDE host.
 
 Another UI pack may honor the same Rig + UI rules. Dock chrome is layout, not entity meaning.
 
@@ -20,7 +21,7 @@ Another UI pack may honor the same Rig + UI rules. Dock chrome is layout, not en
 
 Author/tool surfaces share portable entity data. Skip ECS and you fork Properties, catalogs, and schemas.
 
-**Portable panels:** a particle panel and an audio panel can appear in different apps and still compose (e.g. spatial sound) when both mutate the same POD fields. Layout only arranges views.
+**Portable panels:** `CUiPanel` / `CUiGroup` / `CUiControl` / `CUiAction` in **rigComponent**. Creators: `rig::makeUiPanel` / `makeUiControl` / `makeUiAction`. **rigImGui** presents visible panels. Contract import writes the same POD (entity refs resolved from document ids). Layout only arranges views. Running proof: `examples/oscHost --author` Look panel on the `look` entity.
 
 **Properties:** portable datatype rows ([Rig properties](https://github.com/rigkid/RigWorks/blob/main/docs/properties.md)) so any Properties surface can show opt-in fields. RigKit: `sProp` / `GetProperties()` drawn by **rigImGui**.
 
@@ -46,15 +47,16 @@ No particular UI pack. No particular dock model. No GPU editor on light hosts.
 
 | Seam | Role |
 |------|------|
-| [`IMui`](../../src/core/IMui.h) | Host UI manager interface (`chromeId()`, attach / swap) |
+| [`IMui`](../../src/core/IMui.h) | Host UI seam for the loop (`chromeId()`, attach / swap). Toolkit chrome stays on `Mui`. [seams.md](seams.md) |
+| `rigImGui::mui()` / `authorMui` | Author handle to the ImGui fulfillment — hold this; do not rediscover via `getUiManager()` cast |
+| `CUiPanel` / `CUiGroup` / `CUiControl` / `CUiAction` | Portable tool / HUD surfaces in **rigComponent**. **rigImGui** presents visible panels; controls bind `target` + `propertyKey`; actions fire `SEvent`. |
 | `attachUiManager` / `detachUiManager` | Attach or omit UI |
-| `requestUiChrome` / `registerUiChrome` | Deferred ImGui / ImTui (or other) swap |
+| `requestUiChrome` / `registerUiChrome` | Deferred ImGui / ImTui (or other) swap; rebind held `Mui*` in `onUiAttached` |
 | `IApp::setWindowVisibility*` | Show windows by name |
-| `IWindow` + `MWindow` | Pack/app panels in the dock layout |
-| `IMui::dockPassthroughCentral` | Central node shows GL bed vs solid fill |
+| `ImGuiPanel` + `MWindow` | Pack/app ImGui dock panels via `Mui::getWindowManager()` — fulfillment only, not a host `I*` |
+| Dock passthrough / central rect | On `Mui` (and TUI for the GL bed) |
 | File / export / undo / gizmo hooks | Author chrome |
 | `IMui::registerFileThumbnailDecoder` | Pack CPU decoders for file-browser Icons (e.g. **rigSvg** `.svg`) |
-| `IMui::addViewportOverlay` | Multi-subscriber draw over the GL bed (ImGui screen space). Packs use this so they do not steal the app gizmo slot. |
 | File > Open Recent | `IMui::noteRecentFile` + `setRecentFileOpenHandler`; persisted in `rigkit_settings.json` |
 | App > Workspace | Named dock layouts (`rigImGui` / `IMui::loadWorkspace`): save/load/delete `data/user/workspaces/<name>.ini` (docks + window visibility); active name in `rigkit_settings.json`; startup restores the session autosave, presets seed only the first session. A `[RigVisibility]` section hides every registered window, then shows only names marked visible. Visibility-only files (no `[Docking]`) re-seed docks from the craft builder for that name. |
 | [`IMui::progress()`](../../src/core/util/Progress.h) | Progress chrome (status bar or floating); null when UI detached |

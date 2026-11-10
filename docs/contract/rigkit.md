@@ -71,4 +71,6 @@ A device that **is Rig** via entity/component POD under **RigKit-esp32-core** (a
 
 See [`tools/esp32_contract_host/`](../../tools/esp32_contract_host/) - a tiny C++ unit implementing SUDE hooks and a minimal entity table. Build with `-DRIGKIT_BUILD_ESP32_CONTRACT_HOST=ON`, or copy into an ESP-IDF / Arduino project.
 
+[`examples/example-esp32`](../../examples/example-esp32/) is the flashable sample: SUDE, a browser page over the document, radio preferences, and ESP-NOW. It does not link the desktop engine. The contract host above stays the dependency-free proof.
+
 Prefer a small JSON or binary slice for entity POD fields when sharing state with the desktop host. Schema alignment matters more than identical ECS libraries.

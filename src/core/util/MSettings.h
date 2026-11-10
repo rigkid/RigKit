@@ -4,7 +4,6 @@
 #include <string>
 #include <vector>
 
-#include "core/IManager.h"
 #include "core/ISettings.h"
 #include "core/json.h"
 #include "ecs/PropertyReflection.h"
@@ -24,11 +23,11 @@ struct PrefSectionView {
  * @details Packs register POD structs with GetProperties(); values load from
  *          `<userData>/user/rigkit_settings.json` on register and save on request / exit.
  */
-class MSettings : public IManager, public ISettings {
+class MSettings : public ISettings {
   public:
 	MSettings();
-	void init() override {}
-	void shutdown() override {}
+	void init() {}
+	void shutdown() {}
 
 	/// Load JSON blob from disk (does not require registered sections yet).
 	bool loadFromDisk();

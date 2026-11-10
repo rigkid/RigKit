@@ -48,7 +48,9 @@ If you use VS Code, install `ms-vscode.cpptools`, `ms-vscode.cmake-tools`, and `
 - **Language:** modern C++20; prefer clear code over cleverness.
 - **Includes:** clang-format `SortIncludes` only ([includes.md](includes.md)). Do not auto-strip; a missing include is worse than an extra one.
 - **Casts:** prefer explicit casts for narrowing and enums.
-- **Naming:** interfaces `I*` (`IApp`, `IMui`); managers often `M*` (`MEcs`); files match type names.
+- **Naming:** host interfaces `I*` live in RigKit `src/` (`IApp`, `IMui`); managers `M*` (`MEcs`, `MWindow`); pack panel bases are plain types (`ImGuiPanel`), not fake host `I*`. Files match type names.
+- **DRY:** one function owns one behavior; do not copy-paste drawers or spawn paths between files.
+- **Instanced:** scene / document / graph / selection state lives on ECS entities and components — no process-wide static for live scene data. Host user prefs may sit on `MSettings` (session chrome).
 - **ECS:** core components live in `src/ecs/components/`; packs may define their own.
 - **Data over hardcoding:** prefer config / properties where it keeps Canvas flexible.
 - **UI:** no Dear ImGui includes in `src/` - see [contract/ui.md](contract/ui.md). Complete Contract = SUDE-ECS-UI.
@@ -78,7 +80,7 @@ Details: [tools/contract_smoke/README.md](../tools/contract_smoke/README.md).
 
 ## Versioning
 
-Host SemVer is [`cmake/VERSION`](../cmake/VERSION). Bump rules and History: [versioning.md](versioning.md). App and pack versions stay in `app.json` / `pack.json`. The Contract number is [`contract/RigWorks/VERSION`](contract/RigWorks/VERSION).
+Host SemVer is [`cmake/VERSION`](../cmake/VERSION). Bump rules and History: [versioning.md](versioning.md). App and pack versions stay in `app.json` / `pack.json`. Product apps that freeze pack `ref`s use [`tools/rigpack.py`](../tools/rigpack.py) `update --pin` then `check --pinned`; examples keep `"ref": "main"` and `update --latest --sync`. Pack bump and tag rules live under [versioning.md](versioning.md#pack-versions). The Contract number is [`contract/RigWorks/VERSION`](contract/RigWorks/VERSION).
 
 ## Pull requests
 
@@ -107,7 +109,7 @@ Without the secret, workflows warn and continue. Jobs that only touch public rem
 
 - **[contract/commandments.md](contract/commandments.md)** - constitution (start here).
 - **[AGENTS.md](../AGENTS.md)** - commandments + commentary (**NO CODE JUST DATA**, **Pi floor**, **fast rebuilds**, **author friendliness**).
-- **[`tools/check-invariants`](../tools/check-invariants.sh)** - machine gates for ImGui-in-`src/`, data/code pack shape, banned vocabulary, archaeology phrasing.
+- **[`tools/check-invariants`](../tools/check-invariants.sh)** - machine gates for ImGui-in-`src/`, data/code pack shape, pack `pack.json` SemVer, banned vocabulary, archaeology phrasing.
 - **[`tools/check-docs`](../tools/check-docs.sh)** - the Doxygen warning log must be empty. Run it after `cmake --build build --target docs`; the Docs workflow fails on any warning. A warning means text is missing from the HTML, not merely untidy.
 - **`.cursor/rules/rigkit-core.mdc`** - Cursor's always-on hard-invariants reminder. Gitignored (local, not repo content) - see [AGENTS.md#tool-specific-folders-are-local-not-shared](../AGENTS.md#tool-specific-folders-are-local-not-shared).
 - **[authoring.md](authoring.md)** - how users should code (helpers / creators, not manager ceremony).

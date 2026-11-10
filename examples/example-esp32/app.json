@@ -1,0 +1,7 @@
+{
+  "name": "example-esp32",
+  "version": "0.1.0",
+  "license": "MIT",
+  "description": "ESP32-S3 sample. Browser page, radio preferences, ESP-NOW. Not a GLFW app.",
+  "dependencies": []
+}

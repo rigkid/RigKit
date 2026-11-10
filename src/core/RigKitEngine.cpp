@@ -354,6 +354,17 @@ void RigKitEngine::run() {
 	while (!glfwWindowShouldClose(m_window)) {
 		auto frameStart = clock::now();
 		m_deltaTime = std::chrono::duration<float>(frameStart - lastTime).count();
+		// One stall (shader compile, device open, OS hiccup) must not inject a
+		// multi-second step into every clock, tween and video time at once.
+		// Long-running shows care about this more than about one slow frame.
+		if (m_deltaTime > 0.1f) {
+			static int clampCount = 0;
+			if (++clampCount == 1 || clampCount % 300 == 0) {
+				spdlog::warn("[RigKitEngine] frame gap {:.3f}s clamped to 0.1s (x{})",
+							 m_deltaTime, clampCount);
+			}
+			m_deltaTime = 0.1f;
+		}
 		if (m_deltaTime > 0.0f) {
 			m_currentFps = static_cast<int>(1.0f / m_deltaTime);
 		}

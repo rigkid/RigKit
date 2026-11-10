@@ -51,7 +51,7 @@ target_include_directories(${PACK_NAME} PUBLIC
 
 5. Optional: declare further packs via CPM inside the pack’s CMake so consumers only pull one package. Put pack demos in that pack’s `examples/` (not in this repo).
 
-6. Ship **one example** under `examples/<name>/` (nest host + `add_rigkit_application`, same shape as `examples/minimal`). Link `examples/<name>/img/preview.png` from the pack README. See [packs/README.md](../packs/README.md).
+6. Code packs should ship one example under `examples/<name>/` (same shape as `examples/minimal`). Link `examples/<name>/img/preview.png` from the pack README when that shot exists. Data packs (`*Component`, plus **rigProject** / **rigColorspace** / **rigComposition**) do not need an example. See [packs/README.md](../packs/README.md).
 
 ## Using a pack from an example
 
@@ -72,7 +72,7 @@ List it under `dependencies` in `examples/<name>/app.json`:
 }
 ```
 
-SPDX `"license"` is required on `app.json` as well (CI / `check-invariants`).
+SPDX `"license"` is required on `app.json` as well (CI / `check-invariants`). In-tree examples keep `"ref": "main"` as the integration canary (`python tools/rigpack.py update <app.json> --latest --sync` pulls without rewriting). Product apps that need a freeze snapshot with `--pin`, then `check --pinned` — [packs/README.md](../packs/README.md#pinning).
 
 In the app, register the pack in `bootstrapPacks()` / `setup()` (see `examples/oscHost`).
 

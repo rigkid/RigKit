@@ -1,6 +1,8 @@
 #include "ecs/MEcs.h"
 
 #include <algorithm>
+#include <utility>
+
 #include <spdlog/spdlog.h>
 
 namespace rigkit {
@@ -146,6 +148,14 @@ void MEcs::clear() {
 	m_registry.clear();
 	m_namedEntities.clear();
 	m_entities.clear();
+}
+
+void MEcs::exchangeDocument(EcsDocument& parked) {
+	// swap() rebinds pool owners. std::swap would move through a temporary and
+	// leave those pointers on the wrong registry.
+	m_registry.swap(parked.registry);
+	std::swap(m_namedEntities, parked.names);
+	std::swap(m_entities, parked.entities);
 }
 
 size_t MEcs::getEntityCount() const {

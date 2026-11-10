@@ -14,10 +14,11 @@ In-org packs are separate remotes in the [rigkid](https://github.com/rigkid) org
 
 | Pack | Remote | Role |
 |------|--------|------|
-| **rigComponent** | [rigkid/rigComponent](https://github.com/rigkid/rigComponent) | Data-only generic sketch PODs - no systems (`CPath` / `rig.geometry.path`; `CScreenCast` / `CScreenCastReceive` / `CCastReceiver` for cast send/receive + discovery). Domain decks live in **rigShowComponent**, **rigCadComponent**, **rigMusicComponent**, **rigAnimComponent**. |
+| **rigComponent** | [rigkid/rigComponent](https://github.com/rigkid/rigComponent) | Data-only generic sketch PODs - no systems (`CPath` / `rig.geometry.path`; `CUiPanel` / `CUiGroup` / `CUiControl` / `CUiAction` for `rig.ui.*`; `CScreenCast` / `CScreenCastReceive` / `CCastReceiver` for cast send/receive + discovery). Domain decks live in **rigShowComponent**, **rigCadComponent**, **rigMusicComponent**, **rigAnimComponent**. |
 | **rigSystems** | [rigkid/rigSystems](https://github.com/rigkid/rigSystems) | Update/Draw systems over that data |
-| **rigProject** | [rigkid/rigProject](https://github.com/rigkid/rigProject) | Host project envelope (`CProject`/`CPage`) + `.rig` document IO (document = portable `.rig`, or `.rigz` when files travel with it; this pack writes the JSON) |
-| **rigImGui** | [rigkid/rigImGui](https://github.com/rigkid/rigImGui) | UI fulfillment (`IMui`); host shell; Properties catalog; themes/fonts. Chrome labels apply TTF `kern` pairs (GPOS via `IMui::setChromeKernFn` / VarFont). |
+| **rigProjectComponent** | [rigkid/rigProjectComponent](https://github.com/rigkid/rigProjectComponent) | Project envelope PODs (`CProject`, `CPage`, `FaceInsets`) - data pack |
+| **rigProject** | [rigkid/rigProject](https://github.com/rigkid/rigProject) | `.rig` document IO + deferred load/save (document = portable `.rig`, or `.rigz` when files travel with it; this pack writes the JSON) |
+| **rigImGui** | [rigkid/rigImGui](https://github.com/rigkid/rigImGui) | UI fulfillment (`IMui`); host shell; Properties catalog; presents visible `CUiPanel` surfaces; themes/fonts. Chrome labels apply TTF `kern` pairs (GPOS via `Mui::setChromeKernFn` / VarFont). |
 | **rigImTui** | [rigkid/rigImTui](https://github.com/rigkid/rigImTui) (local `packs/` until published) | GPU character-grid compositor `IMui` - cell chrome over a live GL present (Player/Viewer ImTui habit). Swap with **rigImGui** via Preferences > Interface (Chrome row) / `--tui` / `--imgui`. Not ggerganov/imtui. |
 
 ### 3D / mesh
@@ -45,7 +46,8 @@ Teaching app: `packs/rigJolt/examples/cloth`. Hosts list the leaf; the trunk and
 
 | Pack | Remote | Role |
 |------|--------|------|
-| **rigNodeComponent** | [rigkid/rigNodeComponent](https://github.com/rigkid/rigNodeComponent) | Node-graph PODs (`CNodeGraph`) + catalog/eval helpers - data pack |
+| **rigNodeComponent** | [rigkid/rigNodeComponent](https://github.com/rigkid/rigNodeComponent) | Node-graph PODs (`CNodeGraph`) + pure graph helpers - data pack |
+| **rigNode** | [rigkid/rigNode](https://github.com/rigkid/rigNode) | Node graph code - evaluation, `SGraphEval`, catalog, buses, `.rig` codecs |
 | **rigNodeEditor** | [rigkid/rigNodeEditor](https://github.com/rigkid/rigNodeEditor) | ImGui node editor over `CNodeGraph` |
 
 Artist guide: [nodes.md](nodes.md).
@@ -58,7 +60,8 @@ Artist guide: [nodes.md](nodes.md).
 | **rigColorspace** | [rigkid/rigColorspace](https://github.com/rigkid/rigColorspace) | RGB + CMYK color POD, optional `ink`, paint fill/stroke refs, swatch library |
 | **rigCompositor** | [rigkid/rigCompositor](https://github.com/rigkid/rigCompositor) | FBO layer compositor - SVG blend modes + path masks |
 | **rigSvg** | [rigkid/rigSvg](https://github.com/rigkid/rigSvg) | SVG import/export / `ParsedPathDoc` / paints |
-| **rigPdf** | [rigkid/rigPdf](https://github.com/rigkid/rigPdf) (local `packs/` until published) | PDF emit from `CPage` / paths / text; Separation / overprint / PDF/X. Shapes `CText` via ImVarFont `varfont_core` (+ optional system HarfBuzz). **Leaf.** |
+| **rigPdfWrite** | [rigkid/rigPdfWrite](https://github.com/rigkid/rigPdfWrite) (local `packs/` until published) | PDF emit from `CPage` / paths / text; Separation / overprint / PDF/X. Shapes `CText` via ImVarFont `varfont_core` (+ optional system HarfBuzz). **Leaf.** |
+| **rigPdfRead** | [rigkid/rigPdfRead](https://github.com/rigkid/rigPdfRead) (local `packs/` until published) | PDF page boxes and RGBA rasters for an outside file. **Leaf. BSD-3-Clause.** Pins [pdfium-binaries](https://github.com/bblanchon/pdfium-binaries) (no in-tree compile). **Pi:** glibc `linux-arm64` / `linux-arm` prebuilt — a device with an older glibc will not load it. |
 | **rigStoryComponent** | [rigkid/rigStoryComponent](https://github.com/rigkid/rigStoryComponent) (local `packs/` until published) | Story PODs - `rig.story.flow` / paragraph / table / named styles. DATA ONLY |
 | **rigLayoutComponent** | [rigkid/rigLayoutComponent](https://github.com/rigkid/rigLayoutComponent) (local `packs/` until published) | Layout PODs - master / facing / visual paragraph+character styles / frame chain. DATA ONLY |
 | **rigLayout** | [rigkid/rigLayout](https://github.com/rigkid/rigLayout) (local `packs/` until published) | Paginate story onto `CPage` + `CText` (Setup bake). Product host **Relay** ([GitBruno/relayout](https://github.com/GitBruno/relayout)) lives out of tree |
@@ -110,11 +113,10 @@ Product app **RigSlicer** lives out of tree (e.g. next to RigKit), not under `ex
 
 | Pack | Remote | Role |
 |------|--------|------|
-| **rigShowComponent** | [rigkid/rigShowComponent](https://github.com/rigkid/rigShowComponent) (local `packs/` until published) | Show deck + analysis PODs (`CVisualizer` / `CAudioAnalysis` / `CPictureAnalysis`). DATA ONLY. Codecs file from **rigMilk**. |
+| **rigShowComponent** | [rigkid/rigShowComponent](https://github.com/rigkid/rigShowComponent) (local `packs/` until published) | Show deck + analysis PODs (`CVisualizer` / `CAudioAnalysis` / `CPictureAnalysis`). DATA ONLY. Files `rig.visualizer.deck`, `rig.audio.analysis`, and `rig.picture.analysis`. `examples/visualizer` plays `.rig` presets. |
 | **rigMusicComponent** | [rigkid/rigMusicComponent](https://github.com/rigkid/rigMusicComponent) (local `packs/` until published) | Music clock / transport PODs (`CMusicClock` / `CMusicTransport`). DATA ONLY. Speaks `rig.music.*`. Codecs file from **rigAudio**. |
 | **rigAnimComponent** | [rigkid/rigAnimComponent](https://github.com/rigkid/rigAnimComponent) (local `packs/` until published) | Tween / LFO / binding PODs (`CTween` / `CModLfo` / `CModBinding`). DATA ONLY. Advance and codecs are **rigSystems**. `CCurve` stays on **rigComponent**. |
 | **rigAudio** | [rigkid/rigAudio](https://github.com/rigkid/rigAudio) | Audio in and out (miniaudio). Capture analysis to node `AudioBus`; playback `Mixer` renders `ISynth` sources, `AudioFile` voices (WAV/FLAC/MP3), `ISendFx` sends (pass / schroeder / bitcrush); `XyScopeSynth` traces polylines as stereo XY on the mix or a second sound card; polled `BeatClock` follows `CMusicTransport` |
-| **rigMilk** | [rigkid/rigMilk](https://github.com/rigkid/rigMilk) (local `packs/` until published) | MilkDrop1-class `.milk` present over `CVisualizer` (playlist / `output` in **rigShowComponent**). Mesh size and hardcut live on `CMilk` here. Equations via MIT projectm-eval; `switchOn` reads **rigAudio**. Shader presets skipped. **Leaf.** |
 | **rigOpen303** | [rigkid/rigOpen303](https://github.com/rigkid/rigOpen303) (local `packs/` until published) | TB-303 bassline `ISynth` - Open303 DSP (MIT) fetched pinned; accent / slide, normalized params. **Leaf.** |
 | **rigDexed** | [rigkid/rigDexed](https://github.com/rigkid/rigDexed) (local `packs/` until published) | Dexed DX7 FM `ISynth` - MSFA + MkI / OPL engines, DX7 `.syx` cartridges. **Leaf. GPL-3.0-or-later.** |
 | **rigAudioUi** | [rigkid/rigAudioUi](https://github.com/rigkid/rigAudioUi) | ImGui widgets over **rigAudio**: time rulers, playhead, ClipPool, Sampler (arm/record/stop of the mixer output tap) |
@@ -130,7 +132,7 @@ Folders stay flat. The tree is `pack.json` dependencies: an app lists a **leaf**
 
 | Pack | Remote | Role |
 |------|--------|------|
-| **rigSerial** | [rigkid/rigSerial](https://github.com/rigkid/rigSerial) (local `packs/` until published) | Serial medium - `CSerial` / `rig.io.serial` (`port` / `baud` / `enabled`) + OS port + serial monitor `IWindow`. Same shape as **rigOsc** / `COscEndpoint`. Not GRBL, not DMX. GPIO / presence stay out |
+| **rigSerial** | [rigkid/rigSerial](https://github.com/rigkid/rigSerial) (local `packs/` until published) | Serial medium - `CSerial` / `rig.io.serial` (`port` / `baud` / `enabled`) + OS port + serial monitor `ImGuiPanel`. Same shape as **rigOsc** / `COscEndpoint`. Not GRBL, not DMX. GPIO / presence stay out |
 | **rigDmx** | [rigkid/rigDmx](https://github.com/rigkid/rigDmx) (local `packs/` until published) | DMX512 universe buffer + `rig.io.dmx` / `rig.dmx.fixture`. No sockets, no USB. Transports read this buffer. **Trunk, not a leaf.** |
 
 **Protocol leaves** (one wire format each)
@@ -138,6 +140,7 @@ Folders stay flat. The tree is `pack.json` dependencies: an app lists a **leaf**
 | Pack | Remote | Role |
 |------|--------|------|
 | **rigOsc** | [rigkid/rigOsc](https://github.com/rigkid/rigOsc) | OSC (UDP, optional TCP, optional multicast) + network identity. Show-bus leaves are registered by the app under `/<appName>/<networkId>/`. `oscHost --smoke-osc`. Sibling of serial / DMX, not a child |
+| **rigEspnow** | local `packs/` until published | ESP-NOW peer send. `Endpoint` / `rig.io.espnow`. Action `espnow.send`. Sibling of **rigOsc** / **rigSerial**, not a Wi-Fi child. No window type. The browser page and desktop `presentUiPanels` both draw the `rig.ui.panel` on the entity. Transport compiles when `RIGKIT_ESP_ESPNOW` is set |
 | **rigGrbl** | [rigkid/rigGrbl](https://github.com/rigkid/rigGrbl) | GRBL lines. Depends on **rigSerial**. **Leaf.** |
 | **rigSacn** | [rigkid/rigSacn](https://github.com/rigkid/rigSacn) (local `packs/` until published) | sACN / E1.31 over UDP. Depends on **rigDmx**. Own cadence / memcmp. **Leaf.** |
 | **rigEnttec** | [rigkid/rigEnttec](https://github.com/rigkid/rigEnttec) (local `packs/` until published) | Enttec USB PRO. Depends on **rigDmx** + **rigSerial**. Universe 1, stub port, own cadence / memcmp. **Leaf.** |
@@ -168,7 +171,7 @@ Art-Net is a **planned leaf** on **rigDmx**. Do not stuff it into **rigSacn**.
 | Pack | Remote | Role |
 |------|--------|------|
 | **rigImage** | [rigkid/rigImage](https://github.com/rigkid/rigImage) (local `packs/` until published) | Raster decode + GLES upload (stb_image). CPU buffer is `rig::pixel::Raster` (`rig.pixel.raster`). Path POD stays `CAssetRef` in **rigComponent**. Example `image --smoke-image`. |
-| **rigVideo** | [rigkid/rigVideo](https://github.com/rigkid/rigVideo) (local `packs/` until published) | Video IO - webcam (MF/V4L2), file decode (FFmpeg / Media Foundation), filmstrip / still, ffmpeg CLI trim/extract. **Leaf.** |
+| **rigVideo** | [rigkid/rigVideo](https://github.com/rigkid/rigVideo) (local `packs/` until published) | Video IO - webcam (MF/V4L2), file decode (FFmpeg / Media Foundation), filmstrip / still, ffmpeg CLI trim/extract, page URLs via pinned yt-dlp + qjs copied beside the executable. **Leaf.** |
 | **rigOpenCV** | [rigkid/rigOpenCV](https://github.com/rigkid/rigOpenCV) (local `packs/` until published) | Optional OpenCV Raster bridge (`toMat` / `fromMat`). FetchContent OpenCV 4.10.0 `core`+`imgproc` - does not use a machine / openFrameworks copy. **Leaf.** **Pi / rebuild risk** (first configure compiles OpenCV). |
 
 ### Scripting / CAD
@@ -199,13 +202,14 @@ git clone --recurse-submodules https://github.com/rigkid/rigBlend2D.git packs/ri
 
 | Pack | Remote | Role |
 |------|--------|------|
-| **rigVarFont** | [rigkid/rigVarFont](https://github.com/rigkid/rigVarFont) | Optional VF / FreeType fulfillment of `CText` + `IRenderer` filled text (ImVarFont `varfont_core` + `varfont_gl`). Axis values on POD; Face/atlas in the pack. GLES2 falls back to CPU FreeType. **HarfBuzz** = optional system lib behind ImVarFont (GPOS / OT features), not a pack. |
+| **rigTrueType** | [rigkid/rigTrueType](https://github.com/rigkid/rigTrueType) (local `packs/` until published) | CPU TTF load / stamp / glyph vertices via stb_truetype. CODE trunk. No ImGui, no GL, no `IRenderer`. Leaves: **rigSvg** (SVG thumbnail text), **rigVectorEditor** (text to outline paths), **rigImTui** (Roboto atlas bake). Not **rigVarFont** (present / FreeType / atlas) and not **rigFont** (UFO). |
+| **rigVarFont** | [rigkid/rigVarFont](https://github.com/rigkid/rigVarFont) | Optional VF / FreeType fulfillment of `CText` + `IRenderer` filled text (ImVarFont `varfont_core` + `varfont_gl`). Axis values on POD; Face/atlas in the pack. `CText` present prefers the pack-owned **SlugRenderer** (true Slug dual-ray Bezier evaluation in a shader, curve texture, no atlas; desktop GL 3.3+) with atlas fallback per run. GLES2: Slug unavailable, falls back to CPU FreeType. **HarfBuzz** = optional system lib behind ImVarFont (GPOS / OT features), not a pack. |
 
-`CText` lives in **rigComponent** and speaks `rig.media.text` (`font` is a `CAssetRef` kind font; `axes` / `features` / `useKerning` on the schema). Screen present (**rigVarFont**) and PDF emit (**rigPdf**) both shape through ImVarFont `varfont_core` - same Face / features / kerning path; PDF does not link `varfont_gl` / OpenGL. Chrome labels are a separate present: **rigImGui** applies TTF `kern` pairs on ImGui `RenderText` (atlas = glyph cache). GPOS / live UFO pairs plug in through `IMui::setChromeKernFn` (VarFont `GetGposPairExtraPx`). Editable UFO source is `rig.font.*` (**rigFontComponent** + **rigUfo**; host example **ufomat** / UFOMAT), not `CText`.
+`CText` lives in **rigComponent** and speaks `rig.media.text` (`font` is a `CAssetRef` kind font; `axes` / `features` / `useKerning` on the schema). Screen present (**rigVarFont**) and PDF emit (**rigPdfWrite**) both shape through ImVarFont `varfont_core` - same Face / features / kerning path; PDF does not link `varfont_gl` / OpenGL. Chrome labels are a separate present: **rigImGui** applies TTF `kern` pairs on ImGui `RenderText` (atlas = glyph cache). GPOS / live UFO pairs plug in through `Mui::setChromeKernFn` (VarFont `GetGposPairExtraPx`). Editable UFO source is `rig.font.*` (**rigFontComponent** + **rigUfo**; host example **ufomat** / UFOMAT), not `CText`.
 
 | Pack | Remote | Role |
 |------|--------|------|
-| **rigFontComponent** | local `packs/rigFontComponent` until published | UFO source PODs - `CFontFace` / glyph / kern / axis / cell / ... Data only. |
+| **rigFontComponent** | local `packs/rigFontComponent` until published | UFO source PODs - `CFontFaceSource` / glyph / kern / axis / cell / ... Data only. |
 | **rigUfo** | local `packs/rigUfo` until published | `.ufo` / `.ufoz` read/write into those PODs; static TTF via fontmake (code / IO) |
 | **rigFont** | local `packs/rigFont` until published | Shape / reconstruct over `rig.font.*` source PODs (code). Not **rigVarFont**. |
 

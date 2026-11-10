@@ -19,7 +19,16 @@ Every id in the vendored catalog ([schemas/README.md](RigWorks/schemas/README.md
 | `rig.spatial.group` | **rigComponent** - `CGroup` | Marker only (empty). Children use `CRelationship::parent`. |
 | `rig.spatial.camera` | **rigComponent** - `CCamera` (present **rigRender3D**) | Matches projection set (`active`, `projection`, clips, FOV, aspect). |
 | `rig.spatial.layer` | **rigComponent** - `CLayer` | `order` / `locked` / tint (`rgba`). Hide bit is `rig.render.visibility` when present; otherwise `x.rigkit.layer_visible`. |
+| `rig.spatial.instance` | **rigComponent** - `CInstance` | Exact `source`. Pose is `rig.spatial.transform` on this entity. |
 | `rig.paint.fill_stroke` | **rigComponent** - `CDrawStyle` | Core fill/stroke; caps/joins/dash are host extensions. |
+| `rig.paint.order` | **rigComponent** - `CPaintOrder` | `layers` permutation of fill / stroke / markers. |
+| `rig.paint.clip` | **rigComponent** - `CPaintClip` | Exact `path`. |
+| `rig.paint.mask` | **rigComponent** - `CPaintMask` | `source` + `channel` (`luminance` / `alpha`). |
+| `rig.paint.markers` | **rigComponent** - `CPaintMarkers` | `start` / `mid` / `end` marker entities. |
+| `rig.paint.marker` | **rigComponent** - `CPaintMarker` | Tile `width` / `height` / `ref` / `orient` / `units`. |
+| `rig.paint.pattern` | **rigComponent** - `CPaintPattern` | Tile `width` / `height` / `units` / `contentUnits`. Pose is transform. |
+| `rig.paint.filter` | **rigComponent** - `CPaintFilter` | `filter` entity + `primitiveUnits`. Steps are children. |
+| `rig.paint.filter_step` | **rigComponent** - `CPaintFilterStep` | Kind plus the shared step fields. Present may skip a kind. |
 | `rig.geometry.mesh` | **rigComponent** - `CMesh` | positions / optional normals / indices / optional n-gon `loops`+`loopSizes` / texcoords / mode / optional face colours. Edges are consecutive loop pairs (no parallel edge table). |
 | `rig.geometry.spline` | **rigComponent** - `CSpline` | NURBS curve in the plane. |
 | `rig.geometry.spline3d` | **rigComponent** - `CSpline3d` | NURBS curve in 3-space. |
@@ -52,6 +61,9 @@ Every id in the vendored catalog ([schemas/README.md](RigWorks/schemas/README.md
 | `rig.render.light` | **rigComponent** - `CLight` | Dir/point + colour / intensity / banded shade. Spot not in v0.1. |
 | `rig.io.osc` | **rigOsc** - `COscEndpoint` | Listen/send ports + prefix. |
 | `rig.io.serial` | **rigSerial** - `CSerial` | `port` / `baud` / `enabled`. Byte buffers and handles stay in the pack. |
+| `rig.io.wifi` | **example-esp32** - `host.radio` | `mode` / `apSsid` / `staSsid` / `channel`. Password, link, address, and RSSI stay host cache. The sample stores the section in NVS, not on a scene entity. |
+| `rig.io.espnow` | **rigEspnow** - `Endpoint` | `enabled` / `peer` / `channel` / `payload`. `espnow.send` queues one frame. `pending` and `lastResult` stay in `Cache`. |
+| `rig.io.bluetooth` | **firmware/esp** A2DP sink | `enabled`. The name is `rig.meta.named`. Classic Bluetooth on the original ESP32 only. ESP32-S3 omits the component. Pairing and PCM stay cache. |
 | `rig.pixel.effect_chain` | **rigPixelPlotComponent** - `CPixelEffectChain` | `stage` image/draw/generate + `effectId` / `enabled` + step `id` / `parentStep` / chain `nextId`. Step `blendMode` / `opacity` / `options` travel as `x.rigkit.pixel_effect_step`. |
 | `rig.pixel.canvas` | **rigPixelPlotComponent** - `CPixelCanvas` | `width` / `height` / `clearRgba` only. Title is `rig.meta.named` on the scene. `exportWithTimestamp` / `preferGpu` on `x.rigkit.pixel_canvas_meta`. |
 | `rig.pixel.source` | **rigPixelPlotComponent** - `CPixelSource` | Contract `kind` + `asset` / `generatorName` / sequence / webcam / `videoTime`. Label is `rig.meta.named`. Loop extras + `cast-receive` stay on `x.rigkit.pixel_source_ext`. |
@@ -59,13 +71,14 @@ Every id in the vendored catalog ([schemas/README.md](RigWorks/schemas/README.md
 | `rig.meta.named` | **rigComponent** - `CName` + `MEcs::entityName` | Display name / `stableId`. `ProjectSerializer` writes this from `entityName` — do not register a second codec. |
 | `rig.render.visibility` | **rigComponent** - `CRenderVisibility` | `visible`. Absent = shown. |
 | `rig.render.blend` | **rigComponent** - `CRenderBlend` | Compositing-1 tokens + `add` / `subtract` / `disabled`, plus `opacity`. Defaults omitted. |
-| `rig.ui.panel` | **rigComponent** - `CUiPanel` | Portable tool surface. ImGui docks are fulfillment. |
-| `rig.ui.group` | **rigComponent** - `CUiGroup` | Group inside a panel. |
-| `rig.ui.control` | **rigComponent** - `CUiControl` | Control bound to a property. PixelPlotter emits `pixel.source` / `pixel.layers` / `pixel.canvas`. |
 | `rig.node.graph` | **rigNodeComponent** - `CNodeGraph` / `NodeGraphData` | `nodes` / `links` / `nextId`. Also used as `nested` on group nodes. |
 | `rig.node.node` | nested in graph | Supports `nested` + `publishes` for nestable groups (`typeId` e.g. `group`). |
 | `rig.node.publish` | `NodePublish` on `GraphNode` | `pin` / `innerNode` / `innerPin`. |
 | `rig.interact.selectable` | **rigComponent** - `CSelectable` | Exact `enabled`. Selection *state* stays on `CSelection` (host). Pick honors flag when present; absence = legacy selectable. |
+| `rig.ui.panel` | **rigComponent** - `CUiPanel`; present **rigImGui** | `role` / `surface` (`tool` / `hud`) / `order` / `visible` / preferred size. Labels compose `rig.meta.named`. |
+| `rig.ui.group` | **rigComponent** - `CUiGroup`; present **rigImGui** | `panel` / `parent` / `order` / `orientation` / `collapsed`. |
+| `rig.ui.control` | **rigComponent** - `CUiControl`; present **rigImGui** | `target` + `propertyKey` bind a live `GetProperties` field. `widget` / `min` / `max` / `step` / `options` are advisory. |
+| `rig.ui.action` | **rigComponent** - `CUiAction`; present **rigImGui** | `panel` / `group` / `order` / `actionId` / `enabled`. Fires `SEvent`. Unknown ids stay hidden. |
 | `rig.media.asset_ref` | **rigComponent** - `CAssetRef` | `kind` / `path` / `loop`. Other schemas take an entity ref or compose this type on the same entity. |
 | `rig.media.code` | **rigComponent** - `CCode` | `text` / `language` / `readOnly`. Compose `CAssetRef` on the same entity for disk origin. `name` / `order` until `rig.meta.named`. `dirty` / `epoch` are editor cache - do not serialize. No `.rig` serializer: buffers are derived data. |
 | `rig.anim.curve` | **rigComponent** - `CCurve` | `points` / `interp` / `preset`. |
@@ -74,7 +87,7 @@ Every id in the vendored catalog ([schemas/README.md](RigWorks/schemas/README.md
 | `rig.mod.binding` | **rigAnimComponent** - `CModBinding` | `source` / `target` / `propertyKey` / `depth` / `additive` / optional `min` / `max`. |
 | `rig.music.clock` | **rigMusicComponent** - `CMusicClock` | `ticksPerQuarter` / `phaseTicks` / swing / `externalSync` + sync fields. Writers: **rigAudio**, **rigAbletonLink**. |
 | `rig.music.transport` | **rigMusicComponent** - `CMusicTransport` | `playing` / `bpm` / time signature / `positionBeats` / loop window. |
-| `rig.visualizer.deck` | **rigShowComponent** - `CVisualizer` | Playlist + `switchOn` + `output`. Present is **rigMilk**. |
+| `rig.visualizer.deck` | **rigShowComponent** - `CVisualizer` | Playlist + `switchOn` + `output`. `examples/visualizer` loads `.rig` entries. |
 | `rig.audio.analysis` | **rigShowComponent** - `CAudioAnalysis` | Authored request (`source` / `bandCount` / `features`). Live values stay on the bus. |
 | `rig.picture.analysis` | **rigShowComponent** - `CPictureAnalysis` | Authored request pointed at `source`. |
 | `rig.media.text` | **rigComponent** - `CText` (present **rigVarFont**) | `text` / `font` (`CAssetRef` kind font) / `fontSize` / `rgba` / `axes` / `features` / `useKerning`. Plot bake-to-path stays on `CTexts` (`TextItem` keeps `fontPath`; `sizeMm` / `baselineMm` plot-local). |
@@ -98,12 +111,11 @@ Every id in the vendored catalog ([schemas/README.md](RigWorks/schemas/README.md
 | `rig.render.material` | **rigComponent** `CRenderMaterial`; shaded by **rigRender3D** | Import writes albedo, metal, roughness, emissive, albedo-map entity. No schema writer. |
 | `rig.render.environment` | **rigComponent** `CRenderEnvironment`; shaded by **rigRender3D** | `hdri` is a `rig.media.asset_ref` entity (lat-long radiance). `intensity` scales; absent is 1. Decode stays in the present pack. |
 | `rig.media.*` | - | Remaining media ids. Settings-only; decode in code packs. |
-| `rig.ui.action` | **rigProject** import list | `panel` / `group` / `order` / `actionId` / `enabled` collected on import. Not an ECS component. |
 | `rig.interact.selected` | **rigComponent** - `CSelection` | Live `selectionIndex`. The document snapshot (`order`) is not read or written. |
 | `rig.node.pin` | nested in `CNodeGraph` | `type` is a property datatype id. |
 | `rig.node.link` | nested in `CNodeGraph` | Link between pins. |
 | `rig.node.param` | nested in `CNodeGraph` | `type` is a property datatype id. |
-| `rig.cad.cuboid` | **rigCadComponent** - `CCadBox`; bake **rigManifold** | `sizeX` / `sizeY` / `sizeZ` / `center`. Import recognizes the id and does not write the POD. Pi: bake in Setup. |
+| `rig.cad.cuboid` | **rigCadComponent** - `CCadCuboid`; bake **rigManifold** | `sizeX` / `sizeY` / `sizeZ` / `center`. Import recognizes the id and does not write the POD. Pi: bake in Setup. |
 | `rig.cad.cylinder` | **rigCadComponent** - `CCadCylinder`; bake **rigManifold** | `radius` / `height` / `circularSegments` / `center`. Import does not write the POD. |
 | `rig.cad.sphere` | **rigCadComponent** - `CCadSphere`; bake **rigManifold** | `radius` / `circularSegments`. Import does not write the POD. |
 | `rig.cad.boolean` | **rigCadComponent** - `CCadBoolean`; bake **rigManifold** | `op` + entity-name `operands`. Nested booleans recurse. Operand local TRS applies before the op. |
@@ -190,6 +202,8 @@ Every id in the vendored catalog ([schemas/README.md](RigWorks/schemas/README.md
 ## UI
 
 **rigImGui** fulfills **Rig + UI** (seam `IMui`). Show mode detaches it - Rig only. Pick helpers (`EntityPick`) live here; `CSelectable` data lives in **rigComponent**. **rigNodeEditor** dives nestable groups and publishes pins.
+
+**examples/example-esp32** presents `rig.ui.panel` / `rig.ui.control` / `rig.ui.action` from the scene document in a browser page (no `IMui`, no rigImGui). Preference sections come from NVS / `host.*`, not from those UI entities. `rig.ui.group` is not honored on that page yet.
 
 ## Checklist
 

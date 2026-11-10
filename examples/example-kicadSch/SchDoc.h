@@ -5,7 +5,9 @@
 #include <memory>
 #include <string>
 
+namespace rigkit {
 class IRenderer;
+}
 struct SchSheet;
 struct SchNav;
 
@@ -32,7 +34,7 @@ class SchDoc {
 	float grid() const;
 	void setGrid(float mm);
 
-	void draw(IRenderer& renderer, const rigkit::View2D& view);
+	void draw(rigkit::IRenderer& renderer, const rigkit::View2D& view);
 
 	/// @param kx @param ky Sheet coordinates, Y up, origin at the bottom left.
 	void press(float kx, float ky);

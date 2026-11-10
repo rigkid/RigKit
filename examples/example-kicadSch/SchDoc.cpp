@@ -2,6 +2,9 @@
 
 #include "rendering/IRenderer.h"
 
+using rigkit::IRenderer;
+using rigkit::Paint;
+
 #include <spdlog/spdlog.h>
 
 #include <algorithm>

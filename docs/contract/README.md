@@ -53,6 +53,7 @@ One file word (**document**: `.rig`, or [`.rigz`](RigWorks/docs/interchange.md#p
 | [sude-loop.md](sude-loop.md) | SUDE - Setup / Update / Draw / Exit (RigKit copy; see Rig) |
 | [rigkit.md](rigkit.md) | ECS conventions + ESP32 subset profile (RigKit copy; see Rig) |
 | [ui.md](ui.md) | UI companion + RigKit `IMui` fulfillment notes |
+| [seams.md](seams.md) | Host floor vs `I*` seams; when to add an interface; unknown apps attach as data |
 | [distribution.md](distribution.md) | Default distribution; Rig + UI on author path |
 | [port-map.md](port-map.md) | Rig schema / RigKit pack map |
 | [pi-host.md](pi-host.md) | Raspberry Pi as minimum full host |
@@ -85,7 +86,7 @@ The **host** can finish. **Packs** do not - artists keep adding packs.
 The host is complete when it can ship a **Rig + UI** fulfillment on Pi (SUDE-ECS-UI stack):
 
 1. **Rig + UI** - Rig honored; UI via the `IMui` seam (no UI toolkit in `src/`). Default UI pack: **rigImGui**. Show path may omit UI and remain Rig-only.
-2. **Seams are enough** - apps and packs extend through `IApp`, `MEcs` register/catalog, `IMui`, `IRenderer` / Draw, pack load - without a second scene graph or systems in `rigComponent`.
+2. **Seams are enough** - apps and packs extend through `IApp`, `MEcs` register/catalog, `IMui`, `IRenderer` / Draw, pack load - without a second scene graph or systems in `rigComponent`. Floor stays concrete. New `I*` only when a second fulfillment exists or is a known next pack. [seams.md](seams.md).
 3. **Weight is outside core** - new features land in packs; core changes are bugfixes, seam hardening, or Pi/rebuild fixes.
 4. **Data layer direction** - portable meaning is POD components + properties; host impurities are not widened.
 5. **Pi is the floor** - compiles and runs smoothly on Raspberry Pi.

@@ -6,7 +6,7 @@ RigKit is a vision of tools after years of playing with code of others. Most hea
 
 - **Yoshinobu Adachi** | Industry Foundation Classes, buildingSMART Model Support Group, with Thomas Liebich and the others named on the IFC2x3 cover. Thank you. `rig.bim.*` speaks that model.
 - **Rasmus Andersson** | Inter (`InterVariable.ttf`), with The Inter Project Authors. Thank you for the UI face. SIL OFL.
-- **Sean Barrett** | [stb](https://github.com/nothings/stb), public domain. Thank you for JPEG, PNG, and BMP decode, for the PNG/BMP/TGA writer, and for the font and text bits Dear ImGui carries (`imstb_truetype`, `imstb_textedit`, `imstb_rectpack`). Further names are in `packs/rigImGui/third_party/stb/stb_image.h` and `third_party/glfw/deps/stb_image_write.h`.
+- **Sean Barrett** | [stb](https://github.com/nothings/stb), public domain. Thank you for JPEG, PNG, and BMP decode, for the PNG/BMP/TGA writer, and for the font and text bits Dear ImGui carries (`imstb_truetype`, `imstb_textedit`, `imstb_rectpack`). PlutoVG in **rigSvg** uses `stb_truetype` for glyph outlines. Further names are in `packs/rigImGui/third_party/stb/stb_image.h` and `third_party/glfw/deps/stb_image_write.h`.
 - **Gerhard Behles** | Ableton, with Robert Henke. Thank you for Link. **rigAbletonLink** follows that clock.
 - **Frederik Berlaen** | [UFO](https://unifiedfontobject.org/contributors/). Thank you for maintaining the specification, with Tal Leming, Erik van Blokland, Just van Rossum, and Ben Kiel. `rig.font.*` maps `.ufo` and `.glif`.
 - **Doug Binks** | [IconFontCppHeaders](https://github.com/juliettef/IconFontCppHeaders), with Juliette Foucaut. Thank you for the icon code points.
@@ -29,7 +29,6 @@ RigKit is a vision of tools after years of playing with code of others. Most hea
 - **Dave Gandy** | Font Awesome Free (`fa-solid-900.ttf`), Fonticons, Inc. Thank you for the icons in the chrome. Fonts are SIL OFL, icons CC BY.
 - **Pascal Gauthier** | Dexed. Thank you for the DX7 instrument. The MSFA core underneath is copyright Google. **rigDexed**.
 - **Marcus Geelnard** | [GLFW](https://github.com/glfw/glfw). Thank you for starting the window library Camilla carried on.
-- **Ryan Geiss** | MilkDrop and ns-eel. Thank you. **rigMilk** runs those presets through projectm-eval, the projectM team's MIT reimplementation of ns-eel2.
 - **Rich Geldreich** | [miniz](https://github.com/richgel999/miniz). Thank you for deflate. **rigUfo** and **rigProject** fetch it.
 - **Alexander Gessler** | Assimp, with Kim Kulling and the assimp team. Thank you. **rigAssimp** fetches it.
 - **Daniel Gibson** | stb. Thank you for the JPEG writer integration, and for 16-bit TGA.
@@ -44,7 +43,7 @@ RigKit is a vision of tools after years of playing with code of others. Most hea
 - **Balazs Jako** | ImGuiColorTextEdit. Thank you for the code editor. **rigCodeEditor**.
 - **Angus Johnson** | Clipper2. Thank you for polygon clipping. **rigVectorEditor**.
 - **Emmanuel Julien** | stb_image_write. Thank you for the file IO callback.
-- **Gal Kahana** | PDF-Writer. Thank you. **rigPdf** fetches it.
+- **Gal Kahana** | PDF-Writer. Thank you. **rigPdfWrite** fetches it.
 - **Baldur Karlsson** | stb_image_write. Thank you for HDR.
 - **Kari Karstila** | Industry Foundation Classes, buildingSMART Model Support Group. Thank you. `rig.bim.*` speaks that model.
 - **Tim Kelsey** | stb_image_write. Thank you for the miscellaneous enhancements.
@@ -68,7 +67,6 @@ RigKit is a vision of tools after years of playing with code of others. Most hea
 - **Gabi Melman** | [spdlog](https://github.com/gabime/spdlog), with the spdlog contributors. Thank you for logging.
 - **Ken Miller** | stb_image. Thank you for PGM and PPM.
 - **Martin Mitáš** | md4c. Thank you for the CommonMark parser. **rigMarkdown**.
-- **Mikko Mononen** | nanosvg. Thank you for reading SVG. **rigSvg**. Maxim Shemanarev's Anti-Grain rasterizer is in that same pair of headers.
 - **Marius Muja** | FLANN, with David Lowe. Thank you. nanoflann in **rigPixelPlotter** carries that copyright.
 - **Andrew Mustun** | dxflib, RibbonSoft. Thank you for DXF. **rigDxf**.
 - **Jon Olick** | stb_image_write. Thank you for the JPEG writer it is built on.
@@ -87,9 +85,9 @@ RigKit is a vision of tools after years of playing with code of others. Most hea
 - **Nicolas Schulz** | stb_image. Thank you for HDR and PSD.
 - **Tom Seddon** | stb_image. Thank you for PIC.
 - **Peter Selinger** | Potrace. Thank you. **rigPlotFinders** traces bitmaps with it.
-- **Maxim Shemanarev** | Anti-Grain Geometry. Thank you. The nanosvg rasterizer in **rigSvg** is his.
 - **Adam Templeton** | Senior Application Engineer at [ENESS](https://eness.com/). Thank you for teaching me C++, and for the years of practice around Pixile.
-- **David Turner** | [FreeType](https://freetype.org/), with Robert Wilhelm and Werner Lemberg. Thank you. rigImGui compiles `imgui_freetype` when the build finds it.
+- **David Turner** | [FreeType](https://freetype.org/), with Robert Wilhelm and Werner Lemberg. Thank you. rigImGui compiles `imgui_freetype` when the build finds it. PlutoVG in **rigSvg** includes the FreeType gray raster.
+- **Samuel Ugochukwu** | [LunaSVG](https://github.com/sammycage/lunasvg) and PlutoVG. Thank you. **rigSvg** icon tiles, including text.
 - **Thatcher Ulrich** | stb_image. Thank you for PSD.
 - **Juho Vähä-Herttua** | RAOP / shairplay, which UxPlay continues. Thank you. **rigScreenCast**.
 - **Paul Walker** | Surge tuning library, vendored with Dexed. Thank you. **rigDexed**.

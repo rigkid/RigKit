@@ -27,7 +27,7 @@ Examples already in this tree keep the id they have: `minimal`, `oscHost`, `glEd
 | Example | Role |
 |---------|------|
 | `minimal` | Creator + mesh + hierarchy proof |
-| `oscHost` | Contract / host reference (`--author` / `--show`; OSC via `rigOsc`, `--smoke-osc`) |
+| `oscHost` | Contract / host reference (`--author` / `--show`; OSC via `rigOsc`, `--smoke-osc`; Look `CUiPanel` on `look`) |
 | `glEditor` | GLSL shader preview shell |
 | `calendar` | Content scheduler - `CContentItem` month view persisted with **rigSQLite** (needs local `packs/rigSQLite/` until the pack remote exists; not in host CI yet) |
 | `ufomat` | UFOMAT - UFO source editor (`rigFontComponent` + `rigFont` + `rigUfo`; `--smoke` / `--smoke-ttf`) |

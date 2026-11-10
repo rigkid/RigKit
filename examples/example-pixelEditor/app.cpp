@@ -78,8 +78,9 @@ void PixelEditorApp::setup() {
 		return;
 	}
 
-	if (auto* ui = m_engine->getUiManager()) {
-		ui->loadWorkspace("Pixel", false);
+	m_mui = m_engine ? rigkit::authorMui(*m_engine) : nullptr;
+	if (m_mui) {
+		m_mui->loadWorkspace("Pixel", false);
 	}
 
 	if (auto uiPack = packs->getPack<rigkit::rigPixelPlotterUi>()) {
@@ -104,6 +105,10 @@ void PixelEditorApp::setup() {
 	if (auto uiPack = packs->getPack<rigkit::rigPixelPlotterUi>()) {
 		uiPack->resyncFromDoc();
 	}
+}
+
+void PixelEditorApp::onUiAttached() {
+	m_mui = m_engine ? rigkit::authorMui(*m_engine) : nullptr;
 }
 
 bool PixelEditorApp::runSmoke() {

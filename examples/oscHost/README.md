@@ -10,7 +10,7 @@ Default window is **640×400** so two instances fit on one desktop.
 
 | Mode | Flag | What you get |
 |------|------|----------------|
-| **Author** | `--author` (default) | rigImGui host shell + Show Control (network id, ports, master / blackout) |
+| **Author** | `--author` (default) | rigImGui host shell + Show Control (network id, ports, master / blackout) + Look (`CUiPanel` on the `look` entity) |
 | **Show** | `--show` / `--install` | UI-light: rigImGui detached; clear-color present; identity from CLI |
 
 ## Network (shared with product apps)
@@ -45,7 +45,7 @@ std::cout << rigkit::rigOsc::commandLineHelp();
 ./oscHost --show --network-id=box-b --listen-port=8001 --send-host=127.0.0.1 --send-port=8000
 ```
 
-Move Master or Color on A; within about a second B's clear color follows (heartbeat tick pushes the leaves this app registered). Addresses: `/<appName>/<networkId>/master|blackout|color|status|heartbeat`; bare `/<appName>/master` is broadcast. `color` is three floats. Sends append the sender network id.
+Move Master or Color on A (Show Control or the Look portable panel); within about a second B's clear color follows (heartbeat tick pushes the leaves this app registered). Look binds `CRenderBlend::opacity` and `CDrawStyle` fill on the `look` entity. Reset look fires `SEvent` `look.reset`. Addresses: `/<appName>/<networkId>/master|blackout|color|status|heartbeat`; bare `/<appName>/master` is broadcast. `color` is three floats. Sends append the sender network id.
 
 ## Dependencies
 

@@ -52,6 +52,9 @@ assets/user/workspaces/current.json
 # Logs (spdlog runtime output, local debug redirects)
 *.log
 
+# Python (tools/rigpack.py)
+**/__pycache__/
+
 # AI tool-vendor folders — not shared repo content. skills/ + AGENTS.md are
 # the one tracked source; each agent bootstraps its own tool's discovery
 # folder locally from those (see "Tool-specific folders" in AGENTS.md).

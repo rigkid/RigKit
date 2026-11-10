@@ -7,6 +7,7 @@
 #include "core/U_core.h"
 
 namespace rigkit {
+class Mui;
 class rigPlotter;
 class rigProject;
 class rigTraceUi;
@@ -18,6 +19,7 @@ class SvgEditorApp : public rigkit::IApp {
 	void setup() override;
 	void update(float) override;
 	void draw() override {}
+	void onUiAttached() override;
 
 	bool smokeFailed() const { return m_smoke && !m_smokeOk; }
 
@@ -28,6 +30,7 @@ class SvgEditorApp : public rigkit::IApp {
 	bool runSmoke();
 	std::string documentPathHint() const;
 
+	rigkit::Mui* m_mui = nullptr;
 	std::shared_ptr<rigkit::rigPlotter> m_plotter;
 	std::shared_ptr<rigkit::rigProject> m_document;
 	std::shared_ptr<rigkit::rigTraceUi> m_traceUi;

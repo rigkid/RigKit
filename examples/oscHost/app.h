@@ -3,12 +3,20 @@
 #include <memory>
 #include <string>
 
+#include <entt/entt.hpp>
+
 #include "core/IApp.h"
 #include "core/util/CommandLineArgs.h"
 
 namespace rigkit {
+class Mui;
 class rigOsc;
-}
+namespace ecs {
+class SEvent;
+struct CDrawStyle;
+struct CRenderBlend;
+} // namespace ecs
+} // namespace rigkit
 
 /// OSC show host: author (rigImGui) vs show (UI-light), multi-instance via network id + UDP.
 class OscHost : public rigkit::IApp {
@@ -19,11 +27,11 @@ class OscHost : public rigkit::IApp {
 
 	bool isShowMode() const { return m_showMode; }
 
-	float& masterLevel() { return m_masterLevel; }
-	float masterLevel() const { return m_masterLevel; }
+	float& masterLevel();
+	float masterLevel() const;
 	bool& blackout() { return m_blackout; }
 	bool blackout() const { return m_blackout; }
-	float* color() { return m_color; }
+	float* color();
 
 	void setShowStatus(const std::string& status) { m_showStatus = status; }
 	const std::string& showStatus() const { return m_showStatus; }
@@ -36,20 +44,27 @@ class OscHost : public rigkit::IApp {
 	void update(float dt) override;
 	void draw() override;
 	void exit() override;
+	void registerUIActions(rigkit::ecs::SEvent& events) override;
+	void onUiAttached() override;
 
   private:
 	void bootstrapPacks();
+	void setupLook();
+	void setupLookPanel();
 	void setupAuthorUi();
 	void registerShowBus();
 	void publishShowBus();
 	bool runOscSmoke();
 
+	rigkit::ecs::CDrawStyle& lookStyle() const;
+	rigkit::ecs::CRenderBlend& lookBlend() const;
+
+	rigkit::Mui* m_mui = nullptr;
 	bool m_showMode = false;
 	bool m_smokeOsc = false;
 
-	float m_masterLevel = 1.0f;
+	entt::entity m_look = entt::null;
 	bool m_blackout = false;
-	float m_color[3] = {0.35f, 0.55f, 0.95f};
 	std::string m_showStatus = "idle";
 	int m_showHeartbeat = 0;
 	float m_heartbeatAccum = 0.f;
@@ -57,3 +72,4 @@ class OscHost : public rigkit::IApp {
 	rigkit::CommandLineArgs m_cliArgs;
 	std::shared_ptr<rigkit::rigOsc> m_osc;
 };
+

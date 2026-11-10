@@ -14,6 +14,8 @@
 #include "CLayer.h"
 #include "CLight.h"
 #include "CMesh.h"
+#include "CModBinding.h"
+#include "CModLfo.h"
 #include "CPage.h"
 #include "CPath.h"
 #include "CProject.h"
@@ -23,6 +25,8 @@
 #include "CSelection.h"
 #include "CText.h"
 #include "CTransform.h"
+#include "CTween.h"
+#include "CUiPanel.h"
 #include "ContractImport.h"
 #include "ProjectSerializer.h"
 #include "fixture.h"
@@ -443,11 +447,16 @@ TEST_CASE("rigProject round-trips path layer asset text curve via pack codecs") 
 	pathPod.commands = {move, line};
 	ecs.addComponent<ecs::CPath>(stroke, pathPod);
 
+	ecs::CCurve straight;
+	curve::applyPreset(straight, ecs::CCurve::Preset::Linear);
+	CHECK(straight.interp == ecs::CCurve::Interp::Linear);
+	CHECK(curve::eval(straight, 0.25f) == doctest::Approx(0.25f));
+
 	auto ramp = ecs.createEntity("ramp");
 	ecs::CCurve curve;
 	curve.preset = ecs::CCurve::Preset::EaseInOut;
 	curve::applyPreset(curve, curve.preset);
-	curve.interp = ecs::CCurve::Interp::Smooth;
+	CHECK(curve.interp == ecs::CCurve::Interp::Smooth);
 	ecs.addComponent<ecs::CCurve>(ramp, curve);
 
 	REQUIRE(docPack->serializer().save(ecs, path));
@@ -489,4 +498,100 @@ TEST_CASE("rigProject round-trips path layer asset text curve via pack codecs") 
 	CHECK(ecs.getComponent<ecs::CCurve>(rampE).interp == ecs::CCurve::Interp::Smooth);
 
 	std::filesystem::remove(path);
+}
+
+TEST_CASE("Contract import writes CUi* with resolved entity refs") {
+	SpineFixture f;
+	const std::string path =
+		std::string(RIGKIT_SOURCE_ROOT) + "/docs/contract/RigWorks/examples/ui-panel.json";
+	std::ifstream in(path, std::ios::binary);
+	REQUIRE(in);
+	std::ostringstream text;
+	text << in.rdbuf();
+	const auto result = importWithPackCodecs(f, text.str().c_str(), "ui-panel.json");
+	REQUIRE(result.ok);
+	REQUIRE(result.panels.size() == 1);
+	CHECK(result.panels[0].role == "led.install");
+
+	auto& ecs = f.ecs();
+	const auto panel = ecs.findEntity("Install");
+	const auto colour = ecs.findEntity("Colour");
+	const auto rate = ecs.findEntity("Pulse rate");
+	const auto reset = ecs.findEntity("Reset phase");
+	const auto fill = ecs.findEntity("fill");
+	const auto pulse = ecs.findEntity("pulse");
+	REQUIRE(panel != entt::null);
+	REQUIRE(colour != entt::null);
+	REQUIRE(rate != entt::null);
+	REQUIRE(reset != entt::null);
+	REQUIRE(fill != entt::null);
+	REQUIRE(pulse != entt::null);
+
+	REQUIRE(ecs.hasComponent<ecs::CUiPanel>(panel));
+	CHECK(ecs.getComponent<ecs::CUiPanel>(panel).role == "led.install");
+	CHECK(ecs.getComponent<ecs::CUiPanel>(panel).surface == ecs::CUiPanel::Surface::Tool);
+
+	REQUIRE(ecs.hasComponent<ecs::CUiControl>(colour));
+	CHECK(ecs.getComponent<ecs::CUiControl>(colour).panel == entt::to_integral(panel));
+	CHECK(ecs.getComponent<ecs::CUiControl>(colour).target == entt::to_integral(fill));
+	CHECK(ecs.getComponent<ecs::CUiControl>(colour).widget == ecs::CUiControl::Widget::Color);
+
+	REQUIRE(ecs.hasComponent<ecs::CUiControl>(rate));
+	CHECK(ecs.getComponent<ecs::CUiControl>(rate).target == entt::to_integral(pulse));
+	CHECK(ecs.getComponent<ecs::CUiControl>(rate).propertyKey == "frequency");
+	CHECK(ecs.getComponent<ecs::CUiControl>(rate).widget == ecs::CUiControl::Widget::Slider);
+
+	REQUIRE(ecs.hasComponent<ecs::CUiAction>(reset));
+	CHECK(ecs.getComponent<ecs::CUiAction>(reset).panel == entt::to_integral(panel));
+	CHECK(ecs.getComponent<ecs::CUiAction>(reset).actionId == "lfo.resetPhase");
+}
+
+TEST_CASE("Contract import resolves anim references from document ids to entity names") {
+	SpineFixture f;
+	auto& ecs = f.ecs();
+	const char* jsonText = R"({
+		"rig": "0.9.0",
+		"document": { "title": "anim-refs" },
+		"entities": [
+			{
+				"id": "lfo-1",
+				"components": {
+					"rig.meta.named": { "name": "Pulse" },
+					"rig.mod.lfo": { "waveform": "sine", "frequency": 0.5 }
+				}
+			},
+			{
+				"id": "fill-1",
+				"components": {
+					"rig.meta.named": { "name": "Fill" },
+					"rig.geometry.rectangle": { "x": 0, "y": 0, "width": 10, "height": 10 }
+				}
+			},
+			{
+				"id": "bind-1",
+				"components": {
+					"rig.meta.named": { "name": "Bind" },
+					"rig.mod.binding": { "source": "lfo-1", "target": "fill-1", "propertyKey": "frequency" },
+					"rig.anim.tween": { "target": "fill-1", "propertyKey": "opacity" }
+				}
+			}
+		]
+	})";
+	auto result = importWithPackCodecs(f, jsonText, "anim-refs");
+	REQUIRE(result.ok);
+
+	const auto pulse = ecs.findEntity("Pulse");
+	REQUIRE(pulse != entt::null);
+	REQUIRE(ecs.hasComponent<ecs::CModLfo>(pulse));
+	CHECK(ecs.getComponent<ecs::CModLfo>(pulse).waveform == "sine");
+
+	const auto bind = ecs.findEntity("Bind");
+	REQUIRE(bind != entt::null);
+	REQUIRE(ecs.hasComponent<ecs::CModBinding>(bind));
+	const auto& binding = ecs.getComponent<ecs::CModBinding>(bind);
+	CHECK(binding.source == "Pulse");
+	CHECK(binding.target == "Fill");
+
+	REQUIRE(ecs.hasComponent<ecs::CTween>(bind));
+	CHECK(ecs.getComponent<ecs::CTween>(bind).target == "Fill");
 }

@@ -7,18 +7,17 @@
 #include <utility>
 #include <vector>
 
-#include "IManager.h"
 #include "ISettings.h"
 
 namespace rigkit {
 class RigKitEngine;
 class IPack;
-class MPack : public IManager, public ISettings {
+class MPack : public ISettings {
   public:
 	explicit MPack(RigKitEngine* engine);
 	~MPack();
-	void init() override {}
-	void shutdown() override {}
+	void init() {}
+	void shutdown() {}
 
 	// Pack registration and management
 	void registerPack(std::shared_ptr<IPack> pack);

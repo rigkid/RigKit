@@ -24,7 +24,7 @@ bool inputTextStd(const char* label, std::string& value) {
 } // namespace
 
 ToolControlWindow::ToolControlWindow(OscHost* app)
-	: rigkit::IWindow("Show Control", 0), m_app(app) {}
+	: rigkit::ImGuiPanel("Show Control", 0), m_app(app) {}
 
 void ToolControlWindow::renderContents() {
 	ImGui::TextUnformatted("oscHost - show / network controls");

@@ -4,6 +4,9 @@
 #include "core/canvas/Canvas.h"
 #include "rendering/RendererRegistry.h"
 
+#include <string>
+#include <vector>
+
 namespace rigkit {
 
 MRendering::MRendering() {}
@@ -98,14 +101,6 @@ void MRendering::setSettings(const rigkit::json& settings) {
 	}
 }
 
-} // namespace rigkit
-
-// -----------------------------------------------------------------------------
-// Helper functions - global to match IRenderer.h declarations.
-
-#include <string>
-#include <vector>
-
 std::shared_ptr<IRenderer> createRenderer(RendererType type) {
 	return RendererRegistry::instance().create(type);
 }
@@ -133,3 +128,5 @@ std::vector<std::string> getAvailableRendererNames() {
 	}
 	return names;
 }
+
+} // namespace rigkit

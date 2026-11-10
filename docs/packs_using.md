@@ -10,7 +10,7 @@
 | **rigSystems** | Update/Draw systems that register on `MEcs` |
 | **rigRender3D** | GLES mesh present when an active `CCamera` exists |
 | **rigObj** | Wavefront OBJ load/save for `CMesh` (tinyobjloader) |
-| **rigPdf** | PDF emit from `CPage` / paths / shaped `CText` (PDF-Writer + ImVarFont core; leaf) |
+| **rigPdfWrite** | PDF emit from `CPage` / paths / shaped `CText` (PDF-Writer + ImVarFont core; leaf) |
 | **rigStoryComponent** | Story PODs (`CStoryFlow`, paragraph, table, named styles) - DATA ONLY |
 | **rigLayoutComponent** | Layout PODs (master, facing, visual styles, frame chain) - DATA ONLY |
 | **rigLayout** | Compose engine - story to placed `CText` on pages (Setup bake) |
@@ -18,9 +18,11 @@
 | **rigAssimp** | Optional Assimp multi-format to `CMesh` (leaf; app opt-in only) |
 | **rigOpenCV** | Optional OpenCV Raster bridge (leaf; FetchContent core+imgproc; app opt-in only) |
 | **rigMeshEdit** | ImGuizmo TRS edit for selected `CTransform` |
-| **rigNodeComponent** | Generic node-graph PODs (`CNodeGraph`) - DATA + catalog/eval helpers. Artist guide: [nodes.md](nodes.md) |
+| **rigNodeComponent** | Generic node-graph PODs (`CNodeGraph`) + pure graph helpers - DATA ONLY. Artist guide: [nodes.md](nodes.md) |
+| **rigNode** | Node graph code - evaluation, `SGraphEval`, catalog, buses, `.rig` codecs over `CNodeGraph` |
 | **rigNodeEditor** | ImGui editor over `CNodeGraph` ([nodes.md](nodes.md)) |
-| **rigProject** | Host project envelope + `.rig` document IO (document = portable `.rig`, or `.rigz` when files travel with it; this pack writes the JSON; project = host session) |
+| **rigProjectComponent** | Project envelope PODs (`CProject`, `CPage`, `FaceInsets`) - DATA ONLY |
+| **rigProject** | `.rig` document IO + host session (document = portable `.rig`, or `.rigz` when files travel with it; this pack writes the JSON; project = host session) |
 | **rigImGui** | Properties/Debug read the **component catalog** |
 | **rigNetScan** | LAN TCP connect scan over `CNetScan` / `CNetHost`; `IpScannerWindow` on rigImGui |
 | **rigSerial** | Serial medium (`CSerial` / `rig.io.serial`) + port + optional monitor. Trunk for **rigGrbl** / **rigEnttec** |
@@ -41,11 +43,19 @@ Pick a home before writing systems or UI. Agents: [rigkit-data](../skills/rigkit
 |------|------|----------|
 | Host `src/ecs/components/` | Host-bound leftovers only - do not grow for new portable meaning | `CEvent` (menu/UI action data; `std::any` payload keeps it host-only) |
 | **rigComponent** | Generic reusable PODs - grow here; keep thin | `CTransform`, `CCanvas`, `CCamera`, `CLight`, `CPalette`, `CIndexedAtlas`, `CFaceSelection`, `CEdgeSelection`, `CShape`, `CMesh`, `CSpline3d`, `CNurbsSurface`, `CDrawStyle`, `CSelection`, `CScreenCast`, `CScreenCastReceive`, `CCastReceiver` |
-| Domain data pack | Product-specific PODs (+ codecs / pure helpers over that POD) | `rigProject` (`CProject`, `CPage`); `rigShowComponent` (`CVisualizer`, analysis); `rigCadComponent` (`CCad*`); `rigMusicComponent` (`CMusicClock` / `CMusicTransport`); `rigAnimComponent` (`CTween` / `CModLfo` / `CModBinding`); `rigPlotComponent` (`CPaths`, ...); `rigNodeComponent` (`CNodeGraph`) |
-| Code pack | Systems / I/O / UI - not portable component homes | `rigSystems`, `rigRender3D`, `rigObj`, `rigAssimp` (leaf), `rigOpenCV` (leaf), `rigPdf` (leaf), `rigEthereum` (leaf), `rigScreenCast` (leaf), `rigMeshEdit`, `rigNodeEditor`, `rigPlotter`, `rigPlotFinders`, `rigTrace`, `rigSvg`, `rigImGui` |
+| Domain data pack | Product-specific PODs (+ codecs / pure helpers over that POD) | `rigProjectComponent` (`CProject`, `CPage`); `rigShowComponent` (`CVisualizer`, analysis); `rigCadComponent` (`CCad*`); `rigMusicComponent` (`CMusicClock` / `CMusicTransport`); `rigAnimComponent` (`CTween` / `CModLfo` / `CModBinding`); `rigPlotComponent` (`CPaths`, ...); `rigNodeComponent` (`CNodeGraph`) |
+| Code pack | Systems / I/O / UI - not portable component homes | `rigSystems`, `rigRender3D`, `rigObj`, `rigAssimp` (leaf), `rigOpenCV` (leaf), `rigPdfWrite` (leaf), `rigEthereum` (leaf), `rigScreenCast` (leaf), `rigMeshEdit`, `rigNodeEditor`, `rigPlotter`, `rigPlotFinders`, `rigTrace`, `rigSvg`, `rigImGui` |
 | App | Prototypes until promotion to `rigComponent` or a domain data pack | one-off app structs |
 
-A data pack is **components-first**, not “literally only `struct` files.” Allowed: `C*` PODs, `GetProperties`, `registerComponent`, pure helpers (catalog, eval, flatten). Forbidden: Update/Draw systems, ImGui panels, document codecs, GPU/window handles in components. Engines (e.g. PlotDoc), editors, and `.rig` serializers stay in **code** packs.
+A data pack is **components-first**, not “literally only `struct` files.” Allowed: `C*` PODs, `GetProperties`, `registerComponent`, pure helpers over the POD (graph construction, catalog shapes, flatten). Forbidden: Update/Draw systems, ImGui panels, GPU/window handles in components. Engines (e.g. PlotDoc) and editors stay in **code** packs.
+
+**Codec policy (hybrid).** A `.rig` codec is filed by the code pack that fulfills the PODs (floor PODs by `rigSystems`, CAD by `rigManifold`, node by `rigNode`, pixel by `rigPixelPlotter`, layout/story by `rigLayout`, font by `rigFont`, pages by `rigProject`) - not by the data pack that registers the component. Named exceptions keep their codecs at home: **rigPlotComponent** (many peer consumers), **rigShowComponent** (no code pack), **rigColorspace** (its own domain home). Moving a codec requires a consumer list first: every app that loads the data pack without the code pack must be shown not to need document IO.
+
+**Decisions on record** (boundary plan, Phase 5):
+- Transport PODs (`COscEndpoint`, `CNetworkIdentity`, `CSerial`, `CNetScan`, `CNetHost`, `COnChainArt`) stay in their code packs: session/transport state, no `.rig` codec, no second consumer. No shared IO data pack until one exists.
+- Cast PODs (`CScreenCast`, `CScreenCastReceive`, `CCastReceiver`) stay on the floor in `rigComponent`: generic scene data with two independent consumers (`rigScreenCast`, `rigPixelPlotter`).
+- Layout bake markers (`CLayoutBake`, `CLayoutOverflowPage`, `CLayoutMasterItem`) are transient engine state in `rigLayout` - component types, never catalog names. `CLayoutTextVariable` stays registered (artist-editable folio tokens).
+- **rigColorspace** and **rigComposition** keep their shipped ids (no `Component` suffix). They are domain data homes; a rename breaks every consumer manifest for symmetry alone.
 
 Serialize from the **code** pack that fulfills the POD: `project::addSerializer<T>(...)` in that pack's `setup()`. Data packs announce the type (`ecs->registerComponent`). **rigProject** walks the registry and owns the document envelope (`CPage`). Floor sketch codecs live in **rigSystems**. Do not grow a kitchen-sink serializer list inside **rigProject**.
 

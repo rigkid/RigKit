@@ -2,6 +2,12 @@
 
 #include "core/RigKitEngine.h"
 #include "core/pack/MPack.h"
+#include "ecs/MEcs.h"
+#include "ecs/systems/SEvent.h"
+#include "packs/rigComponent/src/CDrawStyle.h"
+#include "packs/rigComponent/src/CRenderBlend.h"
+#include "packs/rigComponent/src/CUiPanel.h"
+#include "packs/rigComponent/src/rig/create.h"
 #include "packs/rigComponent/src/rigComponent.h"
 #include "packs/rigImGui/src/Mui.h"
 #include "packs/rigImGui/src/rigImGui.h"
@@ -57,7 +63,70 @@ bool argBool(const rigkit::osc::OscArg& a, bool& out) {
 
 } // namespace
 
-OscHost::OscHost() { settings().appName = "oscHost"; }
+OscHost::OscHost() {
+	settings().appName = "oscHost";
+}
+
+rigkit::ecs::CDrawStyle& OscHost::lookStyle() const {
+	return getEngine()->getECSManager()->getComponent<rigkit::ecs::CDrawStyle>(m_look);
+}
+
+rigkit::ecs::CRenderBlend& OscHost::lookBlend() const {
+	return getEngine()->getECSManager()->getComponent<rigkit::ecs::CRenderBlend>(m_look);
+}
+
+float& OscHost::masterLevel() {
+	return lookBlend().opacity;
+}
+
+float OscHost::masterLevel() const {
+	return lookBlend().opacity;
+}
+
+float* OscHost::color() {
+	return &lookStyle().fillR;
+}
+
+void OscHost::registerUIActions(rigkit::ecs::SEvent& events) {
+	events.registerAction("look.reset", [this]() {
+		if (m_look == entt::null || !getEngine() || !getEngine()->getECSManager()) {
+			return;
+		}
+		lookStyle().setFillColor(0.35f, 0.55f, 0.95f);
+		lookBlend().opacity = 1.f;
+		m_blackout = false;
+	});
+}
+
+void OscHost::setupLook() {
+	auto* ecs = getEngine()->getECSManager();
+	m_look = ecs->createEntity("look");
+	auto& style = ecs->addComponent<rigkit::ecs::CDrawStyle>(m_look);
+	style.setFillColor(0.35f, 0.55f, 0.95f);
+	style.hasStroke = false;
+	auto& blend = ecs->addComponent<rigkit::ecs::CRenderBlend>(m_look);
+	blend.opacity = 1.f;
+}
+
+void OscHost::setupLookPanel() {
+	auto* ecs = getEngine()->getECSManager();
+	using Surface = rigkit::ecs::CUiPanel::Surface;
+	using Widget = rigkit::ecs::CUiControl::Widget;
+	const auto panel = rig::makeUiPanel(*ecs, "show.look", Surface::Tool, "Look");
+	auto bindSlider = [&](const char* key, int order, const char* name) {
+		const auto e = rig::makeUiControl(*ecs, panel, m_look, key, order, Widget::Slider, name);
+		auto& c = ecs->getComponent<rigkit::ecs::CUiControl>(e);
+		c.min = 0.f;
+		c.max = 1.f;
+		c.step = 0.01f;
+		c.type = "float";
+	};
+	bindSlider("Opacity", 0, "Master");
+	bindSlider("Fill R", 1, "Red");
+	bindSlider("Fill G", 2, "Green");
+	bindSlider("Fill B", 3, "Blue");
+	rig::makeUiAction(*ecs, panel, "look.reset", 4, "Reset look");
+}
 
 void OscHost::parseCommandLineArgs(const rigkit::CommandLineArgs& args) {
 	rigkit::IApp::parseCommandLineArgs(args);
@@ -104,34 +173,34 @@ void OscHost::bootstrapPacks() {
 	packs->setupAll();
 
 	m_osc = packs->getPack<rigkit::rigOsc>();
+	setupLook();
+}
+
+void OscHost::onUiAttached() {
+	m_mui = getEngine() ? rigkit::authorMui(*getEngine()) : nullptr;
 }
 
 void OscHost::setupAuthorUi() {
-	auto* ui = getEngine()->getUiManager();
-	if (!ui) {
-		spdlog::warn("Author mode but no IMui - rigImGui failed to attach");
+	m_mui = getEngine() ? rigkit::authorMui(*getEngine()) : nullptr;
+	if (!m_mui) {
+		spdlog::warn("Author mode but no Mui - rigImGui failed to attach");
 		return;
 	}
+	m_mui->setDockPassthroughCentral(true);
+	m_mui->addAllHostPanels();
+	m_mui->setWindowVisibility("Debug", true);
+	m_mui->showNotification("Author mode - oscHost");
 
-	auto* mui = dynamic_cast<rigkit::Mui*>(ui);
-	if (mui) {
-		mui->setDockPassthroughCentral(true);
-		mui->addAllHostPanels();
-		mui->setWindowVisibility("Debug", true);
-		mui->showNotification("Author mode - oscHost");
-	}
-
-	auto* wm = ui->getWindowManager();
+	auto* wm = m_mui->getWindowManager();
 	if (!wm) {
 		return;
 	}
 
 	wm->createWindow<ToolControlWindow>(this);
 	wm->showWindow("Show Control");
-	if (mui) {
-		mui->setFirstRunHostDockLayout({"Show Control"});
-	}
-	spdlog::info("Author UI: rigImGui host shell + Show Control");
+	setupLookPanel();
+	m_mui->setFirstRunHostDockLayout({"Show Control"});
+	spdlog::info("Author UI: rigImGui host shell + Show Control + Look panel");
 }
 
 void OscHost::registerShowBus() {
@@ -141,7 +210,7 @@ void OscHost::registerShowBus() {
 	m_osc->addBusListener("master", [this](const rigkit::osc::OscRx& rx) {
 		float v = 0.f;
 		if (!rx.msg.args.empty() && argFloat(rx.msg.args[0], v)) {
-			m_masterLevel = std::clamp(v, 0.f, 1.f);
+			masterLevel() = std::clamp(v, 0.f, 1.f);
 		}
 	});
 	m_osc->addBusListener("blackout", [this](const rigkit::osc::OscRx& rx) {
@@ -157,9 +226,10 @@ void OscHost::registerShowBus() {
 		float r = 0.f, g = 0.f, b = 0.f;
 		if (argFloat(rx.msg.args[0], r) && argFloat(rx.msg.args[1], g) &&
 			argFloat(rx.msg.args[2], b)) {
-			m_color[0] = std::clamp(r, 0.f, 1.f);
-			m_color[1] = std::clamp(g, 0.f, 1.f);
-			m_color[2] = std::clamp(b, 0.f, 1.f);
+			float* c = color();
+			c[0] = std::clamp(r, 0.f, 1.f);
+			c[1] = std::clamp(g, 0.f, 1.f);
+			c[2] = std::clamp(b, 0.f, 1.f);
 		}
 	});
 	m_osc->addBusListener("status", [this](const rigkit::osc::OscRx& rx) {
@@ -182,9 +252,10 @@ void OscHost::publishShowBus() {
 	const std::string& id = m_osc->identity().networkId;
 	m_osc->send(m_osc->makeAddress("heartbeat"), {static_cast<int32_t>(m_showHeartbeat), id});
 	m_osc->send(m_osc->makeAddress("status"), {m_showStatus, id});
-	m_osc->send(m_osc->makeAddress("master"), {m_masterLevel, id});
+	const float* c = color();
+	m_osc->send(m_osc->makeAddress("master"), {masterLevel(), id});
 	m_osc->send(m_osc->makeAddress("blackout"), {m_blackout, id});
-	m_osc->send(m_osc->makeAddress("color"), {m_color[0], m_color[1], m_color[2], id});
+	m_osc->send(m_osc->makeAddress("color"), {c[0], c[1], c[2], id});
 }
 
 bool OscHost::runOscSmoke() {
@@ -249,10 +320,15 @@ void OscHost::update(float dt) {
 }
 
 void OscHost::draw() {
-	float level = m_blackout ? 0.f : m_masterLevel;
-	getEngine()->setClearColor(m_color[0] * level, m_color[1] * level, m_color[2] * level, 1.f);
+	if (m_look == entt::null) {
+		return;
+	}
+	const float level = m_blackout ? 0.f : masterLevel();
+	const float* c = color();
+	getEngine()->setClearColor(c[0] * level, c[1] * level, c[2] * level, 1.f);
 }
 
 void OscHost::exit() {
 	spdlog::info("oscHost exit");
 }
+

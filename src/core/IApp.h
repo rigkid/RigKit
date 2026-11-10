@@ -16,7 +16,7 @@ class SEvent;
  * @brief Application entry surface - setup / update / draw / exit.
  * @details Override setup/update/draw/exit. Do not override rigSetup/rigUpdate/
  * rigDraw/rigExit - those are host template methods (SUDE + present).
- * @see RigKitEngine, docs/contract/sude-loop.md, docs/authoring.md
+ * @see RigKitEngine, docs/contract/sude-loop.md, docs/contract/seams.md, docs/authoring.md
  */
 class IApp {
   public:
@@ -84,8 +84,8 @@ class IApp {
 
 	/**
 	 * @brief Re-bind app UI actions after an `IMui` chrome swap.
-	 * @details Calls registerUIActions when ECS is available. Packs also get
-	 * IPack::onUiAttached from the engine.
+	 * @details Calls registerUIActions when ECS is available, then
+	 * `onUiAttached()`. Packs also get IPack::onUiAttached from the engine.
 	 */
 	void notifyUiAttached();
 
@@ -97,6 +97,12 @@ class IApp {
 	virtual void exit() {}
 
 	virtual void registerUIActions(rigkit::ecs::SEvent&) {}
+
+	/**
+	 * @brief Chrome attached or swapped — rebind held `Mui*` via `authorMui`.
+	 * @details Called from `notifyUiAttached` after `registerUIActions`.
+	 */
+	virtual void onUiAttached() {}
 
 	rigkit::RigKitEngine* m_engine = nullptr;
 	AppSettings m_settings;

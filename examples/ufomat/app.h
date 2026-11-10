@@ -12,6 +12,10 @@
 #include "packs/rigPlotComponent/src/CArtboard.h"
 #include "packs/rigPlotComponent/src/CBedView.h"
 
+namespace rigkit {
+class Mui;
+}
+
 /**
  * @brief UFOMAT glyph-surface chrome prefs (not `rig.font.*`, not CAD gizmos).
  * @details Persisted as `ufomat.surface`. Path node type is inferred from handles.
@@ -76,6 +80,7 @@ class UfomatApp : public rigkit::IApp {
 	void setup() override;
 	void update(float) override {}
 	void draw() override {}
+	void onUiAttached() override;
 
 	void selectGlyph(entt::entity glyph);
 	void selectFace(entt::entity face);
@@ -112,6 +117,7 @@ class UfomatApp : public rigkit::IApp {
 	bool runVarSmoke();
 	bool runTtfSmoke();
 
+	rigkit::Mui* m_mui = nullptr;
 	rigkit::ecs::CBedView m_view;
 	rigkit::ecs::CArtboard m_board;
 	UfomatSurfacePrefs m_surfacePrefs;

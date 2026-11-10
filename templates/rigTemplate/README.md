@@ -39,7 +39,7 @@ Host copy lives at `templates/rigTemplate/` in the RigKit repo (not loaded as an
 
 ## CI
 
-`.github/workflows/ci.yml` builds `examples/demo` against a RigKit host checkout. After renaming this scaffold, set `PACK` / `EXAMPLE` in that workflow to match your pack.
+Code packs keep `examples/demo`. After renaming this scaffold, set `PACK` / `EXAMPLE` in `.github/workflows/ci.yml` and capture `img/preview.png` when the window is the README picture. Data packs (`*Component`) delete `examples/` and compile the static library in that workflow instead. They do not need a demo or a screenshot.
 
 `.github/workflows/docs.yml` publishes pack API docs to `https://rigkid.github.io/<pack>/` (host reusable `pack-docs.yml`). Rename the `pack:` input to your id. Enable Pages (GitHub Actions) once on the pack remote after host `pack-docs.yml` is on `main`.
 
