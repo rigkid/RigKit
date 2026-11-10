@@ -167,6 +167,8 @@ One family per change, in this order: pixel plot, layout and story, node (rides 
 
 Gate per family: the consumer list has no silent IO loss, and the round-trip passes.
 
+Status: pixel family done locally (consumer matrix: only `rigPixelPlotter` and its apps load the pixel PODs for IO; the data pack's own `pixeldata` example does no document IO). The serializer sources moved verbatim, so round-trip behavior is unchanged; both pack targets and both examples build. Layout and story, then font, remain.
+
 ### Phase 5: Remaining boundary audit
 
 1. Classify the IO PODs (`COscEndpoint`, `CNetworkIdentity`, `CSerial`, `CNetScan`, `CNetHost`, `COnChainArt`): document data that travels in `.rig` files moves to a data pack; session and transport configuration stays with its transport pack, with the reason written in the pack docs. Do not create a shared IO data pack until a second consumer needs the same POD without the code pack.
