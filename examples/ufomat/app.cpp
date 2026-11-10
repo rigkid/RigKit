@@ -2302,66 +2302,75 @@ void UfomatApp::setup() {
 
 	loadContractDemo();
 
-	if (auto* mui = rigkit::asMui(m_engine->getUiManager())) {
-		mui->setUndoStack(&m_undo);
-		mui->registerFileAction("Open...", [this] { promptOpen(); }, "Ctrl+O");
-		mui->registerFileAction("Save...", [this] { promptSave(); }, "Ctrl+S");
-		mui->registerExportAction("TTF...", [this] { promptExportTtf(); });
-		mui->setRecentFileOpenHandler([this](const std::string& path) {
-			if (!path.empty()) {
-				openUfo(path);
-			}
-		});
-		if (auto* wm = rigkit::windowManager(mui)) {
-			wm->createWindow<GlyphListPanel>(this);
-			wm->createWindow<GlyphSurfacePanel>(this);
-			wm->createWindow<KernPanel>(this);
-			wm->createWindow<FeaturesPanel>(this);
-			wm->createWindow<PreviewPanel>(this);
-			wm->createWindow<FontInfoPanel>(this);
-			wm->createWindow<LayersPanel>(this);
-			wm->showWindow("Glyphs");
-			wm->showWindow("Layers");
-			wm->showWindow("Glyph");
-			wm->showWindow("Properties");
-			wm->showWindow("Kern");
-			wm->showWindow("Features");
-			wm->showWindow("Preview");
-			wm->showWindow("Font Info");
-		}
-		mui->setDockLayoutBuilder([mui](ImGuiID dockspaceId) {
-			ImGuiDockNode* node = ImGui::DockBuilderGetNode(dockspaceId);
-			if (!node) {
-				return;
-			}
-			if (node->IsSplitNode()) {
-				mui->setDockLayoutBuilder(nullptr);
-				return;
-			}
-			const ImGuiViewport* vp = ImGui::GetMainViewport();
-			ImGui::DockBuilderRemoveNode(dockspaceId);
-			ImGui::DockBuilderAddNode(dockspaceId, ImGuiDockNodeFlags_DockSpace);
-			ImGui::DockBuilderSetNodeSize(dockspaceId, vp->WorkSize);
-			ImGuiID left = 0;
-			ImGuiID rest = 0;
-			ImGuiID center = 0;
-			ImGuiID right = 0;
-			ImGuiID bottom = 0;
-			ImGui::DockBuilderSplitNode(dockspaceId, ImGuiDir_Left, 0.18f, &left, &rest);
-			ImGui::DockBuilderSplitNode(rest, ImGuiDir_Down, 0.32f, &bottom, &rest);
-			ImGui::DockBuilderSplitNode(rest, ImGuiDir_Right, 0.28f, &right, &center);
-			ImGuiID leftBottom = 0;
-			ImGui::DockBuilderSplitNode(left, ImGuiDir_Down, 0.3f, &leftBottom, &left);
-			ImGui::DockBuilderDockWindow("Glyphs", left);
-			ImGui::DockBuilderDockWindow("Layers", leftBottom);
-			ImGui::DockBuilderDockWindow("Glyph", center);
-			ImGui::DockBuilderDockWindow("Properties", right);
-			ImGui::DockBuilderDockWindow("Font Info", right);
-			ImGui::DockBuilderDockWindow("Kern", bottom);
-			ImGui::DockBuilderDockWindow("Features", bottom);
-			ImGui::DockBuilderDockWindow("Preview", bottom);
-			ImGui::DockBuilderFinish(dockspaceId);
-			mui->setDockLayoutBuilder(nullptr);
-		});
+	m_mui = m_engine ? rigkit::authorMui(*m_engine) : nullptr;
+	if (!m_mui) {
+		return;
 	}
+	m_mui->setUndoStack(&m_undo);
+	m_mui->registerFileAction("Open...", [this] { promptOpen(); }, "Ctrl+O");
+	m_mui->registerFileAction("Save...", [this] { promptSave(); }, "Ctrl+S");
+	m_mui->registerExportAction("TTF...", [this] { promptExportTtf(); });
+	m_mui->setRecentFileOpenHandler([this](const std::string& path) {
+		if (!path.empty()) {
+			openUfo(path);
+		}
+	});
+	if (auto* wm = m_mui->getWindowManager()) {
+		wm->createWindow<GlyphListPanel>(this);
+		wm->createWindow<GlyphSurfacePanel>(this);
+		wm->createWindow<KernPanel>(this);
+		wm->createWindow<FeaturesPanel>(this);
+		wm->createWindow<PreviewPanel>(this);
+		wm->createWindow<FontInfoPanel>(this);
+		wm->createWindow<LayersPanel>(this);
+		wm->showWindow("Glyphs");
+		wm->showWindow("Layers");
+		wm->showWindow("Glyph");
+		wm->showWindow("Properties");
+		wm->showWindow("Kern");
+		wm->showWindow("Features");
+		wm->showWindow("Preview");
+		wm->showWindow("Font Info");
+	}
+	m_mui->setDockLayoutBuilder([this](ImGuiID dockspaceId) {
+		if (!m_mui) {
+			return;
+		}
+		ImGuiDockNode* node = ImGui::DockBuilderGetNode(dockspaceId);
+		if (!node) {
+			return;
+		}
+		if (node->IsSplitNode()) {
+			m_mui->setDockLayoutBuilder(nullptr);
+			return;
+		}
+		const ImGuiViewport* vp = ImGui::GetMainViewport();
+		ImGui::DockBuilderRemoveNode(dockspaceId);
+		ImGui::DockBuilderAddNode(dockspaceId, ImGuiDockNodeFlags_DockSpace);
+		ImGui::DockBuilderSetNodeSize(dockspaceId, vp->WorkSize);
+		ImGuiID left = 0;
+		ImGuiID rest = 0;
+		ImGuiID center = 0;
+		ImGuiID right = 0;
+		ImGuiID bottom = 0;
+		ImGui::DockBuilderSplitNode(dockspaceId, ImGuiDir_Left, 0.18f, &left, &rest);
+		ImGui::DockBuilderSplitNode(rest, ImGuiDir_Down, 0.32f, &bottom, &rest);
+		ImGui::DockBuilderSplitNode(rest, ImGuiDir_Right, 0.28f, &right, &center);
+		ImGuiID leftBottom = 0;
+		ImGui::DockBuilderSplitNode(left, ImGuiDir_Down, 0.3f, &leftBottom, &left);
+		ImGui::DockBuilderDockWindow("Glyphs", left);
+		ImGui::DockBuilderDockWindow("Layers", leftBottom);
+		ImGui::DockBuilderDockWindow("Glyph", center);
+		ImGui::DockBuilderDockWindow("Properties", right);
+		ImGui::DockBuilderDockWindow("Font Info", right);
+		ImGui::DockBuilderDockWindow("Kern", bottom);
+		ImGui::DockBuilderDockWindow("Features", bottom);
+		ImGui::DockBuilderDockWindow("Preview", bottom);
+		ImGui::DockBuilderFinish(dockspaceId);
+		m_mui->setDockLayoutBuilder(nullptr);
+	});
+}
+
+void UfomatApp::onUiAttached() {
+	m_mui = m_engine ? rigkit::authorMui(*m_engine) : nullptr;
 }

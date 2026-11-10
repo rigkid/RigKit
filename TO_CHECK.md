@@ -4,7 +4,7 @@ Scratchpad for smells and follow-ups. Dated bullets; no archaeology.
 
 ## 2026-11-10 — named surfaces / ImGuiPanel
 
-- [ ] Out-of-tree apps (KidVJ, PixelPlotter, product apps): bump **rigImGui** / **rigNodeEditor**; rename `IWindow` → `ImGuiPanel`; prefer `windowManager(ui)` / held pointers. Recompile against menu `register*Action(..., group)` (default empty).
+- [ ] Out-of-tree apps (KidVJ, PixelPlotter, Viewer/Player): bump **rigImGui** / **rigNodeEditor**; rename `IWindow` → `ImGuiPanel`; hold `Mui*` via `authorMui` / `rigImGui::mui()` (rebind in `onUiAttached`). `asMui` / `windowManager(IMui*)` are gone. Recompile against menu `register*Action(..., group)` (default empty).
 - [x] In-tree `IWindow` callers gone (only a third_party comment left).
 - [x] Menu submenus are hooks: `register*Action` + optional `group`; no `register*Submenu(drawContents)`.
 - [x] Chrome kerning peeled off `IMui` onto `Mui` (`setChromeKerning` / `setChromeKernFn` / pair count).
@@ -15,5 +15,5 @@ Scratchpad for smells and follow-ups. Dated bullets; no archaeology.
 - [ ] Host submodule pointer bumps after pack pushes (`rigImGui`, then `rigNodeEditor`).
 - [x] `nodeEditorPrefs()` process-static: OK for `MSettings` chrome; keep graph/scene state on `CNodeGraph` (do not grow this into a scene singleton).
 - [x] Was a byte-identical copy of `README.md` before this pass (wrong file role) — replaced with this scratchpad.
-- [ ] Pack submodule commits: push **rigImGui** (`IWindow` → `ImGuiPanel`, `asMui`/`windowManager`, Properties←`CSelection`, menu hooks, kerning on `Mui`), then **rigNodeEditor** (helpers + SpawnPropRefOpts + shared catalog param drawer + patch-bay type scan), then bump host pointers.
-- [x] In-tree examples on `asMui`/`windowManager` (oscHost, glEditor, calendar, ufomat, example-stage); rigImGui internals use `asMui` too. Other pack examples may still raw-cast until touched.
+- [ ] Pack submodule commits: push **rigImGui** (`IWindow` → `ImGuiPanel`, author `Mui*` / `authorMui`, cast-free chrome factory, Properties←`CSelection`, menu hooks, kerning on `Mui`, deleted `asMui`/`windowManager`), then **rigNodeEditor**, then bump host pointers.
+- [x] Author chrome ownership: in-tree examples hold `Mui*` + rebind in `onUiAttached`; rigImGui panels use `authorMui`; `asMui` / `windowManager(IMui*)` deleted.

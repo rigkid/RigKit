@@ -9,6 +9,7 @@
 #include "core/util/CommandLineArgs.h"
 
 namespace rigkit {
+class Mui;
 class rigOsc;
 namespace ecs {
 class SEvent;
@@ -44,6 +45,7 @@ class OscHost : public rigkit::IApp {
 	void draw() override;
 	void exit() override;
 	void registerUIActions(rigkit::ecs::SEvent& events) override;
+	void onUiAttached() override;
 
   private:
 	void bootstrapPacks();
@@ -57,6 +59,7 @@ class OscHost : public rigkit::IApp {
 	rigkit::ecs::CDrawStyle& lookStyle() const;
 	rigkit::ecs::CRenderBlend& lookBlend() const;
 
+	rigkit::Mui* m_mui = nullptr;
 	bool m_showMode = false;
 	bool m_smokeOsc = false;
 

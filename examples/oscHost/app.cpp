@@ -176,23 +176,22 @@ void OscHost::bootstrapPacks() {
 	setupLook();
 }
 
+void OscHost::onUiAttached() {
+	m_mui = getEngine() ? rigkit::authorMui(*getEngine()) : nullptr;
+}
+
 void OscHost::setupAuthorUi() {
-	auto* ui = getEngine()->getUiManager();
-	if (!ui) {
-		spdlog::warn("Author mode but no IMui - rigImGui failed to attach");
+	m_mui = getEngine() ? rigkit::authorMui(*getEngine()) : nullptr;
+	if (!m_mui) {
+		spdlog::warn("Author mode but no Mui - rigImGui failed to attach");
 		return;
 	}
+	m_mui->setDockPassthroughCentral(true);
+	m_mui->addAllHostPanels();
+	m_mui->setWindowVisibility("Debug", true);
+	m_mui->showNotification("Author mode - oscHost");
 
-	auto* mui = rigkit::asMui(ui);
-	if (!mui) {
-		return;
-	}
-	mui->setDockPassthroughCentral(true);
-	mui->addAllHostPanels();
-	mui->setWindowVisibility("Debug", true);
-	mui->showNotification("Author mode - oscHost");
-
-	auto* wm = rigkit::windowManager(ui);
+	auto* wm = m_mui->getWindowManager();
 	if (!wm) {
 		return;
 	}
@@ -200,9 +199,7 @@ void OscHost::setupAuthorUi() {
 	wm->createWindow<ToolControlWindow>(this);
 	wm->showWindow("Show Control");
 	setupLookPanel();
-	if (mui) {
-		mui->setFirstRunHostDockLayout({"Show Control"});
-	}
+	m_mui->setFirstRunHostDockLayout({"Show Control"});
 	spdlog::info("Author UI: rigImGui host shell + Show Control + Look panel");
 }
 

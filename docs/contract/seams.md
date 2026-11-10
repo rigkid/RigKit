@@ -39,17 +39,29 @@ Trunk-pack seams (`ISynth` on **rigAudio**, `ISimBackend` on **rigPhysics**) sta
 
 `IApp` / `IPack` holding `RigKitEngine*` is the floor pointer, not a missing `IEngine`.
 
+## Author chrome ownership
+
+Document (`.rig` + POD + `rig.ui.*`) is the product. Every host keeps **SUDE** (Desktop/Pi, Show/Player, ESP subset). Chrome is optional fulfillment on top.
+
+| Role | Floor | Author surface |
+|------|-------|----------------|
+| Show / Player | SUDE + present | None (`IMui` detached) |
+| Desktop / Pi author | SUDE + ECS + `IRenderer` | Hold **`Mui*`** from **rigImGui** (`mui()` / `authorMui`) |
+| ESP | SUDE + POD | Browser over the document — not `IMui` / rigImGui |
+
+**Engine stores `unique_ptr<IMui>`** for the desktop/Pi input/render loop and chrome swap. That is not the author programming surface. Author apps that link **rigImGui** hold `Mui*` (set after pack init; rebind in `onUiAttached` / `notifyUiAttached` after a chrome swap). Docks, `MWindow`, kerning, and layout builders go through that pointer — never `asMui(engine->getUiManager())`.
+
 ## `IMui` stays thin (named surfaces, no panel factory)
 
 Keep on `IMui` what every chrome must honor: `init` / `shutdown` / `handleInput` / `render`, `chromeId`, **named surface** visibility (show / hide / list by name), file and folder dialogs (path in, path out), named menu **actions** (optional `group` nests under a submenu label — hooks only; chrome draws), shortcuts, recent files, named workspaces, edit mode, undo bind, progress.
 
 That named-surface API is the portable “window” agreement on the host. Do **not** add `getWindowManager`, `createWindow`, or typed dock panels to `IMui` — that moves ImGui bloat onto the seam every chrome (TUI, ESP web) would have to fake. Do **not** register menu rows as fulfillment draw callbacks (`ImGui::MenuItem` inside a registrar lambda).
 
-Keep on **`Mui`** (rigImGui) what assumes Dear ImGui: tool-rail icon glyphs, dock passthrough and central-node rect presentation details, chrome kerning (`setChromeKerning` / `setChromeKernFn`), `addHostPanel`, `setDockLayoutBuilder`, preferences drawers, notifications, `ImGuiPanel` / `MWindow`, viewport overlays. Packs that need typed panels already link **rigImGui** and use `windowManager(ui)` / held `shared_ptr`s.
+Keep on **`Mui`** (rigImGui) what assumes Dear ImGui: tool-rail icon glyphs, dock passthrough and central-node rect, chrome kerning, `addHostPanel`, `setDockLayoutBuilder`, preferences drawers, notifications, `ImGuiPanel` / `MWindow`, viewport overlays. Author code uses `rigImGui::mui()` / `authorMui(engine)` or a held `Mui*`.
 
 New work does not grow `IMui` with toolkit-shaped methods. When you touch one that still sits on the seam by accident, move it to `Mui` in the same change.
 
-ESP author UI is **web** over the same POD / document ([example-esp32](../../examples/example-esp32)); it does not implement `IMui` or `ImGuiPanel`. `#ifdef RIGKIT_MCU` may strip desktop weight — it does not license a dock factory in `src/`.
+ESP keeps SUDE + POD; author UI is **web** over the same document ([example-esp32](../../examples/example-esp32)). It does not implement `IMui` or `ImGuiPanel`. `#ifdef RIGKIT_MCU` may strip desktop weight — it does not license a dock factory in `src/`.
 
 ## Present
 
@@ -70,9 +82,10 @@ A later tool is a document plus a pack, not a new host interface.
 
 | App | Uses | Does not need |
 |-----|------|----------------|
-| Show / install | SUDE + `IRenderer`; no `IMui` | Dock API, `ImGuiPanel` |
-| New author tool | `IApp` + POD + `IMui` actions / named surfaces | `Mui` / `ImGuiPanel` unless it only needs names |
-| New chrome | Same `IMui` named surfaces + `rig.ui.*` | `ImGui::MenuItem` inside a host callback; fake `MWindow` |
+| Show / install | SUDE + `IRenderer`; no chrome | Dock API, `ImGuiPanel`, `Mui` |
+| New author tool | `IApp` + POD + held `Mui*` + `rig.ui.*` | Rediscovery casts via `getUiManager()` |
+| Portable-only chrome | `IMui` named surfaces / actions (no docks) | `Mui` / `ImGuiPanel` |
+| ESP author | SUDE + POD + web over document | `IMui`, rigImGui |
 | New present / font | `IRenderer` + `ITextBackend` | `OpenGLRenderer.h` |
 | Domain not named yet | New `C*` in a data pack + register | A new host interface |
 

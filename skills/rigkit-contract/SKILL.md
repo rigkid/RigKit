@@ -56,7 +56,7 @@ Floor is concrete (`RigKitEngine`, `M*`, GLFW, default OpenGL). Seams are `IApp`
 
 ## Hard boundaries (RigKit-specific)
 
-- **UI / ImGui:** no Dear ImGui in `src/`; attach via `IMui` (named surfaces). Default UI fulfillment = `rigImGui`. Chrome rules (DPI, work rect, prefs): [packs/rigImGui/README.md](../../packs/rigImGui/README.md#chrome-rules). Toolkit panel base is `ImGuiPanel` (not a host `I*`); dock builders stay on **rigImGui** / `Mui`. Menu rows on `IMui` are hooks (`register*Action` + optional `group`) — chrome draws; no fulfillment widgets in the registrar. Do not grow `IMui` with `getWindowManager` / `createWindow`.
+- **UI / ImGui:** no Dear ImGui in `src/`; engine stores `IMui` for the loop. Author apps hold **`Mui*`** from **rigImGui** (`mui()` / `authorMui`) — no `asMui(getUiManager())`. Default UI fulfillment = `rigImGui`. Chrome rules: [packs/rigImGui/README.md](../../packs/rigImGui/README.md#chrome-rules). Toolkit panel base is `ImGuiPanel` (not a host `I*`). Menu rows on `IMui` are hooks (`register*Action` + optional `group`). Do not grow `IMui` with `getWindowManager` / `createWindow`. Every host keeps SUDE; ESP author chrome is web over the document, not `IMui`.
 - **GPU / UI types:** stay out of Contract-facing components; host packs may hold resources keyed by opaque ids.
 - **Registry:** app owns logical scene/document; host may hold a pointer and run systems - no second hidden registry for app entities.
 - **Systems:** simulation in `Update(dt)`; present in `Draw()`. Host always calls Draw after Update (empty body OK; skip is not SUDE). Draw can be LEDs / GPIO, not only GPU.

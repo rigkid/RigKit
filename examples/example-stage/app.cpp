@@ -37,6 +37,14 @@
 
 StageApp::~StageApp() = default;
 
+void StageApp::onUiAttached() {
+#if STAGE_WITH_EDITOR
+	m_mui = m_engine ? rigkit::authorMui(*m_engine) : nullptr;
+#else
+	m_mui = nullptr;
+#endif
+}
+
 void StageApp::parseCommandLineArgs(const rigkit::CommandLineArgs& args) {
 	IApp::parseCommandLineArgs(args);
 	if (args.hasFlag("smoke")) {
@@ -230,8 +238,9 @@ void StageApp::setup() {
 
 #if STAGE_WITH_EDITOR
 	if (!m_play && !m_smoke) {
-		if (auto* mui = rigkit::asMui(m_engine->getUiManager())) {
-			dockEditor(mui);
+		m_mui = m_engine ? rigkit::authorMui(*m_engine) : nullptr;
+		if (m_mui) {
+			dockEditor(m_mui);
 		}
 	}
 #endif

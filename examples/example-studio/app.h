@@ -5,6 +5,7 @@
 #include <memory>
 
 namespace rigkit {
+class Mui;
 class rigPixelPlotter;
 class rigPlotter;
 class rigProject;
@@ -16,6 +17,7 @@ class StudioApp : public rigkit::IApp {
 	void setup() override;
 	void update(float) override {}
 	void draw() override {}
+	void onUiAttached() override;
 
 	bool smokeFailed() const { return m_smoke && !m_smokeOk; }
 
@@ -24,6 +26,7 @@ class StudioApp : public rigkit::IApp {
 	void seedVector();
 	bool runSmoke();
 
+	rigkit::Mui* m_mui = nullptr;
 	std::shared_ptr<rigkit::rigPlotter> m_plotter;
 	std::shared_ptr<rigkit::rigPixelPlotter> m_pixel;
 	std::shared_ptr<rigkit::rigProject> m_document;

@@ -6,6 +6,7 @@
 #include "core/U_core.h"
 
 namespace rigkit {
+class Mui;
 class rigPython;
 }
 
@@ -16,6 +17,7 @@ class StageApp : public rigkit::IApp {
 	void setup() override;
 	void update(float dt) override;
 	void draw() override {}
+	void onUiAttached() override;
 
 	bool smokeFailed() const { return m_smoke && !m_smokeOk; }
 	bool presentFailed() const { return m_present && !m_presentOk; }
@@ -23,6 +25,7 @@ class StageApp : public rigkit::IApp {
   private:
 	bool runSmoke();
 
+	rigkit::Mui* m_mui = nullptr;
 	bool m_smoke = false;
 	bool m_smokeOk = false;
 	bool m_play = false;

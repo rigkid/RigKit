@@ -163,6 +163,7 @@ void SvgEditorApp::setup() {
 	packs->initAll();
 	packs->setupAll();
 
+	m_mui = m_engine ? rigkit::authorMui(*m_engine) : nullptr;
 	m_document = packs->getPack<rigkit::rigProject>();
 	m_plotter = packs->getPack<rigkit::rigPlotter>();
 	m_traceUi = packs->getPack<rigkit::rigTraceUi>();
@@ -183,8 +184,7 @@ void SvgEditorApp::setup() {
 			if (!m_plotter || stack.empty()) {
 				return;
 			}
-			auto* ui = m_engine ? m_engine->getUiManager() : nullptr;
-			rigkit::UndoStack* undo = ui ? ui->undoStack() : nullptr;
+			rigkit::UndoStack* undo = m_mui ? m_mui->undoStack() : nullptr;
 			auto* doc = &m_plotter->doc();
 			rigkit::mutateDocGeometry(undo, doc, "Trace image", [&] {
 				if (!m_traceApplied.empty()) {
@@ -1017,4 +1017,8 @@ bool SvgEditorApp::runSmoke() {
 
 	spdlog::info("svgEditor smoke: shell ops ok (paths={})", pathCount);
 	return true;
+}
+
+void SvgEditorApp::onUiAttached() {
+	m_mui = m_engine ? rigkit::authorMui(*m_engine) : nullptr;
 }

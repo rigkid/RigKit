@@ -95,6 +95,7 @@ void IApp::notifyUiAttached() {
 	if (m_engine && m_engine->getECSManager()) {
 		registerUIActions(m_engine->getECSManager()->getEventSystem());
 	}
+	onUiAttached();
 }
 
 // -------------------- UI Window Management -----------------

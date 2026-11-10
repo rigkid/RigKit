@@ -10,12 +10,17 @@
 
 class ShaderPreviewWindow;
 
+namespace rigkit {
+class Mui;
+}
+
 class GlEditorApp : public rigkit::IApp {
   public:
 	void parseCommandLineArgs(const rigkit::CommandLineArgs& args) override;
 	void setup() override;
 	void update(float dt) override;
 	void draw() override {}
+	void onUiAttached() override;
 
 	bool smokeFailed() const { return m_smoke && !m_smokeOk; }
 
@@ -27,6 +32,7 @@ class GlEditorApp : public rigkit::IApp {
 	void syncPreviewWithEditor();
 	bool runSmoke();
 
+	rigkit::Mui* m_mui = nullptr;
 	ShaderPreviewWindow* m_previewWin = nullptr;
 	bool m_smoke = false;
 	bool m_smokeOk = false;

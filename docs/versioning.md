@@ -48,9 +48,10 @@ A `"ref": "main"` (or any branch) is a **track**, not a pin: `update` leaves it 
 
 | Version | Notes |
 |---------|-------|
+| unreleased | Author chrome ownership: apps hold `Mui*` from `rigImGui::mui()` / `authorMui`; engine `IMui*` is loop/attach only. Removed `asMui` / `windowManager(IMui*)` rediscovery. |
 | unreleased | Chrome kerning (`setChromeKerning` / `setChromeKernFn` / `chromeKernPairCount`) moved off `IMui` onto `Mui`. |
 | unreleased | `IMui` menu rows are hooks only: dropped `register*Submenu(drawContents)`; `register*Action` takes optional `group` for nested menus. Chrome (`Mui` / `TuiMui`) draws; registrars do not emit toolkit widgets. |
-| unreleased | `IWindow` renamed to `ImGuiPanel` (rigImGui panel base — not a host `I*`). `MWindow` stays the dock manager. Packs use `asMui` / `windowManager(IMui*)` or held pointers; do not grow `IMui` with a panel factory. Named surfaces on `IMui` remain the portable show/hide agreement; ESP web fulfills POD without `IMui`. |
+| unreleased | `IWindow` renamed to `ImGuiPanel` (rigImGui panel base — not a host `I*`). `MWindow` stays the dock manager. Named surfaces on `IMui` remain the portable show/hide agreement; ESP web fulfills POD without `IMui`. |
 | unreleased | `CUiPanel` / `CUiGroup` / `CUiControl` / `CUiAction` match `rig.ui.*`. Creators: `rig::makeUiPanel` / `makeUiControl` / `makeUiAction`. Contract import writes the POD (refs from document ids). **rigImGui** presents visible panels. Actions fire `SEvent`. `oscHost --author` Look panel binds the `look` entity. |
 | unreleased | `IMui::getWindowManager` removed. Create and show panels through `Mui::getWindowManager` (include rigImGui). `IMui::chromeId()` default is `"none"`; `Mui` returns `"imgui"`. |
 | unreleased | Removed `IStrokeUI`. Removed `IManager`; `MEcs` / `MPack` / `MRendering` / `MCanvas` / `MSettings` keep `init` / `shutdown` as ordinary methods. |

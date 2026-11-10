@@ -150,11 +150,15 @@ void GlEditorApp::watchDiskBuffers() {
 	}
 }
 
+void GlEditorApp::onUiAttached() {
+	m_mui = m_engine ? rigkit::authorMui(*m_engine) : nullptr;
+}
+
 void GlEditorApp::syncPreviewWithEditor() {
-	if (!m_previewWin) {
+	if (!m_previewWin || !m_mui) {
 		return;
 	}
-	auto* wm = rigkit::windowManager(m_engine->getUiManager());
+	auto* wm = m_mui->getWindowManager();
 	if (!wm) {
 		return;
 	}
@@ -298,9 +302,9 @@ void GlEditorApp::setup() {
 		}
 	}
 
-	auto* mui = rigkit::asMui(m_engine->getUiManager());
-	auto* wm = rigkit::windowManager(m_engine->getUiManager());
-	if (mui && wm) {
+	m_mui = m_engine ? rigkit::authorMui(*m_engine) : nullptr;
+	auto* wm = m_mui ? m_mui->getWindowManager() : nullptr;
+	if (m_mui && wm) {
 		auto win = wm->createWindow<ShaderPreviewWindow>();
 		m_previewWin = win.get();
 		wm->showWindow("Shader Preview");
@@ -308,13 +312,16 @@ void GlEditorApp::setup() {
 
 		// First-run: preview fills the central dock; code editor on the right.
 		// No-ops once imgui.ini has restored a split.
-		mui->setDockLayoutBuilder([mui](ImGuiID dockspaceId) {
+		m_mui->setDockLayoutBuilder([this](ImGuiID dockspaceId) {
+			if (!m_mui) {
+				return;
+			}
 			ImGuiDockNode* node = ImGui::DockBuilderGetNode(dockspaceId);
 			if (!node) {
 				return;
 			}
 			if (node->IsSplitNode()) {
-				mui->setDockLayoutBuilder(nullptr);
+				m_mui->setDockLayoutBuilder(nullptr);
 				return;
 			}
 			const ImGuiViewport* vp = ImGui::GetMainViewport();
@@ -327,7 +334,7 @@ void GlEditorApp::setup() {
 			ImGui::DockBuilderDockWindow("Shader Preview", center);
 			ImGui::DockBuilderDockWindow("Code Editor", right);
 			ImGui::DockBuilderFinish(dockspaceId);
-			mui->setDockLayoutBuilder(nullptr);
+			m_mui->setDockLayoutBuilder(nullptr);
 		});
 
 		// Start on the first example; sync keeps the editor tab with it.

@@ -111,8 +111,9 @@ void StudioApp::setup() {
 	m_plotter = packs->getPack<rigkit::rigPlotter>();
 	m_pixel = packs->getPack<rigkit::rigPixelPlotter>();
 
-	if (auto* ui = m_engine->getUiManager()) {
-		if (!ui->loadWorkspace("Vector", false)) {
+	m_mui = m_engine ? rigkit::authorMui(*m_engine) : nullptr;
+	if (m_mui) {
+		if (!m_mui->loadWorkspace("Vector", false)) {
 			spdlog::warn("example-studio - Vector workspace missing; using session layout");
 		}
 	}
@@ -148,16 +149,19 @@ bool StudioApp::runSmoke() {
 		spdlog::error("studio smoke: pixel layers missing");
 		return false;
 	}
-	auto* ui = m_engine->getUiManager();
-	if (ui) {
-		if (!ui->loadWorkspace("Pixel", false) || ui->currentWorkspace() != "Pixel") {
+	if (m_mui) {
+		if (!m_mui->loadWorkspace("Pixel", false) || m_mui->currentWorkspace() != "Pixel") {
 			spdlog::error("studio smoke: Pixel workspace failed");
 			return false;
 		}
-		if (!ui->loadWorkspace("Vector", false) || ui->currentWorkspace() != "Vector") {
+		if (!m_mui->loadWorkspace("Vector", false) || m_mui->currentWorkspace() != "Vector") {
 			spdlog::error("studio smoke: Vector workspace failed");
 			return false;
 		}
 	}
 	return true;
+}
+
+void StudioApp::onUiAttached() {
+	m_mui = m_engine ? rigkit::authorMui(*m_engine) : nullptr;
 }
