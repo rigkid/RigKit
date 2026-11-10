@@ -115,7 +115,7 @@ Every id in the vendored catalog ([schemas/README.md](RigWorks/schemas/README.md
 | `rig.node.pin` | nested in `CNodeGraph` | `type` is a property datatype id. |
 | `rig.node.link` | nested in `CNodeGraph` | Link between pins. |
 | `rig.node.param` | nested in `CNodeGraph` | `type` is a property datatype id. |
-| `rig.cad.cuboid` | **rigCadComponent** - `CCadBox`; bake **rigManifold** | `sizeX` / `sizeY` / `sizeZ` / `center`. Import recognizes the id and does not write the POD. Pi: bake in Setup. |
+| `rig.cad.cuboid` | **rigCadComponent** - `CCadCuboid`; bake **rigManifold** | `sizeX` / `sizeY` / `sizeZ` / `center`. Import recognizes the id and does not write the POD. Pi: bake in Setup. |
 | `rig.cad.cylinder` | **rigCadComponent** - `CCadCylinder`; bake **rigManifold** | `radius` / `height` / `circularSegments` / `center`. Import does not write the POD. |
 | `rig.cad.sphere` | **rigCadComponent** - `CCadSphere`; bake **rigManifold** | `radius` / `circularSegments`. Import does not write the POD. |
 | `rig.cad.boolean` | **rigCadComponent** - `CCadBoolean`; bake **rigManifold** | `op` + entity-name `operands`. Nested booleans recurse. Operand local TRS applies before the op. |

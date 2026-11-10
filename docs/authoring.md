@@ -72,7 +72,7 @@ rig::makeMeshGrid(*ecs);
 #include "rig/show.h"  // visualizer / analysis - rigShowComponent
 
 // CAD solids (bake via rigManifold::bakeToMesh):
-rig::makeCadBox(*ecs, 2.f, 1.5f, 1.2f, true, "stock");
+rig::makeCadCuboid(*ecs, 2.f, 1.5f, 1.2f, true, "stock");
 rig::makeCadCylinder(*ecs, 0.4f, 2.f, true, "cutter");
 rig::makeCadBoolean(*ecs, rigkit::ecs::CCadBoolean::Op::Difference, {"stock", "cutter"},
 					rig::fill(0.95f, 0.55f, 0.25f), "part");

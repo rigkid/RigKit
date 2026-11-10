@@ -14,6 +14,8 @@
 #include "CLayer.h"
 #include "CLight.h"
 #include "CMesh.h"
+#include "CModBinding.h"
+#include "CModLfo.h"
 #include "CPage.h"
 #include "CPath.h"
 #include "CProject.h"
@@ -23,6 +25,7 @@
 #include "CSelection.h"
 #include "CText.h"
 #include "CTransform.h"
+#include "CTween.h"
 #include "CUiPanel.h"
 #include "ContractImport.h"
 #include "ProjectSerializer.h"
@@ -541,4 +544,54 @@ TEST_CASE("Contract import writes CUi* with resolved entity refs") {
 	REQUIRE(ecs.hasComponent<ecs::CUiAction>(reset));
 	CHECK(ecs.getComponent<ecs::CUiAction>(reset).panel == entt::to_integral(panel));
 	CHECK(ecs.getComponent<ecs::CUiAction>(reset).actionId == "lfo.resetPhase");
+}
+
+TEST_CASE("Contract import resolves anim references from document ids to entity names") {
+	SpineFixture f;
+	auto& ecs = f.ecs();
+	const char* jsonText = R"({
+		"rig": "0.9.0",
+		"document": { "title": "anim-refs" },
+		"entities": [
+			{
+				"id": "lfo-1",
+				"components": {
+					"rig.meta.named": { "name": "Pulse" },
+					"rig.mod.lfo": { "waveform": "sine", "frequency": 0.5 }
+				}
+			},
+			{
+				"id": "fill-1",
+				"components": {
+					"rig.meta.named": { "name": "Fill" },
+					"rig.geometry.rectangle": { "x": 0, "y": 0, "width": 10, "height": 10 }
+				}
+			},
+			{
+				"id": "bind-1",
+				"components": {
+					"rig.meta.named": { "name": "Bind" },
+					"rig.mod.binding": { "source": "lfo-1", "target": "fill-1", "propertyKey": "frequency" },
+					"rig.anim.tween": { "target": "fill-1", "propertyKey": "opacity" }
+				}
+			}
+		]
+	})";
+	auto result = importWithPackCodecs(f, jsonText, "anim-refs");
+	REQUIRE(result.ok);
+
+	const auto pulse = ecs.findEntity("Pulse");
+	REQUIRE(pulse != entt::null);
+	REQUIRE(ecs.hasComponent<ecs::CModLfo>(pulse));
+	CHECK(ecs.getComponent<ecs::CModLfo>(pulse).waveform == "sine");
+
+	const auto bind = ecs.findEntity("Bind");
+	REQUIRE(bind != entt::null);
+	REQUIRE(ecs.hasComponent<ecs::CModBinding>(bind));
+	const auto& binding = ecs.getComponent<ecs::CModBinding>(bind);
+	CHECK(binding.source == "Pulse");
+	CHECK(binding.target == "Fill");
+
+	REQUIRE(ecs.hasComponent<ecs::CTween>(bind));
+	CHECK(ecs.getComponent<ecs::CTween>(bind).target == "Fill");
 }

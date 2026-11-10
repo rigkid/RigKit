@@ -2,7 +2,7 @@
 
 Code packs should ship one teaching example. Data packs do not need one. Rules: [packs/README.md](../packs/README.md#pack-example-readme-screenshot).
 
-A data pack id ends in `Component`. Shipped data packs that do not: **rigProject**, **rigColorspace**, **rigComposition**. Leave those ids. Do not add a host app to a data pack to clear this list. Demos already in a data pack (including `rigCadComponent/examples/cadBox` and `rigMusicComponent/examples/clock`, which have no screenshot) can stay.
+A data pack id ends in `Component`. Shipped data packs that do not: **rigProject**, **rigColorspace**, **rigComposition**. Leave those ids. Do not add a host app to a data pack to clear this list. Demos already in a data pack (including `rigCadComponent/examples/cadCuboid` and `rigMusicComponent/examples/clock`, which have no screenshot) can stay.
 
 `tools/check-invariants` fails only when a pack README embeds `preview.png` and that file is missing. Missing examples are not a gate. No placeholder images.
 
