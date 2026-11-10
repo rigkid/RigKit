@@ -167,7 +167,7 @@ One family per change, in this order: pixel plot, layout and story, node (rides 
 
 Gate per family: the consumer list has no silent IO loss, and the round-trip passes.
 
-Status: pixel family done locally (consumer matrix: only `rigPixelPlotter` and its apps load the pixel PODs for IO; the data pack's own `pixeldata` example does no document IO). The serializer sources moved verbatim, so round-trip behavior is unchanged; both pack targets and both examples build. Layout and story, then font, remain.
+Status: pixel family done locally (consumer matrix: only `rigPixelPlotter` and its apps load the pixel PODs for IO; the data pack's own `pixeldata` example does no document IO). The serializer sources moved verbatim, so round-trip behavior is unchanged; both pack targets and both examples build. Layout and story done locally: both codec sets moved to `rigLayout`, and their never-called `resolveContractRefs` is now wired through a new registry hook (`resolveEntityReferences`, document id to live entity) that `ContractImport` runs beside the name hook. Font remains.
 
 ### Phase 5: Remaining boundary audit
 
