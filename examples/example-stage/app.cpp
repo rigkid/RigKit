@@ -248,8 +248,8 @@ bool StageApp::openDocument(const std::string& path) {
 					  m_package.error.empty() ? "package open failed" : m_package.error, path);
 		return false;
 	}
-	const auto result = rigkit::project::importContractFile(
-		*ecs, m_package.rigPath, m_document->serializer().registry());
+	const auto result = rigkit::project::importContractFile(*ecs, m_package.rigPath,
+															m_document->serializer().registry());
 	if (!result.ok) {
 		spdlog::error("stage open: {} ({})", result.error.empty() ? "import failed" : result.error,
 					  m_package.rigPath);
@@ -342,9 +342,8 @@ bool StageApp::runOpenSmoke() {
 						  sunXf.rotation.x, sunXf.rotation.y, sunXf.rotation.z, sunXf.rotation.w);
 			return false;
 		}
-	} else if (enabledPoint != 1 &&
-			   ecs->getComponent<rigkit::ecs::CLight>(keptLight).type !=
-				   rigkit::ecs::CLight::Type::Spot) {
+	} else if (enabledPoint != 1 && ecs->getComponent<rigkit::ecs::CLight>(keptLight).type !=
+										rigkit::ecs::CLight::Type::Spot) {
 		spdlog::error("stage open smoke: expected directional, point, or spot light");
 		return false;
 	}
@@ -505,10 +504,10 @@ bool StageApp::runOpenSmoke() {
 
 void StageApp::setup() {
 	const bool opening = !m_openPath.empty();
-	spdlog::info(opening	 ? "Stage open"
-				 : m_smoke	 ? "Stage smoke"
-				 : m_play	 ? "Stage play"
-							 : "Stage editor");
+	spdlog::info(opening   ? "Stage open"
+				 : m_smoke ? "Stage smoke"
+				 : m_play  ? "Stage play"
+						   : "Stage editor");
 	m_engine->setClearColor(0.10f, 0.11f, 0.13f, 1.f);
 
 	auto* packs = m_engine->getPackManager();
@@ -558,8 +557,7 @@ void StageApp::setup() {
 		if (!path.is_absolute()) {
 			const fs::path besideExe = fs::path(AppPaths::getExecutableDir()) / m_openPath;
 			const fs::path inData = fs::path(AppPaths::getDataDir()) / m_openPath;
-			const fs::path inScenes =
-				fs::path(AppPaths::getDataDir()) / "scenes" / path.filename();
+			const fs::path inScenes = fs::path(AppPaths::getDataDir()) / "scenes" / path.filename();
 			if (fs::exists(besideExe)) {
 				path = besideExe;
 			} else if (fs::exists(inData)) {

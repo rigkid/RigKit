@@ -12,4 +12,3 @@ TEST_CASE("rigkit::version is host SemVer") {
 	CHECK(rigkit::versionMinor() >= 0);
 	CHECK(rigkit::versionPatch() >= 0);
 }
-
