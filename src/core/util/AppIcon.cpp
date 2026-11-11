@@ -152,12 +152,30 @@ void hsvToRgb(float h, float s, float v, unsigned char rgb[3]) {
 		sector = 5;
 	}
 	switch (sector) {
-	case 0: r = c; g = x; break;
-	case 1: r = x; g = c; break;
-	case 2: g = c; b = x; break;
-	case 3: g = x; b = c; break;
-	case 4: r = x; b = c; break;
-	default: r = c; b = x; break;
+	case 0:
+		r = c;
+		g = x;
+		break;
+	case 1:
+		r = x;
+		g = c;
+		break;
+	case 2:
+		g = c;
+		b = x;
+		break;
+	case 3:
+		g = x;
+		b = c;
+		break;
+	case 4:
+		r = x;
+		b = c;
+		break;
+	default:
+		r = c;
+		b = x;
+		break;
 	}
 	rgb[0] = static_cast<unsigned char>(std::lround((r + m) * 255.f));
 	rgb[1] = static_cast<unsigned char>(std::lround((g + m) * 255.f));
@@ -368,4 +386,3 @@ std::vector<IconImage> makeDefaultIcon(const std::string& appName) {
 }
 
 } // namespace AppIcon
-
