@@ -96,6 +96,18 @@ from the menus.
 - **Pi risk:** none - registration-time code only, no per-frame cost.
 - **Rebuild cost:** confined to one pack plus its example.
 
+## Status
+
+Done locally. Phases 1-3: submenus decomposed into grouped actions, Fit
+Curves tolerance is the `rigPlotterUi.fit` preference, all 9 window-manager
+sites use the `Mui` cast; the pack target and the full `plotui` example
+build, and the app launches through setup. Phase 4 inventory: the same
+drift remains in pack sources `rigVectorUi` (5 calls), `rigCad` (2),
+`rigTraceUi` (2), `rigSerial` (1), `rigMeshEdit` (1), `rigBlend2D` (1),
+`rigAgentty` (1), `rigDocumentShell` (1), and in roughly 25 pack example
+apps (worst: `gcodeViewer` 6, `lowpoly` 3). Each is the same mechanical
+repair; none was touched here.
+
 ## Out of scope
 
 - Growing `IMui` with submenu or widget surfaces.

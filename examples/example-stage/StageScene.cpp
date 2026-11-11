@@ -1,6 +1,7 @@
 #include "StageScene.h"
 
 #include "CAssetRef.h"
+#include "CCamera.h"
 #include "CDrawStyle.h"
 #include "CLight.h"
 #include "CMesh.h"
@@ -195,6 +196,44 @@ int rigidbodyCount(rigkit::MEcs& ecs) {
 		++count;
 	}
 	return count;
+}
+
+void prepareOpenedDocument(rigkit::MEcs& ecs) {
+	bool anyActiveCamera = false;
+	entt::entity firstCamera = entt::null;
+	for (auto entity : ecs.view<rigkit::ecs::CCamera>()) {
+		if (firstCamera == entt::null) {
+			firstCamera = entity;
+		}
+		if (ecs.getComponent<rigkit::ecs::CCamera>(entity).active) {
+			anyActiveCamera = true;
+			break;
+		}
+	}
+	if (!anyActiveCamera && firstCamera != entt::null) {
+		ecs.getComponent<rigkit::ecs::CCamera>(firstCamera).active = true;
+	}
+
+	entt::entity keep = entt::null;
+	for (auto entity : ecs.view<rigkit::ecs::CLight>()) {
+		auto& light = ecs.getComponent<rigkit::ecs::CLight>(entity);
+		if (!light.enabled) {
+			continue;
+		}
+		if (light.type == rigkit::ecs::CLight::Type::Directional) {
+			keep = entity;
+			break;
+		}
+		if (keep == entt::null) {
+			keep = entity;
+		}
+	}
+	if (keep == entt::null) {
+		return;
+	}
+	for (auto entity : ecs.view<rigkit::ecs::CLight>()) {
+		ecs.getComponent<rigkit::ecs::CLight>(entity).enabled = (entity == keep);
+	}
 }
 
 } // namespace stage

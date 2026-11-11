@@ -6,9 +6,11 @@ Known and planned RigKit packs. Operational detail (naming, pinning, examples, C
 
 Survey this list before scaffolding a new pack. Prefer growing an existing seam.
 
+Packs usually start **private** and graduate to **public** when mature. Host aggregate docs only fetch public remotes listed in [`docs/api/pack-remotes.txt`](api/pack-remotes.txt). Want a private pack released? Open an issue on [RigKit](https://github.com/rigkid/RigKit/issues) and name it.
+
 ## Known
 
-In-org packs are separate remotes in the [rigkid](https://github.com/rigkid) org. **Host basics** (submodules): `rigComponent`, `rigSystems`, `rigProject`, `rigImGui`. Other packs: local clone or CPM at a pinned `ref`.
+In-org packs are separate remotes in the [rigkid](https://github.com/rigkid) org. **Host basics** (submodules): `rigComponent`, `rigSystems`, `rigProject`, `rigImGui` (plus `rigProjectComponent`). Other packs: local clone or CPM at a pinned `ref`.
 
 ### Core / distribution (host basics)
 

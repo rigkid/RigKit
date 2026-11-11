@@ -58,7 +58,7 @@ Every id in the vendored catalog ([schemas/README.md](RigWorks/schemas/README.md
 | `rig.story.table` | **rigStoryComponent** - `CStoryTable` | `columnCount` / cells with spans + nested blocks. |
 | `rig.spatial.anchor` | **rigProject** - `CPage::originAnchor` | Which cell of the trim is page-local (0,0), as the Contract 3×3 string enum. Absent = `top-left`, so a top-left page writes no component. |
 | `rig.pixel.palette` | **rigComponent** - `CPalette` | `colors` (16 rgba). `shadeNext` travels separately as `x.rigkit.palette_shade`. |
-| `rig.render.light` | **rigComponent** - `CLight` | Dir/point + colour / intensity / banded shade. Spot not in v0.1. |
+| `rig.render.light` | **rigComponent** - `CLight` | Dir/point/spot + colour / intensity / banded shade + `range` / cone degrees. Spot present still uses the point path until cone shading grows. |
 | `rig.io.osc` | **rigOsc** - `COscEndpoint` | Listen/send ports + prefix. |
 | `rig.io.serial` | **rigSerial** - `CSerial` | `port` / `baud` / `enabled`. Byte buffers and handles stay in the pack. |
 | `rig.io.wifi` | **example-esp32** - `host.radio` | `mode` / `apSsid` / `staSsid` / `channel`. Password, link, address, and RSSI stay host cache. The sample stores the section in NVS, not on a scene entity. |
@@ -83,6 +83,11 @@ Every id in the vendored catalog ([schemas/README.md](RigWorks/schemas/README.md
 | `rig.media.code` | **rigComponent** - `CCode` | `text` / `language` / `readOnly`. Compose `CAssetRef` on the same entity for disk origin. `name` / `order` until `rig.meta.named`. `dirty` / `epoch` are editor cache - do not serialize. No `.rig` serializer: buffers are derived data. |
 | `rig.anim.curve` | **rigComponent** - `CCurve` | `points` / `interp` / `preset`. |
 | `rig.anim.tween` | **rigAnimComponent** - `CTween` | `target` / `propertyKey` / `from` / `to` / `duration` / `elapsed` / `easing` / `loop` / `playing`. Advance is **rigSystems** `STweens`. |
+| `rig.anim.skeleton` | **rigAnimComponent** - `CAnimSkeleton` | `root` + ordered `bones`. Codecs in **rigSystems**. |
+| `rig.anim.bind` | **rigAnimComponent** - `CAnimBind` | Optional rest `position` / `rotation` / `scale` on a bone. |
+| `rig.anim.skin` | **rigAnimComponent** - `CAnimSkin`; present **rigRender3D** | Four influences per vertex + `inverseBind`. CPU linear blend at Draw (**Pi risk**). |
+| `rig.anim.clip` | **rigAnimComponent** - `CAnimClip` | `duration` / `wrap`. `elapsed` / `playing` are host playback cache. |
+| `rig.anim.track` | **rigAnimComponent** - `CAnimTrack`; advance **rigSystems** `SAnimClips` | `clip` / `target` / `propertyKey` / `times` / `values` / `stride`. |
 | `rig.mod.lfo` | **rigAnimComponent** - `CModLfo` | `waveform` / `frequency` / `amplitude` / `offset` / `phase`. Advance is **rigSystems** `SModulators`. |
 | `rig.mod.binding` | **rigAnimComponent** - `CModBinding` | `source` / `target` / `propertyKey` / `depth` / `additive` / optional `min` / `max`. |
 | `rig.music.clock` | **rigMusicComponent** - `CMusicClock` | `ticksPerQuarter` / `phaseTicks` / swing / `externalSync` + sync fields. Writers: **rigAudio**, **rigAbletonLink**. |
@@ -108,7 +113,7 @@ Every id in the vendored catalog ([schemas/README.md](RigWorks/schemas/README.md
 | `rig.paint.stroke` | **rigColorspace** - `CPaintStroke` | Entity paint ref; `width` on the stroke POD. |
 | `rig.paint.gradient` | **rigPlotComponent** - `CGradient` | Wire `kind` / stops `t`/`rgba`. `interp` / `spread` / `intensity` / `angle`/`center`/radii are host stand-ins for `p0`/`p1`. |
 | `rig.paint.library` | **rigPlotComponent** - `CPaintLibrary` / **rigColorspace** - `CSwatchLibrary` | Still index-based gradients/swatches - not entity paint lists yet. |
-| `rig.render.material` | **rigComponent** `CRenderMaterial`; shaded by **rigRender3D** | Import writes albedo, metal, roughness, emissive, albedo-map entity. No schema writer. |
+| `rig.render.material` | **rigComponent** `CRenderMaterial`; shaded by **rigRender3D** | Albedo / metal / roughness / emissive + `albedoMap` entity. Codec in **rigSystems**; Contract import also resolves document-id albedo maps. |
 | `rig.render.environment` | **rigComponent** `CRenderEnvironment`; shaded by **rigRender3D** | `hdri` is a `rig.media.asset_ref` entity (lat-long radiance). `intensity` scales; absent is 1. Decode stays in the present pack. |
 | `rig.media.*` | - | Remaining media ids. Settings-only; decode in code packs. |
 | `rig.interact.selected` | **rigComponent** - `CSelection` | Live `selectionIndex`. The document snapshot (`order`) is not read or written. |
@@ -136,7 +141,7 @@ Every id in the vendored catalog ([schemas/README.md](RigWorks/schemas/README.md
 |---------------|--------------|
 | `rig.font.*` | **rigFontComponent** (UFO source PODs; local `packs/` until published). Chrome bind is host `x.rigkit.ui_face`, not a `rig.*` id. IO in **rigUfo**. Shape / reconstruct in **rigFont**. Host example `ufomat`. |
 | `rig.music.*` (sequencer / pattern / step) | **rigMusicComponent** - clock / transport are Close; grow this pack |
-| `rig.anim.*` / `rig.mod.*` (remaining) | **rigAnimComponent** - tween / LFO / binding are Close; grow this pack |
+| `rig.anim.*` / `rig.mod.*` (remaining) | **rigAnimComponent** - tween / LFO / binding / skeleton / bind / skin / clip / track are Close; blend and friends still grow here |
 | `rig.led.*` | **rigLedComponent** |
 | `rig.io.dmx` | **rigDmx** | Universe / direction / enabled. 512-slot buffer stays in the pack. No sockets, no USB. Transports (`rigSacn`, `rigArtnet`, `rigEnttec`) read this buffer. |
 | `rig.io.sacn` | **rigSacn** | E1.31 endpoint. Depends on **rigDmx**. Pack exists; schema still Planned until POD fields Close. |
@@ -162,6 +167,8 @@ Every id in the vendored catalog ([schemas/README.md](RigWorks/schemas/README.md
 | `rig.dmx.fixture` | Fixture patch. The universe buffer is `rig.io.dmx`. |
 | `rig.input.*` | Buttons, axes, pointer, binding. No POD yet. |
 | `rig.audio.voice` | One playing asset. No POD yet. |
+| `rig.synth.*` | Oscillator / filter / amplifier / envelope. No POD pack yet; schemas live under RigWorks `synth/`. |
+| `rig.modular.*` | Case / module / port / power / rail. No POD pack yet; schemas live under RigWorks `modular/`. |
 | `rig.sim.collider` | Contact shape. No POD yet. `CSimShape` is the host solver shape. |
 | `rig.sim.joint` | No POD yet. |
 | `rig.sim.character` | No POD yet. |

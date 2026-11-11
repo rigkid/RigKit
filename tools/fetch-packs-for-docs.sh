@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-# Ensure first-party pack trees exist under packs/ for host aggregate Doxygen.
-# Reads docs/api/pack-remotes.txt; skips clone failures with a warning.
+# Ensure public (supported) pack trees exist under packs/ for host aggregate
+# Doxygen. Reads docs/api/pack-remotes.txt (public remotes only); skips clone
+# failures with a warning. Private packs graduate into that list when mature.
 #
 # Usage (from host root, after checkout + submodules):
 #   ./tools/fetch-packs-for-docs.sh

@@ -1,0 +1,76 @@
+{
+  "rig": "1.4.0",
+  "document": {
+    "title": "HDRI open",
+    "defaultUnit": "m"
+  },
+  "entities": [
+    {
+      "id": "cube",
+      "components": {
+        "rig.meta.named": { "name": "Cube" },
+        "rig.spatial.transform": { "position": [0, 0, 0] },
+        "rig.geometry.mesh": {
+          "positions": [
+            -1, -1, -1, 1, -1, -1, 1, 1, -1, -1, 1, -1,
+            -1, -1, 1, 1, -1, 1, 1, 1, 1, -1, 1, 1
+          ],
+          "indices": [
+            0, 1, 2, 0, 2, 3, 4, 7, 6, 4, 6, 5, 0, 4, 5, 0, 5, 1,
+            1, 5, 6, 1, 6, 2, 2, 6, 7, 2, 7, 3, 3, 7, 4, 3, 4, 0
+          ],
+          "mode": "triangles"
+        },
+        "rig.render.material": {
+          "albedoRgb": [0.85, 0.85, 0.9],
+          "metallic": 0.2,
+          "roughness": 0.35
+        }
+      }
+    },
+    {
+      "id": "camera",
+      "components": {
+        "rig.meta.named": { "name": "Camera" },
+        "rig.spatial.transform": { "position": [0, 1.2, 4.5] },
+        "rig.spatial.camera": { "active": true, "fovYDegrees": 40, "nearClip": 0.1, "farClip": 100 }
+      }
+    },
+    {
+      "id": "sun",
+      "components": {
+        "rig.meta.named": { "name": "Sun" },
+        "rig.spatial.transform": {
+          "position": [3, 5, 2],
+          "rotation": [-0.4226, 0, 0, 0.9063]
+        },
+        "rig.render.light": {
+          "type": "directional",
+          "intensity": 0.8,
+          "banded": false,
+          "ambient": 0.1
+        }
+      }
+    },
+    {
+      "id": "sky",
+      "components": {
+        "rig.meta.named": { "name": "Sky" },
+        "rig.render.environment": {
+          "hdri": "sky-hdr",
+          "intensity": 1
+        }
+      }
+    },
+    {
+      "id": "sky-hdr",
+      "components": {
+        "rig.meta.named": { "name": "sky-hdr", "stableId": "sky-hdr" },
+        "rig.media.asset_ref": {
+          "kind": "image",
+          "path": "env/sky.hdr"
+        }
+      }
+    }
+  ]
+}

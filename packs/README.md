@@ -97,6 +97,8 @@ python tools/rigpack.py check <app.json> --pinned          # product release: fl
 
 **In-org** means first-party packs in the [rigkid](https://github.com/rigkid) GitHub org - each pack has its own remote.
 
+**Visibility.** New packs start **private**. When a pack matures (green pack CI, useful example or clear data contract, ready for outside clones), make the remote **public** and add it to [`docs/api/pack-remotes.txt`](../docs/api/pack-remotes.txt) so host aggregate docs can fetch it. Host basics stay public. Private packs are not part of the supported aggregate; they keep their own Pages when enabled. If you want a private pack released, open an issue on [rigkid/RigKit](https://github.com/rigkid/RigKit/issues) and name the pack.
+
 **Host basics** (git submodules in this repo):
 
 | Pack | Role |
@@ -189,7 +191,7 @@ cmake -S . -B build && cmake --build build --target docs
 ./tools/generate-pack-docs.sh rigComponent
 ```
 
-**Rollout order:** land host `docs.yml` + `pack-docs.yml` on `rigkid/RigKit` `main` first (pack callers use `@main`). Then commit/push each pack’s `docs.yml` and end its README with `[API/docs](https://rigkid.github.io/<packName>/)`. **One-time per remote:** Settings > Pages > Source: **GitHub Actions**. Private Pages need an org plan that allows them (or public remotes). When adding a new in-org pack, append it to [`docs/api/pack-remotes.txt`](../docs/api/pack-remotes.txt) so the host aggregate can fetch it in CI.
+**Rollout order:** land host `docs.yml` + `pack-docs.yml` on `rigkid/RigKit` `main` first (pack callers use `@main`). Then commit/push each pack’s `docs.yml` and end its README with `[API/docs](https://rigkid.github.io/<packName>/)`. **One-time per remote:** Settings > Pages > Source: **GitHub Actions**. Private Pages need an org plan that allows them (or public remotes). Append a pack to [`docs/api/pack-remotes.txt`](../docs/api/pack-remotes.txt) only when its remote is **public** (see Visibility above).
 
 ## New pack
 

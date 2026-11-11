@@ -10,6 +10,16 @@
   },
   "dependencies": [
     {
+      "name": "rigAnimComponent",
+      "url": "https://github.com/rigkid/rigAnimComponent.git",
+      "ref": "main"
+    },
+    {
+      "name": "rigProject",
+      "url": "https://github.com/rigkid/rigProject.git",
+      "ref": "main"
+    },
+    {
       "name": "rigRender3D",
       "url": "https://github.com/rigkid/rigRender3D.git",
       "ref": "main"

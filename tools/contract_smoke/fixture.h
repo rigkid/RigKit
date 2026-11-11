@@ -11,6 +11,7 @@
 #include "ecs/MEcs.h"
 #include "ecs/PropertyReflection.h"
 #include "SmokeApp.h"
+#include "rigAnimComponent.h"
 #include "rigComponent.h"
 #include "rigProject.h"
 #include "rigProjectComponent.h"
@@ -41,6 +42,7 @@ struct SpineFixture {
 		// Construct packs directly - STATIC pack libs may drop PackRegistry
 		// self-registration object files when nothing references them.
 		packs->registerPack<rigComponent>();
+		packs->registerPack<rigAnimComponent>();
 		packs->registerPack<rigSystems>();
 		packs->registerPack<rigProjectComponent>();
 		packs->registerPack<rigProject>();

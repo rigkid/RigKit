@@ -14,16 +14,20 @@ hit() {
 # --no-ignore is load-bearing: .gitignore holds `packs/*` so all but the four
 # submodule packs are ignored, and without it rg would sweep a twentieth of
 # packs/ while the grep fallback swept all of it.
+# Vendored RigWorks is skipped: its Blender tree legitimately says addons/, and
+# portable prose is gated upstream, not by this host script.
 search() {
 	# usage: search PATTERN PATH...
 	local pat="$1"
 	shift
 	if command -v rg >/dev/null 2>&1; then
 		rg -n --no-ignore --glob '!**/third_party/**' --glob '!**/build/**' \
-			--glob '!**/check-invariants.*' -e "$pat" "$@" 2>/dev/null || true
+			--glob '!**/RigWorks/**' --glob '!**/check-invariants.*' \
+			-e "$pat" "$@" 2>/dev/null || true
 	else
 		grep -RIn --exclude-dir=third_party --exclude-dir=build \
-			--exclude='check-invariants.*' -E "$pat" "$@" 2>/dev/null || true
+			--exclude-dir=RigWorks --exclude='check-invariants.*' \
+			-E "$pat" "$@" 2>/dev/null || true
 	fi
 }
 
@@ -32,10 +36,12 @@ search_i() {
 	shift
 	if command -v rg >/dev/null 2>&1; then
 		rg -n -i --no-ignore --glob '!**/third_party/**' --glob '!**/build/**' \
-			--glob '!**/check-invariants.*' -e "$pat" "$@" 2>/dev/null || true
+			--glob '!**/RigWorks/**' --glob '!**/check-invariants.*' \
+			-e "$pat" "$@" 2>/dev/null || true
 	else
 		grep -RIn --exclude-dir=third_party --exclude-dir=build \
-			--exclude='check-invariants.*' -Ei "$pat" "$@" 2>/dev/null || true
+			--exclude-dir=RigWorks --exclude='check-invariants.*' \
+			-Ei "$pat" "$@" 2>/dev/null || true
 	fi
 }
 
@@ -83,14 +89,22 @@ arrow_globs=(--glob '*.md' --glob '*.mdc' --glob '*.yml' --glob '!**/third_party
 if command -v rg >/dev/null 2>&1; then
 	matches="$(rg -n --no-ignore "${arrow_globs[@]}" -e "$ARROW_RE" "${ARROW_PATHS[@]}" 2>/dev/null || true)"
 else
-	matches="$(python -c "
+	ARROW_PY=
+	if command -v python3 >/dev/null 2>&1; then
+		ARROW_PY=python3
+	elif command -v python >/dev/null 2>&1; then
+		ARROW_PY=python
+	else
+		hit "unicode-arrow check needs rg or python3 when rg is missing"
+	fi
+	matches=""
+	if [[ -n "$ARROW_PY" ]]; then
+		matches="$("$ARROW_PY" -c "
 import pathlib, re, sys
-root = pathlib.Path('.')
 pat = re.compile(r'[\u2190\u2192\u2194\u21d0\u21d2\u21d4]')
 skip = {'third_party', 'build', 'RigWorks'}
-paths = sys.argv[1:]
 hits = []
-for base in paths:
+for base in sys.argv[1:]:
 	p = pathlib.Path(base)
 	files = p.rglob('*') if p.is_dir() else [p]
 	for f in files:
@@ -106,7 +120,8 @@ for base in paths:
 			if pat.search(line):
 				hits.append(f'{f}:{i}:{line}')
 print('\n'.join(hits))
-" "${ARROW_PATHS[@]}")"
+" "${ARROW_PATHS[@]}" || true)"
+	fi
 fi
 if [[ -n "$matches" ]]; then
 	hit "unicode arrows in Markdown (write to / then / > for menus)"

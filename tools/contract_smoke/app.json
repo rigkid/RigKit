@@ -10,6 +10,11 @@
 			"ref": "main"
 		},
 		{
+			"name": "rigAnimComponent",
+			"url": "https://github.com/rigkid/rigAnimComponent.git",
+			"ref": "main"
+		},
+		{
 			"name": "rigSystems",
 			"url": "https://github.com/rigkid/rigSystems.git",
 			"ref": "main"

@@ -5,17 +5,30 @@
 #include "core/pack/MPack.h"
 #include "core/util/AppPaths.h"
 #include "core/util/CommandLineArgs.h"
+#include "packs/rigAnimComponent/src/rigAnimComponent.h"
 #include "packs/rigAssimp/src/rigAssimp.h"
 #include "packs/rigComponent/src/rigComponent.h"
 #include "packs/rigJolt/src/rigJolt.h"
 #include "packs/rigPhysics/src/rigPhysics.h"
+#include "packs/rigProject/src/ContractImport.h"
+#include "packs/rigProject/src/Rigz.h"
+#include "packs/rigProject/src/rigProject.h"
+#include "packs/rigProjectComponent/src/rigProjectComponent.h"
 #include "packs/rigPython/src/rigPython.h"
 #include "packs/rigRender3D/src/rigRender3D.h"
 #include "packs/rigSimComponent/src/rigSimComponent.h"
 #include "packs/rigSystems/src/rigSystems.h"
+#include "CAnimClip.h"
+#include "CAnimSkin.h"
+#include "CAnimTrack.h"
 #include "CAssetRef.h"
+#include "CCamera.h"
+#include "CInstance.h"
+#include "CLight.h"
 #include "CMesh.h"
+#include "CRenderEnvironment.h"
 #include "CRenderMaterial.h"
+#include "CRenderVisibility.h"
 #include "CTransform.h"
 #include "StageBindings.h"
 #include "StageProp.h"
@@ -23,6 +36,7 @@
 #include "SurfacePass.h"
 
 #include <cmath>
+#include <filesystem>
 #include <spdlog/spdlog.h>
 #include <string>
 
@@ -35,7 +49,9 @@
 #include "packs/rigMeshEdit/src/rigMeshEdit.h"
 #endif
 
-StageApp::~StageApp() = default;
+StageApp::~StageApp() {
+	rigkit::project::releasePackage(m_package);
+}
 
 void StageApp::onUiAttached() {
 #if STAGE_WITH_EDITOR
@@ -56,6 +72,15 @@ void StageApp::parseCommandLineArgs(const rigkit::CommandLineArgs& args) {
 	if (args.hasFlag("present")) {
 		m_present = true;
 		m_play = true;
+	}
+	if (auto open = args.getValue("open")) {
+		m_openPath = *open;
+	} else if (!args.getPositionalArgs().empty()) {
+		const std::string& first = args.getPositionalArgs().front();
+		if (first.size() > 4 &&
+			(first.ends_with(".rig") || first.ends_with(".rigz") || first.ends_with(".json"))) {
+			m_openPath = first;
+		}
 	}
 }
 
@@ -210,8 +235,279 @@ bool StageApp::runSmoke() {
 	return true;
 }
 
+bool StageApp::openDocument(const std::string& path) {
+	auto* ecs = m_engine->getECSManager();
+	if (!ecs || !m_document) {
+		spdlog::error("stage open: missing ECS or rigProject");
+		return false;
+	}
+	rigkit::project::releasePackage(m_package);
+	m_package = rigkit::project::openPackage(path);
+	if (!m_package.ok) {
+		spdlog::error("stage open: {} ({})",
+					  m_package.error.empty() ? "package open failed" : m_package.error, path);
+		return false;
+	}
+	const auto result = rigkit::project::importContractFile(*ecs, m_package.rigPath,
+															m_document->serializer().registry());
+	if (!result.ok) {
+		spdlog::error("stage open: {} ({})", result.error.empty() ? "import failed" : result.error,
+					  m_package.rigPath);
+		rigkit::project::releasePackage(m_package);
+		return false;
+	}
+	for (auto entity : ecs->view<rigkit::ecs::CAssetRef>()) {
+		auto& ref = ecs->getComponent<rigkit::ecs::CAssetRef>(entity);
+		ref.path = rigkit::project::resolvePacketAssetPath(m_package.packetRoot, ref.path);
+		std::error_code ec;
+		if (!ref.path.empty() && !std::filesystem::exists(ref.path, ec)) {
+			const auto underData = std::filesystem::path(AppPaths::getDataDir()) / ref.path;
+			if (std::filesystem::exists(underData, ec)) {
+				ref.path = underData.string();
+			}
+		}
+	}
+	stage::prepareOpenedDocument(*ecs);
+	spdlog::info("stage open: '{}' entities={} geometry={}", path, result.entityCount,
+				 result.geometryCount);
+	return true;
+}
+
+bool StageApp::runOpenSmoke() {
+	auto* ecs = m_engine->getECSManager();
+	if (!ecs) {
+		spdlog::error("stage open smoke: no ECS");
+		return false;
+	}
+
+	int meshCount = 0;
+	entt::entity meshEntity = entt::null;
+	for (auto entity : ecs->view<rigkit::ecs::CMesh>()) {
+		++meshCount;
+		if (meshEntity == entt::null) {
+			meshEntity = entity;
+		}
+	}
+	if (meshCount < 1 || meshEntity == entt::null) {
+		spdlog::error("stage open smoke: expected a mesh");
+		return false;
+	}
+	const auto& mesh = ecs->getComponent<rigkit::ecs::CMesh>(meshEntity);
+	if (mesh.positions.size() < 3) {
+		spdlog::error("stage open smoke: mesh has {} positions", mesh.positions.size());
+		return false;
+	}
+	if (!ecs->hasComponent<rigkit::ecs::CRenderMaterial>(meshEntity)) {
+		spdlog::error("stage open smoke: mesh has no material");
+		return false;
+	}
+
+	int activeCameras = 0;
+	for (auto entity : ecs->view<rigkit::ecs::CCamera>()) {
+		if (ecs->getComponent<rigkit::ecs::CCamera>(entity).active) {
+			++activeCameras;
+		}
+	}
+	if (activeCameras < 1) {
+		spdlog::error("stage open smoke: no active camera");
+		return false;
+	}
+
+	int enabledLights = 0;
+	int enabledDirectional = 0;
+	int enabledPoint = 0;
+	entt::entity keptLight = entt::null;
+	for (auto entity : ecs->view<rigkit::ecs::CLight, rigkit::ecs::CTransform>()) {
+		const auto& light = ecs->getComponent<rigkit::ecs::CLight>(entity);
+		if (!light.enabled) {
+			continue;
+		}
+		++enabledLights;
+		keptLight = entity;
+		if (light.type == rigkit::ecs::CLight::Type::Directional) {
+			++enabledDirectional;
+		} else if (light.type == rigkit::ecs::CLight::Type::Point) {
+			++enabledPoint;
+		}
+	}
+	if (enabledLights != 1 || keptLight == entt::null) {
+		spdlog::error("stage open smoke: expected one enabled light (have {})", enabledLights);
+		return false;
+	}
+	if (enabledDirectional == 1) {
+		const auto& sunXf = ecs->getComponent<rigkit::ecs::CTransform>(keptLight);
+		if (std::fabs(sunXf.rotation.x - (-0.4226f)) > 0.01f ||
+			std::fabs(sunXf.rotation.w - 0.9063f) > 0.01f) {
+			spdlog::error("stage open smoke: sun rotation stomped ({:.4f}, {:.4f}, {:.4f}, {:.4f})",
+						  sunXf.rotation.x, sunXf.rotation.y, sunXf.rotation.z, sunXf.rotation.w);
+			return false;
+		}
+	} else if (enabledPoint != 1 && ecs->getComponent<rigkit::ecs::CLight>(keptLight).type !=
+										rigkit::ecs::CLight::Type::Spot) {
+		spdlog::error("stage open smoke: expected directional, point, or spot light");
+		return false;
+	}
+
+	int instanceCount = 0;
+	for (auto entity : ecs->view<rigkit::ecs::CInstance>()) {
+		const auto source = ecs->getComponent<rigkit::ecs::CInstance>(entity).source;
+		if (!ecs->registry().valid(source) || !ecs->hasComponent<rigkit::ecs::CMesh>(source)) {
+			spdlog::error("stage open smoke: instance source missing mesh");
+			return false;
+		}
+		++instanceCount;
+	}
+
+	int hiddenCount = 0;
+	for (auto entity : ecs->view<rigkit::ecs::CRenderVisibility>()) {
+		if (!ecs->getComponent<rigkit::ecs::CRenderVisibility>(entity).visible) {
+			++hiddenCount;
+		}
+	}
+
+	const auto& material = ecs->getComponent<rigkit::ecs::CRenderMaterial>(meshEntity);
+	if (material.albedoMap != entt::null) {
+		if (!ecs->registry().valid(material.albedoMap) ||
+			!ecs->hasComponent<rigkit::ecs::CAssetRef>(material.albedoMap)) {
+			spdlog::error("stage open smoke: albedoMap entity missing");
+			return false;
+		}
+		const auto& href = ecs->getComponent<rigkit::ecs::CAssetRef>(material.albedoMap).path;
+		if (href.empty() || !std::filesystem::exists(href)) {
+			spdlog::error("stage open smoke: albedo file missing ({})", href);
+			return false;
+		}
+	}
+
+	const char* lightKind = "point";
+	if (enabledDirectional) {
+		lightKind = "directional";
+	} else if (ecs->getComponent<rigkit::ecs::CLight>(keptLight).type ==
+			   rigkit::ecs::CLight::Type::Spot) {
+		lightKind = "spot";
+	}
+	spdlog::info("stage open smoke: mesh verts={} cameras={} light={} instances={} hidden={} "
+				 "albedo={}",
+				 mesh.positions.size(), activeCameras, lightKind, instanceCount, hiddenCount,
+				 material.albedoMap != entt::null);
+
+	if (m_openPath.find("skinned") != std::string::npos) {
+		int skinCount = 0;
+		for (auto entity : ecs->view<rigkit::ecs::CAnimSkin>()) {
+			const auto& skin = ecs->getComponent<rigkit::ecs::CAnimSkin>(entity);
+			if (skin.joints.size() < 2 || skin.inverseBind.size() < 32) {
+				spdlog::error("stage open smoke: skin incomplete");
+				return false;
+			}
+			++skinCount;
+		}
+		int clipCount = 0;
+		for (auto entity : ecs->view<rigkit::ecs::CAnimClip>()) {
+			(void)entity;
+			++clipCount;
+		}
+		int trackCount = 0;
+		for (auto entity : ecs->view<rigkit::ecs::CAnimTrack>()) {
+			(void)entity;
+			++trackCount;
+		}
+		if (skinCount < 1 || clipCount < 1 || trackCount < 1) {
+			spdlog::error("stage open smoke: expected skin/clip/track (skin={} clip={} track={})",
+						  skinCount, clipCount, trackCount);
+			return false;
+		}
+		entt::entity tip = entt::null;
+		for (auto entity : ecs->view<rigkit::ecs::CTransform>()) {
+			if (ecs->entityName(entity) == "Tip") {
+				tip = entity;
+				break;
+			}
+		}
+		if (tip == entt::null) {
+			spdlog::error("stage open smoke: tip bone missing");
+			return false;
+		}
+		const auto rot0 = ecs->getComponent<rigkit::ecs::CTransform>(tip).rotation;
+		ecs->updateSystems(0.25f);
+		ecs->updateSystems(0.25f);
+		const auto rot1 = ecs->getComponent<rigkit::ecs::CTransform>(tip).rotation;
+		if (std::fabs(rot1.z - rot0.z) < 1e-4f && std::fabs(rot1.w - rot0.w) < 1e-4f) {
+			spdlog::error("stage open smoke: clip did not move tip");
+			return false;
+		}
+		spdlog::info("stage open smoke: skin + clip playback ok");
+	}
+
+	if (m_openPath.find("hdri") != std::string::npos) {
+		bool hdriOk = false;
+		for (auto entity : ecs->view<rigkit::ecs::CRenderEnvironment>()) {
+			const auto hdri = ecs->getComponent<rigkit::ecs::CRenderEnvironment>(entity).hdri;
+			if (hdri == entt::null || !ecs->hasComponent<rigkit::ecs::CAssetRef>(hdri)) {
+				continue;
+			}
+			const auto& href = ecs->getComponent<rigkit::ecs::CAssetRef>(hdri).path;
+			if (!href.empty() && std::filesystem::exists(href)) {
+				hdriOk = true;
+				break;
+			}
+		}
+		if (!hdriOk) {
+			spdlog::error("stage open smoke: HDRI asset missing after open");
+			return false;
+		}
+		spdlog::info("stage open smoke: HDRI path ok");
+	}
+
+	if (m_openPath.find("spot-light") != std::string::npos) {
+		if (ecs->getComponent<rigkit::ecs::CLight>(keptLight).type !=
+			rigkit::ecs::CLight::Type::Spot) {
+			spdlog::error("stage open smoke: expected spot light");
+			return false;
+		}
+		spdlog::info("stage open smoke: spot light ok");
+	}
+
+	// Phase 2: textured package also round-trips through a temp .rigz.
+	if (m_openPath.find("textured") != std::string::npos && !m_package.temporary) {
+		const std::string dest =
+			AppPaths::joinPath(AppPaths::getExecutableDir(), "data/scenes/textured-smoke.rigz");
+		std::string err;
+		if (!rigkit::project::writeRigz(dest, m_package.rigPath, m_package.packetRoot, &err)) {
+			spdlog::error("stage open smoke: writeRigz failed ({})", err);
+			return false;
+		}
+		if (!openDocument(dest)) {
+			spdlog::error("stage open smoke: reopen .rigz failed");
+			return false;
+		}
+		bool albedoOk = false;
+		for (auto entity : ecs->view<rigkit::ecs::CRenderMaterial>()) {
+			const auto& mat = ecs->getComponent<rigkit::ecs::CRenderMaterial>(entity);
+			if (mat.albedoMap == entt::null ||
+				!ecs->hasComponent<rigkit::ecs::CAssetRef>(mat.albedoMap)) {
+				continue;
+			}
+			const auto& href = ecs->getComponent<rigkit::ecs::CAssetRef>(mat.albedoMap).path;
+			if (!href.empty() && std::filesystem::exists(href)) {
+				albedoOk = true;
+				break;
+			}
+		}
+		if (!albedoOk) {
+			spdlog::error("stage open smoke: .rigz albedo path missing after reopen");
+			return false;
+		}
+		spdlog::info("stage open smoke: .rigz round-trip ok");
+	}
+	return true;
+}
+
 void StageApp::setup() {
-	spdlog::info(m_smoke ? "Stage smoke" : (m_play ? "Stage play" : "Stage editor"));
+	const bool opening = !m_openPath.empty();
+	spdlog::info(opening   ? "Stage open"
+				 : m_smoke ? "Stage smoke"
+				 : m_play  ? "Stage play"
+						   : "Stage editor");
 	m_engine->setClearColor(0.10f, 0.11f, 0.13f, 1.f);
 
 	auto* packs = m_engine->getPackManager();
@@ -219,6 +515,9 @@ void StageApp::setup() {
 		return;
 	}
 	packs->registerPack<rigkit::rigComponent>();
+	packs->registerPack<rigkit::rigAnimComponent>();
+	packs->registerPack<rigkit::rigProjectComponent>();
+	packs->registerPack<rigkit::rigProject>();
 	packs->registerPack<rigkit::rigSystems>();
 	packs->registerPack<rigkit::rigRender3D>();
 	packs->registerPack<rigkit::rigSimComponent>();
@@ -235,6 +534,7 @@ void StageApp::setup() {
 #endif
 	packs->initAll();
 	packs->setupAll();
+	m_document = packs->getPack<rigkit::rigProject>();
 
 #if STAGE_WITH_EDITOR
 	if (!m_play && !m_smoke) {
@@ -250,6 +550,43 @@ void StageApp::setup() {
 		return;
 	}
 	stage::registerComponents(*ecs);
+
+	if (opening) {
+		namespace fs = std::filesystem;
+		fs::path path(m_openPath);
+		if (!path.is_absolute()) {
+			const fs::path besideExe = fs::path(AppPaths::getExecutableDir()) / m_openPath;
+			const fs::path inData = fs::path(AppPaths::getDataDir()) / m_openPath;
+			const fs::path inScenes = fs::path(AppPaths::getDataDir()) / "scenes" / path.filename();
+			if (fs::exists(besideExe)) {
+				path = besideExe;
+			} else if (fs::exists(inData)) {
+				path = inData;
+			} else if (fs::exists(inScenes)) {
+				path = inScenes;
+			} else {
+				path = besideExe;
+			}
+		}
+		const bool opened = openDocument(path.string());
+		if (m_smoke) {
+			m_smokeOk = opened && runOpenSmoke();
+			if (m_smokeOk) {
+				spdlog::info("example-stage --open --smoke ok");
+			} else {
+				spdlog::error("example-stage --open --smoke failed");
+			}
+			if (auto* win = m_engine->getWindow()) {
+				glfwSetWindowShouldClose(win, GLFW_TRUE);
+			}
+			return;
+		}
+		if (!opened) {
+			m_smokeOk = false;
+		}
+		return;
+	}
+
 	stage::addFeatureActors(*ecs);
 
 	std::string propError;
@@ -292,7 +629,7 @@ void StageApp::update(float dt) {
 			}
 		}
 	}
-	if (m_smoke || !m_python || !m_python->available()) {
+	if (m_smoke || !m_openPath.empty() || !m_python || !m_python->available()) {
 		return;
 	}
 	auto* ecs = m_engine->getECSManager();

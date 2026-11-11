@@ -6,11 +6,17 @@
 #include <sstream>
 
 #include "CAnchor.h"
+#include "CAnimBind.h"
+#include "CAnimClip.h"
+#include "CAnimSkeleton.h"
+#include "CAnimSkin.h"
+#include "CAnimTrack.h"
 #include "CAssetRef.h"
 #include "CCamera.h"
 #include "CCode.h"
 #include "CCurve.h"
 #include "CDrawStyle.h"
+#include "CInstance.h"
 #include "CLayer.h"
 #include "CLight.h"
 #include "CMesh.h"
@@ -338,6 +344,236 @@ TEST_CASE("rigProject Contract import maps rig.* geometry light material") {
 
 	auto camView = ecs.view<ecs::CCamera>();
 	REQUIRE(camView.begin() != camView.end());
+}
+
+TEST_CASE("Contract import keeps authored directional rotation and flat mesh positions") {
+	SpineFixture f;
+	auto& ecs = f.ecs();
+	const char* jsonText = R"({
+		"rig": "1.4.0",
+		"document": { "title": "blender-like" },
+		"entities": [
+			{
+				"id": "sun",
+				"components": {
+					"rig.spatial.transform": { "rotation": [-0.4226, 0, 0, 0.9063] },
+					"rig.render.light": { "type": "directional", "intensity": 3 }
+				}
+			},
+			{
+				"id": "cube",
+				"components": {
+					"rig.spatial.transform": { "position": [0, 1, 0] },
+					"rig.geometry.mesh": {
+						"mode": "triangles",
+						"positions": [
+							-1, -1, -1, 1, -1, -1, 1, 1, -1, -1, 1, -1,
+							-1, -1, 1, 1, -1, 1, 1, 1, 1, -1, 1, 1
+						],
+						"indices": [0, 1, 2, 0, 2, 3],
+						"loops": [0, 1, 2, 3],
+						"loopSizes": [4]
+					},
+					"rig.render.material": { "albedoRgb": [0.8, 0.2, 0.1], "roughness": 0.45 }
+				}
+			}
+		]
+	})";
+	auto result = importWithPackCodecs(f, jsonText, "blender-like");
+	REQUIRE(result.ok);
+
+	auto lightView = ecs.view<ecs::CLight, ecs::CTransform>();
+	REQUIRE(lightView.begin() != lightView.end());
+	const auto sun = *lightView.begin();
+	const auto& xf = lightView.get<ecs::CTransform>(sun);
+	CHECK(xf.rotation.x == doctest::Approx(-0.4226f).epsilon(0.01));
+	CHECK(xf.rotation.w == doctest::Approx(0.9063f).epsilon(0.01));
+
+	auto meshView = ecs.view<ecs::CMesh>();
+	REQUIRE(meshView.begin() != meshView.end());
+	const auto& mesh = meshView.get<ecs::CMesh>(*meshView.begin());
+	CHECK(mesh.positions.size() == 8);
+	CHECK(mesh.positions[0].x == doctest::Approx(-1.f));
+	REQUIRE(ecs.hasComponent<ecs::CRenderMaterial>(*meshView.begin()));
+}
+
+TEST_CASE("rigProject writes and reloads rig.render.material") {
+	SpineFixture f;
+	auto& ecs = f.ecs();
+	auto* packs = f.engine->getPackManager();
+	REQUIRE(packs != nullptr);
+	auto docPack = packs->getPack<rigProject>();
+	REQUIRE(docPack != nullptr);
+
+	const auto path = tempRigPath("rigkit_contract_smoke_material.rig").string();
+	std::filesystem::remove(path);
+
+	auto tex = ecs.createEntity("albedo");
+	ecs::CAssetRef ref;
+	ref.kind = ecs::CAssetRef::Kind::Image;
+	ref.path = "checker.png";
+	ecs.addComponent(tex, ref);
+
+	auto mesh = ecs.createEntity("cube");
+	ecs.addComponent(mesh, ecs::CTransform{});
+	ecs::CMesh m;
+	m.positions = {{0, 0, 0}, {1, 0, 0}, {0, 1, 0}};
+	m.indices = {0, 1, 2};
+	ecs.addComponent(mesh, m);
+	ecs::CRenderMaterial mat;
+	mat.albedoR = 0.8f;
+	mat.albedoG = 0.2f;
+	mat.albedoB = 0.1f;
+	mat.roughness = 0.45f;
+	mat.metallic = 0.1f;
+	mat.emissiveR = 0.05f;
+	mat.albedoMap = tex;
+	ecs.addComponent(mesh, mat);
+	ecs::CProject doc;
+	doc.path = path;
+	ecs.addComponent(ecs.createEntity("project"), doc);
+
+	REQUIRE(docPack->serializer().save(ecs, path));
+	REQUIRE(docPack->serializer().load(ecs, path));
+
+	auto view = ecs.view<ecs::CRenderMaterial>();
+	REQUIRE(view.begin() != view.end());
+	const auto& loaded = view.get<ecs::CRenderMaterial>(*view.begin());
+	CHECK(loaded.albedoR == doctest::Approx(0.8f));
+	CHECK(loaded.roughness == doctest::Approx(0.45f));
+	CHECK(loaded.metallic == doctest::Approx(0.1f));
+	CHECK(loaded.emissiveR == doctest::Approx(0.05f));
+	REQUIRE(ecs.registry().valid(loaded.albedoMap));
+	CHECK(ecs.hasComponent<ecs::CAssetRef>(loaded.albedoMap));
+	std::filesystem::remove(path);
+}
+
+TEST_CASE("Contract import remaps anim skin / clip / track by document id") {
+	SpineFixture f;
+	auto& ecs = f.ecs();
+	const char* jsonText = R"({
+		"rig": "1.4.0",
+		"document": { "title": "anim-smoke" },
+		"entities": [
+			{
+				"id": "root",
+				"components": {
+					"rig.spatial.transform": {},
+					"rig.anim.skeleton": { "root": "root", "bones": ["root", "tip"] }
+				}
+			},
+			{
+				"id": "tip",
+				"components": {
+					"rig.spatial.transform": { "position": [0, 1, 0] },
+					"rig.anim.bind": { "position": [0, 1, 0] }
+				}
+			},
+			{
+				"id": "flag",
+				"components": {
+					"rig.spatial.transform": {},
+					"rig.geometry.mesh": {
+						"mode": "triangles",
+						"positions": [0,0,0, 1,0,0, 0,1,0],
+						"indices": [0, 1, 2]
+					},
+					"rig.anim.skin": {
+						"skeleton": "root",
+						"joints": ["root", "tip"],
+						"inverseBind": [
+							1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1,
+							1,0,0,0, 0,1,0,0, 0,0,1,0, 0,-1,0,1
+						],
+						"jointIndices": [0,0,0,0, 0,0,0,0, 1,0,0,0],
+						"jointWeights": [1,0,0,0, 1,0,0,0, 1,0,0,0]
+					}
+				}
+			},
+			{
+				"id": "wave",
+				"components": {
+					"rig.anim.clip": { "duration": 1, "wrap": "loop" }
+				}
+			},
+			{
+				"id": "wave-rot",
+				"components": {
+					"rig.anim.track": {
+						"clip": "wave",
+						"target": "tip",
+						"propertyKey": "rotation",
+						"times": [0, 1],
+						"values": [0,0,0,1, 0,0,0,1],
+						"stride": 4
+					}
+				}
+			}
+		]
+	})";
+	auto result = importWithPackCodecs(f, jsonText, "anim-smoke");
+	REQUIRE(result.ok);
+
+	auto skelView = ecs.view<ecs::CAnimSkeleton>();
+	REQUIRE(skelView.begin() != skelView.end());
+	const auto& skel = skelView.get<ecs::CAnimSkeleton>(*skelView.begin());
+	REQUIRE(ecs.registry().valid(skel.root));
+	REQUIRE(skel.bones.size() == 2);
+
+	auto skinView = ecs.view<ecs::CAnimSkin>();
+	REQUIRE(skinView.begin() != skinView.end());
+	const auto& skin = skinView.get<ecs::CAnimSkin>(*skinView.begin());
+	REQUIRE(ecs.registry().valid(skin.skeleton));
+	REQUIRE(skin.joints.size() == 2);
+	CHECK(ecs.hasComponent<ecs::CAnimSkeleton>(skin.skeleton));
+
+	REQUIRE(ecs.view<ecs::CAnimBind>().begin() != ecs.view<ecs::CAnimBind>().end());
+	REQUIRE(ecs.view<ecs::CAnimClip>().begin() != ecs.view<ecs::CAnimClip>().end());
+
+	auto trackView = ecs.view<ecs::CAnimTrack>();
+	REQUIRE(trackView.begin() != trackView.end());
+	const auto& track = trackView.get<ecs::CAnimTrack>(*trackView.begin());
+	REQUIRE(ecs.registry().valid(track.clip));
+	REQUIRE(ecs.registry().valid(track.target));
+	CHECK(ecs.hasComponent<ecs::CAnimClip>(track.clip));
+	CHECK(ecs.hasComponent<ecs::CTransform>(track.target));
+}
+
+TEST_CASE("Contract import remaps instance source by document id") {
+	SpineFixture f;
+	auto& ecs = f.ecs();
+	const char* jsonText = R"({
+		"rig": "1.4.0",
+		"document": { "title": "instance-smoke" },
+		"entities": [
+			{
+				"id": "cube",
+				"components": {
+					"rig.spatial.transform": {},
+					"rig.geometry.mesh": {
+						"mode": "triangles",
+						"positions": [0,0,0, 1,0,0, 0,1,0],
+						"indices": [0, 1, 2]
+					},
+					"rig.render.material": { "albedoRgb": [1, 0, 0] }
+				}
+			},
+			{
+				"id": "copy",
+				"components": {
+					"rig.spatial.transform": { "position": [2, 0, 0] },
+					"rig.spatial.instance": { "source": "cube" }
+				}
+			}
+		]
+	})";
+	auto result = importWithPackCodecs(f, jsonText, "instance-smoke");
+	REQUIRE(result.ok);
+	auto instView = ecs.view<ecs::CInstance>();
+	REQUIRE(instView.begin() != instView.end());
+	const auto source = instView.get<ecs::CInstance>(*instView.begin()).source;
+	REQUIRE(ecs.registry().valid(source));
+	CHECK(ecs.hasComponent<ecs::CMesh>(source));
 }
 
 /**

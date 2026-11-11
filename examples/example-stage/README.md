@@ -12,6 +12,22 @@ A lit stage: a checkered ground, a small cloth, an orange metal ball that drops,
 
 `CSimShape::Box` is reserved in **rigJolt** and is not spawned.
 
+## Open a Rig document (Blender phase 1)
+
+Blender exports a `.rig` (see [docs/blender-load.md](../../docs/blender-load.md)). Stage opens it with Contract import and presents through **rigRender3D**:
+
+```bash
+./examples/example-stage/build/bin/example-stage --open=data/scenes/basic-scene.rig
+./examples/example-stage/build/bin/example-stage --open=data/scenes/basic-scene.rig --smoke
+./examples/example-stage/build/bin/example-stage --open=data/scenes/point-light.rig --smoke
+./examples/example-stage/build/bin/example-stage --open=data/scenes/textured/scene.rig --smoke
+./examples/example-stage/build/bin/example-stage --open=data/scenes/skinned-flag.rig --smoke
+./examples/example-stage/build/bin/example-stage --open=data/scenes/hdri/scene.rig --smoke
+./examples/example-stage/build/bin/example-stage --open=data/scenes/spot-light.rig --smoke
+```
+
+`--open` skips the feature physics scene and uses `openPackage` (`.rig` or `.rigz`). Relative paths resolve next to the exe, under `data/`, or under `data/scenes/`. Open smoke checks mesh + material, active camera, one kept light (directional preferred), instances, hide flags, albedo files (textured also round-trips a temp `.rigz`), skinned clip playback, HDRI package paths, and spot lights.
+
 ## Build
 
 ```bash
@@ -27,12 +43,13 @@ ctest --test-dir examples/example-stage/build --output-on-failure
 ./examples/example-stage/build/bin/example-stage --play
 ./examples/example-stage/build/bin/example-stage-play
 ./examples/example-stage/build/bin/example-stage --smoke
+./examples/example-stage/build/bin/example-stage --open=data/scenes/basic-cube.rig --smoke
 ./examples/example-stage/build/bin/example-stage-play --present
 ```
 
 `--play` on the editor executable skips editor chrome. `example-stage-play` is the build that does not link **rigImGui** or **rigMeshEdit**.
 
-`--smoke` is headless. It checks the feature scene, steps physics, and runs `data/play.py` through every `stage` call. CPython Development.Embed has to be found at configure time or smoke fails. `example-stage-tests` does not need Python or a GPU. It covers prefab spawn, destroy, and the pose guard.
+`--smoke` without `--open` is headless over the feature scene: physics + `data/play.py`. CPython Development.Embed has to be found at configure time or that smoke fails. `example-stage-tests` does not need Python or a GPU. It covers prefab spawn, destroy, and the pose guard.
 
 First configure compiles Jolt and Assimp. That is heavy. Later edits stay in this folder.
 
@@ -41,6 +58,7 @@ First configure compiles Jolt and Assimp. That is heavy. Later edits stay in thi
 | Pack | Role |
 |------|------|
 | **rigComponent** / **rigSystems** | Transform, camera, light, mesh, hierarchy |
+| **rigProject** / **rigProjectComponent** | `.rig` Contract import (`--open`) |
 | **rigRender3D** | GLES mesh present |
 | **rigSimComponent** / **rigPhysics** / **rigJolt** | World, plane, sphere, cloth |
 | **rigAssimp** | glTF (and the other formats that build enables) into `CMesh` |
