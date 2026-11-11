@@ -1,54 +1,22 @@
-# First-party pack remotes for host aggregate Doxygen CI.
+# Public (supported) pack remotes for host aggregate Doxygen CI.
 # Columns: name<TAB>url<TAB>ref
-# Keep in sync when adding an in-org pack (see packs/README.md).
+# Private packs stay out of this list until they graduate to public.
+# Full inventory: docs/packs_catalog.md. Policy: packs/README.md (visibility).
 rigAcp	https://github.com/rigkid/rigAcp.git	main
-rigAgentty	https://github.com/rigkid/rigAgentty.git	main
+rigAnimComponent	https://github.com/rigkid/rigAnimComponent.git	main
 rigAssimp	https://github.com/rigkid/rigAssimp.git	main
-rigBlend2D	https://github.com/rigkid/rigBlend2D.git	main
 rigCad	https://github.com/rigkid/rigCad.git	main
 rigCodeEditor	https://github.com/rigkid/rigCodeEditor.git	main
-rigColorspace	https://github.com/rigkid/rigColorspace.git	main
 rigComponent	https://github.com/rigkid/rigComponent.git	main
-rigCompositor	https://github.com/rigkid/rigCompositor.git	main
 rigDxf	https://github.com/rigkid/rigDxf.git	main
-rigEthereum	https://github.com/rigkid/rigEthereum.git	main
-rigGCode	https://github.com/rigkid/rigGCode.git	main
-rigGrbl	https://github.com/rigkid/rigGrbl.git	main
 rigImGui	https://github.com/rigkid/rigImGui.git	main
-rigManifold	https://github.com/rigkid/rigManifold.git	main
-rigMeshEdit	https://github.com/rigkid/rigMeshEdit.git	main
 rigNodeComponent	https://github.com/rigkid/rigNodeComponent.git	main
 rigNodeEditor	https://github.com/rigkid/rigNodeEditor.git	main
 rigObj	https://github.com/rigkid/rigObj.git	main
-rigOpenCV	https://github.com/rigkid/rigOpenCV.git	main
 rigOsc	https://github.com/rigkid/rigOsc.git	main
-rigPainty	https://github.com/rigkid/rigPainty.git	main
-rigPdfWrite	https://github.com/rigkid/rigPdfWrite.git	main
-rigPixelPlotComponent	https://github.com/rigkid/rigPixelPlotComponent.git	main
-rigPixelPlotter	https://github.com/rigkid/rigPixelPlotter.git	main
-rigPixelPlotterUi	https://github.com/rigkid/rigPixelPlotterUi.git	main
-rigPlotComponent	https://github.com/rigkid/rigPlotComponent.git	main
-rigPlotFinders	https://github.com/rigkid/rigPlotFinders.git	main
-rigPlotGenerators	https://github.com/rigkid/rigPlotGenerators.git	main
-rigPlotProcessors	https://github.com/rigkid/rigPlotProcessors.git	main
-rigPlotter	https://github.com/rigkid/rigPlotter.git	main
-rigPlotterUi	https://github.com/rigkid/rigPlotterUi.git	main
-rigPrintComponent	https://github.com/rigkid/rigPrintComponent.git	main
 rigProject	https://github.com/rigkid/rigProject.git	main
-rigPython	https://github.com/rigkid/rigPython.git	main
+rigProjectComponent	https://github.com/rigkid/rigProjectComponent.git	main
 rigRender3D	https://github.com/rigkid/rigRender3D.git	main
-rigScreenCast	https://github.com/rigkid/rigScreenCast.git	main
-rigSlice	https://github.com/rigkid/rigSlice.git	main
-rigSQLite	https://github.com/rigkid/rigSQLite.git	main
 rigSvg	https://github.com/rigkid/rigSvg.git	main
-rigTrace	https://github.com/rigkid/rigTrace.git	main
-rigTraceUi	https://github.com/rigkid/rigTraceUi.git	main
-rigTrueType	https://github.com/rigkid/rigTrueType.git	main
 rigSystems	https://github.com/rigkid/rigSystems.git	main
-rigVarFont	https://github.com/rigkid/rigVarFont.git	main
-rigVectorEditor	https://github.com/rigkid/rigVectorEditor.git	main
-rigVectorUi	https://github.com/rigkid/rigVectorUi.git	main
-rigAudioUi	https://github.com/rigkid/rigAudioUi.git	main
-rigCast	https://github.com/rigkid/rigCast.git	main
-rigMidi	https://github.com/rigkid/rigMidi.git	main
 rigVolca	https://github.com/rigkid/rigVolca.git	main
