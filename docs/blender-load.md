@@ -22,7 +22,7 @@ Host for this work: **example-stage** (already presents with **rigRender3D**). O
 
 ## Phase 2 - Basic
 
-**Done when:** linked duplicate, hide flags, textured Principled in a `.rigz`, and a usable point-only light read correctly.
+**Done when:** linked duplicate, hide flags, textured Principled in a `.rigz`, usable point and spot lights, material round-trip.
 
 | Work | Home | Status |
 |------|------|--------|
@@ -30,13 +30,16 @@ Host for this work: **example-stage** (already presents with **rigRender3D**). O
 | Honour `rig.render.visibility` in 3D present | **rigRender3D** | done |
 | Albedo map + `.rigz` `data/` | stage `openPackage` + rewrite `CAssetRef` via `resolvePacketAssetPath` | done |
 | Point light when it is the only light | `prepareOpenedDocument` keeps first light if no directional | done |
+| Spot light (cone + range) | `CLight::Spot`; Lambert + surface present | done |
 | Material schema writer (save round-trip) | **rigSystems** `CRenderMaterial` codec | done |
 
-Fixtures: `data/scenes/basic-scene.rig` (instance + hide + sun over bulb), `data/scenes/point-light.rig`, `data/scenes/textured/` (+ smoke writes a temp `.rigz`).
+Fixtures: `data/scenes/basic-scene.rig` (instance + hide + sun over bulb), `data/scenes/point-light.rig`, `data/scenes/spot-light.rig`, `data/scenes/textured/` (+ smoke writes a temp `.rigz`).
+
+No Phase 2 leftovers.
 
 ## Phase 3 - Intermediate
 
-**Done when:** the add-on smoke skinned armature + sampled action plays; world HDRI affects shading; spot reads and presents.
+**Done when:** the add-on smoke skinned armature + sampled action plays; world HDRI affects shading.
 
 | Work | Home | Status |
 |------|------|--------|
@@ -45,18 +48,17 @@ Fixtures: `data/scenes/basic-scene.rig` (instance + hide + sun over bulb), `data
 | Skinned mesh present | **rigRender3D** CPU linear blend (**Pi risk**) | done |
 | Clip / track playback | **rigSystems** `SAnimClips` | done |
 | HDRI open from exported `.rigz` / package | stage asset resolve + **rigImage** | done |
-| Spot lights | `CLight::Spot` + point present until cone shading grows | done |
 
-Fixtures: `data/scenes/skinned-flag.rig`, `data/scenes/hdri/`, `data/scenes/spot-light.rig`.
+Fixtures: `data/scenes/skinned-flag.rig`, `data/scenes/hdri/`.
 
-**Still out (Contract):** modifiers, Geometry Nodes, live constraints/drivers, shape keys, area lights until schema, multi-UV, Cycles graphs, multi-light accumulate, true spot cone shading.
+**Still out (Contract):** modifiers, Geometry Nodes, live constraints/drivers, shape keys, area lights until schema, multi-UV, Cycles graphs, multi-light accumulate.
 
 ## Risks
 
 - **Pi / rebuild:** skinned present and HDRI decode stay in packs; stage is the verify host. CPU skin is O(verts) per Draw.
 - **Fix where it lives:** light aim, mesh packing, instance/skin present, and anim codecs are pack fixes - no private viewer workaround.
 - **One light:** phases 1-3 stay honest about single-light present; multi-light is a later present design.
-- **Spot:** POD + import store cone fields; present still uses the point path.
+- **Spot:** cone + range on the single-light present path; not shadowed.
 
 ## Commands
 
