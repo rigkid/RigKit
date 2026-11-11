@@ -68,6 +68,14 @@ jobs:
           chmod +x tools/generate-pack-docs.sh
           ./tools/generate-pack-docs.sh "$PACK" "$PWD" "$PWD/build/docs/pack/$PACK"
 
+      - name: Check generated docs
+        env:
+          PACK: ${{ inputs.pack }}
+        working-directory: host
+        run: |
+          chmod +x tools/check-docs.sh
+          ./tools/check-docs.sh --out "$PWD/build/docs/pack/$PACK" --input "packs/$PACK" --exclude-examples
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:

@@ -110,7 +110,7 @@ Without the secret, workflows warn and continue. Jobs that only touch public rem
 - **[contract/commandments.md](contract/commandments.md)** - constitution (start here).
 - **[AGENTS.md](../AGENTS.md)** - commandments + commentary (**NO CODE JUST DATA**, **Pi floor**, **fast rebuilds**, **author friendliness**).
 - **[`tools/check-invariants`](../tools/check-invariants.sh)** - machine gates for ImGui-in-`src/`, data/code pack shape, pack `pack.json` SemVer, banned vocabulary, archaeology phrasing.
-- **[`tools/check-docs`](../tools/check-docs.sh)** - the Doxygen warning log must be empty. Run it after `cmake --build build --target docs`; the Docs workflow fails on any warning. A warning means text is missing from the HTML, not merely untidy.
+- **[`tools/check-docs`](../tools/check-docs.sh)** - empty Doxygen warning log, and every documented namespace-scope function or enum present in the generated XML. Run it after `cmake --build build --target docs`. Pack Pages runs the same check. A warning means text is missing from the HTML. A missing symbol means a documented free function was dropped.
 - **`.cursor/rules/rigkit-core.mdc`** - Cursor's always-on hard-invariants reminder. Gitignored (local, not repo content) - see [AGENTS.md#tool-specific-folders-are-local-not-shared](../AGENTS.md#tool-specific-folders-are-local-not-shared).
 - **[authoring.md](authoring.md)** - how users should code (helpers / creators, not manager ceremony).
 - Iterate with `cmake -S examples/<name> -B examples/<name>/build` - see [build_instructions.md](build_instructions.md).

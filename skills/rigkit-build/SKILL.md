@@ -10,7 +10,7 @@ description: >-
 
 # RigKit build
 
-Capability units are **packs** (`packs/`, `pack.json`, `cmake/RigKitPacks.cmake`). Spoken name = folder id = `pack.json` `"name"` = `app.json` `"name"` - [packs/README.md#naming](../../packs/README.md#naming). New host examples are `example-<Name>`; new product apps are `app-<Name>` ([docs/apps_creating.md](../../docs/apps_creating.md)). The CMake target keeps the hyphen.
+Capability units are **packs** (`packs/`, `pack.json`, `cmake/RigKitPacks.cmake`). Spoken name = folder id = `pack.json` `"name"` = `app.json` `"name"` - [packs/README.md#naming](../../packs/README.md#naming). New in-tree examples (host or pack demo) are `example-<Name>`; product apps use a brand id ([docs/apps_creating.md](../../docs/apps_creating.md)). The CMake target keeps the hyphen.
 
 ## Pi gate (always)
 
@@ -110,7 +110,7 @@ cmake --build build --target docs
 ./tools/generate-pack-docs.sh rigComponent
 ```
 
-Published: [https://rigkid.github.io/rigkit/](https://rigkid.github.io/rigkit/) (landing), [https://rigkid.github.io/rigkit/api/](https://rigkid.github.io/rigkit/api/) (host Doxygen), and `https://rigkid.github.io/<pack>/` (pack `docs.yml`). Config: [docs/api/Doxyfile.in](../../docs/api/Doxyfile.in), [PackDoxyfile.in](../../docs/api/PackDoxyfile.in). Site source: [`site/`](../../site/). Rollout / Pages: [packs/README.md](../../packs/README.md#api-docs--github-pages). Comment tags: [rigkit-comments](../rigkit-comments/SKILL.md).
+Published: [https://rigkid.github.io/rigkit/](https://rigkid.github.io/rigkit/) (landing), [https://rigkid.github.io/rigkit/api/](https://rigkid.github.io/rigkit/api/) (host Doxygen), and `https://rigkid.github.io/<pack>/` (pack `docs.yml`). Config: [docs/api/Doxyfile.in](../../docs/api/Doxyfile.in), [PackDoxyfile.in](../../docs/api/PackDoxyfile.in). The generate step prepends a bare `@file` so documented free functions are kept. `tools/check-docs` fails the docs build when the warning log is dirty or one of those symbols is missing. Site source: [`site/`](../../site/). Rollout / Pages: [packs/README.md](../../packs/README.md#api-docs--github-pages). Comment tags: [rigkit-comments](../rigkit-comments/SKILL.md).
 
 ## API change sweep
 

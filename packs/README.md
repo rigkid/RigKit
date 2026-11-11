@@ -189,7 +189,11 @@ Local:
 ```bash
 cmake -S . -B build && cmake --build build --target docs
 ./tools/generate-pack-docs.sh rigComponent
+./tools/check-docs.sh build
+./tools/check-docs.sh --out build/docs/pack/rigComponent --input packs/rigComponent --exclude-examples
 ```
+
+The docs build prepends a bare `@file` when a header has Doxygen comments and no `@file` of its own, so documented free functions are not dropped. `tools/check-docs` is the gate: the warning log must be empty, and every documented namespace-scope function or enum must be in the output. Pack Pages runs that check before it publishes.
 
 **Rollout order:** land host `docs.yml` + `pack-docs.yml` on `rigkid/RigKit` `main` first (pack callers use `@main`). Then commit/push each pack’s `docs.yml` and end its README with `[API/docs](https://rigkid.github.io/<packName>/)`. **One-time per remote:** Settings > Pages > Source: **GitHub Actions**. Private Pages need an org plan that allows them (or public remotes). Append a pack to [`docs/api/pack-remotes.txt`](../docs/api/pack-remotes.txt) only when its remote is **public** (see Visibility above).
 

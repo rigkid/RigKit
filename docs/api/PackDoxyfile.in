@@ -64,7 +64,9 @@ QUIET                  = YES
 WARNINGS               = YES
 WARN_IF_UNDOCUMENTED   = NO
 WARN_IF_DOC_ERROR      = YES
-WARN_IF_INCOMPLETE_DOC = YES
+# House style documents non-obvious parameters only (skills/rigkit-comments),
+# so a partial @param list is intended, not an omission to warn about.
+WARN_IF_INCOMPLETE_DOC = NO
 WARN_NO_PARAMDOC       = NO
 WARN_AS_ERROR          = NO
 WARN_LOGFILE           = "@RIGKIT_DOXY_OUT@/doxygen.warn"
@@ -86,6 +88,11 @@ EXCLUDE_PATTERNS       = */third_party/* \
                          */README.md \
                          */examples/*
 EXCLUDE_SYMBOLS        =
+
+# Bare @file for headers that document free functions and omit the command.
+# See tools/doxygen_ensure_file.py.
+FILTER_PATTERNS        = @RIGKIT_DOXY_FILTER_PATTERNS@
+FILTER_SOURCE_FILES    = NO
 
 USE_MDFILE_AS_MAINPAGE = "@RIGKIT_DOXY_OUT@/mainpage.md"
 
@@ -119,7 +126,9 @@ SEARCHENGINE           = YES
 GENERATE_LATEX         = NO
 GENERATE_RTF           = NO
 GENERATE_MAN           = NO
-GENERATE_XML           = NO
+GENERATE_XML           = YES
+XML_OUTPUT             = xml
+XML_PROGRAMLISTING     = NO
 GENERATE_DOCBOOK       = NO
 
 ENABLE_PREPROCESSING   = YES

@@ -93,7 +93,9 @@ EXAMPLE_PATTERNS       =
 EXAMPLE_RECURSIVE      = NO
 IMAGE_PATH             =
 INPUT_FILTER           =
-FILTER_PATTERNS        =
+# Bare @file for headers that document free functions and omit the command.
+# See tools/doxygen_ensure_file.py. Empty when Python is not on PATH.
+FILTER_PATTERNS        = @RIGKIT_DOXY_FILTER_PATTERNS@
 FILTER_SOURCE_FILES    = NO
 
 USE_MDFILE_AS_MAINPAGE = "@RIGKIT_ROOT@/docs/api/mainpage.md"
@@ -128,7 +130,9 @@ SEARCHENGINE           = YES
 GENERATE_LATEX         = NO
 GENERATE_RTF           = NO
 GENERATE_MAN           = NO
-GENERATE_XML           = NO
+GENERATE_XML           = YES
+XML_OUTPUT             = xml
+XML_PROGRAMLISTING     = NO
 GENERATE_DOCBOOK       = NO
 
 ENABLE_PREPROCESSING   = YES
