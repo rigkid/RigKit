@@ -162,6 +162,8 @@ Every id in the vendored catalog ([schemas/README.md](RigWorks/schemas/README.md
 | `rig.dmx.fixture` | Fixture patch. The universe buffer is `rig.io.dmx`. |
 | `rig.input.*` | Buttons, axes, pointer, binding. No POD yet. |
 | `rig.audio.voice` | One playing asset. No POD yet. |
+| `rig.synth.*` | Oscillator / filter / amplifier / envelope. No POD pack yet; schemas live under RigWorks `synth/`. |
+| `rig.modular.*` | Case / module / port / power / rail. No POD pack yet; schemas live under RigWorks `modular/`. |
 | `rig.sim.collider` | Contact shape. No POD yet. `CSimShape` is the host solver shape. |
 | `rig.sim.joint` | No POD yet. |
 | `rig.sim.character` | No POD yet. |

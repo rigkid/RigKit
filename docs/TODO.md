@@ -8,13 +8,7 @@ A data pack id ends in `Component`. Shipped data packs that do not: **rigProject
 
 ## README links a missing `img/preview.png`
 
-The gate fails on these. Add the PNG, or remove the image line until the shot exists.
-
-| Pack | Example |
-|------|---------|
-| rigSQLite | `examples/sqlite` |
-| rigMarkdown | `examples/markdown` |
-| rigImage | `examples/image` |
+None right now. Embeds for **rigSQLite** / **rigMarkdown** / **rigImage** were removed so the gate stays green; capture then restore the image line (section below).
 
 ## Example exists - capture `img/preview.png`
 
@@ -22,6 +16,9 @@ Real window, then `examples/<name>/img/preview.png`. Lead the pack README with `
 
 | Pack | Example |
 |------|---------|
+| rigSQLite | `examples/sqlite` |
+| rigMarkdown | `examples/markdown` |
+| rigImage | `examples/image` |
 | rigAgentty | `examples/agenttyDemo` |
 | rigAcp | `examples/acpDemo` |
 | rigAbletonLink | `examples/link` |
