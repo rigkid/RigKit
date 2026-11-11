@@ -340,6 +340,57 @@ TEST_CASE("rigProject Contract import maps rig.* geometry light material") {
 	REQUIRE(camView.begin() != camView.end());
 }
 
+TEST_CASE("Contract import keeps authored directional rotation and flat mesh positions") {
+	SpineFixture f;
+	auto& ecs = f.ecs();
+	const char* jsonText = R"({
+		"rig": "1.4.0",
+		"document": { "title": "blender-like" },
+		"entities": [
+			{
+				"id": "sun",
+				"components": {
+					"rig.spatial.transform": { "rotation": [-0.4226, 0, 0, 0.9063] },
+					"rig.render.light": { "type": "directional", "intensity": 3 }
+				}
+			},
+			{
+				"id": "cube",
+				"components": {
+					"rig.spatial.transform": { "position": [0, 1, 0] },
+					"rig.geometry.mesh": {
+						"mode": "triangles",
+						"positions": [
+							-1, -1, -1, 1, -1, -1, 1, 1, -1, -1, 1, -1,
+							-1, -1, 1, 1, -1, 1, 1, 1, 1, -1, 1, 1
+						],
+						"indices": [0, 1, 2, 0, 2, 3],
+						"loops": [0, 1, 2, 3],
+						"loopSizes": [4]
+					},
+					"rig.render.material": { "albedoRgb": [0.8, 0.2, 0.1], "roughness": 0.45 }
+				}
+			}
+		]
+	})";
+	auto result = importWithPackCodecs(f, jsonText, "blender-like");
+	REQUIRE(result.ok);
+
+	auto lightView = ecs.view<ecs::CLight, ecs::CTransform>();
+	REQUIRE(lightView.begin() != lightView.end());
+	const auto sun = *lightView.begin();
+	const auto& xf = lightView.get<ecs::CTransform>(sun);
+	CHECK(xf.rotation.x == doctest::Approx(-0.4226f).epsilon(0.01));
+	CHECK(xf.rotation.w == doctest::Approx(0.9063f).epsilon(0.01));
+
+	auto meshView = ecs.view<ecs::CMesh>();
+	REQUIRE(meshView.begin() != meshView.end());
+	const auto& mesh = meshView.get<ecs::CMesh>(*meshView.begin());
+	CHECK(mesh.positions.size() == 8);
+	CHECK(mesh.positions[0].x == doctest::Approx(-1.f));
+	REQUIRE(ecs.hasComponent<ecs::CRenderMaterial>(*meshView.begin()));
+}
+
 /**
  * The writer and the Contract reader must agree on one format. Every other test
  * here checks a side against itself - the serializer against its own loader, the

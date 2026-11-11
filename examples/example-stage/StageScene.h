@@ -47,4 +47,12 @@ entt::entity spawn(rigkit::MEcs& ecs, const std::string& prefab, glm::vec3 at, g
 
 int rigidbodyCount(rigkit::MEcs& ecs);
 
+/**
+ * @brief After Contract import: one active camera, one enabled light (directional first).
+ * @details Present uses the first enabled `CLight`. Prefer a directional sun over a
+ * point bulb so Blender exports shade from the sun. Activate the first camera when
+ * none is marked active.
+ */
+void prepareOpenedDocument(rigkit::MEcs& ecs);
+
 } // namespace stage

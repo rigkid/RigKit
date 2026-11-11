@@ -10,6 +10,7 @@ Stage is the host example `examples/example-stage`. It is not a second engine. E
 |------|--------|
 | Entities, transform, camera, light, mesh, selection | **rigComponent** + host ECS |
 | Hierarchy, host systems | **rigSystems** |
+| Open `.rig` / Blender export | **rigProject** `importContractFile` + codecs (`--open`); plan [docs/blender-load.md](../../docs/blender-load.md) |
 | Draw | **rigRender3D** (`SMeshPresent3D`, surface pass for `CRenderMaterial`) |
 | Albedo image, HDRI decode | **rigImage** |
 | Gravity, plane, sphere, cloth recipes | **rigSimComponent** |

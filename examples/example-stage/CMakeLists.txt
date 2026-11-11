@@ -24,6 +24,8 @@ target_link_libraries(example-stage-play PRIVATE
 	rigkit
 	rigComponent
 	rigSystems
+	rigProject
+	rigProjectComponent
 	rigRender3D
 	rigSimComponent
 	rigPhysics
@@ -37,6 +39,8 @@ target_include_directories(example-stage-play PRIVATE
 	"${RIGKIT_DIR}/src"
 	"${RIGKIT_DIR}/packs/rigComponent/src"
 	"${RIGKIT_DIR}/packs/rigSystems/src"
+	"${RIGKIT_DIR}/packs/rigProject/src"
+	"${RIGKIT_DIR}/packs/rigProjectComponent/src"
 	"${RIGKIT_DIR}/packs/rigRender3D/src"
 	"${RIGKIT_DIR}/packs/rigSimComponent/src"
 	"${RIGKIT_DIR}/packs/rigPhysics/src"
@@ -105,5 +109,10 @@ set_target_properties(example-stage-tests PROPERTIES
 add_test(NAME example-stage-tests COMMAND example-stage-tests)
 add_test(NAME example-stage-smoke COMMAND "$<TARGET_FILE:example-stage>" --smoke)
 set_tests_properties(example-stage-smoke PROPERTIES
+	WORKING_DIRECTORY "$<TARGET_FILE_DIR:example-stage>"
+)
+add_test(NAME example-stage-open-smoke
+	COMMAND "$<TARGET_FILE:example-stage>" --open=data/scenes/basic-cube.rig --smoke)
+set_tests_properties(example-stage-open-smoke PROPERTIES
 	WORKING_DIRECTORY "$<TARGET_FILE_DIR:example-stage>"
 )
