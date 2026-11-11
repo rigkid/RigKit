@@ -1,0 +1,69 @@
+{
+  "rig": "1.4.0",
+  "document": {
+    "title": "Textured cube",
+    "defaultUnit": "m"
+  },
+  "entities": [
+    {
+      "id": "cube",
+      "components": {
+        "rig.meta.named": { "name": "Cube" },
+        "rig.spatial.transform": { "position": [0, 1, 0] },
+        "rig.geometry.mesh": {
+          "mode": "triangles",
+          "positions": [
+            -1, -1, -1, 1, -1, -1, 1, 1, -1, -1, 1, -1,
+            -1, -1, 1, 1, -1, 1, 1, 1, 1, -1, 1, 1
+          ],
+          "texcoords": [
+            0, 0, 1, 0, 1, 1, 0, 1,
+            0, 0, 1, 0, 1, 1, 0, 1
+          ],
+          "indices": [
+            0, 1, 2, 0, 2, 3, 4, 7, 6, 4, 6, 5, 0, 4, 5, 0, 5, 1,
+            1, 5, 6, 1, 6, 2, 2, 6, 7, 2, 7, 3, 3, 7, 4, 3, 4, 0
+          ]
+        },
+        "rig.render.material": {
+          "albedoRgb": [1, 1, 1],
+          "roughness": 0.6,
+          "albedoMap": "albedo"
+        }
+      }
+    },
+    {
+      "id": "albedo",
+      "components": {
+        "rig.meta.named": { "name": "checker" },
+        "rig.media.asset_ref": {
+          "kind": "image",
+          "path": "checker.png"
+        }
+      }
+    },
+    {
+      "id": "camera",
+      "components": {
+        "rig.meta.named": { "name": "Camera" },
+        "rig.spatial.transform": { "position": [0, 2, 6] },
+        "rig.spatial.camera": { "active": true, "fovYDegrees": 40, "nearClip": 0.1, "farClip": 100 }
+      }
+    },
+    {
+      "id": "sun",
+      "components": {
+        "rig.meta.named": { "name": "Sun" },
+        "rig.spatial.transform": {
+          "rotation": [-0.4226, 0, 0, 0.9063]
+        },
+        "rig.render.light": {
+          "type": "directional",
+          "intensity": 2,
+          "banded": false,
+          "ambient": 0.25
+        }
+      }
+    }
+  ]
+}

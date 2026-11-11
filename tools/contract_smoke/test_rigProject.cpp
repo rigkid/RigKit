@@ -391,6 +391,43 @@ TEST_CASE("Contract import keeps authored directional rotation and flat mesh pos
 	REQUIRE(ecs.hasComponent<ecs::CRenderMaterial>(*meshView.begin()));
 }
 
+TEST_CASE("Contract import remaps instance source by document id") {
+	SpineFixture f;
+	auto& ecs = f.ecs();
+	const char* jsonText = R"({
+		"rig": "1.4.0",
+		"document": { "title": "instance-smoke" },
+		"entities": [
+			{
+				"id": "cube",
+				"components": {
+					"rig.spatial.transform": {},
+					"rig.geometry.mesh": {
+						"mode": "triangles",
+						"positions": [0,0,0, 1,0,0, 0,1,0],
+						"indices": [0, 1, 2]
+					},
+					"rig.render.material": { "albedoRgb": [1, 0, 0] }
+				}
+			},
+			{
+				"id": "copy",
+				"components": {
+					"rig.spatial.transform": { "position": [2, 0, 0] },
+					"rig.spatial.instance": { "source": "cube" }
+				}
+			}
+		]
+	})";
+	auto result = importWithPackCodecs(f, jsonText, "instance-smoke");
+	REQUIRE(result.ok);
+	auto instView = ecs.view<ecs::CInstance>();
+	REQUIRE(instView.begin() != instView.end());
+	const auto source = instView.get<ecs::CInstance>(*instView.begin()).source;
+	REQUIRE(ecs.registry().valid(source));
+	CHECK(ecs.hasComponent<ecs::CMesh>(source));
+}
+
 /**
  * The writer and the Contract reader must agree on one format. Every other test
  * here checks a side against itself - the serializer against its own loader, the

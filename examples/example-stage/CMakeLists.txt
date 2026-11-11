@@ -112,7 +112,17 @@ set_tests_properties(example-stage-smoke PROPERTIES
 	WORKING_DIRECTORY "$<TARGET_FILE_DIR:example-stage>"
 )
 add_test(NAME example-stage-open-smoke
-	COMMAND "$<TARGET_FILE:example-stage>" --open=data/scenes/basic-cube.rig --smoke)
+	COMMAND "$<TARGET_FILE:example-stage>" --open=data/scenes/basic-scene.rig --smoke)
 set_tests_properties(example-stage-open-smoke PROPERTIES
+	WORKING_DIRECTORY "$<TARGET_FILE_DIR:example-stage>"
+)
+add_test(NAME example-stage-open-point-smoke
+	COMMAND "$<TARGET_FILE:example-stage>" --open=data/scenes/point-light.rig --smoke)
+set_tests_properties(example-stage-open-point-smoke PROPERTIES
+	WORKING_DIRECTORY "$<TARGET_FILE_DIR:example-stage>"
+)
+add_test(NAME example-stage-open-textured-smoke
+	COMMAND "$<TARGET_FILE:example-stage>" --open=data/scenes/textured/scene.rig --smoke)
+set_tests_properties(example-stage-open-textured-smoke PROPERTIES
 	WORKING_DIRECTORY "$<TARGET_FILE_DIR:example-stage>"
 )

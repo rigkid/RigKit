@@ -17,11 +17,13 @@ A lit stage: a checkered ground, a small cloth, an orange metal ball that drops,
 Blender exports a `.rig` (see [docs/blender-load.md](../../docs/blender-load.md)). Stage opens it with Contract import and presents through **rigRender3D**:
 
 ```bash
-./examples/example-stage/build/bin/example-stage --open=data/scenes/basic-cube.rig
-./examples/example-stage/build/bin/example-stage --open=data/scenes/basic-cube.rig --smoke
+./examples/example-stage/build/bin/example-stage --open=data/scenes/basic-scene.rig
+./examples/example-stage/build/bin/example-stage --open=data/scenes/basic-scene.rig --smoke
+./examples/example-stage/build/bin/example-stage --open=data/scenes/point-light.rig --smoke
+./examples/example-stage/build/bin/example-stage --open=data/scenes/textured/scene.rig --smoke
 ```
 
-`--open` skips the feature physics scene. Relative paths resolve next to the exe, under `data/`, or under `data/scenes/`. The open smoke checks a mesh with material, an active camera, and that the directional sun keeps its authored rotation.
+`--open` skips the feature physics scene and uses `openPackage` (`.rig` or `.rigz`). Relative paths resolve next to the exe, under `data/`, or under `data/scenes/`. Open smoke checks mesh + material, active camera, one kept light (directional preferred), instances, hide flags, and albedo files (textured also round-trips a temp `.rigz`).
 
 ## Build
 

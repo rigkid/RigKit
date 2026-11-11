@@ -24,15 +24,17 @@ Host for this work: **example-stage** (already presents with **rigRender3D**). O
 
 **Done when:** linked duplicate, hide flags, textured Principled in a `.rigz`, and a usable point-only light read correctly.
 
-| Work | Home |
-|------|------|
-| Present or expand `rig.spatial.instance` | **rigRender3D** (prefer) or expand on import |
-| Honour `rig.render.visibility` in 3D present | **rigRender3D** |
-| Albedo map + `.rigz` `data/` | stage + **rigImage** |
-| Point light when it is the only light | light picker |
-| Material schema writer (save round-trip) | **rigProject** / serializers |
+| Work | Home | Status |
+|------|------|--------|
+| Present `rig.spatial.instance` | **rigRender3D** draws source mesh at instance pose | done |
+| Honour `rig.render.visibility` in 3D present | **rigRender3D** | done |
+| Albedo map + `.rigz` `data/` | stage `openPackage` + rewrite `CAssetRef` via `resolvePacketAssetPath` | done |
+| Point light when it is the only light | `prepareOpenedDocument` keeps first light if no directional | done |
+| Material schema writer (save round-trip) | **rigProject** / serializers | still open |
 
-**Still out:** skeleton / skin / clip, product-quality IBL, spots, area lights, multi-light shading.
+Fixtures: `data/scenes/basic-scene.rig` (instance + hide + sun over bulb), `data/scenes/point-light.rig`, `data/scenes/textured/` (+ smoke writes a temp `.rigz`).
+
+**Still out:** skeleton / skin / clip, product-quality IBL, spots, area lights, multi-light shading, material writer.
 
 ## Phase 3 - Intermediate
 
@@ -56,13 +58,15 @@ Host for this work: **example-stage** (already presents with **rigRender3D**). O
 - **Fix where it lives:** light aim, mesh packing, and instance present are pack fixes - no private viewer workaround.
 - **One light:** phases 1-2 stay honest about single-light present; multi-light is a later present design.
 
-## Commands (phase 1)
+## Commands
 
 ```bash
 cmake -S examples/example-stage -B examples/example-stage/build
 cmake --build examples/example-stage/build --target example-stage
-./examples/example-stage/build/bin/example-stage --open=data/scenes/basic-cube.rig
-./examples/example-stage/build/bin/example-stage --open=data/scenes/basic-cube.rig --smoke
+./examples/example-stage/build/bin/example-stage --open=data/scenes/basic-scene.rig
+./examples/example-stage/build/bin/example-stage --open=data/scenes/basic-scene.rig --smoke
+./examples/example-stage/build/bin/example-stage --open=data/scenes/point-light.rig --smoke
+./examples/example-stage/build/bin/example-stage --open=data/scenes/textured/scene.rig --smoke
 ```
 
-Blender: File > Export > Rig Document (`.rig`), then `--open=` that path.
+Blender: File > Export > Rig Document (`.rig` / `.rigz`), then `--open=` that path.

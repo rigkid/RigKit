@@ -10,6 +10,7 @@
 #include "packs/rigJolt/src/rigJolt.h"
 #include "packs/rigPhysics/src/rigPhysics.h"
 #include "packs/rigProject/src/ContractImport.h"
+#include "packs/rigProject/src/Rigz.h"
 #include "packs/rigProject/src/rigProject.h"
 #include "packs/rigProjectComponent/src/rigProjectComponent.h"
 #include "packs/rigPython/src/rigPython.h"
@@ -18,9 +19,11 @@
 #include "packs/rigSystems/src/rigSystems.h"
 #include "CAssetRef.h"
 #include "CCamera.h"
+#include "CInstance.h"
 #include "CLight.h"
 #include "CMesh.h"
 #include "CRenderMaterial.h"
+#include "CRenderVisibility.h"
 #include "CTransform.h"
 #include "StageBindings.h"
 #include "StageProp.h"
@@ -41,7 +44,9 @@
 #include "packs/rigMeshEdit/src/rigMeshEdit.h"
 #endif
 
-StageApp::~StageApp() = default;
+StageApp::~StageApp() {
+	rigkit::project::releasePackage(m_package);
+}
 
 void StageApp::onUiAttached() {
 #if STAGE_WITH_EDITOR
@@ -231,12 +236,24 @@ bool StageApp::openDocument(const std::string& path) {
 		spdlog::error("stage open: missing ECS or rigProject");
 		return false;
 	}
-	const auto result =
-		rigkit::project::importContractFile(*ecs, path, m_document->serializer().registry());
+	rigkit::project::releasePackage(m_package);
+	m_package = rigkit::project::openPackage(path);
+	if (!m_package.ok) {
+		spdlog::error("stage open: {} ({})",
+					  m_package.error.empty() ? "package open failed" : m_package.error, path);
+		return false;
+	}
+	const auto result = rigkit::project::importContractFile(
+		*ecs, m_package.rigPath, m_document->serializer().registry());
 	if (!result.ok) {
 		spdlog::error("stage open: {} ({})", result.error.empty() ? "import failed" : result.error,
-					  path);
+					  m_package.rigPath);
+		rigkit::project::releasePackage(m_package);
 		return false;
+	}
+	for (auto entity : ecs->view<rigkit::ecs::CAssetRef>()) {
+		auto& ref = ecs->getComponent<rigkit::ecs::CAssetRef>(entity);
+		ref.path = rigkit::project::resolvePacketAssetPath(m_package.packetRoot, ref.path);
 	}
 	stage::prepareOpenedDocument(*ecs);
 	spdlog::info("stage open: '{}' entities={} geometry={}", path, result.entityCount,
@@ -286,34 +303,107 @@ bool StageApp::runOpenSmoke() {
 
 	int enabledLights = 0;
 	int enabledDirectional = 0;
-	entt::entity sun = entt::null;
+	int enabledPoint = 0;
+	entt::entity keptLight = entt::null;
 	for (auto entity : ecs->view<rigkit::ecs::CLight, rigkit::ecs::CTransform>()) {
 		const auto& light = ecs->getComponent<rigkit::ecs::CLight>(entity);
 		if (!light.enabled) {
 			continue;
 		}
 		++enabledLights;
+		keptLight = entity;
 		if (light.type == rigkit::ecs::CLight::Type::Directional) {
 			++enabledDirectional;
-			sun = entity;
+		} else if (light.type == rigkit::ecs::CLight::Type::Point) {
+			++enabledPoint;
 		}
 	}
-	if (enabledLights != 1 || enabledDirectional != 1 || sun == entt::null) {
-		spdlog::error("stage open smoke: expected one enabled directional light (have {} lights, "
-					  "{} directional)",
-					  enabledLights, enabledDirectional);
+	if (enabledLights != 1 || keptLight == entt::null) {
+		spdlog::error("stage open smoke: expected one enabled light (have {})", enabledLights);
 		return false;
 	}
-	const auto& sunXf = ecs->getComponent<rigkit::ecs::CTransform>(sun);
-	if (std::fabs(sunXf.rotation.x - (-0.4226f)) > 0.01f ||
-		std::fabs(sunXf.rotation.w - 0.9063f) > 0.01f) {
-		spdlog::error("stage open smoke: sun rotation stomped ({:.4f}, {:.4f}, {:.4f}, {:.4f})",
-					  sunXf.rotation.x, sunXf.rotation.y, sunXf.rotation.z, sunXf.rotation.w);
+	if (enabledDirectional == 1) {
+		const auto& sunXf = ecs->getComponent<rigkit::ecs::CTransform>(keptLight);
+		if (std::fabs(sunXf.rotation.x - (-0.4226f)) > 0.01f ||
+			std::fabs(sunXf.rotation.w - 0.9063f) > 0.01f) {
+			spdlog::error("stage open smoke: sun rotation stomped ({:.4f}, {:.4f}, {:.4f}, {:.4f})",
+						  sunXf.rotation.x, sunXf.rotation.y, sunXf.rotation.z, sunXf.rotation.w);
+			return false;
+		}
+	} else if (enabledPoint != 1) {
+		spdlog::error("stage open smoke: expected directional or point light");
 		return false;
 	}
 
-	spdlog::info("stage open smoke: mesh verts={} activeCameras={} sun kept", mesh.positions.size(),
-				 activeCameras);
+	int instanceCount = 0;
+	for (auto entity : ecs->view<rigkit::ecs::CInstance>()) {
+		const auto source = ecs->getComponent<rigkit::ecs::CInstance>(entity).source;
+		if (!ecs->registry().valid(source) || !ecs->hasComponent<rigkit::ecs::CMesh>(source)) {
+			spdlog::error("stage open smoke: instance source missing mesh");
+			return false;
+		}
+		++instanceCount;
+	}
+
+	int hiddenCount = 0;
+	for (auto entity : ecs->view<rigkit::ecs::CRenderVisibility>()) {
+		if (!ecs->getComponent<rigkit::ecs::CRenderVisibility>(entity).visible) {
+			++hiddenCount;
+		}
+	}
+
+	const auto& material = ecs->getComponent<rigkit::ecs::CRenderMaterial>(meshEntity);
+	if (material.albedoMap != entt::null) {
+		if (!ecs->registry().valid(material.albedoMap) ||
+			!ecs->hasComponent<rigkit::ecs::CAssetRef>(material.albedoMap)) {
+			spdlog::error("stage open smoke: albedoMap entity missing");
+			return false;
+		}
+		const auto& href = ecs->getComponent<rigkit::ecs::CAssetRef>(material.albedoMap).path;
+		if (href.empty() || !std::filesystem::exists(href)) {
+			spdlog::error("stage open smoke: albedo file missing ({})", href);
+			return false;
+		}
+	}
+
+	spdlog::info("stage open smoke: mesh verts={} cameras={} light={} instances={} hidden={} "
+				 "albedo={}",
+				 mesh.positions.size(), activeCameras,
+				 enabledDirectional ? "directional" : "point", instanceCount, hiddenCount,
+				 material.albedoMap != entt::null);
+
+	// Phase 2: textured package also round-trips through a temp .rigz.
+	if (m_openPath.find("textured") != std::string::npos && !m_package.temporary) {
+		const std::string dest =
+			AppPaths::joinPath(AppPaths::getExecutableDir(), "data/scenes/textured-smoke.rigz");
+		std::string err;
+		if (!rigkit::project::writeRigz(dest, m_package.rigPath, m_package.packetRoot, &err)) {
+			spdlog::error("stage open smoke: writeRigz failed ({})", err);
+			return false;
+		}
+		if (!openDocument(dest)) {
+			spdlog::error("stage open smoke: reopen .rigz failed");
+			return false;
+		}
+		bool albedoOk = false;
+		for (auto entity : ecs->view<rigkit::ecs::CRenderMaterial>()) {
+			const auto& mat = ecs->getComponent<rigkit::ecs::CRenderMaterial>(entity);
+			if (mat.albedoMap == entt::null ||
+				!ecs->hasComponent<rigkit::ecs::CAssetRef>(mat.albedoMap)) {
+				continue;
+			}
+			const auto& href = ecs->getComponent<rigkit::ecs::CAssetRef>(mat.albedoMap).path;
+			if (!href.empty() && std::filesystem::exists(href)) {
+				albedoOk = true;
+				break;
+			}
+		}
+		if (!albedoOk) {
+			spdlog::error("stage open smoke: .rigz albedo path missing after reopen");
+			return false;
+		}
+		spdlog::info("stage open smoke: .rigz round-trip ok");
+	}
 	return true;
 }
 

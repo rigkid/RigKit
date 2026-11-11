@@ -4,6 +4,7 @@
 #include <string>
 
 #include "core/U_core.h"
+#include "packs/rigProject/src/Rigz.h"
 
 namespace rigkit {
 class Mui;
@@ -39,4 +40,5 @@ class StageApp : public rigkit::IApp {
 	std::string m_scriptError;
 	std::shared_ptr<rigkit::rigPython> m_python;
 	std::shared_ptr<rigkit::rigProject> m_document;
+	rigkit::project::PackageOpen m_package;
 };

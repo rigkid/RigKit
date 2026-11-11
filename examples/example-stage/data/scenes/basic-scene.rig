@@ -1,0 +1,108 @@
+{
+  "rig": "1.4.0",
+  "document": {
+    "title": "Basic scene",
+    "defaultUnit": "m"
+  },
+  "entities": [
+    {
+      "id": "scene",
+      "components": {
+        "rig.meta.named": { "name": "Scene", "stableId": "Scene" },
+        "rig.spatial.vertex": {}
+      }
+    },
+    {
+      "id": "rig-collection",
+      "components": {
+        "rig.meta.named": { "name": "Rig", "stableId": "Scene/Rig" },
+        "rig.spatial.relationship": { "parent": "scene" },
+        "rig.spatial.group": {}
+      }
+    },
+    {
+      "id": "cube",
+      "components": {
+        "rig.meta.named": { "name": "Cube", "stableId": "Scene/Rig/Cube" },
+        "rig.spatial.relationship": { "parent": "rig-collection" },
+        "rig.spatial.transform": { "position": [0, 1, 0] },
+        "rig.geometry.mesh": {
+          "positions": [
+            -1, -1, -1, 1, -1, -1, 1, 1, -1, -1, 1, -1,
+            -1, -1, 1, 1, -1, 1, 1, 1, 1, -1, 1, 1
+          ],
+          "indices": [
+            0, 1, 2, 0, 2, 3, 4, 7, 6, 4, 6, 5, 0, 4, 5, 0, 5, 1,
+            1, 5, 6, 1, 6, 2, 2, 6, 7, 2, 7, 3, 3, 7, 4, 3, 4, 0
+          ],
+          "loops": [
+            0, 1, 2, 3, 4, 7, 6, 5, 0, 4, 5, 1, 1, 5, 6, 2, 2, 6, 7, 3, 3, 7, 4, 0
+          ],
+          "loopSizes": [4, 4, 4, 4, 4, 4],
+          "mode": "triangles"
+        },
+        "rig.render.material": {
+          "albedoRgb": [0.8, 0.2, 0.1],
+          "roughness": 0.45
+        }
+      }
+    },
+    {
+      "id": "cube-copy",
+      "components": {
+        "rig.meta.named": { "name": "CubeCopy", "stableId": "Scene/Rig/CubeCopy" },
+        "rig.spatial.relationship": { "parent": "rig-collection" },
+        "rig.spatial.transform": { "position": [3, 1, 0] },
+        "rig.spatial.instance": { "source": "cube" }
+      }
+    },
+    {
+      "id": "guide",
+      "components": {
+        "rig.meta.named": { "name": "Guide", "stableId": "Scene/Rig/Guide" },
+        "rig.spatial.relationship": { "parent": "rig-collection" },
+        "rig.spatial.transform": { "position": [0, 3, 0] },
+        "rig.spatial.vertex": {},
+        "rig.render.visibility": { "visible": false }
+      }
+    },
+    {
+      "id": "camera",
+      "components": {
+        "rig.meta.named": { "name": "Camera", "stableId": "Scene/Rig/Camera" },
+        "rig.spatial.relationship": { "parent": "rig-collection" },
+        "rig.spatial.transform": { "position": [0, 2, 6] },
+        "rig.spatial.camera": { "active": true, "fovYDegrees": 40, "nearClip": 0.1, "farClip": 100 }
+      }
+    },
+    {
+      "id": "sun",
+      "components": {
+        "rig.meta.named": { "name": "Sun", "stableId": "Scene/Rig/Sun" },
+        "rig.spatial.relationship": { "parent": "rig-collection" },
+        "rig.spatial.transform": {
+          "rotation": [-0.4226, 0, 0, 0.9063]
+        },
+        "rig.render.light": {
+          "type": "directional",
+          "intensity": 3,
+          "banded": false,
+          "ambient": 0.22
+        }
+      }
+    },
+    {
+      "id": "bulb",
+      "components": {
+        "rig.meta.named": { "name": "Bulb", "stableId": "Scene/Rig/Bulb" },
+        "rig.spatial.relationship": { "parent": "rig-collection" },
+        "rig.spatial.transform": { "position": [2, 3, 0] },
+        "rig.render.light": {
+          "type": "point",
+          "intensity": 1.2,
+          "banded": false
+        }
+      }
+    }
+  ]
+}
