@@ -88,10 +88,10 @@ Integration app: `packs/rigPlotter/examples/plot`. SVG IO pack example: `packs/r
 
 | Pack | Remote | Role |
 |------|--------|------|
-| **rigPixelPlotComponent** | [rigkid/rigPixelPlotComponent](https://github.com/rigkid/rigPixelPlotComponent) | PixelPlotter PODs (source, canvas, effect chain, rasters, `CPixelBrush`). DATA ONLY |
+| **rigPixelPlotComponent** | [rigkid/rigPixelPlotComponent](https://github.com/rigkid/rigPixelPlotComponent) | Pixel-plot PODs (source, canvas, effect chain, rasters, `CPixelBrush`). DATA ONLY |
 | **rigPainty** | [rigkid/rigPainty](https://github.com/rigkid/rigPainty) (local `packs/` until published) | Painterly ETF / flow-based DoG / Hertzmann canvas SBR. CODE. Native `paintPicture` does not use finders or DoG. Optional lindemeier/painty submodule. Links **rigPlotFinders** (**GPL-2.0-or-later**) |
 | **rigPixelPlotter** | [rigkid/rigPixelPlotter](https://github.com/rigkid/rigPixelPlotter) | PixelDoc pipeline (IMAGE/DRAW, GPU, layers, PNG) |
-| **rigPixelPlotterUi** | [rigkid/rigPixelPlotterUi](https://github.com/rigkid/rigPixelPlotterUi) | Kit UI panels (Main View, Canvas, Resources, Layers, Brushes) |
+| **rigPixelPlotterUi** | [rigkid/rigPixelPlotterUi](https://github.com/rigkid/rigPixelPlotterUi) | Kit UI panels (Main View, Canvas, Resources, Layers, Brushes). `Options::ownShell=false` for hosts that keep their own shell |
 | **rigPsd** | [rigkid/rigPsd](https://github.com/rigkid/rigPsd) (local `packs/` until published) | Layered 8-bit RGB PSD read/write. Format model only. **Leaf.** |
 
 Product app **PixelPlotter** lives out of tree (e.g. next to RigKit), not under `examples/`. See [apps.md](apps.md). Thin host - packs own pipeline + UI.
