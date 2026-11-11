@@ -30,33 +30,33 @@ Host for this work: **example-stage** (already presents with **rigRender3D**). O
 | Honour `rig.render.visibility` in 3D present | **rigRender3D** | done |
 | Albedo map + `.rigz` `data/` | stage `openPackage` + rewrite `CAssetRef` via `resolvePacketAssetPath` | done |
 | Point light when it is the only light | `prepareOpenedDocument` keeps first light if no directional | done |
-| Material schema writer (save round-trip) | **rigProject** / serializers | still open |
+| Material schema writer (save round-trip) | **rigSystems** `CRenderMaterial` codec | done |
 
 Fixtures: `data/scenes/basic-scene.rig` (instance + hide + sun over bulb), `data/scenes/point-light.rig`, `data/scenes/textured/` (+ smoke writes a temp `.rigz`).
 
-**Still out:** skeleton / skin / clip, product-quality IBL, spots, area lights, multi-light shading, material writer.
-
 ## Phase 3 - Intermediate
 
-**Done when:** the add-on smoke skinned armature + sampled action plays; world HDRI affects shading.
+**Done when:** the add-on smoke skinned armature + sampled action plays; world HDRI affects shading; spot reads and presents.
 
-| Work | Home |
-|------|------|
-| Import skeleton / bind / bone entities | **rigAnimComponent** (+ port-map Close) |
-| Import skin (4 influences) | **rigAnimComponent** |
-| Skinned mesh present | **rigRender3D** / thin system (**Pi risk**) |
-| Clip / track playback | **rigAnimComponent** + Update |
-| HDRI open from exported `.rigz` | stage + **rigImage** |
-| Spot lights | grow `CLight` + present |
-| Optional headless Blender convert tool | tools (fulfillment; never a Kit `.blend` parser) |
+| Work | Home | Status |
+|------|------|--------|
+| Import skeleton / bind / bone entities | **rigAnimComponent** + **rigSystems** codecs | done |
+| Import skin (4 influences) | **rigAnimComponent** `CAnimSkin` | done |
+| Skinned mesh present | **rigRender3D** CPU linear blend (**Pi risk**) | done |
+| Clip / track playback | **rigSystems** `SAnimClips` | done |
+| HDRI open from exported `.rigz` / package | stage asset resolve + **rigImage** | done |
+| Spot lights | `CLight::Spot` + point present until cone shading grows | done |
 
-**Still out (Contract):** modifiers, Geometry Nodes, live constraints/drivers, shape keys, area lights until schema, multi-UV, Cycles graphs.
+Fixtures: `data/scenes/skinned-flag.rig`, `data/scenes/hdri/`, `data/scenes/spot-light.rig`.
+
+**Still out (Contract):** modifiers, Geometry Nodes, live constraints/drivers, shape keys, area lights until schema, multi-UV, Cycles graphs, multi-light accumulate, true spot cone shading.
 
 ## Risks
 
-- **Pi / rebuild:** skinned present and HDRI decode stay in packs; stage is the verify host.
-- **Fix where it lives:** light aim, mesh packing, and instance present are pack fixes - no private viewer workaround.
-- **One light:** phases 1-2 stay honest about single-light present; multi-light is a later present design.
+- **Pi / rebuild:** skinned present and HDRI decode stay in packs; stage is the verify host. CPU skin is O(verts) per Draw.
+- **Fix where it lives:** light aim, mesh packing, instance/skin present, and anim codecs are pack fixes - no private viewer workaround.
+- **One light:** phases 1-3 stay honest about single-light present; multi-light is a later present design.
+- **Spot:** POD + import store cone fields; present still uses the point path.
 
 ## Commands
 
@@ -67,6 +67,9 @@ cmake --build examples/example-stage/build --target example-stage
 ./examples/example-stage/build/bin/example-stage --open=data/scenes/basic-scene.rig --smoke
 ./examples/example-stage/build/bin/example-stage --open=data/scenes/point-light.rig --smoke
 ./examples/example-stage/build/bin/example-stage --open=data/scenes/textured/scene.rig --smoke
+./examples/example-stage/build/bin/example-stage --open=data/scenes/skinned-flag.rig --smoke
+./examples/example-stage/build/bin/example-stage --open=data/scenes/hdri/scene.rig --smoke
+./examples/example-stage/build/bin/example-stage --open=data/scenes/spot-light.rig --smoke
 ```
 
 Blender: File > Export > Rig Document (`.rig` / `.rigz`), then `--open=` that path.

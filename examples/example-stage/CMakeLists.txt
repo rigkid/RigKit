@@ -23,6 +23,7 @@ target_compile_definitions(example-stage-play PRIVATE STAGE_WITH_EDITOR=0)
 target_link_libraries(example-stage-play PRIVATE
 	rigkit
 	rigComponent
+	rigAnimComponent
 	rigSystems
 	rigProject
 	rigProjectComponent
@@ -38,6 +39,7 @@ target_include_directories(example-stage-play PRIVATE
 	"${RIGKIT_DIR}"
 	"${RIGKIT_DIR}/src"
 	"${RIGKIT_DIR}/packs/rigComponent/src"
+	"${RIGKIT_DIR}/packs/rigAnimComponent/src"
 	"${RIGKIT_DIR}/packs/rigSystems/src"
 	"${RIGKIT_DIR}/packs/rigProject/src"
 	"${RIGKIT_DIR}/packs/rigProjectComponent/src"

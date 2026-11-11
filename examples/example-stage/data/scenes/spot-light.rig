@@ -1,0 +1,58 @@
+{
+  "rig": "1.4.0",
+  "document": {
+    "title": "Spot light only",
+    "defaultUnit": "m"
+  },
+  "entities": [
+    {
+      "id": "cube",
+      "components": {
+        "rig.meta.named": { "name": "Cube" },
+        "rig.spatial.transform": { "position": [0, 0, 0] },
+        "rig.geometry.mesh": {
+          "positions": [
+            -1, -1, -1, 1, -1, -1, 1, 1, -1, -1, 1, -1,
+            -1, -1, 1, 1, -1, 1, 1, 1, 1, -1, 1, 1
+          ],
+          "indices": [
+            0, 1, 2, 0, 2, 3, 4, 7, 6, 4, 6, 5, 0, 4, 5, 0, 5, 1,
+            1, 5, 6, 1, 6, 2, 2, 6, 7, 2, 7, 3, 3, 7, 4, 3, 4, 0
+          ],
+          "mode": "triangles"
+        },
+        "rig.render.material": {
+          "albedoRgb": [0.9, 0.55, 0.2],
+          "roughness": 0.4
+        }
+      }
+    },
+    {
+      "id": "camera",
+      "components": {
+        "rig.meta.named": { "name": "Camera" },
+        "rig.spatial.transform": { "position": [0, 1.5, 5] },
+        "rig.spatial.camera": { "active": true, "fovYDegrees": 40, "nearClip": 0.1, "farClip": 100 }
+      }
+    },
+    {
+      "id": "spot",
+      "components": {
+        "rig.meta.named": { "name": "Spot" },
+        "rig.spatial.transform": {
+          "position": [2, 4, 2],
+          "rotation": [-0.3827, 0, 0, 0.9239]
+        },
+        "rig.render.light": {
+          "type": "spot",
+          "intensity": 2.5,
+          "banded": false,
+          "ambient": 0.15,
+          "range": 12,
+          "innerConeDegrees": 15,
+          "outerConeDegrees": 35
+        }
+      }
+    }
+  ]
+}

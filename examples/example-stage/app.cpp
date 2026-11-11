@@ -5,6 +5,7 @@
 #include "core/pack/MPack.h"
 #include "core/util/AppPaths.h"
 #include "core/util/CommandLineArgs.h"
+#include "packs/rigAnimComponent/src/rigAnimComponent.h"
 #include "packs/rigAssimp/src/rigAssimp.h"
 #include "packs/rigComponent/src/rigComponent.h"
 #include "packs/rigJolt/src/rigJolt.h"
@@ -17,11 +18,15 @@
 #include "packs/rigRender3D/src/rigRender3D.h"
 #include "packs/rigSimComponent/src/rigSimComponent.h"
 #include "packs/rigSystems/src/rigSystems.h"
+#include "CAnimClip.h"
+#include "CAnimSkin.h"
+#include "CAnimTrack.h"
 #include "CAssetRef.h"
 #include "CCamera.h"
 #include "CInstance.h"
 #include "CLight.h"
 #include "CMesh.h"
+#include "CRenderEnvironment.h"
 #include "CRenderMaterial.h"
 #include "CRenderVisibility.h"
 #include "CTransform.h"
@@ -254,6 +259,13 @@ bool StageApp::openDocument(const std::string& path) {
 	for (auto entity : ecs->view<rigkit::ecs::CAssetRef>()) {
 		auto& ref = ecs->getComponent<rigkit::ecs::CAssetRef>(entity);
 		ref.path = rigkit::project::resolvePacketAssetPath(m_package.packetRoot, ref.path);
+		std::error_code ec;
+		if (!ref.path.empty() && !std::filesystem::exists(ref.path, ec)) {
+			const auto underData = std::filesystem::path(AppPaths::getDataDir()) / ref.path;
+			if (std::filesystem::exists(underData, ec)) {
+				ref.path = underData.string();
+			}
+		}
 	}
 	stage::prepareOpenedDocument(*ecs);
 	spdlog::info("stage open: '{}' entities={} geometry={}", path, result.entityCount,
@@ -330,8 +342,10 @@ bool StageApp::runOpenSmoke() {
 						  sunXf.rotation.x, sunXf.rotation.y, sunXf.rotation.z, sunXf.rotation.w);
 			return false;
 		}
-	} else if (enabledPoint != 1) {
-		spdlog::error("stage open smoke: expected directional or point light");
+	} else if (enabledPoint != 1 &&
+			   ecs->getComponent<rigkit::ecs::CLight>(keptLight).type !=
+				   rigkit::ecs::CLight::Type::Spot) {
+		spdlog::error("stage open smoke: expected directional, point, or spot light");
 		return false;
 	}
 
@@ -366,11 +380,93 @@ bool StageApp::runOpenSmoke() {
 		}
 	}
 
+	const char* lightKind = "point";
+	if (enabledDirectional) {
+		lightKind = "directional";
+	} else if (ecs->getComponent<rigkit::ecs::CLight>(keptLight).type ==
+			   rigkit::ecs::CLight::Type::Spot) {
+		lightKind = "spot";
+	}
 	spdlog::info("stage open smoke: mesh verts={} cameras={} light={} instances={} hidden={} "
 				 "albedo={}",
-				 mesh.positions.size(), activeCameras,
-				 enabledDirectional ? "directional" : "point", instanceCount, hiddenCount,
+				 mesh.positions.size(), activeCameras, lightKind, instanceCount, hiddenCount,
 				 material.albedoMap != entt::null);
+
+	if (m_openPath.find("skinned") != std::string::npos) {
+		int skinCount = 0;
+		for (auto entity : ecs->view<rigkit::ecs::CAnimSkin>()) {
+			const auto& skin = ecs->getComponent<rigkit::ecs::CAnimSkin>(entity);
+			if (skin.joints.size() < 2 || skin.inverseBind.size() < 32) {
+				spdlog::error("stage open smoke: skin incomplete");
+				return false;
+			}
+			++skinCount;
+		}
+		int clipCount = 0;
+		for (auto entity : ecs->view<rigkit::ecs::CAnimClip>()) {
+			(void)entity;
+			++clipCount;
+		}
+		int trackCount = 0;
+		for (auto entity : ecs->view<rigkit::ecs::CAnimTrack>()) {
+			(void)entity;
+			++trackCount;
+		}
+		if (skinCount < 1 || clipCount < 1 || trackCount < 1) {
+			spdlog::error("stage open smoke: expected skin/clip/track (skin={} clip={} track={})",
+						  skinCount, clipCount, trackCount);
+			return false;
+		}
+		entt::entity tip = entt::null;
+		for (auto entity : ecs->view<rigkit::ecs::CTransform>()) {
+			if (ecs->entityName(entity) == "Tip") {
+				tip = entity;
+				break;
+			}
+		}
+		if (tip == entt::null) {
+			spdlog::error("stage open smoke: tip bone missing");
+			return false;
+		}
+		const auto rot0 = ecs->getComponent<rigkit::ecs::CTransform>(tip).rotation;
+		ecs->updateSystems(0.25f);
+		ecs->updateSystems(0.25f);
+		const auto rot1 = ecs->getComponent<rigkit::ecs::CTransform>(tip).rotation;
+		if (std::fabs(rot1.z - rot0.z) < 1e-4f && std::fabs(rot1.w - rot0.w) < 1e-4f) {
+			spdlog::error("stage open smoke: clip did not move tip");
+			return false;
+		}
+		spdlog::info("stage open smoke: skin + clip playback ok");
+	}
+
+	if (m_openPath.find("hdri") != std::string::npos) {
+		bool hdriOk = false;
+		for (auto entity : ecs->view<rigkit::ecs::CRenderEnvironment>()) {
+			const auto hdri = ecs->getComponent<rigkit::ecs::CRenderEnvironment>(entity).hdri;
+			if (hdri == entt::null || !ecs->hasComponent<rigkit::ecs::CAssetRef>(hdri)) {
+				continue;
+			}
+			const auto& href = ecs->getComponent<rigkit::ecs::CAssetRef>(hdri).path;
+			if (!href.empty() && std::filesystem::exists(href)) {
+				hdriOk = true;
+				break;
+			}
+		}
+		if (!hdriOk) {
+			spdlog::error("stage open smoke: HDRI asset missing after open");
+			return false;
+		}
+		spdlog::info("stage open smoke: HDRI path ok");
+	}
+
+	if (m_openPath.find("spot-light") != std::string::npos) {
+		if (ecs->getComponent<rigkit::ecs::CLight>(keptLight).type !=
+			rigkit::ecs::CLight::Type::Spot) {
+			spdlog::error("stage open smoke: expected spot light");
+			return false;
+		}
+		spdlog::info("stage open smoke: spot light ok");
+	}
 
 	// Phase 2: textured package also round-trips through a temp .rigz.
 	if (m_openPath.find("textured") != std::string::npos && !m_package.temporary) {
@@ -420,6 +516,7 @@ void StageApp::setup() {
 		return;
 	}
 	packs->registerPack<rigkit::rigComponent>();
+	packs->registerPack<rigkit::rigAnimComponent>();
 	packs->registerPack<rigkit::rigProjectComponent>();
 	packs->registerPack<rigkit::rigProject>();
 	packs->registerPack<rigkit::rigSystems>();

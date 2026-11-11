@@ -1,0 +1,111 @@
+{
+  "rig": "1.4.0",
+  "document": {
+    "title": "Skinned flag",
+    "defaultUnit": "m"
+  },
+  "entities": [
+    {
+      "id": "camera",
+      "components": {
+        "rig.meta.named": { "name": "Camera" },
+        "rig.spatial.transform": { "position": [0, 1.2, 4] },
+        "rig.spatial.camera": { "active": true, "fovYDegrees": 40, "nearClip": 0.1, "farClip": 100 }
+      }
+    },
+    {
+      "id": "sun",
+      "components": {
+        "rig.meta.named": { "name": "Sun" },
+        "rig.spatial.transform": {
+          "position": [3, 5, 2],
+          "rotation": [-0.4226, 0, 0, 0.9063]
+        },
+        "rig.render.light": {
+          "type": "directional",
+          "intensity": 1.2,
+          "banded": false,
+          "ambient": 0.25
+        }
+      }
+    },
+    {
+      "id": "armature",
+      "components": {
+        "rig.meta.named": { "name": "Armature" },
+        "rig.spatial.transform": { "position": [0, 0, 0] }
+      }
+    },
+    {
+      "id": "root",
+      "components": {
+        "rig.meta.named": { "name": "Root" },
+        "rig.spatial.relationship": { "parent": "armature" },
+        "rig.spatial.transform": { "position": [0, 0, 0] },
+        "rig.anim.skeleton": { "root": "root", "bones": ["root", "tip"] }
+      }
+    },
+    {
+      "id": "tip",
+      "components": {
+        "rig.meta.named": { "name": "Tip" },
+        "rig.spatial.relationship": { "parent": "root" },
+        "rig.spatial.transform": {
+          "position": [0, 1, 0],
+          "rotation": [0, 0, 0.0995, 0.995]
+        },
+        "rig.anim.bind": { "position": [0, 1, 0] }
+      }
+    },
+    {
+      "id": "flag",
+      "components": {
+        "rig.meta.named": { "name": "Flag" },
+        "rig.spatial.relationship": { "parent": "armature" },
+        "rig.spatial.transform": { "position": [0, 0, 0] },
+        "rig.geometry.mesh": {
+          "positions": [-0.5, 0, 0, 0.5, 0, 0, -0.5, 2, 0, 0.5, 2, 0],
+          "texcoords": [0, 0, 1, 0, 0, 1, 1, 1],
+          "indices": [0, 1, 3, 0, 3, 2],
+          "loops": [0, 1, 3, 2],
+          "loopSizes": [4],
+          "mode": "triangles"
+        },
+        "rig.render.material": {
+          "albedoRgb": [0.2, 0.6, 0.9],
+          "roughness": 0.8
+        },
+        "rig.anim.skin": {
+          "skeleton": "root",
+          "joints": ["root", "tip"],
+          "inverseBind": [
+            1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1,
+            1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, -1, 0, 1
+          ],
+          "jointIndices": [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
+          "jointWeights": [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0]
+        }
+      }
+    },
+    {
+      "id": "wave",
+      "components": {
+        "rig.meta.named": { "name": "Wave" },
+        "rig.anim.clip": { "duration": 1, "wrap": "loop" }
+      }
+    },
+    {
+      "id": "wave-rot",
+      "components": {
+        "rig.anim.track": {
+          "clip": "wave",
+          "target": "tip",
+          "propertyKey": "rotation",
+          "times": [0, 0.5, 1],
+          "values": [0, 0, 0, 1, 0, 0, 0.3827, 0.9239, 0, 0, 0, 1],
+          "stride": 4
+        }
+      }
+    }
+  ]
+}

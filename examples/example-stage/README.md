@@ -21,9 +21,12 @@ Blender exports a `.rig` (see [docs/blender-load.md](../../docs/blender-load.md)
 ./examples/example-stage/build/bin/example-stage --open=data/scenes/basic-scene.rig --smoke
 ./examples/example-stage/build/bin/example-stage --open=data/scenes/point-light.rig --smoke
 ./examples/example-stage/build/bin/example-stage --open=data/scenes/textured/scene.rig --smoke
+./examples/example-stage/build/bin/example-stage --open=data/scenes/skinned-flag.rig --smoke
+./examples/example-stage/build/bin/example-stage --open=data/scenes/hdri/scene.rig --smoke
+./examples/example-stage/build/bin/example-stage --open=data/scenes/spot-light.rig --smoke
 ```
 
-`--open` skips the feature physics scene and uses `openPackage` (`.rig` or `.rigz`). Relative paths resolve next to the exe, under `data/`, or under `data/scenes/`. Open smoke checks mesh + material, active camera, one kept light (directional preferred), instances, hide flags, and albedo files (textured also round-trips a temp `.rigz`).
+`--open` skips the feature physics scene and uses `openPackage` (`.rig` or `.rigz`). Relative paths resolve next to the exe, under `data/`, or under `data/scenes/`. Open smoke checks mesh + material, active camera, one kept light (directional preferred), instances, hide flags, albedo files (textured also round-trips a temp `.rigz`), skinned clip playback, HDRI package paths, and spot lights.
 
 ## Build
 
