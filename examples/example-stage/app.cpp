@@ -459,12 +459,18 @@ bool StageApp::runOpenSmoke() {
 	}
 
 	if (m_openPath.find("spot-light") != std::string::npos) {
-		if (ecs->getComponent<rigkit::ecs::CLight>(keptLight).type !=
-			rigkit::ecs::CLight::Type::Spot) {
+		const auto& spot = ecs->getComponent<rigkit::ecs::CLight>(keptLight);
+		if (spot.type != rigkit::ecs::CLight::Type::Spot) {
 			spdlog::error("stage open smoke: expected spot light");
 			return false;
 		}
-		spdlog::info("stage open smoke: spot light ok");
+		if (spot.outerConeDegrees < spot.innerConeDegrees + 1.f || spot.range <= 0.f) {
+			spdlog::error("stage open smoke: spot cone/range missing (inner={} outer={} range={})",
+						  spot.innerConeDegrees, spot.outerConeDegrees, spot.range);
+			return false;
+		}
+		spdlog::info("stage open smoke: spot cone ok (inner={} outer={} range={})",
+					 spot.innerConeDegrees, spot.outerConeDegrees, spot.range);
 	}
 
 	// Phase 2: textured package also round-trips through a temp .rigz.

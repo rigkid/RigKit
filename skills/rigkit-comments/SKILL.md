@@ -97,7 +97,7 @@ entt::entity makeRect(rigkit::MEcs& ecs, float x, float y, float w, float h,
 
 ## Doxygen traps that silently eat text
 
-`tools/check-docs` fails the build on any warning, because a warning here means text is missing from the HTML rather than merely untidy. Some of these truncate **without** warning, so a clean log is not proof - see "Silence is not proof" below.
+`tools/check-docs` fails the build on any warning, and when a documented namespace-scope function or enum is missing from the generated XML. Pack Pages runs the same check. A warning means text is missing from the HTML. A missing symbol means Doxygen dropped a free function, which it does not warn about. Some brief text still truncates without a warning - see "Silence is not proof" below.
 
 ### A dot before punctuation ends the brief
 
@@ -122,16 +122,18 @@ Backticks are enough on their own: `` `tools/<name>.json` ``, `` `<exeDir>/data`
 | Target | Form that resolves |
 |--------|--------------------|
 | Namespace-scope free function | Fully qualified: `@ref rigkit::plot::climbRoundedPoints` |
-| Enum at namespace scope | Fully qualified, and the file needs `@file` |
+| Enum at namespace scope | Fully qualified. The docs build emits it (a bare `@file` is supplied when the header has none). |
 | Undocumented member, `constexpr`, file-static | None - use backticks: `` `kTitle` `` |
 
 For a free function inside a namespace, the bare name, a trailing `()`, and a full signature all fail; only the qualified name works. A `:` straight after a qualified name is absorbed into it, so follow the reference with an em dash instead of a colon.
 
 `EXTRACT_ALL` and `EXTRACT_STATIC` are both `NO`, so a one-line accessor with no doc comment is not in the output and nothing can link to it. Document the target or use backticks.
 
-### `@file` or the free functions vanish
+### `@file` and free functions
 
-**A header with no `@file` block has its free functions and namespace-scope enums dropped entirely.** Doxygen documents file-scope members only when the file itself is documented; structs and classes appear either way. Any header declaring namespace-scope functions or enums needs:
+Doxygen documents namespace-scope functions and enums only when the header is a documented file. The docs build runs `tools/doxygen_ensure_file.py` on each header and prepends a bare `@file` when the header already has a Doxygen comment and no `@file` command. `HIDE_UNDOC_MEMBERS` still hides undocumented helpers. `EXTRACT_STATIC` stays `NO`, so a `static` function is still omitted.
+
+Write `@file` yourself when that header should have a description in the file list. The injected block has no brief.
 
 ```cpp
 /**
@@ -139,6 +141,8 @@ For a free function inside a namespace, the bare name, a trailing `()`, and a fu
  * @brief Run prepare-pipeline steps and per-layer path effects over `CPaths`.
  */
 ```
+
+`tools/check-docs` reads the Doxygen XML and fails if a documented free function or namespace enum is absent. That is the gate for this drop. A clean warning log does not prove it.
 
 ### Silence is not proof
 

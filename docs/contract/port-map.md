@@ -58,7 +58,7 @@ Every id in the vendored catalog ([schemas/README.md](RigWorks/schemas/README.md
 | `rig.story.table` | **rigStoryComponent** - `CStoryTable` | `columnCount` / cells with spans + nested blocks. |
 | `rig.spatial.anchor` | **rigProject** - `CPage::originAnchor` | Which cell of the trim is page-local (0,0), as the Contract 3×3 string enum. Absent = `top-left`, so a top-left page writes no component. |
 | `rig.pixel.palette` | **rigComponent** - `CPalette` | `colors` (16 rgba). `shadeNext` travels separately as `x.rigkit.palette_shade`. |
-| `rig.render.light` | **rigComponent** - `CLight` | Dir/point/spot + colour / intensity / banded shade + `range` / cone degrees. Spot present still uses the point path until cone shading grows. |
+| `rig.render.light` | **rigComponent** - `CLight` | Dir/point/spot + colour / intensity / banded shade + `range` / cone degrees. Spot present: position + local -Z with inner/outer falloff (not shadowed). |
 | `rig.io.osc` | **rigOsc** - `COscEndpoint` | Listen/send ports + prefix. |
 | `rig.io.serial` | **rigSerial** - `CSerial` | `port` / `baud` / `enabled`. Byte buffers and handles stay in the pack. |
 | `rig.io.wifi` | **example-esp32** - `host.radio` | `mode` / `apSsid` / `staSsid` / `channel`. Password, link, address, and RSSI stay host cache. The sample stores the section in NVS, not on a scene entity. |

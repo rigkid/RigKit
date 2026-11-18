@@ -4,12 +4,13 @@
 
 **One id:** folder = `app.json` `"name"` = CMake target. The build keeps a hyphen in that target.
 
-| Kind | Id starts with | Example |
-|------|----------------|---------|
-| Host example (this repo, `examples/`) | `example-` | `example-svgAnimator` |
-| Product app (own repo) | `app-` | `app-svgAnimator` |
+| Kind | Id | Example |
+|------|----|---------|
+| Host example (`examples/`) | `example-<Name>` | `example-svgAnimator` |
+| Pack demo (`packs/<pack>/examples/`) | `example-<Name>` | `example-pixel` |
+| Product app (own repo) | brand id (no prefix) | `pixelplotter`, `Relay` |
 
-Pack demos under `packs/<id>/examples/<short>/` stay a short id.
+Every in-tree example uses the `example-` prefix (folder = `app.json` `"name"` = CMake target = exe). Product hosts use a brand id.
 
 Examples already in this tree keep the id they have (`minimal`, `oscHost`, `glEditor`, `calendar`, `svgEditor`, `ufomat`). New folders use the prefix.
 
@@ -59,20 +60,20 @@ Wayland and macOS take the icon from the `.desktop` entry / app bundle - a distr
 
 Use the thin starter under [`templates/app`](../templates/app/) - not an in-repo example:
 
-1. Copy `templates/app` to your new app repo (or clone and rename). The folder name is the id, and it starts with `app-` (for example `app-svgAnimator`).
+1. Copy `templates/app` to your new app repo (or clone and rename). The folder name is the **brand id** (for example `pixelplotter` or `MyApp`) - no `app-` or `example-` prefix.
 2. Edit `app.json` so `"name"` matches that folder, plus SPDX `license`, `window` (width, height, title), and pack `dependencies`. Do not also set the window in the app constructor.
 3. Add RigKit as a submodule at `rigkit/` (or set `-DRIGKIT_DIR=`).
 4. Configure from the **product** root - it `add_subdirectory`s RigKit and calls `add_rigkit_application(SOURCE_DIR ...)` on itself.
 
 ```bash
-cp -r templates/app ~/app-MyApp && cd ~/app-MyApp
+cp -r templates/app ~/MyApp && cd ~/MyApp
 git init
 git submodule add https://github.com/rigkid/RigKit.git rigkit
 git submodule update --init --recursive
 cmake -S . -B build
-cmake --build build --target app-MyApp
+cmake --build build --target MyApp
 ```
 
 The submodule path must be `rigkit/` - that matches `templates/app/CMakeLists.txt` (`RIGKIT_DIR` default). A capital `RigKit/` folder will fail configure unless you pass `-DRIGKIT_DIR=`.
 
-Do **not** copy `examples/minimal` into a product repo. Run examples inside RigKit to learn; start shipping apps from `templates/app`.
+Do **not** copy `examples/minimal` into a product repo. Run examples inside RigKit to learn; start shipping apps from `templates/app`. When an in-tree `example-*` prototype becomes a product, graduate it to a sibling brand repo - do not rename it to `app-*`.

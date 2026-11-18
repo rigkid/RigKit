@@ -58,7 +58,7 @@ jobs:
           cmake -S . -B build
           cmake --build build --target docs
 
-      - name: Fail on Doxygen warnings
+      - name: Check generated docs
         run: |
           chmod +x tools/check-docs.sh
           ./tools/check-docs.sh build

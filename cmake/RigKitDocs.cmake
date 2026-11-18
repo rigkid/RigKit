@@ -20,6 +20,36 @@ set(RIGKIT_DOXYFILE_IN "${RIGKIT_ROOT}/docs/api/Doxyfile.in")
 set(RIGKIT_DOXYFILE_OUT "${RIGKIT_DOXY_OUT}/Doxyfile")
 
 file(MAKE_DIRECTORY "${RIGKIT_DOXY_OUT}")
+
+# Doxygen drops namespace-scope functions unless the header has @file.
+# The filter supplies a bare one. check-docs fails if a documented function
+# is still missing from the XML.
+find_program(RIGKIT_PYTHON NAMES python3 python)
+set(RIGKIT_DOXY_FILTER_PATTERNS "")
+if(RIGKIT_PYTHON)
+	set(_filter_py "${RIGKIT_ROOT}/tools/doxygen_ensure_file.py")
+	if(WIN32)
+		set(_launcher "${RIGKIT_DOXY_OUT}/ensure-file-filter.cmd")
+	else()
+		set(_launcher "${RIGKIT_DOXY_OUT}/ensure-file-filter")
+	endif()
+	file(TO_CMAKE_PATH "${RIGKIT_PYTHON}" _py_fwd)
+	file(TO_CMAKE_PATH "${_filter_py}" _py_script)
+	file(TO_CMAKE_PATH "${_launcher}" _launcher_fwd)
+	if(WIN32)
+		file(WRITE "${_launcher}" "@echo off\r\n\"${_py_fwd}\" \"${_py_script}\" \"%~1\"\r\n")
+	else()
+		file(WRITE "${_launcher}" "#!/bin/sh\nexec \"${_py_fwd}\" \"${_py_script}\" \"\$1\"\n")
+		file(CHMOD "${_launcher}" FILE_PERMISSIONS
+			OWNER_READ OWNER_WRITE OWNER_EXECUTE
+			GROUP_READ GROUP_EXECUTE
+			WORLD_READ WORLD_EXECUTE)
+	endif()
+	set(RIGKIT_DOXY_FILTER_PATTERNS "*.h=\"${_launcher_fwd}\" *.hpp=\"${_launcher_fwd}\"")
+else()
+	message(STATUS "  Python not found - documented free functions without @file stay out of the HTML")
+endif()
+
 configure_file("${RIGKIT_DOXYFILE_IN}" "${RIGKIT_DOXYFILE_OUT}" @ONLY)
 
 add_custom_target(docs

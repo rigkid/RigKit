@@ -12,6 +12,7 @@ Root overview: [../README.md](../README.md). Agent playbook: [../AGENTS.md](../A
 | [build_instructions.md](build_instructions.md) | CMake, examples, ANGLE, Pi notes |
 | [nodes.md](nodes.md) | Node graphs - editor + catalog (artist guide) |
 | [contributing.md](contributing.md) | Format, hooks, CI style, how to contribute |
+| [gate-driven-development.md](gate-driven-development.md) | Gate-Driven Development field guide (fun read + code) |
 | [notes.md](notes.md) | Running list of deferred issues and out-of-vision code |
 
 ## Contract + Host

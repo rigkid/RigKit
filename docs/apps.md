@@ -9,9 +9,10 @@ The `examples/` directory holds in-repo **example apps** built on RigKit. Produc
 | Kind | Id | Where |
 |------|----|-------|
 | Host example | `example-<Name>` | `examples/example-<Name>/` in this repo |
-| Product app | `app-<Name>` | Its own repo, started from [`templates/app`](../templates/app/) |
+| Pack demo (hero) | `example-<Name>` | `packs/<pack>/examples/example-<Name>/` |
+| Product app | brand id (no prefix) | Its own repo, started from [`templates/app`](../templates/app/) |
 
-Pack demos under `packs/<id>/examples/<short>/` stay a short id. They are the pack's demo, not a host example and not a product app.
+Every in-tree example (host or pack) uses the `example-` prefix so the exe is never a bare short name (`example-pixel`, not `pixel`). Product hosts use a brand id (`pixelplotter`, `Relay`, `Illustrator`).
 
 Examples already in this tree keep the id they have: `minimal`, `oscHost`, `glEditor`, `calendar`, `svgEditor`, `ufomat`. New folders use the prefix.
 
@@ -37,7 +38,7 @@ Examples already in this tree keep the id they have: `minimal`, `oscHost`, `glEd
 | `example-studio` | Vector + Pixel crafts; App > Workspace switches chrome (`--smoke`) |
 | `example-stage` | Stage - 3D scene, materials, Jolt spheres/cloth, glTF prop, Python `stage` API. Editor target plus `example-stage-play` (`--smoke`, `--present`, doctest) |
 
-Product apps (out of tree) live next to RigKit, not under `examples/`. `../app-svgAnimator` plays SVG paths. `../Relay` is [Relay](https://github.com/GitBruno/relayout), the book layout host.
+Product apps (out of tree) live next to RigKit, not under `examples/`. Brand checkouts such as `../pixelplotter` or `../Relay` ([Relay](https://github.com/GitBruno/relayout)) are product hosts; `example-svgAnimator` is the in-repo playback reference for that craft.
 
 ## Adding a new example
 

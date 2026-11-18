@@ -38,6 +38,16 @@ if ! command -v doxygen >/dev/null 2>&1; then
 	exit 1
 fi
 
+PY=""
+if command -v python3 >/dev/null 2>&1; then
+	PY=python3
+elif command -v python >/dev/null 2>&1; then
+	PY=python
+else
+	echo "python3 not found on PATH" >&2
+	exit 1
+fi
+
 TEMPLATE="$RIGKIT_ROOT/docs/api/PackDoxyfile.in"
 if [[ ! -f "$TEMPLATE" ]]; then
 	echo "Missing $TEMPLATE" >&2
@@ -45,8 +55,8 @@ if [[ ! -f "$TEMPLATE" ]]; then
 fi
 
 PROJECT_VERSION="0.1.0"
-if [[ -f "$PACK_DIR/pack.json" ]] && command -v python >/dev/null 2>&1; then
-	PROJECT_VERSION="$(python - "$PACK_DIR/pack.json" <<'PY'
+if [[ -f "$PACK_DIR/pack.json" ]]; then
+	PROJECT_VERSION="$("$PY" - "$PACK_DIR/pack.json" <<'PY'
 import json, sys
 with open(sys.argv[1], encoding="utf-8") as f:
 	print(json.load(f).get("version") or "0.1.0")
@@ -85,6 +95,24 @@ doxy_path() {
 root_esc="$(doxy_path "$RIGKIT_ROOT")"
 out_esc="$(doxy_path "$RIGKIT_DOXY_OUT")"
 
+# Native doxygen runs the filter. On Windows that is cmd.exe, so the launcher
+# is a .cmd that calls Windows Python. Elsewhere it is a shell script.
+FILTER_SCRIPT="$(doxy_path "$RIGKIT_ROOT/tools/doxygen_ensure_file.py")"
+if command -v cygpath >/dev/null 2>&1; then
+	PY_ESC="$(cygpath -m "$(command -v "$PY")")"
+	LAUNCHER="$RIGKIT_DOXY_OUT/ensure-file-filter.cmd"
+	LAUNCHER_ESC="$(doxy_path "$LAUNCHER")"
+	printf '@echo off\r\n"%s" "%s" "%%~1"\r\n' "$PY_ESC" "$FILTER_SCRIPT" >"$LAUNCHER"
+else
+	PY_ESC="$(command -v "$PY")"
+	LAUNCHER="$RIGKIT_DOXY_OUT/ensure-file-filter"
+	LAUNCHER_ESC="$(doxy_path "$LAUNCHER")"
+	printf '#!/bin/sh\nexec "%s" "%s" "$1"\n' "$PY_ESC" "$FILTER_SCRIPT" >"$LAUNCHER"
+	chmod +x "$LAUNCHER"
+fi
+RIGKIT_DOXY_FILTER_PATTERNS="*.h=\"${LAUNCHER_ESC}\" *.hpp=\"${LAUNCHER_ESC}\""
+FILTER_ESC="${RIGKIT_DOXY_FILTER_PATTERNS//&/\\&}"
+
 DOXYFILE="$RIGKIT_DOXY_OUT/Doxyfile"
 sed \
 	-e "s|@PACK_NAME@|${PACK_NAME}|g" \
@@ -92,6 +120,7 @@ sed \
 	-e "s|@RIGKIT_ROOT@|${root_esc}|g" \
 	-e "s|@RIGKIT_DOXY_OUT@|${out_esc}|g" \
 	-e "s|@RIGKIT_DOXY_HAVE_DOT@|${RIGKIT_DOXY_HAVE_DOT}|g" \
+	-e "s|@RIGKIT_DOXY_FILTER_PATTERNS@|${FILTER_ESC}|g" \
 	"$TEMPLATE" >"$DOXYFILE"
 
 echo "Doxygen → $RIGKIT_DOXY_OUT/html (pack=$PACK_NAME)"
