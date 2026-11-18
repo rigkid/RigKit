@@ -36,6 +36,11 @@ class UndoStack {
 	void redo();
 	void clear();
 
+	/** @brief Mark the current tip as the last saved state (clears dirty). */
+	void markClean();
+	/** @brief True when the tip differs from the last `markClean` / clear. */
+	bool isDirty() const { return m_dirty; }
+
 	const std::string& undoLabel() const { return m_undoLabel; }
 	const std::string& redoLabel() const { return m_redoLabel; }
 
@@ -51,6 +56,11 @@ class UndoStack {
 	std::string m_undoLabel;
 	std::string m_redoLabel;
 	std::size_t m_limit = 100;
+	bool m_dirty = false;
+	/// Undo stack size at last markClean. `kNoCleanDepth` when that tip is no longer reachable
+	/// (its redo branch was discarded, or trimmed off the front).
+	static constexpr std::size_t kNoCleanDepth = static_cast<std::size_t>(-1);
+	std::size_t m_cleanDepth = 0;
 };
 
 } // namespace rigkit

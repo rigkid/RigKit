@@ -4,12 +4,16 @@ namespace rigkit {
 
 void UndoStack::push(UndoRecord rec) {
 	invalidateRedo();
+	if (m_cleanDepth != kNoCleanDepth && m_cleanDepth > m_undo.size()) {
+		m_cleanDepth = kNoCleanDepth; // the saved tip lived in the redo branch just dropped
+	}
 	m_undo.push_back(std::move(rec));
 	trimUndo();
 	if (!m_undo.empty()) {
 		m_undoLabel = m_undo.back().label;
 	}
 	m_redoLabel.clear();
+	m_dirty = true;
 }
 
 void UndoStack::push(std::string label, std::function<void()> undoFn,
@@ -33,6 +37,7 @@ void UndoStack::undo() {
 	m_redo.push_back(std::move(rec));
 	m_redoLabel = m_redo.back().label;
 	m_undoLabel = m_undo.empty() ? std::string{} : m_undo.back().label;
+	m_dirty = m_undo.size() != m_cleanDepth;
 }
 
 void UndoStack::redo() {
@@ -47,6 +52,7 @@ void UndoStack::redo() {
 	m_undo.push_back(std::move(rec));
 	m_undoLabel = m_undo.back().label;
 	m_redoLabel = m_redo.empty() ? std::string{} : m_redo.back().label;
+	m_dirty = m_undo.size() != m_cleanDepth;
 }
 
 void UndoStack::clear() {
@@ -54,6 +60,13 @@ void UndoStack::clear() {
 	m_redo.clear();
 	m_undoLabel.clear();
 	m_redoLabel.clear();
+	m_dirty = false;
+	m_cleanDepth = 0;
+}
+
+void UndoStack::markClean() {
+	m_cleanDepth = m_undo.size();
+	m_dirty = false;
 }
 
 void UndoStack::setLimit(std::size_t maxRecords) {
@@ -64,6 +77,9 @@ void UndoStack::setLimit(std::size_t maxRecords) {
 void UndoStack::trimUndo() {
 	while (m_undo.size() > m_limit) {
 		m_undo.erase(m_undo.begin());
+		if (m_cleanDepth != kNoCleanDepth) {
+			m_cleanDepth = (m_cleanDepth == 0) ? kNoCleanDepth : m_cleanDepth - 1;
+		}
 	}
 	if (!m_undo.empty()) {
 		m_undoLabel = m_undo.back().label;
