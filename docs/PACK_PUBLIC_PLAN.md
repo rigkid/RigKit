@@ -127,3 +127,27 @@ See Wave 4 list. Next level for each: add CI+docs (and example/LICENSE where not
 - No force-push.
 - Visibility flip only after **CI success** on default branch; Docs/Pages may lag one commit.
 - Skip `RigVJ` / `RigVJ-Content`.
+
+## Ready for you to make public (CI green, 2026-11-18)
+
+Flip these private remotes to **public**, then enable Pages (GitHub Actions). After each flip, append the pack to \docs/api/pack-remotes.txt\ on RigKit (or ask the agent).
+
+| Pack | Why first |
+|------|-----------|
+| rigSerial | I/O trunk - unlocks Grbl |
+| rigNode | Graph code |
+| rigColorspace | Data trunk |
+| rigTrueType | Font raster - unlocks ImTui |
+| rigFontComponent | Font data |
+| rigMeshEdit | Mesh tools |
+| rigMarkdown | Leaf |
+| rigSQLite | Leaf |
+| rigJoystick | Leaf |
+| rigTouch | Leaf |
+| rigAgentty | Leaf |
+| rigPixelPlotComponent | Pixel data |
+
+Already public and now listed in \pack-remotes.txt\: rigAbletonLink, rigArtboards, rigCadComponent, rigDocumentShell, rigNetScan.
+
+**Not ready yet (CI red / deeper fixes):** rigPlotComponent (example API drift), rigBlend2D (third_party header on CI), remaining Wave 3 isolates, Wave 2 leaves until trunks above are public.
+
