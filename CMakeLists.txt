@@ -237,10 +237,16 @@ function(add_rigkit_application)
 		if(NOT _app_icon_path STREQUAL "")
 			configure_file("${_app_icon_path}" "${_app_icon_dir}/app.ico" COPYONLY)
 		elseif(TARGET gen-app-icon)
+			# Run through cmake/RunGenAppIcon.cmake so a freshly linked PE that
+			# Windows still holds (0xC0000005 under ninja -j) is retried.
 			add_custom_command(
 				OUTPUT "${_app_icon_dir}/app.ico"
-				COMMAND gen-app-icon "${_app_icon_seed}" "${_app_icon_dir}/app.ico"
-				DEPENDS gen-app-icon
+				COMMAND ${CMAKE_COMMAND}
+					-DGEN_APP_ICON=$<TARGET_FILE:gen-app-icon>
+					-DAPP_NAME=${_app_icon_seed}
+					-DOUT_ICO=${_app_icon_dir}/app.ico
+					-P "${RIGKIT_ROOT}/cmake/RunGenAppIcon.cmake"
+				DEPENDS gen-app-icon "${RIGKIT_ROOT}/cmake/RunGenAppIcon.cmake"
 				COMMENT "Generate default PE icon for ${_sanitized_name}"
 				VERBATIM
 			)
