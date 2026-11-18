@@ -5,26 +5,26 @@ Thin host for a **product** RigKit app (separate repo). Not built by RigKit’s 
 ## Layout after copy
 
 ```
-app-MyApp/
+MyApp/
   CMakeLists.txt
   app.json                # name, SPDX license, pack dependencies
   app.h / app.cpp / main.cpp
   rigkit/                 # git submodule
 ```
 
-Edit `app.json` before first build: set `name` to the folder id (`app-<Name>`), SPDX `"license"` (required), and pack `dependencies`. Folder = `app.json` `"name"` = CMake target.
+Edit `app.json` before first build: set `name` to the folder **brand id** (no `app-` / `example-` prefix), SPDX `"license"` (required), and pack `dependencies`. Folder = `app.json` `"name"` = CMake target.
 
 ## Setup
 
 ```bash
-cp -r templates/app /path/to/app-MyApp
-cd /path/to/app-MyApp
+cp -r templates/app /path/to/MyApp
+cd /path/to/MyApp
 git init
 git submodule add https://github.com/rigkid/RigKit.git rigkit
 git submodule update --init --recursive
 cmake -S . -B build
-cmake --build build --target app-MyApp
-# run: build/bin/app-MyApp
+cmake --build build --target MyApp
+# run: build/bin/MyApp
 ```
 
 Override RigKit location: `-DRIGKIT_DIR=/path/to/rigkit`.

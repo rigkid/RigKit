@@ -146,7 +146,7 @@ cmake -S examples/oscHost -B examples/oscHost/build -G Ninja -DCMAKE_BUILD_TYPE=
 cmake --build examples/oscHost/build
 ```
 
-Commandments tablet: [docs/contract/commandments.md](../../docs/contract/commandments.md).
+Commandments: [docs/contract/commandments.md](../../docs/contract/commandments.md).
 
 On Windows, omit `-G Ninja` if Ninja is not installed (default generator is fine). Scope builds to what you touched when the change is narrow, but **never skip** style + `contract_smoke` for core / spine / format-sensitive edits, and never skip the example(s) whose `app.json` / sources you changed.
 

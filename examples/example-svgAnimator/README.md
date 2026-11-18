@@ -2,7 +2,7 @@
 
 Host example. Loads `data/demo.svg` into `CPath` entities and lets `STweens` slide the last path (`bob`) on `position.x`.
 
-The product host is the sibling checkout `../app-svgAnimator` (next to this repo). This folder stays the in-repo playback reference.
+When this craft ships as a product, graduate it to a sibling brand repo (brand id, no `app-` prefix). This folder stays the in-repo playback reference.
 
 ## What you see
 

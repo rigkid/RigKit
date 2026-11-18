@@ -131,4 +131,4 @@ Fire-and-forget packs stay as `registerPack<T>()` with no member. Plotter/SVG UI
 
 `registerPack<T>(args...)` constructs and owns the instance; the `shared_ptr` overload remains for data-driven registration (PackLoader / manifests). `getPack<T>()` keys on the pack class, so the id lives in one place and a wrong type is a compile error. The name overload `getPack("rigProject")` returns `IPack` and stays for enable/disable, settings, and dependency lookups.
 
-> SUDE bootstrap: `examples/oscHost`. Creators + meshes: `examples/minimal`. CAD CSG: `packs/rigManifold/examples/cad`. Sprite sheet: `packs/rigComponent/examples/pixel`.
+> SUDE bootstrap: `examples/oscHost`. Creators + meshes: `examples/minimal`. CAD CSG: `packs/rigManifold/examples/cad`. Sprite sheet: `packs/rigComponent/examples/pixel` (rename to `example-*` when touched).

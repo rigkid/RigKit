@@ -52,7 +52,7 @@ Data layer is mandatory before Contract work that touches entities - see [rigkit
 
 ## Host seams
 
-Floor is concrete (`RigKitEngine`, `M*`, GLFW, default OpenGL). Seams are `IApp`, `IPack`, `IMui`, `IRenderer`, `ISettings`. Unknown apps attach as POD + register, not a new vtable. Add a host `I*` only when a second fulfillment exists or is a known next pack. Do not wrap managers. Toolkit chrome stays on `Mui`. Full tablet: [seams.md](../../docs/contract/seams.md).
+Floor is concrete (`RigKitEngine`, `M*`, GLFW, default OpenGL). Seams are `IApp`, `IPack`, `IMui`, `IRenderer`, `ISettings`. Unknown apps attach as POD + register, not a new vtable. Add a host `I*` only when a second fulfillment exists or is a known next pack. Do not wrap managers. Toolkit chrome stays on `Mui`. Full text: [seams.md](../../docs/contract/seams.md).
 
 ## Hard boundaries (RigKit-specific)
 
