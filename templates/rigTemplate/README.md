@@ -32,10 +32,20 @@ Host copy lives at `templates/rigTemplate/` in the RigKit repo (not loaded as an
 
 ## Style
 
-- `.clang-format` / `.editorconfig` match RigKit (tabs, C++20, `SortIncludes`).
-- Format first-party `src/` + `examples/`: `./tools/format.sh` or `tools\format.bat`. Never `third_party/`.
-- Pre-commit (once per clone): `./tools/install-hooks.sh` or `tools\install-hooks.bat`. From a RigKit host checkout, `./tools/install-hooks.sh` also wires every `packs/<name>` git repo.
-- Public headers: Doxygen `@brief` ([rigkit-comments](../../skills/rigkit-comments/SKILL.md)).
+Format first-party `src/` and `examples/` with clang-format before commit (never `third_party/`).
+
+```bash
+./tools/format.sh
+./tools/install-hooks.sh    # once per clone - pre-commit formats staged C/C++
+```
+
+Hooks **fail** if you stage C/C++ and `clang-format` is missing. Put it on PATH:
+
+- **Windows:** install [LLVM](https://github.com/llvm/llvm-project/releases) (enable “Add LLVM to the system PATH”), or `winget install LLVM.LLVM`, then open a new shell. Confirm: `clang-format --version`.
+- **macOS:** `brew install clang-format`
+- **Linux:** `sudo apt install clang-format`
+
+From a RigKit host checkout, `./tools/install-hooks.sh` / `tools\install-hooks.bat` wires every `packs/<name>` git repo. Full policy: [packs/README.md Style](../../packs/README.md#style). Public headers: Doxygen `@brief` ([rigkit-comments](../../skills/rigkit-comments/SKILL.md)).
 
 ## CI
 

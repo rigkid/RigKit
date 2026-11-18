@@ -111,7 +111,7 @@ python tools/rigpack.py check <app.json> --pinned          # product release: fl
 
 Everything else under `packs/` is optional: local clone or CPM at `app.json` `url` + `ref`. Survey [docs/packs_catalog.md](../docs/packs_catalog.md) before scaffolding a new pack.
 
-**Plot family:** `packs/rigPlotter/examples/plot` remains the **integration** app (full Kit) when that pack is checked out. Plot code packs should ship a thin example under `examples/<name>/` (and `img/preview.png` when the window is the picture). **rigPlotComponent** does not need one; `examples/paths` may stay. Headless `tools/*_smoke` stay as unit gates.
+**Plot family:** `packs/rigPlotter/examples/example-plot` remains the **integration** app (full Kit) when that pack is checked out. Plot code packs should ship a thin `example-<Name>` under `examples/` (and `img/preview.png` when the window is the picture). **rigPlotComponent** does not need one; `examples/example-paths` may stay. Headless `tools/*_smoke` stay as unit gates.
 
 Pin basics = submodule SHA in the host. Pin optional packs = `ref` in `app.json` (CPM) or a local checkout.
 
@@ -127,7 +127,7 @@ In-tree examples configure with `RIGKIT_DIR=${CMAKE_CURRENT_SOURCE_DIR}/../..` s
 
 ## Pack example (README screenshot)
 
-A **code** pack should ship one example under `examples/<name>/` when there is a window, a mesh, or a transport worth teaching. That app is how someone learns the pack. When the window is the picture, save it as `examples/<name>/img/preview.png` and lead the pack README with `![preview](examples/<name>/img/preview.png)`. A headless pack (CLI, smoke, library with nothing to draw) may ship `tools/*_smoke` and skip the screenshot.
+A **code** pack should ship one example under `examples/example-<Name>/` when there is a window, a mesh, or a transport worth teaching. The id uses the same `example-` prefix as host examples so the exe is never a bare short name (`example-pixel`, not `pixel`). That app is how someone learns the pack. When the window is the picture, save it as `examples/example-<Name>/img/preview.png` and lead the pack README with `![preview](examples/example-<Name>/img/preview.png)`. A headless pack (CLI, smoke, library with nothing to draw) may ship `tools/*_smoke` and skip the screenshot.
 
 A **data** pack does not need an example. That is every `*Component` pack, plus **rigProject**, **rigColorspace**, and **rigComposition**. Show the POD from the code pack that fulfills it, or from a `.rig` document. An example already in a data pack may stay; do not add one to satisfy a checklist.
 
@@ -140,33 +140,47 @@ End every pack README with the Pages link for that pack id:
 ```
 
 ```
-packs/<pack>/examples/<name>/
+packs/<pack>/examples/example-<Name>/
   CMakeLists.txt   # RIGKIT_DIR is the host root; add_rigkit_application
-  app.json
+  app.json         # "name": "example-<Name>"
   app.h / app.cpp / main.cpp
   img/preview.png
   README.md
 ```
 
 ```bash
-cmake -S packs/<pack>/examples/<name> -B packs/<pack>/examples/<name>/build
-cmake --build packs/<pack>/examples/<name>/build --target <name>
+cmake -S packs/<pack>/examples/example-<Name> -B packs/<pack>/examples/example-<Name>/build
+cmake --build packs/<pack>/examples/example-<Name>/build --target example-<Name>
 ```
 
-Screenshot workflow, when the pack has a window: build and run the example, capture the main window, save as `examples/<name>/img/preview.png` (no emoji chrome), commit with the example. Host `examples/` stay Contract/product apps; they do not replace a pack example.
+Screenshot workflow, when the pack has a window: build and run the example, capture the main window, save as `examples/example-<Name>/img/preview.png` (no emoji chrome), commit with the example. Host `examples/` stay Contract/product apps; they do not replace a pack example.
 
 ## Style
 
-Host `tools/format.*` never touches `packs/`. Each pack formats its own first-party `src/` + `examples/` with clang-format (`SortIncludes` - [docs/includes.md](../docs/includes.md)).
+Host `tools/format.*` never touches `packs/`. Each pack formats its own first-party `src/` + `examples/` with clang-format (`SortIncludes` - [docs/includes.md](../docs/includes.md)). Never format `third_party/`.
 
-From the host, once per clone:
+### Pre-commit hooks
+
+From the host, once per clone (and again after updating hooks):
 
 ```bash
 ./tools/install-hooks.sh          # Unix
 tools\install-hooks.bat           # Windows
 ```
 
-That installs the host pre-commit hook and copies the pack hook into every `packs/<name>` that is its own git repo. New packs get `tools/format.*` + `tools/install-hooks.*` from [rigTemplate](../templates/rigTemplate/). Never format `third_party/`.
+That installs the host pre-commit hook and copies the pack hook into every `packs/<name>` that is its own git repo. Inside a single pack checkout: `./tools/install-hooks.sh`. Pack hooks **fail closed** if you stage C/C++ and `clang-format` is not available - they do not silently skip (that used to let unformatted commits pass local commit and fail pack CI). New packs get `tools/format.*` + `tools/install-hooks.*` from [rigTemplate](../templates/rigTemplate/).
+
+### Put `clang-format` on PATH
+
+Confirm with `clang-format --version` in the same shell you use for `git commit`.
+
+| OS | Install |
+|----|---------|
+| **Windows** | Install [LLVM](https://github.com/llvm/llvm-project/releases) and enable **Add LLVM to the system PATH**, or `winget install LLVM.LLVM`. Open a **new** terminal (PATH changes do not apply to shells already open). Git Bash hooks also look under `C:\Program Files\LLVM\bin\` if PATH is incomplete. |
+| **macOS** | `brew install clang-format` |
+| **Linux** | `sudo apt install clang-format` (or your distro’s clang-format package) |
+
+Format without committing: `./tools/format.sh` in the pack (or `tools\format.bat` when the pack ships one).
 
 ## Pack CI
 
