@@ -33,7 +33,7 @@
 [submodule "docs/contract/RigWorks"]
 	path = docs/contract/RigWorks
 	url = https://github.com/rigkid/RigWorks.git
-	branch = master
+	branch = main
 
 [submodule "packs/rigProjectComponent"]
 	path = packs/rigProjectComponent
