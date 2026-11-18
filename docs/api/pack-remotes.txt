@@ -9,6 +9,7 @@ rigCad	https://github.com/rigkid/rigCad.git	main
 rigCodeEditor	https://github.com/rigkid/rigCodeEditor.git	main
 rigComponent	https://github.com/rigkid/rigComponent.git	main
 rigDxf	https://github.com/rigkid/rigDxf.git	main
+rigImage	https://github.com/rigkid/rigImage.git	main
 rigImGui	https://github.com/rigkid/rigImGui.git	main
 rigNodeComponent	https://github.com/rigkid/rigNodeComponent.git	main
 rigNodeEditor	https://github.com/rigkid/rigNodeEditor.git	main
