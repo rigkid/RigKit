@@ -2,15 +2,20 @@
 # Columns: name<TAB>url<TAB>ref
 # Private packs stay out of this list until they graduate to public.
 # Full inventory: docs/packs_catalog.md. Policy: packs/README.md (visibility).
+rigAbletonLink	https://github.com/rigkid/rigAbletonLink.git	main
 rigAcp	https://github.com/rigkid/rigAcp.git	main
 rigAnimComponent	https://github.com/rigkid/rigAnimComponent.git	main
+rigArtboards	https://github.com/rigkid/rigArtboards.git	main
 rigAssimp	https://github.com/rigkid/rigAssimp.git	main
 rigCad	https://github.com/rigkid/rigCad.git	main
+rigCadComponent	https://github.com/rigkid/rigCadComponent.git	main
 rigCodeEditor	https://github.com/rigkid/rigCodeEditor.git	main
 rigComponent	https://github.com/rigkid/rigComponent.git	main
+rigDocumentShell	https://github.com/rigkid/rigDocumentShell.git	main
 rigDxf	https://github.com/rigkid/rigDxf.git	main
 rigImage	https://github.com/rigkid/rigImage.git	main
 rigImGui	https://github.com/rigkid/rigImGui.git	main
+rigNetScan	https://github.com/rigkid/rigNetScan.git	main
 rigNodeComponent	https://github.com/rigkid/rigNodeComponent.git	main
 rigNodeEditor	https://github.com/rigkid/rigNodeEditor.git	main
 rigObj	https://github.com/rigkid/rigObj.git	main
