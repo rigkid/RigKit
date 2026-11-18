@@ -3,11 +3,10 @@
 # before <imgui.h> (which requires ImGui types first).
 #
 # Tidy includes with clang-format only:
-#   tools\format.bat
-#   tools/format.sh
+#   ./tools/format.sh
 #
 # Report-only scan (does not write):
-#   powershell -File tools\scan-includes.ps1
+#   powershell -File tools/scan-includes.ps1
 
-Write-Error "tools/fix-includes.ps1 is retired. Use tools/format.bat (clang-format SortIncludes). See docs/includes.md."
+Write-Error "tools/fix-includes.ps1 is retired. Use ./tools/format.sh (clang-format SortIncludes). See docs/includes.md."
 exit 1

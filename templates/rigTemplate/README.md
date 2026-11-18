@@ -39,13 +39,13 @@ Format first-party `src/` and `examples/` with clang-format before commit (never
 ./tools/install-hooks.sh    # once per clone - pre-commit formats staged C/C++
 ```
 
-Hooks **fail** if you stage C/C++ and `clang-format` is missing. Put it on PATH:
+Hooks only look for `clang-format` on PATH and warn, without formatting, when it is missing. Put it on PATH:
 
 - **Windows:** install [LLVM](https://github.com/llvm/llvm-project/releases) (enable “Add LLVM to the system PATH”), or `winget install LLVM.LLVM`, then open a new shell. Confirm: `clang-format --version`.
 - **macOS:** `brew install clang-format`
 - **Linux:** `sudo apt install clang-format`
 
-From a RigKit host checkout, `./tools/install-hooks.sh` / `tools\install-hooks.bat` wires every `packs/<name>` git repo. Full policy: [packs/README.md Style](../../packs/README.md#style). Public headers: Doxygen `@brief` ([rigkit-comments](../../skills/rigkit-comments/SKILL.md)).
+From a RigKit host checkout, `./tools/install-hooks.sh` wires every `packs/<name>` git repo. Full policy: [packs/README.md Style](../../packs/README.md#style). Public headers: Doxygen `@brief` ([rigkit-comments](../../skills/rigkit-comments/SKILL.md)).
 
 ## CI
 

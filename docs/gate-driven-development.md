@@ -217,7 +217,7 @@ Local CI before commit is not optional politeness. It is the sport:
 
 ```bash
 # static
-tools/check-invariants.sh   # Windows: tools\check-invariants.bat
+./tools/check-invariants.sh   # on Windows, run from Git Bash
 
 # contract
 cmake --build build --target contract_smoke

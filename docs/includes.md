@@ -36,9 +36,9 @@ The root `CMakeLists.txt` exposes `src/`, `src/core`, `src/core/pack`, `src/rend
 
 ## Automatic tidy
 
-Use **clang-format only** (`tools/format.bat` / `tools/format.sh`, or format-on-save). It reorders includes; it does not add or delete them.
+Use **clang-format only** (`./tools/format.sh`, or format-on-save). It reorders includes; it does not add or delete them.
 
-Install the hook once per clone: `./tools/install-hooks.sh` (Windows: `tools\install-hooks.bat`). From the **host** that also copies the pack hook into every `packs/<name>` that is its own git repo. Pack commits never run the host hook (it skips `packs/`). New packs get `tools/` from [rigTemplate](../templates/rigTemplate/).
+Install the hook once per clone: `./tools/install-hooks.sh` (on Windows, run from Git Bash). From the **host** that also copies the pack hook into every `packs/<name>` that is its own git repo. Pack commits never run the host hook (it skips `packs/`). New packs get `tools/` from [rigTemplate](../templates/rigTemplate/).
 
 Do not run a second rewriter that deletes or alphabetizes the first include block. `tools/fix-includes.ps1` is retired - it dropped includes and put `<imfilebrowser.h>` before `<imgui.h>`. `tools/scan-includes.ps1` is report-only.
 

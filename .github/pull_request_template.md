@@ -24,6 +24,6 @@ See [docs/contract/commandments.md](docs/contract/commandments.md).
 
 ## Test plan
 
-- [ ] `./tools/check-invariants.sh` (or `tools\check-invariants.bat`)
+- [ ] `./tools/check-invariants.sh`
 - [ ] Format + `contract_smoke` (see `skills/rigkit-build`)
 - [ ] Built example(s) / pack example(s) touched

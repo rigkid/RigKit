@@ -128,10 +128,10 @@ Mirror [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml) for host / c
 
 ```bash
 # 0) Ten Commandments machine gates
-./tools/check-invariants.sh   # Windows: tools\check-invariants.bat
+./tools/check-invariants.sh   # on Windows, run from Git Bash
 
 # 1) style - format first-party trees, then dry-run on touched C/C++ (exclude third_party/)
-./tools/format.sh   # Windows: tools\format.bat
+./tools/format.sh
 clang-format --dry-run --Werror <changed .cpp/.h/.c/.hpp under src/ examples/ tools/>
 
 # 2) headless - contract smoke
@@ -209,9 +209,9 @@ Contribute does not end at commit. [docs/contributing.md](../../docs/contributin
 
 - Canonical: `.clang-format` (LLVM base, **tabs**, C++20, 100-col).
 - Include sort: `.clang-format` `IncludeCategories` put host (`core/` / `ecs/` / `rendering/`) before `packs/`. Policy: [docs/includes.md](../../docs/includes.md).
-- Run `tools/format.sh` or `tools/format.bat` on first-party trees: `src/`, `examples/`, `tools/`.
-- **Never** format `third_party/` or `packs/` from the host. Packs format their own `src/` + `examples/` (`packs/<name>/tools/format.*`).
-- Pre-commit: `tools/install-hooks.sh` (Windows: `tools\install-hooks.bat`) installs the host hook **and** the pack hook into every `packs/<name>` git checkout. CI `style` job runs `clang-format --dry-run --Werror` on changed first-party files.
+- Run `./tools/format.sh` on first-party trees: `src/`, `examples/`, `tools/` (on Windows, run from Git Bash).
+- **Never** format `third_party/` or `packs/` from the host. Packs format their own `src/` + `examples/` (`packs/<name>/tools/format.sh`).
+- Pre-commit: `./tools/install-hooks.sh` installs the host hook **and** the pack hook into every `packs/<name>` git checkout. CI `style` job runs `clang-format --dry-run --Werror` on changed first-party files.
 
 ## Layout reminders
 

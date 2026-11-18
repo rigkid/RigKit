@@ -6,23 +6,21 @@
 |-----------|----------------|
 | [`.clang-format`](../.clang-format) | Canonical C++ style (LLVM base, **tabs**, C++20, 100-col) |
 | [`.editorconfig`](../.editorconfig) | Tabs, UTF-8, LF, trim trailing whitespace, one blank line at EOF |
-| [`tools/format.bat`](../tools/format.bat) / [`tools/format.sh`](../tools/format.sh) | Format all of `src/`, `examples/`, `tools/` (never `packs/`) |
+| [`tools/format.sh`](../tools/format.sh) | Format all of `src/`, `examples/`, `tools/` (never `packs/`) |
 | Pre-commit hook | Formats staged C/C++ before commit. Host hook skips `packs/`; each pack repo has its own hook |
 | CI (`style` job) | `clang-format --dry-run --Werror` on changed first-party files |
 
 **Requires:** `clang-format` on your PATH (LLVM / Visual Studio / MSYS).
 
 ```bash
-# Format everything first-party
-./tools/format.sh          # Unix
-tools\format.bat           # Windows
+# Format everything first-party (on Windows, run from Git Bash)
+./tools/format.sh
 
-# Install pre-commit (once per clone)
-./tools/install-hooks.sh          # Unix - host + every packs/<name> git checkout
-tools\install-hooks.bat           # Windows
+# Install pre-commit (once per clone - host + every packs/<name> git checkout)
+./tools/install-hooks.sh
 ```
 
-Do **not** run the host formatter on `third_party/` or `packs/`. Each pack formats its own `src/` + `examples/` (`packs/<name>/tools/format.*`, or the pack pre-commit hook). Never format pack `third_party/`.
+Do **not** run the host formatter on `third_party/` or `packs/`. Each pack formats its own `src/` + `examples/` (`packs/<name>/tools/format.sh`, or the pack pre-commit hook). Never format pack `third_party/`.
 
 ## Editor setup
 

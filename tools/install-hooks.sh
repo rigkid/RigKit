@@ -2,7 +2,7 @@
 # Install git hooks for this clone.
 # From the RigKit host: host hook + every packs/<name> that is its own git repo.
 # From a pack: that pack only (uses tools/hooks/pre-commit.sh if present).
-# Usage: ./tools/install-hooks.sh   or   tools\install-hooks.bat
+# Usage: ./tools/install-hooks.sh
 set -euo pipefail
 
 REPO_ROOT="$(git rev-parse --show-toplevel)"

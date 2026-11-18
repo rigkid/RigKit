@@ -17,7 +17,7 @@ Hard rules. Details below. Full text: [docs/contract/commandments.md](docs/contr
 9. **No UI toolkit in `src/`.** UI through `IMui`; **rigImGui** is a fulfillment, not Rig.
 10. **Gates over gospel.** Format, contract smoke, and the example you touched must pass before you call it done. Load-bearing rules get CI - not essays. Refuse the fog: explicit non-goals, next-year docs only, no archaeology, no hallucinated scope. **No fake stubs:** never ship a product path that pretends to work (no-op UI, empty remote, “not implemented yet”). Reserving POD / enum surface for a known port is fine - fulfillments and Kit UI expose only what runs.
 
-Machine checks: `tools/check-invariants.sh` (Windows: `tools\check-invariants.bat`). Call out **Pi risk** and **rebuild-cost risk** in the PR when the change is heavy.
+Machine checks: `./tools/check-invariants.sh` (on Windows, run from Git Bash). Call out **Pi risk** and **rebuild-cost risk** in the PR when the change is heavy.
 
 ## First layer: NO CODE JUST DATA
 

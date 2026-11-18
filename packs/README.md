@@ -164,11 +164,10 @@ Host `tools/format.*` never touches `packs/`. Each pack formats its own first-pa
 From the host, once per clone (and again after updating hooks):
 
 ```bash
-./tools/install-hooks.sh          # Unix
-tools\install-hooks.bat           # Windows
+./tools/install-hooks.sh   # on Windows, run from Git Bash
 ```
 
-That installs the host pre-commit hook and copies the pack hook into every `packs/<name>` that is its own git repo. Inside a single pack checkout: `./tools/install-hooks.sh`. Pack hooks **fail closed** if you stage C/C++ and `clang-format` is not available - they do not silently skip (that used to let unformatted commits pass local commit and fail pack CI). New packs get `tools/format.*` + `tools/install-hooks.*` from [rigTemplate](../templates/rigTemplate/).
+That installs the host pre-commit hook and copies the pack hook into every `packs/<name>` that is its own git repo. Inside a single pack checkout: `./tools/install-hooks.sh`. Hooks only look for `clang-format` on PATH. Without it they print a warning and commit the staged C/C++ unformatted, which pack CI then rejects. New packs get `tools/format.sh` + `tools/install-hooks.sh` from [rigTemplate](../templates/rigTemplate/).
 
 ### Put `clang-format` on PATH
 
@@ -176,11 +175,11 @@ Confirm with `clang-format --version` in the same shell you use for `git commit`
 
 | OS | Install |
 |----|---------|
-| **Windows** | Install [LLVM](https://github.com/llvm/llvm-project/releases) and enable **Add LLVM to the system PATH**, or `winget install LLVM.LLVM`. Open a **new** terminal (PATH changes do not apply to shells already open). Git Bash hooks also look under `C:\Program Files\LLVM\bin\` if PATH is incomplete. |
+| **Windows** | Install [LLVM](https://github.com/llvm/llvm-project/releases) and enable **Add LLVM to the system PATH**, or `winget install LLVM.LLVM`. Visual Studio's C++ Clang tools also work: add their `VC\Tools\Llvm\x64\bin` folder to PATH. Open a **new** terminal (PATH changes do not apply to shells already open). |
 | **macOS** | `brew install clang-format` |
 | **Linux** | `sudo apt install clang-format` (or your distro’s clang-format package) |
 
-Format without committing: `./tools/format.sh` in the pack (or `tools\format.bat` when the pack ships one).
+Format without committing: `./tools/format.sh` in the pack.
 
 ## Pack CI
 

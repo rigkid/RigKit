@@ -432,6 +432,20 @@ for data_pack in rigNodeComponent rigProjectComponent rigPixelPlotComponent \
 	fi
 done
 
+# --- No first-party .bat / .cmd (bash only; vendored third_party is fine) -------
+# Host-tracked files, plus pack checkouts on disk (packs/* is gitignored except
+# the submodule pointers).
+bat_hits="$( {
+	git ls-files '*.bat' '*.cmd'
+	find . packs -type f \( -name '*.bat' -o -name '*.cmd' \) \
+		! -path '*/third_party/*' ! -path '*/build/*' \
+		! -path '*/RigWorks/*' ! -path '*/node_modules/*' 2>/dev/null
+} | sed 's|^\./||' | grep -vE '(^|/)(third_party|RigWorks|node_modules)/' | sort -u || true )"
+if [[ -n "$bat_hits" ]]; then
+	hit "first-party .bat/.cmd — use bash scripts instead (third_party/ is fine)"
+	echo "$bat_hits" >&2
+fi
+
 if [[ "$FAIL" -ne 0 ]]; then
 	echo "" >&2
 	echo "Ten Commandments invariant check failed. See docs/contract/commandments.md" >&2
