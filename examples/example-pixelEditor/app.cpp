@@ -154,6 +154,43 @@ bool PixelEditorApp::runSmoke() {
 			spdlog::error("pixelEditor smoke: raster undo apply failed");
 			return false;
 		}
+		{
+			// Eraser: paint then erase the same spot; alpha must go back to 0.
+			auto& raster = doc.ecs().getComponent<rigkit::ecs::CPixelLayerRaster>(paint);
+			auto alphaAt = [&raster](int x, int y) {
+				return raster.rgba[(static_cast<size_t>(y) * raster.w + x) * 4 + 3];
+			};
+			doc.paintDab(paint, 100.f, 200.f, brush);
+			doc.syncPaintLayer(paint);
+			const int painted = alphaAt(100, 200);
+			doc.paintDab(paint, 100.f, 200.f, brush, true);
+			doc.syncPaintLayer(paint);
+			if (painted == 0 || alphaAt(100, 200) != 0) {
+				spdlog::error("pixelEditor smoke: eraser failed");
+				return false;
+			}
+			// Tip: a real PNG tip paints; a missing tip falls back to round.
+			const std::string tipDir = AppPaths::joinPath(AppPaths::getDataDir(), "export");
+			std::filesystem::create_directories(tipDir);
+			const std::string tipPath = AppPaths::joinPath(tipDir, "tip.png");
+			auto tipBrush = brush;
+			tipBrush.tipPath = tipPath;
+			if (!doc.exportPng(tipPath) || !doc.paintDab(paint, 250.f, 200.f, tipBrush)) {
+				spdlog::error("pixelEditor smoke: tip dab failed");
+				return false;
+			}
+			doc.syncPaintLayer(paint);
+			if (alphaAt(250, 200) == 0) {
+				spdlog::error("pixelEditor smoke: tip dab painted nothing");
+				return false;
+			}
+			tipBrush.tipPath = "does-not-exist.png";
+			if (!doc.paintDab(paint, 200.f, 200.f, tipBrush)) {
+				spdlog::error("pixelEditor smoke: missing tip must fall back to round");
+				return false;
+			}
+			doc.syncPaintLayer(paint);
+		}
 		auto cropBefore = doc.captureCropState();
 		if (!doc.cropCanvas(10, 10, 160, 120) || doc.canvas().width != 160 ||
 			doc.canvas().height != 120 || !doc.render()) {
