@@ -630,6 +630,64 @@ TEST_CASE("rigProject .rig save is readable by Contract import") {
 	std::filesystem::remove(path);
 }
 
+TEST_CASE("Contract import remaps CText.font after recycled entity versions") {
+	const auto path = tempRigPath("rigkit_contract_smoke_font_remap.rig").string();
+	std::filesystem::remove(path);
+
+	{
+		SpineFixture writer;
+		auto& ecs = writer.ecs();
+		auto docPack = writer.engine->getPackManager()->getPack<rigProject>();
+		REQUIRE(docPack != nullptr);
+
+		// Burn entity indices so the font handle carries a non-zero version bit.
+		for (int i = 0; i < 40; ++i) {
+			auto burn = ecs.createEntity("burn");
+			ecs.destroyEntity(burn);
+		}
+
+		auto docEntity = ecs.createEntity("project");
+		ecs::CProject doc;
+		doc.title = "Font Remap";
+		doc.path = path;
+		ecs.addComponent<ecs::CProject>(docEntity, doc);
+
+		auto font = ecs.createEntity("face");
+		ecs::CAssetRef asset;
+		asset.kind = ecs::CAssetRef::Kind::Font;
+		asset.path = "fonts/Body.ttf";
+		ecs.addComponent<ecs::CAssetRef>(font, asset);
+
+		auto label = ecs.createEntity("label");
+		ecs::CText text;
+		text.text = "Hello";
+		text.font = font;
+		text.fontSize = 12.f;
+		ecs.addComponent<ecs::CText>(label, text);
+
+		REQUIRE(static_cast<std::uint32_t>(font) > 0xFFFFu);
+		REQUIRE(docPack->serializer().save(ecs, path));
+	}
+
+	SpineFixture reader;
+	auto& ecs = reader.ecs();
+	auto result = importWithPackCodecs(reader, readFileText(path).c_str(), path.c_str());
+	INFO("import error: " << result.error);
+	REQUIRE(result.ok);
+
+	auto textE = ecs.findEntity("label");
+	REQUIRE(textE != entt::null);
+	REQUIRE(ecs.hasComponent<ecs::CText>(textE));
+	const auto face = ecs.getComponent<ecs::CText>(textE).font;
+	REQUIRE(face != entt::null);
+	REQUIRE(ecs.registry().valid(face));
+	REQUIRE(ecs.hasComponent<ecs::CAssetRef>(face));
+	CHECK(ecs.getComponent<ecs::CAssetRef>(face).kind == ecs::CAssetRef::Kind::Font);
+	CHECK(ecs.getComponent<ecs::CAssetRef>(face).path == "fonts/Body.ttf");
+
+	std::filesystem::remove(path);
+}
+
 TEST_CASE("rigProject round-trips path layer asset text curve via pack codecs") {
 	SpineFixture f;
 	auto& ecs = f.ecs();
