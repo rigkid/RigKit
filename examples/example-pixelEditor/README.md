@@ -13,9 +13,16 @@ cmake --build examples/example-pixelEditor/build --target example-pixelEditor
 ./examples/example-pixelEditor/build/bin/example-pixelEditor --smoke
 ```
 
+## Tools
+
+Main View: paint brush, eraser (E, dest-out), and crop (C, drag a marquee on
+the canvas, then apply). Paint stamps on the GPU; the layer raster syncs at
+stroke end. Project undo covers paint strokes and crop with raster records
+(64 MB byte budget), not just document POD.
+
 ## Brushes
 
-Load a folder that contains `brushes.json` (File-style dialog on the Brushes panel, or drop under `data/brushes/`). Tip PNGs are optional; missing tips use a procedural round.
+Load a folder that contains `brushes.json` (File-style dialog on the Brushes panel, or drop under `data/brushes/`). A brush `tipPath` PNG (relative to the pack folder) is honored on CPU and GPU, with rotation, scatter, flow, and angle jitter; a missing tip falls back to a procedural round.
 
 True Grit Texture Supply partnership is a **Rig SKU** (same idea as their Procreate sets). Do not install their Photoshop `.abr` packs here.
 

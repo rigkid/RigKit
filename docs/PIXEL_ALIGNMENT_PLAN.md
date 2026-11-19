@@ -20,6 +20,54 @@ Status snapshot: 2026-11-19. Re-score after each phase.
 - `yt-dlp` / `qjs` page-URL tools opt-in (`RIGVIDEO_FETCH_TOOLS=OFF` default
   in rigVideo); orphan `rigImage` removed from `example-pixelEditor`.
 
+## Status 2026-11-19 (Phases 0-4 landed, 5 in progress)
+
+- Phase 0: done, committed per repo.
+- Phase 1: done except three deferrals, kept visible here rather than
+  silently dropped:
+  - 1.5 `rigVideo` header seam (`PixelDoc.h` forward-declares webcam types,
+    `RIGKIT_HAS_RIGVIDEO`): deferred. `PixelDoc.h` still includes
+    `VideoHub.h` publicly, so rigVideo stays a core link. Do it as its own
+    change; it touches every PixelDoc consumer's include graph.
+  - 1.6 Ui optionals (`RIGKIT_HAS_RIGSVG` / `RIGKIT_HAS_RIGVECTOR`):
+    deferred. `rigSvg` / `rigVectorEditor` stay core deps of
+    rigPixelPlotterUi; nothing is blocked on splitting them out.
+  - 1.4b `AudioBus` as its own pack: deferred. The `rigNodeBus` leaf target
+    inside rigNode already keeps the node graph out of pixel binaries;
+    extracting a separate pack is a repo-creation decision, not a code one.
+  Landed: `rigNodeBus` leaf; `rigPainty` GPL firewall and `rigObj` as opt-in
+  leaves (`RIGKIT_HAS_RIGPAINTY` / `RIGKIT_HAS_RIGOBJ`); consumer manifests
+  updated (studio, pixelui example, RigVJ opt in explicitly).
+- Phase 2: done. Stroke + crop raster undo (`RasterPatch` /
+  `CropSnapshot`), byte-budgeted `UndoStack` (64 MB in the Ui). Still open:
+  feeder `fillRegion` / `paintSbr` do not push raster records - they ride
+  the POD snapshot, so project undo after a feeder fill restores structure,
+  not those pixels. Fix in the pack or stop offering undo there.
+- Phase 3: done with one deliberate deviation from the text below: pages
+  are NOT all resized. Pages are independent artboards with their own
+  sizes; only the active page bridges to the canvas
+  (`syncActivePageFromCanvas`). Regions (`fillXy` / outline) shift and
+  off-size layer rasters crop proportionally, as specified.
+- Phase 4: done. `tipPath` honored (CPU + GPU stamp, cached pack-side),
+  `angleJitter` + seeded per-stroke RNG (no more `std::rand`), eraser
+  (`tool.eraser`, dest-out both paths), Brushes panel gained flow / scatter /
+  angle-jitter controls and the tip name.
+- Phase 5: in progress. `video_smoke` fixed in rigVideo (Media Foundation
+  display-aperture size; stepped `update(0)` / `readNext` no longer drop
+  every other frame to the pump race) and passes standalone. Host CI gains
+  an `example-pixelEditor` matrix leg with an xvfb `--smoke`;
+  rigPixelPlotter CI gains hero + pixelEditor smokes under xvfb and a
+  pixelEditor build. Two pre-existing GCC/Linux breaks fell out of wiring
+  that up and were fixed where they live (lambda/`nullptr` ternary in
+  `ImageFilters.cpp`; MSVC-only `reinterpret_cast<ImTextureID>` in
+  rigPixelPlotterUi). The full pixelEditor tree builds and `--smoke` passes
+  on Linux (WSL, Mesa) - the same llvmpipe path the CI smoke uses. Docs
+  synced (pack READMEs, example README, packs catalog). Not yet run:
+  GitHub CI itself, and Phase 6.
+- Phase 6: not started. Pi risk stays open until the ANGLE build and a Pi
+  run actually happen; nothing in Phases 0-5 was verified on arm64/GLES
+  hardware.
+
 ## Phase 0 - Land the work above
 
 - Install clang-format; run each pack's `tools/format.sh` (host format never
@@ -74,6 +122,7 @@ paths only:
 
 - Shift `CPixelRegion` fill geometry (`fillXy` / `fillCounts`).
 - Resize every page in `CPixelPages`, not only the active one.
+  ( Landed differently: pages keep their own sizes - see Status. )
 - Non-canvas-sized layer rasters: crop proportionally or refuse loudly.
 - Audit color-select PODs and step-mask references after crop.
 

@@ -49,7 +49,7 @@ Teaching app: `packs/rigJolt/examples/cloth`. Hosts list the leaf; the trunk and
 | Pack | Remote | Role |
 |------|--------|------|
 | **rigNodeComponent** | [rigkid/rigNodeComponent](https://github.com/rigkid/rigNodeComponent) | Node-graph PODs (`CNodeGraph`) + pure graph helpers - data pack |
-| **rigNode** | [rigkid/rigNode](https://github.com/rigkid/rigNode) | Node graph code - evaluation, `SGraphEval`, catalog, buses, `.rig` codecs |
+| **rigNode** | [rigkid/rigNode](https://github.com/rigkid/rigNode) | Node graph code - evaluation, `SGraphEval`, catalog, buses, `.rig` codecs. Also builds the `rigNodeBus` leaf target (audio bus only, no graph) for consumers that just need live bus values |
 | **rigNodeEditor** | [rigkid/rigNodeEditor](https://github.com/rigkid/rigNodeEditor) | ImGui node editor over `CNodeGraph` |
 
 Artist guide: [nodes.md](nodes.md).
