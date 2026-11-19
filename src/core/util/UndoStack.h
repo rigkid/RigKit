@@ -16,6 +16,7 @@ struct UndoRecord {
 	std::string label;
 	std::function<void()> undo;
 	std::function<void()> redo;
+	std::size_t bytes = 0; ///< Payload size for byte-budget trimming (0 = uncounted)
 };
 
 class UndoStack {
@@ -47,6 +48,10 @@ class UndoStack {
 	void setLimit(std::size_t maxRecords);
 	std::size_t limit() const { return m_limit; }
 
+	/** @brief Cap total `UndoRecord::bytes` on the undo stack (0 = unlimited). */
+	void setByteLimit(std::size_t maxBytes);
+	std::size_t byteLimit() const { return m_byteLimit; }
+
   private:
 	void trimUndo();
 	void invalidateRedo();
@@ -56,6 +61,7 @@ class UndoStack {
 	std::string m_undoLabel;
 	std::string m_redoLabel;
 	std::size_t m_limit = 100;
+	std::size_t m_byteLimit = 0;
 	bool m_dirty = false;
 	/// Undo stack size at last markClean. `kNoCleanDepth` when that tip is no longer reachable
 	/// (its redo branch was discarded, or trimmed off the front).

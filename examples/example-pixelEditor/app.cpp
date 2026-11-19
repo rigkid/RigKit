@@ -134,9 +134,36 @@ bool PixelEditorApp::runSmoke() {
 			return false;
 		}
 		doc.syncPaintLayer(paint);
+		rigkit::PixelDoc::RasterPatch undoBefore;
+		rigkit::PixelDoc::RasterPatch undoAfter;
+		doc.beginPaintCapture(paint);
+		const bool dabOk = doc.paintDab(paint, 290.f, 30.f, brush);
+		const bool capOk = doc.endPaintCapture(undoBefore, undoAfter);
+		if (!dabOk || !capOk || undoBefore.empty() || undoBefore.rgba == undoAfter.rgba) {
+			spdlog::error("pixelEditor smoke: raster undo capture failed dab={} cap={} empty={} "
+						  "same={} rect={}x{}",
+						  dabOk, capOk, undoBefore.empty(), undoBefore.rgba == undoAfter.rgba,
+						  undoBefore.w, undoBefore.h);
+			return false;
+		}
+		doc.applyRasterPatch(undoBefore);
+		const auto& raster = doc.ecs().getComponent<rigkit::ecs::CPixelLayerRaster>(paint);
+		const uint8_t* px =
+			raster.rgba.data() + (static_cast<size_t>(undoBefore.y) * raster.w + undoBefore.x) * 4;
+		if (px[0] != undoBefore.rgba[0] || px[3] != undoBefore.rgba[3] || !doc.render()) {
+			spdlog::error("pixelEditor smoke: raster undo apply failed");
+			return false;
+		}
+		auto cropBefore = doc.captureCropState();
 		if (!doc.cropCanvas(10, 10, 160, 120) || doc.canvas().width != 160 ||
 			doc.canvas().height != 120 || !doc.render()) {
 			spdlog::error("pixelEditor smoke: crop failed");
+			return false;
+		}
+		doc.restoreCropState(cropBefore);
+		if (doc.canvas().width != 320 || doc.canvas().height != 240 || !doc.render() ||
+			!doc.cropCanvas(10, 10, 160, 120) || !doc.render()) {
+			spdlog::error("pixelEditor smoke: crop undo restore failed");
 			return false;
 		}
 	}

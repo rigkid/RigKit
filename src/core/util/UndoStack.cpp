@@ -74,8 +74,21 @@ void UndoStack::setLimit(std::size_t maxRecords) {
 	trimUndo();
 }
 
+void UndoStack::setByteLimit(std::size_t maxBytes) {
+	m_byteLimit = maxBytes;
+	trimUndo();
+}
+
 void UndoStack::trimUndo() {
-	while (m_undo.size() > m_limit) {
+	auto totalBytes = [this] {
+		std::size_t n = 0;
+		for (const auto& rec : m_undo) {
+			n += rec.bytes;
+		}
+		return n;
+	};
+	while (m_undo.size() > m_limit ||
+		   (m_byteLimit > 0 && m_undo.size() > 1 && totalBytes() > m_byteLimit)) {
 		m_undo.erase(m_undo.begin());
 		if (m_cleanDepth != kNoCleanDepth) {
 			m_cleanDepth = (m_cleanDepth == 0) ? kNoCleanDepth : m_cleanDepth - 1;
