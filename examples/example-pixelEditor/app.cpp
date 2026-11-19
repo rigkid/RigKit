@@ -120,6 +120,26 @@ bool PixelEditorApp::runSmoke() {
 		spdlog::error("pixelEditor smoke: expected Plot + Paint layers");
 		return false;
 	}
+	{
+		entt::entity paint = entt::null;
+		for (auto e : doc.layerEntities()) {
+			if (doc.ecs().hasComponent<rigkit::ecs::CPixelLayer>(e) &&
+				doc.ecs().getComponent<rigkit::ecs::CPixelLayer>(e).name == "Paint") {
+				paint = e;
+			}
+		}
+		auto brush = doc.brushes().current();
+		if (paint == entt::null || !doc.paintDab(paint, 80.f, 60.f, brush) || !doc.recomposite()) {
+			spdlog::error("pixelEditor smoke: GPU paint/recomposite failed");
+			return false;
+		}
+		doc.syncPaintLayer(paint);
+		if (!doc.cropCanvas(10, 10, 160, 120) || doc.canvas().width != 160 ||
+			doc.canvas().height != 120 || !doc.render()) {
+			spdlog::error("pixelEditor smoke: crop failed");
+			return false;
+		}
+	}
 	const std::string exportDir = AppPaths::joinPath(AppPaths::getDataDir(), "export");
 	std::filesystem::create_directories(exportDir);
 	const std::string png = AppPaths::joinPath(exportDir, "smoke.png");

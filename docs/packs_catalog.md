@@ -173,7 +173,7 @@ Art-Net is a **planned leaf** on **rigDmx**. Do not stuff it into **rigSacn**.
 | Pack | Remote | Role |
 |------|--------|------|
 | **rigImage** | [rigkid/rigImage](https://github.com/rigkid/rigImage) (local `packs/` until published) | Raster decode + GLES upload (stb_image). CPU buffer is `rig::pixel::Raster` (`rig.pixel.raster`). Path POD stays `CAssetRef` in **rigComponent**. Example `image --smoke-image`. |
-| **rigVideo** | [rigkid/rigVideo](https://github.com/rigkid/rigVideo) (local `packs/` until published) | Video IO - webcam (MF/V4L2), file decode (FFmpeg / Media Foundation), filmstrip / still, ffmpeg CLI trim/extract, page URLs via pinned yt-dlp + qjs copied beside the executable. **Leaf.** |
+| **rigVideo** | [rigkid/rigVideo](https://github.com/rigkid/rigVideo) (local `packs/` until published) | Video IO - webcam (MF/V4L2), file decode (FFmpeg / Media Foundation), filmstrip / still, ffmpeg CLI trim/extract, page URLs via pinned yt-dlp + qjs copied beside the executable only when the app opts in with `RIGVIDEO_FETCH_TOOLS=ON`. **Leaf.** |
 | **rigOpenCV** | [rigkid/rigOpenCV](https://github.com/rigkid/rigOpenCV) (local `packs/` until published) | Optional OpenCV Raster bridge (`toMat` / `fromMat`). FetchContent OpenCV 4.10.0 `core`+`imgproc` - does not use a machine / openFrameworks copy. **Leaf.** **Pi / rebuild risk** (first configure compiles OpenCV). |
 
 ### Scripting / CAD
