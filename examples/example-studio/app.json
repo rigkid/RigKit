@@ -22,6 +22,8 @@
     { "name": "rigPsd", "url": "https://github.com/rigkid/rigPsd.git", "ref": "main" },
     { "name": "rigPixelPlotComponent", "url": "https://github.com/rigkid/rigPixelPlotComponent.git", "ref": "main" },
     { "name": "rigPixelPlotter", "url": "https://github.com/rigkid/rigPixelPlotter.git", "ref": "main" },
+    { "name": "rigPainty", "url": "https://github.com/rigkid/rigPainty.git", "ref": "main" },
+    { "name": "rigObj", "url": "https://github.com/rigkid/rigObj.git", "ref": "main" },
     { "name": "rigPixelPlotterUi", "url": "https://github.com/rigkid/rigPixelPlotterUi.git", "ref": "main" }
   ]
 }
