@@ -52,21 +52,29 @@ Status snapshot: 2026-11-19. Re-score after each phase.
   `angleJitter` + seeded per-stroke RNG (no more `std::rand`), eraser
   (`tool.eraser`, dest-out both paths), Brushes panel gained flow / scatter /
   angle-jitter controls and the tip name.
-- Phase 5: in progress. `video_smoke` fixed in rigVideo (Media Foundation
-  display-aperture size; stepped `update(0)` / `readNext` no longer drop
-  every other frame to the pump race) and passes standalone. Host CI gains
-  an `example-pixelEditor` matrix leg with an xvfb `--smoke`;
-  rigPixelPlotter CI gains hero + pixelEditor smokes under xvfb and a
-  pixelEditor build. Two pre-existing GCC/Linux breaks fell out of wiring
-  that up and were fixed where they live (lambda/`nullptr` ternary in
-  `ImageFilters.cpp`; MSVC-only `reinterpret_cast<ImTextureID>` in
+- Phase 5: done locally; GitHub CI has not run it yet. `video_smoke` fixed
+  in rigVideo (Media Foundation display-aperture size; stepped `update(0)` /
+  `readNext` no longer drop every other frame to the pump race) and passes
+  standalone. Host CI gains an `example-pixelEditor` matrix leg with an
+  xvfb `--smoke`; rigPixelPlotter CI gains hero + pixelEditor smokes under
+  xvfb and a pixelEditor build. Two pre-existing GCC/Linux breaks fell out
+  of wiring that up and were fixed where they live (lambda/`nullptr` ternary
+  in `ImageFilters.cpp`; MSVC-only `reinterpret_cast<ImTextureID>` in
   rigPixelPlotterUi). The full pixelEditor tree builds and `--smoke` passes
   on Linux (WSL, Mesa) - the same llvmpipe path the CI smoke uses. Docs
-  synced (pack READMEs, example README, packs catalog). Not yet run:
-  GitHub CI itself, and Phase 6.
-- Phase 6: not started. Pi risk stays open until the ANGLE build and a Pi
-  run actually happen; nothing in Phases 0-5 was verified on arm64/GLES
-  hardware.
+  synced (pack READMEs, example README, packs catalog).
+- Phase 6: desktop GLES parity done; Pi hardware still unverified.
+  `-DRIGKIT_USE_ANGLE=ON` build of the pixelEditor tree (MSYS2 ANGLE) ran
+  `--smoke` green with a clean exit, after two more fixes where they live:
+  integer `clamp` in the pixelate shader (GLSL ES 1.00 has none) in
+  rigPixelPlotter, and `IMGUI_IMPL_OPENGL_ES2` for the vendored ImGui
+  backend in rigImGui - without it the backend loader resolves desktop GL
+  entry points, init fails on any GLES context (Pi included), and shutdown
+  dereferenced the null backend data. Not done: a build + run on arm64 /
+  Pi hardware (no device available), and the perf measurements below -
+  brush strokes are GPU stamps with dirty-rect uploads by construction
+  now, but no frame-time or undo-memory numbers were taken at 320x240 /
+  1920x1080. Treat both as open Pi risk, not as passed gates.
 
 ## Phase 0 - Land the work above
 
