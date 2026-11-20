@@ -1,4 +1,4 @@
-# Pack public graduation
+﻿# Pack public graduation
 
 Living checklist for [packs/README.md](../packs/README.md) **Visibility**. Private until green pack CI, useful example (or data contract), and safe for outside clones; then public + [`docs/api/pack-remotes.txt`](api/pack-remotes.txt).
 
@@ -41,7 +41,7 @@ Sync private pack CI/docs to template patterns (optional token, wayland apt). Re
 | rigPlotComponent | rigGCode, rigCompositor, rigPlotFinders, rigPlotProcessors, rigPlotGenerators; then rigVectorEditor (needs TrueType); then rigPainty |
 | rigTrueType | rigImTui |
 | rigColorspace | rigPdfWrite |
-| rigNode + rigMusicComponent | rigAudio → rigDexed |
+| rigNode + rigMusicComponent | rigAudio  to  rigDexed |
 
 ### Wave 3 — Remaining READY isolates
 
@@ -57,7 +57,7 @@ Sync private pack CI/docs to template patterns (optional token, wayland apt). Re
 
 ### Wave 5 — Product stacks
 
-`rigPlotter` → `rigPlotterUi` / `rigVectorUi` → `rigPixelPlotter` (+ Ui). Update catalog wording; host `pack-remotes.txt`.
+`rigPlotter`  to  `rigPlotterUi` / `rigVectorUi`  to  `rigPixelPlotter` (+ Ui). Update catalog wording; host `pack-remotes.txt`.
 
 ## Per-pack next action (2026-11-18)
 
@@ -75,17 +75,17 @@ Sync private pack CI/docs to template patterns (optional token, wayland apt). Re
 
 | Pack | Next |
 |------|------|
-| rigSerial | CI green → Pages → public → remotes (Wave 1b) |
-| rigPlotComponent | Fix wayland apt → CI green → public (Wave 1b) |
-| rigNode | CI green → public (Wave 1b) |
-| rigColorspace | CI green → public (Wave 1b) |
-| rigTrueType | CI green → public (Wave 1b) |
-| rigFontComponent | CI green → public (Wave 1b) |
-| rigBlend2D | Sync CI token pattern → green → public (Wave 1b) |
-| rigMeshEdit | CI green → public (Wave 1b) |
-| rigMarkdown | Already CI green → public (Wave 1b) |
-| rigSQLite | Already CI green → public (Wave 1b) |
-| rigJoystick | Already CI green → public (Wave 1b) |
+| rigSerial | CI green  to  Pages  to  public  to  remotes (Wave 1b) |
+| rigPlotComponent | Fix wayland apt  to  CI green  to  public (Wave 1b) |
+| rigNode | CI green  to  public (Wave 1b) |
+| rigColorspace | CI green  to  public (Wave 1b) |
+| rigTrueType | CI green  to  public (Wave 1b) |
+| rigFontComponent | CI green  to  public (Wave 1b) |
+| rigBlend2D | Sync CI token pattern  to  green  to  public (Wave 1b) |
+| rigMeshEdit | CI green  to  public (Wave 1b) |
+| rigMarkdown | Already CI green  to  public (Wave 1b) |
+| rigSQLite | Already CI green  to  public (Wave 1b) |
+| rigJoystick | Already CI green  to  public (Wave 1b) |
 | rigAgentty | Wave 3 |
 | rigEthereum | Wave 3 |
 | rigManifold | Wave 3 |
