@@ -70,7 +70,7 @@ Artist guide: [nodes.md](nodes.md).
 | **rigLayout** | [rigkid/rigLayout](https://github.com/rigkid/rigLayout) (local `packs/` until published) | Paginate story onto `CPage` + `CText` (Setup bake). Product host **Relay** ([GitBruno/relayout](https://github.com/GitBruno/relayout)) lives out of tree |
 | **rigDxf** | [rigkid/rigDxf](https://github.com/rigkid/rigDxf) | DXF / typed POD (`CPath` / `CArc` / `CEllipse` / `CSpline`) + `ParsedPathDoc` flatten. **GPL-2.0-or-later** (dxflib) |
 | **rigGCode** | [rigkid/rigGCode](https://github.com/rigkid/rigGCode) | `CPaths` / G-code text emit/import (no serial) |
-| **rigGrbl** | [rigkid/rigGrbl](https://github.com/rigkid/rigGrbl) | GRBL lines over **rigSerial** (**leaf**) |
+| **rigGrbl** | [rigkid/rigGrbl](https://github.com/rigkid/rigGrbl) | GRBL lines over **rigSerial** / **rigNet** Telnet / WebSocket (**leaf**) |
 | **rigPlotter** | [rigkid/rigPlotter](https://github.com/rigkid/rigPlotter) | PlotDoc orchestration |
 | **rigPlotterUi** | [rigkid/rigPlotterUi](https://github.com/rigkid/rigPlotterUi) | Plotter Kit panels on rigImGui |
 | **rigVectorUi** | [rigkid/rigVectorUi](https://github.com/rigkid/rigVectorUi) | Artboard Kit (toolbar / layers / properties) over PlotDoc. Links **rigPlotter** + **rigVectorEditor** + **rigArtboards**. SVG is Import/Export via **rigSvg**. |
@@ -147,7 +147,8 @@ Folders stay flat. The tree is `pack.json` dependencies: an app lists a **leaf**
 | **rigGrbl** | [rigkid/rigGrbl](https://github.com/rigkid/rigGrbl) | GRBL lines. Depends on **rigSerial**. **Leaf.** |
 | **rigSacn** | [rigkid/rigSacn](https://github.com/rigkid/rigSacn) (local `packs/` until published) | sACN / E1.31 over UDP. Depends on **rigDmx**. Own cadence / memcmp. **Leaf.** |
 | **rigEnttec** | [rigkid/rigEnttec](https://github.com/rigkid/rigEnttec) (local `packs/` until published) | Enttec USB PRO. Depends on **rigDmx** + **rigSerial**. Universe 1, stub port, own cadence / memcmp. **Leaf.** |
-| **rigNetScan** | [rigkid/rigNetScan](https://github.com/rigkid/rigNetScan) (local `packs/` until published) | LAN TCP connect scan - `CNetScan` / `CNetHost` + `IpScannerWindow`. Example `netscan --smoke-netscan`. **rigNet** only after a second pack would copy interface helpers |
+| **rigNet** | [rigkid/rigNet](https://github.com/rigkid/rigNet) (local `packs/` until published) | Shared TCP / WebSocket stream helpers (`TcpStream`, `WsClient`). Trunk for **rigGrbl** Telnet / WS. Not LAN scan |
+| **rigNetScan** | [rigkid/rigNetScan](https://github.com/rigkid/rigNetScan) (local `packs/` until published) | LAN TCP connect scan - `CNetScan` / `CNetHost` + `IpScannerWindow`. Example `netscan --smoke-netscan` |
 | **rigJoystick** | [rigkid/rigJoystick](https://github.com/rigkid/rigJoystick) (local `packs/` until published) | GLFW joystick / gamepad poll - per-frame axes, buttons, press / release edges, normalized gamepad layout. Pi via evdev. **Leaf.** |
 | **rigTouch** | [rigkid/rigTouch](https://github.com/rigkid/rigTouch) (local `packs/` until published) | Linux evdev Type-B multi-touch - per-frame `TouchFrame` (contacts + two-finger pan / pinch). **Leaf.** Empty frame on non-Linux. Pi: user needs `input` group. |
 | **rigAbletonLink** | [rigkid/rigAbletonLink](https://github.com/rigkid/rigAbletonLink) (local `packs/` until published) | Ableton Link to `CMusicClock` / `CMusicTransport`. **Leaf.** **GPL-2.0-or-later** (Link SDK). |
@@ -228,10 +229,10 @@ Not remotes yet. Scaffold only when the seam is real - survey Known first; prefe
 | **rigFontUi** | Font view / glyph edit / text view on **rigImGui** |
 | **rigLedComponent** | UV map / LED sample PODs - Pi install path |
 | **rigArtnet** | Art-Net UDP. Depends on **rigDmx**. Add `rig.io.artnet` when the pack is real; do not stuff it into sACN |
-| **rigNet** | Shared IP / interface helpers. Extract from **rigNetScan** only when a second pack would copy them. Not LAN, not a WAN twin |
+| **rigNet** interface helpers | Optional later: move NetScan `startup` / parse helpers onto **rigNet**. Stream clients already live there |
 | **Blend2D demos** | Examples beyond the **rigBlend2D** pack itself - not a new pack id |
 | **rigLayoutUi** | Master / style Kit panels on **rigImGui** - after **rigLayout** compose is real. Spreads view already lives on **rigDocumentShell** `PagesWindow` |
-| **rig.book.*** | Book metadata (`title` / `publication` / `cover` / ...) - compose on the document; not a layout pack |
+| **rig.book.*** | Book metadata (`title` / `publication` / `binding` / `cover` / ...) - compose on the document; not a layout pack. POD home for `rig.book.binding` is **rigProject** (with `CBookPublication`). Spine maths live in **rigLayout** (`computedSpine`) so Cover and smoke share one formula. |
 
 RigWorks schema catalog: [rigkid/RigWorks](https://github.com/rigkid/RigWorks). Pack map: [docs/contract/port-map.md](contract/port-map.md).
 
