@@ -18,6 +18,7 @@
 #include "CPixelBrush.h"
 #include "CPixelLayer.h"
 #include "PixelDoc.h"
+#include "PixelPlotterPanel.h"
 
 #include <filesystem>
 #include <spdlog/spdlog.h>
@@ -29,13 +30,12 @@ void PixelEditorApp::parseCommandLineArgs(const rigkit::CommandLineArgs& args) {
 	}
 }
 
-void PixelEditorApp::seedDocument() {
+void PixelEditorApp::seedSmokeDocument() {
 	if (!m_plotter) {
 		return;
 	}
 	auto& doc = m_plotter->doc();
 	doc.ensureScene();
-	doc.canvas().title = "pixelEditor";
 	doc.canvas().width = 320;
 	doc.canvas().height = 240;
 	doc.ensureDefaultBrushes();
@@ -72,6 +72,7 @@ void PixelEditorApp::setup() {
 	packs->setupAll();
 
 	m_plotter = packs->getPack<rigkit::rigPixelPlotter>();
+	m_uiPack = packs->getPack<rigkit::rigPixelPlotterUi>();
 	m_document = packs->getPack<rigkit::rigProject>();
 	if (!m_plotter || !m_document) {
 		spdlog::error("example-pixelEditor - missing rigPixelPlotter or rigProject");
@@ -88,7 +89,7 @@ void PixelEditorApp::setup() {
 	}
 
 	if (m_smoke) {
-		seedDocument();
+		seedSmokeDocument();
 		m_smokeOk = runSmoke();
 		if (!m_smokeOk) {
 			spdlog::error("example-pixelEditor --smoke failed");
@@ -101,10 +102,9 @@ void PixelEditorApp::setup() {
 		return;
 	}
 
-	seedDocument();
-	if (auto uiPack = packs->getPack<rigkit::rigPixelPlotterUi>()) {
-		uiPack->resyncFromDoc();
-	}
+	// Interactive start is the blank default document (Untitled, no painted
+	// demo stroke, no extra Paint layer). Demo content is a smoke fixture
+	// only - opening or creating a document is the user's first act.
 }
 
 void PixelEditorApp::onUiAttached() {
@@ -203,6 +203,34 @@ bool PixelEditorApp::runSmoke() {
 			spdlog::error("pixelEditor smoke: crop undo restore failed");
 			return false;
 		}
+		if (!doc.scaleCanvas(80, 60) || doc.canvas().width != 80 || doc.canvas().height != 60 ||
+			!doc.render()) {
+			spdlog::error("pixelEditor smoke: image scale failed");
+			return false;
+		}
+		{
+			const auto& scaled = doc.ecs().getComponent<rigkit::ecs::CPixelLayerRaster>(paint);
+			if (scaled.w != 80 || scaled.h != 60) {
+				spdlog::error("pixelEditor smoke: image scale left layer at {}x{}", scaled.w,
+							  scaled.h);
+				return false;
+			}
+		}
+		if (!doc.scaleCanvas(160, 120) || !doc.render()) {
+			spdlog::error("pixelEditor smoke: image scale back failed");
+			return false;
+		}
+		{
+			// Undo snapshot round-trip (not multi-doc - that uses exchangeDocument).
+			doc.paintDab(paint, 80.f, 60.f, brush);
+			doc.syncPaintLayer(paint);
+			rigkit::PixelDoc::ProjectState snap;
+			doc.captureProject(snap);
+			if (!doc.restoreProject(snap)) {
+				spdlog::error("pixelEditor smoke: project restore failed");
+				return false;
+			}
+		}
 	}
 	const std::string exportDir = AppPaths::joinPath(AppPaths::getDataDir(), "export");
 	std::filesystem::create_directories(exportDir);
@@ -237,5 +265,62 @@ bool PixelEditorApp::runSmoke() {
 		spdlog::error("pixelEditor smoke: Paint layer missing after PSD load");
 		return false;
 	}
+	// File > New / Open create parallel EcsDocument worlds via the UI.
+	if (!m_uiPack || !m_uiPack->ui()) {
+		spdlog::error("pixelEditor smoke: no PixelPlotterUi for New/Open");
+		return false;
+	}
+	auto* ui = m_uiPack->ui();
+	const int firstW = m_plotter->doc().canvas().width;
+	const int firstH = m_plotter->doc().canvas().height;
+	spdlog::info("pixelEditor smoke: File New...");
+	if (!ui->newDocument()) {
+		spdlog::error("pixelEditor smoke: File New failed");
+		return false;
+	}
+	{
+		auto& live = m_plotter->doc();
+		if (live.canvas().title != "Untitled" || live.canvas().width != 640 ||
+			live.canvas().height != 480 || !live.projectPath().empty() || !live.render()) {
+			spdlog::error(
+				"pixelEditor smoke: File New not a factory blank title='{}' {}x{} path='{}'",
+				live.canvas().title, live.canvas().width, live.canvas().height, live.projectPath());
+			return false;
+		}
+	}
+	spdlog::info("pixelEditor smoke: File Open image...");
+	if (!ui->openImageAsDocument(png)) {
+		spdlog::error("pixelEditor smoke: File Open image failed");
+		return false;
+	}
+	{
+		auto& live = m_plotter->doc();
+		if (live.canvas().title != "smoke" || !live.render()) {
+			spdlog::error("pixelEditor smoke: File Open image bad title='{}'", live.canvas().title);
+			return false;
+		}
+	}
+	// Sessions: 0 = original, 1 = File New Untitled, 2 = Open image.
+	constexpr int kImageSession = 2;
+	spdlog::info("pixelEditor smoke: switch back to first session...");
+	if (!ui->switchDocument(0)) {
+		spdlog::error("pixelEditor smoke: switchDocument(0) failed");
+		return false;
+	}
+	{
+		auto& live = m_plotter->doc();
+		if (live.canvas().width != firstW || live.canvas().height != firstH) {
+			spdlog::error("pixelEditor smoke: parked session lost size (got {}x{}, want {}x{})",
+						  live.canvas().width, live.canvas().height, firstW, firstH);
+			return false;
+		}
+	}
+	if (!ui->switchDocument(kImageSession) || m_plotter->doc().canvas().title != "smoke") {
+		spdlog::error("pixelEditor smoke: switchDocument({}) failed title='{}'", kImageSession,
+					  m_plotter->doc().canvas().title);
+		return false;
+	}
+	spdlog::info("pixelEditor smoke: parallel New/Open/switch ok ({}x{})",
+				 m_plotter->doc().canvas().width, m_plotter->doc().canvas().height);
 	return true;
 }

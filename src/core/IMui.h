@@ -304,6 +304,27 @@ class IMui {
 	}
 
 	/**
+	 * @brief Register an Image menu row (image/canvas operations, e.g. Image Size).
+	 * @details The host draws a top-level Image menu between Edit and View only
+	 *        when at least one row is registered. Same row shape as
+	 *        `registerEditAction`; re-registering the same label + group replaces.
+	 * @param label Menu label (e.g. "Image Size...").
+	 * @param shortcut Optional chord shown in the menu (display only unless also bound).
+	 * @param isEnabled Optional; when set, disables the item when false.
+	 * @param action Invoked when the item is chosen.
+	 * @param group Optional submenu label. Empty = top-level; non-empty nests under it.
+	 */
+	virtual void registerImageAction(const std::string& label, const std::string& shortcut,
+									 std::function<bool()> isEnabled, std::function<void()> action,
+									 const std::string& group = {}) {
+		(void)label;
+		(void)shortcut;
+		(void)isEnabled;
+		(void)action;
+		(void)group;
+	}
+
+	/**
 	 * @brief Register a View menu row (e.g. Pages, or Camera faces under @p group).
 	 * @param label Menu label.
 	 * @param action Invoked when the item is chosen.

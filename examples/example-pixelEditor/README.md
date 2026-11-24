@@ -1,8 +1,8 @@
 # example-pixelEditor
 
-Layered raster editor on **rigPixelPlotter** + **rigPixelPlotterUi**. Paint on overlay layers with Rig brush packs. Open and save 8-bit RGB PSD via **rigPsd**. Document path is `.rig`.
+Layered raster editor on **rigPixelPlotter** + **rigPixelPlotterUi**. Paint on overlay layers with Rig brush packs. File Open takes a still image (PNG, JPEG, BMP, TGA, GIF, HDR, PIC, PNM), a layered 8-bit RGB PSD via **rigPsd**, or a `.rig` document. Save still writes `.rig`; Save PSD writes the layers. File New / Open open parallel documents via `MEcs::exchangeDocument` (one live world for Update/Draw; parked sessions keep their own `PixelDoc` + GPU).
 
-Not a Photoshop clone. The Pixel workspace docks Main View in the center on load; the document stays.
+Not a Photoshop clone. The Pixel workspace docks Main View in the center, with Layers, Brushes, Colour, and Properties. Canvas, Resources, Source, and Projection stay in the Windows menu. The document stays.
 
 ## Build
 
@@ -15,10 +15,14 @@ cmake --build examples/example-pixelEditor/build --target example-pixelEditor
 
 ## Tools
 
-Main View: paint brush, eraser (E, dest-out), and crop (C, drag a marquee on
-the canvas, then apply). Paint stamps on the GPU; the layer raster syncs at
-stroke end. Project undo covers paint strokes and crop with raster records
-(64 MB byte budget), not just document POD.
+Main View tool rail groups similar tools into flyouts (hold or right-click):
+paint/eraser, marquee select (rect/ellipse/lasso/wand), and move/transform.
+Crop (C) stays alone. Marquee selection draws marching ants (outline), not a
+filled tint. Crop shows a box you can move and resize by the corners. Type a
+proportion such as 3:1, or a width and height in pixels. Enter or Apply commits
+it. Image > Rotate Canvas 90 CW/CCW (Ctrl+] / Ctrl+[) spins the whole document
+and swaps width/height; Rotate Layer keeps canvas size. Undo covers paint,
+selection, paste, crop, canvas/image size, and canvas rotate (64 MB byte budget).
 
 ## Brushes
 
@@ -30,5 +34,5 @@ True Grit Texture Supply partnership is a **Rig SKU** (same idea as their Procre
 
 - **rigPixelPlotComponent** - layer / canvas / brush POD
 - **rigPixelPlotter** - PixelDoc, paint, PNG / PSD map
-- **rigPixelPlotterUi** - docks (Main View, Layers, Brushes)
+- **rigPixelPlotterUi** - docks (Main View, Layers, Brushes, Colour)
 - **rigPsd** - layered 8-bit RGB IO
