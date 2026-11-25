@@ -66,8 +66,8 @@ Artist guide: [nodes.md](nodes.md).
 | **rigPdfRead** | [rigkid/rigPdfRead](https://github.com/rigkid/rigPdfRead) (local `packs/` until published) | PDF page boxes and RGBA rasters for an outside file, plus the placed-page POD and PDF import onto sheets (needs rigLayout). **BSD-3-Clause.** Pins [pdfium-binaries](https://github.com/bblanchon/pdfium-binaries) (no in-tree compile). **Pi:** glibc `linux-arm64` / `linux-arm` prebuilt — a device with an older glibc will not load it. |
 | **rigIdml** | [rigkid/rigIdml](https://github.com/rigkid/rigIdml) (local `packs/` until published) | InDesign IDML read and write: parse, map to ECS (pages, frames, styles, stories), bake, raster of linked art. Zip via `miniz`. |
 | **rigStoryComponent** | [rigkid/rigStoryComponent](https://github.com/rigkid/rigStoryComponent) (local `packs/` until published) | Story PODs - `rig.story.flow` / paragraph / table / named styles. DATA ONLY |
-| **rigLayoutComponent** | [rigkid/rigLayoutComponent](https://github.com/rigkid/rigLayoutComponent) (local `packs/` until published) | Layout PODs - master / facing / visual paragraph+character styles / frame chain. DATA ONLY |
-| **rigLayout** | [rigkid/rigLayout](https://github.com/rigkid/rigLayout) (local `packs/` until published) | Paginate story onto `CPage` + `CText` (Setup bake). Product host **Relay** ([GitBruno/relayout](https://github.com/GitBruno/relayout)) lives out of tree |
+| **rigLayoutComponent** | [rigkid/rigLayoutComponent](https://github.com/rigkid/rigLayoutComponent) (local `packs/` until published) | Layout PODs - master / facing / visual styles / frame chain / book binding (`CBookBinding`, `CBookPublication`). DATA ONLY |
+| **rigLayout** | [rigkid/rigLayout](https://github.com/rigkid/rigLayout) (local `packs/` until published) | Paginate story onto `CPage` + `CText` (Setup bake). Files book binding codecs. Spine maths: `computedSpine`. Product host **Relay** ([GitBruno/relayout](https://github.com/GitBruno/relayout)) lives out of tree |
 | **rigDxf** | [rigkid/rigDxf](https://github.com/rigkid/rigDxf) | DXF / typed POD (`CPath` / `CArc` / `CEllipse` / `CSpline`) + `ParsedPathDoc` flatten. **GPL-2.0-or-later** (dxflib) |
 | **rigGCode** | [rigkid/rigGCode](https://github.com/rigkid/rigGCode) | `CPaths` / G-code text emit/import (no serial) |
 | **rigGrbl** | [rigkid/rigGrbl](https://github.com/rigkid/rigGrbl) | GRBL lines over **rigSerial** / **rigNet** Telnet / WebSocket (**leaf**) |
@@ -232,7 +232,7 @@ Not remotes yet. Scaffold only when the seam is real - survey Known first; prefe
 | **rigNet** interface helpers | Optional later: move NetScan `startup` / parse helpers onto **rigNet**. Stream clients already live there |
 | **Blend2D demos** | Examples beyond the **rigBlend2D** pack itself - not a new pack id |
 | **rigLayoutUi** | Master / style Kit panels on **rigImGui** - after **rigLayout** compose is real. Spreads view already lives on **rigDocumentShell** `PagesWindow` |
-| **rig.book.*** | Book metadata (`title` / `publication` / `binding` / `cover` / ...) - compose on the document; not a layout pack. POD home for `rig.book.binding` is **rigProject** (with `CBookPublication`). Spine maths live in **rigLayout** (`computedSpine`) so Cover and smoke share one formula. |
+| **rig.book.*** | Remaining book metadata (`identifier` / `title` / `contribution` / `cover` / `subject`) composes on the document entity. `CBookBinding` and `CBookPublication` live in **rigLayoutComponent**. Spine maths are **rigLayout** `computedSpine`. |
 
 RigWorks schema catalog: [rigkid/RigWorks](https://github.com/rigkid/RigWorks). Pack map: [docs/contract/port-map.md](contract/port-map.md).
 

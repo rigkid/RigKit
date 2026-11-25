@@ -4,7 +4,7 @@ ESP32-S3 sample. A browser page is the author surface. The desktop engine is not
 
 The scene is a Rig document: status colour is [`rig.paint.solid`](../../docs/contract/RigWorks/schemas/paint/solid.md), ESP-NOW is [`rig.io.espnow`](../../docs/contract/RigWorks/schemas/io/espnow.md) with the action `espnow.send`. [`device.rig`](device.rig) is that scene. Wi-Fi is not an entity here. It is the preference section `host.radio`, same fields as [`rig.io.wifi`](../../docs/contract/RigWorks/schemas/io/wifi.md), stored in NVS. The STA password is a separate write-only key. GET never returns it.
 
-The page lists preference sections and `rig.ui.panel` / `rig.ui.control` / `rig.ui.action` rows from the scene document. It does not hard-code an ESP-NOW form. rigEspnow owns the panel data. `rig.ui.group` is not rendered yet. There is no `IMui` / rigImGui on the board — the browser fulfills the same POD by reading `device.rig` over HTTP.
+The page lists preference sections and `rig.ui.panel` / `rig.ui.control` / `rig.ui.action` rows from the scene document. It does not hard-code an ESP-NOW form. rigEspnow owns the panel data. `rig.ui.group` is not rendered yet. There is no `IMui` / rigImGui on the board — the browser fulfills the same POD by reading `device.rig` over HTTP, with live cache on WebSocket `/ws` when available.
 
 ## Run on a PC
 
@@ -19,7 +19,7 @@ The executable is under `examples/example-esp32/build/bin/` (a multi-config gene
 
 ## Flash
 
-Default env `esp32s3`: Wi-Fi page and ESP-NOW, status pixels on GPIO 47 (two WS2812, GRB). Open AP **RigKit**, then http://192.168.4.1.
+Default env `esp32s3`: Wi-Fi page and ESP-NOW, status pixels on GPIO 47 (two WS2812, GRB). Open AP **RigKit**, then http://192.168.4.1. The page prefers WebSocket `/ws` for live cache (HTTP poll is the fallback). Telnet on port **2323** accepts the same `radio ap` line as USB serial (not GRBL).
 
 ```bash
 pio run -t upload -e esp32s3
@@ -35,9 +35,9 @@ Flags live in [`firmware/esp/include/rig_esp_features.h`](../../firmware/esp/inc
 ## Sign-off
 
 1. Flash `esp32s3` and join RigKit.
-2. Open the page. Change the colour. GPIO 47 follows `rgba`. Alpha scales the pixels. There is no radio tint.
+2. Open the page. Change the colour. GPIO 47 follows `rgba`. Alpha scales the pixels. There is no radio tint. Status updates arrive over `/ws` when connected.
 3. Set the radio to `sta`, then `off`. The page goes away with the radio.
-4. On the serial port, send `radio ap`. The access point comes back.
+4. On the serial port or Telnet `192.168.4.1:2323`, send `radio ap`. The access point comes back.
 5. Send ESP-NOW. Serial prints `lastResult`. A second board is optional.
 
 Link, RSSI, the password, and the send result stay out of the document. Pending is a mailbox, not a field.

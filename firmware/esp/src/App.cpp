@@ -5,6 +5,7 @@
 #include "Json.h"
 #include "PrefsDoc.h"
 #include "SceneDoc.h"
+#include "Telnet.h"
 #include "rig_esp_features.h"
 
 #include <cstdio>
@@ -103,6 +104,10 @@ void Update(App& app, float dt) {
 			halPrint("radio ap\n");
 		}
 	}
+	halUnlock();
+	telnetPoll(app);
+	webPoll(app);
+	halLock();
 	if (app.radioDirty) {
 		applyRadio = app.radio;
 		app.radioDirty = false;

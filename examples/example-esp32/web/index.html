@@ -28,7 +28,7 @@ button { margin: 0 0 0.75rem; }
 <main>
 <section id="prefs"></section>
 <div id="panels"></div>
-<p class="hint">When the radio is off this page is gone. On the serial port, send radio ap.</p>
+<p class="hint">When the radio is off this page is gone. Serial or Telnet (port 2323): radio ap. Live cache prefers WebSocket /ws.</p>
 </main>
 <script>
 const statusEl = document.getElementById("status");
@@ -294,8 +294,28 @@ async function boot() {
   setStatus(state.cache);
 }
 
+let useWs = false;
+function connectWs() {
+  const proto = location.protocol === "https:" ? "wss" : "ws";
+  const ws = new WebSocket(proto + "://" + location.host + "/ws");
+  ws.onopen = () => { useWs = true; };
+  ws.onmessage = (ev) => {
+    try {
+      const msg = JSON.parse(ev.data);
+      if (msg.type === "cache" && msg.cache) setStatus(msg.cache);
+      if (msg.type === "state" && msg.state) {
+        if (msg.state.document) doc = msg.state.document;
+        if (msg.state.cache) setStatus(msg.state.cache);
+      }
+    } catch (e) {}
+  };
+  ws.onclose = () => { useWs = false; setTimeout(connectWs, 2000); };
+  ws.onerror = () => { try { ws.close(); } catch (e) {} };
+}
 boot().then(() => {
+  connectWs();
   setInterval(async () => {
+    if (useWs) return;
     try {
       const cache = await (await fetch("/api/cache")).json();
       setStatus(cache);

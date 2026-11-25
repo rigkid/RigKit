@@ -12,6 +12,7 @@ add_library(rigesp STATIC
 	src/HalStub.cpp
 	src/HalArduino.cpp
 	src/Web.cpp
+	src/Telnet.cpp
 	src/Audio.cpp
 	src/A2dp.cpp
 	src/Airplay.cpp

@@ -5,6 +5,7 @@
 
 #include "core/ISettings.h"
 #include "rendering/IRenderer.h"
+#include "rendering/TextureYOrigin.h"
 
 namespace rigkit {
 
@@ -57,6 +58,13 @@ class Canvas : public ISettings {
 	int getHeight() const { return m_height; }
 	std::shared_ptr<Graphics> getGraphics() { return m_graphics; }
 	unsigned int getColorTexture() const;
+	/**
+	 * @brief Y origin of `getColorTexture()` for ImGui present.
+	 * @details Default `TopLeft` (2D artist path). Writer sets `BottomLeft`
+	 * after `SMeshPresent3D` into this FBO. `beginOffscreen` does not guess.
+	 */
+	TextureYOrigin colorYOrigin() const { return m_colorYOrigin; }
+	void setColorYOrigin(TextureYOrigin origin) { m_colorYOrigin = origin; }
 	void setName(const std::string& name) { m_name = name; }
 	std::string getName() const { return m_name; }
 
@@ -74,6 +82,7 @@ class Canvas : public ISettings {
 	int m_height;
 	std::string m_name;
 	CanvasSettings m_settings;
+	TextureYOrigin m_colorYOrigin = TextureYOrigin::TopLeft;
 
 	struct Impl;
 	std::unique_ptr<Impl> m_impl;

@@ -43,6 +43,7 @@ Every id in the vendored catalog ([schemas/README.md](RigWorks/schemas/README.md
 | `rig.geometry.ring` | **rigComponent** - `CRing` | `centerX` / `centerY` / `outerRadius` / `innerRadius`. Members `cx` / `cy`. |
 | `rig.geometry.arc` | **rigComponent** - `CArc` | `centerX` / `centerY` / `radiusX` / `radiusY` / angles / `pie`. Members `cx` / `cy` / `rx` / `ry`. A lone `radius` sets both axes. |
 | `rig.layout.page` | **rigProject** - `CPage` | `index` / `width` / `height` / `unit`; margins/bleed/slug as scalar channels. Entity title via `rig.meta.named`. |
+| `rig.book.binding` | **rigLayoutComponent** - `CBookBinding`; spine **rigLayout** `computedSpine` | `form` / `paperCaliper` / `caliperUnit` / board, hinge, wrap, flap, fold / `spineOverride`. Compose on the document entity. |
 | `rig.layout.master` | **rigLayoutComponent** - `CLayoutMaster` | Optional `side` `left` / `right` / `single`. |
 | `rig.layout.applied_master` | **rigLayoutComponent** - `CLayoutAppliedMaster` | `master` entity. |
 | `rig.layout.facing` | **rigLayoutComponent** - `CLayoutFacing` | `enabled` / `binding`. Absent = singles. |
@@ -107,6 +108,7 @@ Every id in the vendored catalog ([schemas/README.md](RigWorks/schemas/README.md
 | `rig.document` | **rigProject** import | Requires `rig`. Keeps `document.title` and `document.language`. Other envelope keys are not stored. |
 | `rig.geometry.polygon` | **rigComponent** - `CPolygon` | `points` / `closed`. `fillRule` is not stored. |
 | `rig.layout.frame` | **rigLayoutComponent** - `CTextFrame` | Per-edge insets, `columns`, `gutter` on a rectangle. Schema wants `width` / `height`, inset channels, `firstBaseline`. `overset` is host state. |
+| `rig.book.publication` | **rigLayoutComponent** - `CBookPublication` | `pageCount` and `productForm`. |
 | `rig.pixel.raster` | **rigPixelPlotComponent** - working / output rasters | Size only (`x.rigkit.pixel_*_raster`). Contract `rgba[]` is not written - derived from source + chain. Do not mark Close. |
 | `rig.paint.solid` | **rigColorspace** - `CColor` | `rgba` + optional `cmyk` + optional `ink` + optional overprint flags. `model` / `space` are host authoring lanes. |
 | `rig.paint.fill` | **rigColorspace** - `CPaintFill` | Entity paint ref. |
@@ -147,8 +149,9 @@ Every id in the vendored catalog ([schemas/README.md](RigWorks/schemas/README.md
 | `rig.io.sacn` | **rigSacn** | E1.31 endpoint. Depends on **rigDmx**. Pack exists; schema still Planned until POD fields Close. |
 | `rig.io.artnet` | **rigArtnet** | Art-Net endpoint. No schema yet; add when the pack is real. Depends on **rigDmx**. |
 | `rig.sensor.*` | - | No owning pack yet. Do not fold into serial. |
-| `rig.book.*` | Document metadata - not layout; no owning pack yet |
+| `rig.book.*` | Remaining book records (`identifier` / `title` / `contribution` / `cover` / `subject`). Binding is Close; publication extent is Partial on **rigLayoutComponent**. |
 | LAN host / TCP scan (no `rig.*` id yet) | **rigNetScan** - `CNetScan` / `CNetHost` as `x.rigkit.net_scan` / `x.rigkit.net_host` |
+| TCP / WebSocket stream (no `rig.*` id yet) | **rigNet** - `TcpStream` / `WsClient`; **rigGrbl** Telnet / WS session prefs stay host-local |
 | `rig.pixel.region` | **rigPixelPlotComponent** - `CPixelRegion` as `x.rigkit.pixel_region` | Local proposal: fit / fill / brush / color. |
 | `rig.pixel.mask_path` | **rigPixelPlotComponent** - `CPixelMaskPath` as `x.rigkit.pixel_mask_path` | Local proposal; polygon may later compose `rig.geometry.path`. |
 | `rig.pixel.composite` | **rigPixelPlotComponent** - `CPixelComposite` as `x.rigkit.pixel_composite` | Local proposal: enabled / stack policy. |

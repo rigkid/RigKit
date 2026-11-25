@@ -92,6 +92,8 @@ void Canvas::clear(float r, float g, float b, float a) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	m_impl->resolveDirty = m_impl->appliedSamples > 1;
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	// Cleared attachment is empty; keep the 2D default until a writer sets otherwise.
+	m_colorYOrigin = TextureYOrigin::TopLeft;
 }
 
 void Canvas::beginOffscreen() {

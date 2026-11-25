@@ -93,4 +93,7 @@ bool postAction(App& app, const std::string& body, std::string& err);
 /// @brief Start the page once. No-op when Wi-Fi is not in this build, and on the desktop stub.
 void webStart(App& app);
 
+/// @brief Pump WebSocket clients / cache push. No-op on the desktop stub.
+void webPoll(App& app);
+
 } // namespace rigkit::espapp

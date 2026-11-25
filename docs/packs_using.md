@@ -12,7 +12,7 @@
 | **rigObj** | Wavefront OBJ load/save for `CMesh` (tinyobjloader) |
 | **rigPdfWrite** | PDF emit from `CPage` / paths / shaped `CText` (PDF-Writer + ImVarFont core; leaf) |
 | **rigStoryComponent** | Story PODs (`CStoryFlow`, paragraph, table, named styles) - DATA ONLY |
-| **rigLayoutComponent** | Layout PODs (master, facing, visual styles, frame chain) - DATA ONLY |
+| **rigLayoutComponent** | Layout PODs (master, facing, visual styles, frame chain, book binding) - DATA ONLY |
 | **rigLayout** | Compose engine - story to placed `CText` on pages (Setup bake) |
 | **rigEthereum** | On-chain art record POD + keccak256 / wallet submit intent (leaf; existing wallet; no keys) |
 | **rigAssimp** | Optional Assimp multi-format to `CMesh` (leaf; app opt-in only) |
@@ -24,12 +24,13 @@
 | **rigProjectComponent** | Project envelope PODs (`CProject`, `CPage`, `FaceInsets`) - DATA ONLY |
 | **rigProject** | `.rig` document IO + host session (document = portable `.rig`, or `.rigz` when files travel with it; this pack writes the JSON; project = host session) |
 | **rigImGui** | Properties/Debug read the **component catalog** |
+| **rigNet** | TCP / WebSocket stream helpers (`TcpStream`, `WsClient`). Trunk for **rigGrbl** network media |
 | **rigNetScan** | LAN TCP connect scan over `CNetScan` / `CNetHost`; `IpScannerWindow` on rigImGui |
 | **rigSerial** | Serial medium (`CSerial` / `rig.io.serial`) + port + optional monitor. Trunk for **rigGrbl** / **rigEnttec** |
 | **rigDmx** | DMX512 universe buffer. Trunk for **rigSacn** / **rigEnttec** |
 | **rigSacn** | sACN / E1.31 over **rigDmx** (leaf) |
 | **rigEnttec** | Enttec USB PRO over **rigDmx** + **rigSerial** (leaf) |
-| **rigGrbl** | GRBL lines over **rigSerial** (leaf) |
+| **rigGrbl** | GRBL lines over **rigSerial** / Telnet / WebSocket (leaf) |
 
 Core (`MEcs`) only provides thin `registerComponent` / `registerSystem` glue.
 
@@ -49,7 +50,7 @@ Pick a home before writing systems or UI. Agents: [rigkit-data](../skills/rigkit
 
 A data pack is **components-first**, not “literally only `struct` files.” Allowed: `C*` PODs, `GetProperties`, `registerComponent`, pure helpers over the POD (graph construction, catalog shapes, flatten). Forbidden: Update/Draw systems, ImGui panels, GPU/window handles in components. Engines (e.g. PlotDoc) and editors stay in **code** packs.
 
-**Codec policy (hybrid).** A `.rig` codec is filed by the code pack that fulfills the PODs (floor PODs by `rigSystems`, CAD by `rigManifold`, node by `rigNode`, pixel by `rigPixelPlotter`, layout/story by `rigLayout`, font by `rigFont`, pages by `rigProject`) - not by the data pack that registers the component. Named exceptions keep their codecs at home: **rigPlotComponent** (many peer consumers), **rigShowComponent** (no code pack), **rigColorspace** (its own domain home). Moving a codec requires a consumer list first: every app that loads the data pack without the code pack must be shown not to need document IO.
+**Codec policy (hybrid).** A `.rig` codec is filed by the code pack that fulfills the PODs (floor PODs by `rigSystems`, CAD by `rigManifold`, node by `rigNode`, pixel by `rigPixelPlotter`, layout/story/book by `rigLayout`, font by `rigFont`, pages by `rigProject`) - not by the data pack that registers the component. Named exceptions keep their codecs at home: **rigPlotComponent** (many peer consumers), **rigShowComponent** (no code pack), **rigColorspace** (its own domain home). Moving a codec requires a consumer list first: every app that loads the data pack without the code pack must be shown not to need document IO.
 
 **Decisions on record** (boundary plan, Phase 5):
 - Transport PODs (`COscEndpoint`, `CNetworkIdentity`, `CSerial`, `CNetScan`, `CNetHost`, `COnChainArt`) stay in their code packs: session/transport state, no `.rig` codec, no second consumer. No shared IO data pack until one exists.

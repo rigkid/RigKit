@@ -2,6 +2,7 @@
 
 #include "Hal.h"
 #include "Json.h"
+#include "Telnet.h"
 
 #if defined(ARDUINO) && defined(RIGKIT_ESP_WIFI)
 
@@ -15,12 +16,15 @@ namespace rigkit::espapp {
 namespace {
 
 AsyncWebServer gServer(80);
+AsyncWebSocket gWs("/ws");
 App* gApp = nullptr;
 bool gStarted = false;
 constexpr size_t kBodyMax = 12288;
 char gBody[kBodyMax];
 size_t gBodyLen = 0;
 bool gOverflow = false;
+std::string gLastCache;
+uint32_t gLastPushMs = 0;
 
 void sendJson(AsyncWebServerRequest* request, const std::string& body, int code) {
 	AsyncWebServerResponse* response =
@@ -141,6 +145,93 @@ void onBody(AsyncWebServerRequest* request, uint8_t* data, size_t len, size_t in
 	collectBody(data, len, index, total);
 }
 
+void pushCacheIfChanged(bool force) {
+	if (!gApp || gWs.count() == 0) {
+		return;
+	}
+	halLock();
+	const std::string body = cacheJson(*gApp);
+	halUnlock();
+	if (!force && body == gLastCache) {
+		return;
+	}
+	gLastCache = body;
+	std::string msg = "{\"type\":\"cache\",\"cache\":";
+	msg += body;
+	msg += "}";
+	gWs.textAll(msg.c_str());
+}
+
+void onWsEvent(AsyncWebSocket* server, AsyncWebSocketClient* client, AwsEventType type,
+			   void* arg, uint8_t* data, size_t len) {
+	(void)server;
+	if (type == WS_EVT_CONNECT) {
+		pushCacheIfChanged(true);
+		return;
+	}
+	if (type != WS_EVT_DATA || !gApp || !client) {
+		return;
+	}
+	AwsFrameInfo* info = static_cast<AwsFrameInfo*>(arg);
+	if (!info || info->opcode != WS_TEXT) {
+		return;
+	}
+	std::string body(reinterpret_cast<const char*>(data), len);
+	json::Value root;
+	std::string err;
+	if (!json::parse(body.c_str(), root, err) || root.type != json::Value::Type::Object) {
+		client->text("{\"error\":\"bad json\"}");
+		return;
+	}
+	const json::Value* typeVal = root.find("type");
+	const std::string typeStr =
+		(typeVal && typeVal->type == json::Value::Type::String) ? typeVal->s : "";
+	if (typeStr == "action") {
+		const json::Value* id = root.find("actionId");
+		json::Value payload = json::Value::obj();
+		if (id && id->type == json::Value::Type::String) {
+			payload.set("actionId", json::Value::str(id->s));
+		}
+		halLock();
+		const bool ok = postAction(*gApp, payload.dump(), err);
+		const std::string cache = ok ? cacheJson(*gApp) : "";
+		halUnlock();
+		if (!ok) {
+			client->text("{\"error\":\"bad action\"}");
+			return;
+		}
+		std::string msg = "{\"type\":\"cache\",\"cache\":";
+		msg += cache;
+		msg += "}";
+		client->text(msg.c_str());
+		return;
+	}
+	if (typeStr == "patchState") {
+		const json::Value* doc = root.find("document");
+		std::string payload = doc ? doc->dump() : body;
+		halLock();
+		const bool ok = patchState(*gApp, payload, err);
+		const std::string state = ok ? stateJson(*gApp) : "";
+		halUnlock();
+		if (!ok) {
+			client->text("{\"error\":\"bad document\"}");
+			return;
+		}
+		std::string msg = "{\"type\":\"state\",\"state\":";
+		msg += state;
+		msg += "}";
+		client->text(msg.c_str());
+		return;
+	}
+	if (typeStr == "patchPrefs") {
+		halLock();
+		const bool ok = patchPrefs(*gApp, body, err);
+		halUnlock();
+		client->text(ok ? "{\"ok\":true}" : "{\"error\":\"bad preferences\"}");
+		return;
+	}
+}
+
 } // namespace
 
 void webStart(App& app) {
@@ -149,6 +240,8 @@ void webStart(App& app) {
 		return;
 	}
 	gStarted = true;
+	gWs.onEvent(onWsEvent);
+	gServer.addHandler(&gWs);
 	gServer.on("/", HTTP_GET, [](AsyncWebServerRequest* request) {
 		AsyncWebServerResponse* response =
 			request->beginResponse(200, "text/html", kWebUiGz, kWebUiGzLen);
@@ -164,6 +257,17 @@ void webStart(App& app) {
 	gServer.on("/api/sta-pass", HTTP_POST, handlePass, nullptr, onBody);
 	gServer.on("/api/action", HTTP_POST, handleAction, nullptr, onBody);
 	gServer.begin();
+	telnetStart();
+}
+
+void webPoll(App& app) {
+	(void)app;
+	gWs.cleanupClients();
+	const uint32_t now = millis();
+	if (now - gLastPushMs >= 500) {
+		gLastPushMs = now;
+		pushCacheIfChanged(false);
+	}
 }
 
 } // namespace rigkit::espapp
@@ -173,6 +277,10 @@ void webStart(App& app) {
 namespace rigkit::espapp {
 
 void webStart(App& app) {
+	(void)app;
+}
+
+void webPoll(App& app) {
 	(void)app;
 }
 

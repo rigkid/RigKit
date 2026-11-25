@@ -25,6 +25,7 @@
 #include "CPage.h"
 #include "CPath.h"
 #include "CProject.h"
+#include "DocumentEnvelope.h"
 #include "CRectangle.h"
 #include "CRelationship.h"
 #include "CRenderMaterial.h"
@@ -76,6 +77,7 @@ void buildRoundTripScene(MEcs& ecs, const std::string& docPath) {
 	doc.author = "contract_smoke";
 	doc.dirty = true;
 	ecs.addComponent<ecs::CProject>(docEntity, doc);
+	project::bindDocument(ecs.registry(), docEntity);
 
 	ecs::CPage pageA;
 	pageA.name = "Open";
@@ -110,15 +112,14 @@ void buildRoundTripScene(MEcs& ecs, const std::string& docPath) {
 }
 
 void expectRoundTripScene(MEcs& ecs, const std::string& docPath) {
-	auto docView = ecs.view<ecs::CProject>();
-	REQUIRE(docView.begin() != docView.end());
-	const auto& doc = docView.get<ecs::CProject>(*docView.begin());
-	CHECK(doc.title == "Install Cue");
-	CHECK(doc.activePageIndex == 1);
-	CHECK(doc.defaultUnit == "px");
-	CHECK(doc.author == "contract_smoke");
-	CHECK(doc.path == docPath);
-	CHECK_FALSE(doc.dirty);
+	const auto* doc = project::documentProject(ecs.registry());
+	REQUIRE(doc != nullptr);
+	CHECK(doc->title == "Install Cue");
+	CHECK(doc->activePageIndex == 1);
+	CHECK(doc->defaultUnit == "px");
+	CHECK(doc->author == "contract_smoke");
+	CHECK(doc->path == docPath);
+	CHECK_FALSE(doc->dirty);
 
 	auto openPage = ecs.findEntity("page-Open");
 	auto lookPage = ecs.findEntity("page-Look");
@@ -431,7 +432,9 @@ TEST_CASE("rigProject writes and reloads rig.render.material") {
 	ecs.addComponent(mesh, mat);
 	ecs::CProject doc;
 	doc.path = path;
-	ecs.addComponent(ecs.createEntity("project"), doc);
+	auto docEntity = ecs.createEntity("project");
+	ecs.addComponent(docEntity, doc);
+	project::bindDocument(ecs.registry(), docEntity);
 
 	REQUIRE(docPack->serializer().save(ecs, path));
 	REQUIRE(docPack->serializer().load(ecs, path));
@@ -640,17 +643,13 @@ TEST_CASE("Contract import remaps CText.font after recycled entity versions") {
 		auto docPack = writer.engine->getPackManager()->getPack<rigProject>();
 		REQUIRE(docPack != nullptr);
 
-		// Burn entity indices so the font handle carries a non-zero version bit.
+		// Burn one index so the next entity carries a non-zero version bit.
+		// Create and destroy in turn: the free list stays one slot deep, and
+		// the following createEntity is the one that inherits that version.
 		for (int i = 0; i < 40; ++i) {
 			auto burn = ecs.createEntity("burn");
 			ecs.destroyEntity(burn);
 		}
-
-		auto docEntity = ecs.createEntity("project");
-		ecs::CProject doc;
-		doc.title = "Font Remap";
-		doc.path = path;
-		ecs.addComponent<ecs::CProject>(docEntity, doc);
 
 		auto font = ecs.createEntity("face");
 		ecs::CAssetRef asset;
@@ -664,6 +663,13 @@ TEST_CASE("Contract import remaps CText.font after recycled entity versions") {
 		text.font = font;
 		text.fontSize = 12.f;
 		ecs.addComponent<ecs::CText>(label, text);
+
+		auto docEntity = ecs.createEntity("project");
+		ecs::CProject doc;
+		doc.title = "Font Remap";
+		doc.path = path;
+		ecs.addComponent<ecs::CProject>(docEntity, doc);
+		project::bindDocument(ecs.registry(), docEntity);
 
 		REQUIRE(static_cast<std::uint32_t>(font) > 0xFFFFu);
 		REQUIRE(docPack->serializer().save(ecs, path));
@@ -704,6 +710,7 @@ TEST_CASE("rigProject round-trips path layer asset text curve via pack codecs") 
 	doc.title = "Close Codecs";
 	doc.path = path;
 	ecs.addComponent<ecs::CProject>(docEntity, doc);
+	project::bindDocument(ecs.registry(), docEntity);
 
 	auto font = ecs.createEntity("face");
 	ecs::CAssetRef asset;
