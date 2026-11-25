@@ -144,12 +144,17 @@ class IMui {
 		(void)onSelected;
 	}
 
-	/** @brief Request a save-file path (async; callback on confirm). */
+	/**
+	 * @brief Request a save-file path (async; callback on confirm).
+	 * @param defaultName Pre-filled file name (Save As / Export suggest the document stem).
+	 */
 	virtual void saveFileDialog(const std::string& title, std::vector<std::string> filters,
-								FileDialogCallback onSelected) {
+								FileDialogCallback onSelected,
+								const std::string& defaultName = {}) {
 		(void)title;
 		(void)filters;
 		(void)onSelected;
+		(void)defaultName;
 	}
 
 	/**
@@ -259,18 +264,17 @@ class IMui {
 	}
 
 	/**
-	 * @brief Register a Tools menu row (packs replace default gizmo entries when non-empty).
+	 * @brief Register a Toolbar rail tool (packs replace default gizmo entries when non-empty).
 	 * @param id Stable id (e.g. "tool.selection").
-	 * @param label Menu label.
-	 * @param shortcut Optional chord shown in the menu (display only unless also bound).
-	 * @param isActive Optional; when set, menu item shows a check mark.
-	 * @param action Invoked when the item is chosen.
+	 * @param label Display name (Shortcuts panel / rail tooltip).
+	 * @param shortcut Optional chord shown beside the name (display only unless also bound).
+	 * @param isActive Optional; when set, the rail marks the tool as current.
+	 * @param action Invoked when the tool is chosen.
 	 * @param icon Optional icon glyph for the Toolbar rail (e.g. an IconFont
 	 *        codepoint such as `ICON_FA_PEN`). Empty draws the label text.
 	 * @param group Optional flyout group (e.g. "pen"). Toolbar rows sharing a
 	 *        group collapse to one rail button: click arms the remembered /
 	 *        active member, hold or right-click opens the member flyout.
-	 *        The Tools menu always lists every member flat.
 	 */
 	virtual void registerToolAction(const std::string& id, const std::string& label,
 									const std::string& shortcut, std::function<bool()> isActive,
@@ -357,7 +361,7 @@ class IMui {
 
 	/**
 	 * @brief Gizmo op (Select V, Move W, Rotate E, Scale R).
-	 * @details The Tools rows show when Edit Mode is on or a gizmo drawer is set.
+	 * @details Toolbar rail rows show when Edit Mode is on or a gizmo drawer is set.
 	 * Registered tool actions replace them. Rulers and 2D handles show for a
 	 * bound content view or Edit Mode.
 	 */

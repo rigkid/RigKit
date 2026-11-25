@@ -13,6 +13,7 @@
     { "name": "rigPixelPlotComponent", "url": "https://github.com/rigkid/rigPixelPlotComponent.git", "ref": "main" },
     { "name": "rigPixelPlotter", "url": "https://github.com/rigkid/rigPixelPlotter.git", "ref": "main" },
     { "name": "rigImGui", "url": "https://github.com/rigkid/rigImGui.git", "ref": "main" },
+    { "name": "rigPdfWrite", "url": "https://github.com/rigkid/rigPdfWrite.git", "ref": "main" },
     { "name": "rigPixelPlotterUi", "url": "https://github.com/rigkid/rigPixelPlotterUi.git", "ref": "main" }
   ]
 }

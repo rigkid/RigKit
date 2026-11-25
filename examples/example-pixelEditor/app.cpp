@@ -6,6 +6,7 @@
 #include "core/pack/MPack.h"
 #include "core/util/AppPaths.h"
 #include "core/util/CommandLineArgs.h"
+#include "packs/rigColorspace/src/ColorProfiles.h"
 #include "packs/rigColorspace/src/rigColorspace.h"
 #include "packs/rigComponent/src/rigComponent.h"
 #include "packs/rigImGui/src/rigImGui.h"
@@ -102,9 +103,8 @@ void PixelEditorApp::setup() {
 		return;
 	}
 
-	// Interactive start is the blank default document (Untitled, no painted
-	// demo stroke, no extra Paint layer). Demo content is a smoke fixture
-	// only - opening or creating a document is the user's first act.
+	// Interactive start has no document window. File New / Open / Open Recent
+	// creates the first world. Demo content is a smoke fixture only.
 }
 
 void PixelEditorApp::onUiAttached() {
@@ -271,8 +271,7 @@ bool PixelEditorApp::runSmoke() {
 		return false;
 	}
 	auto* ui = m_uiPack->ui();
-	const int firstW = m_plotter->doc().canvas().width;
-	const int firstH = m_plotter->doc().canvas().height;
+	// No starter Untitled - File New creates session 0, Open adds session 1.
 	spdlog::info("pixelEditor smoke: File New...");
 	if (!ui->newDocument()) {
 		spdlog::error("pixelEditor smoke: File New failed");
@@ -300,18 +299,19 @@ bool PixelEditorApp::runSmoke() {
 			return false;
 		}
 	}
-	// Sessions: 0 = original, 1 = File New Untitled, 2 = Open image.
-	constexpr int kImageSession = 2;
-	spdlog::info("pixelEditor smoke: switch back to first session...");
-	if (!ui->switchDocument(0)) {
-		spdlog::error("pixelEditor smoke: switchDocument(0) failed");
+	constexpr int kNewSession = 0;
+	constexpr int kImageSession = 1;
+	spdlog::info("pixelEditor smoke: switch back to New session...");
+	if (!ui->switchDocument(kNewSession)) {
+		spdlog::error("pixelEditor smoke: switchDocument({}) failed", kNewSession);
 		return false;
 	}
 	{
 		auto& live = m_plotter->doc();
-		if (live.canvas().width != firstW || live.canvas().height != firstH) {
-			spdlog::error("pixelEditor smoke: parked session lost size (got {}x{}, want {}x{})",
-						  live.canvas().width, live.canvas().height, firstW, firstH);
+		if (live.canvas().title != "Untitled" || live.canvas().width != 640 ||
+			live.canvas().height != 480) {
+			spdlog::error("pixelEditor smoke: parked New session lost (title='{}' {}x{})",
+						  live.canvas().title, live.canvas().width, live.canvas().height);
 			return false;
 		}
 	}
@@ -322,5 +322,61 @@ bool PixelEditorApp::runSmoke() {
 	}
 	spdlog::info("pixelEditor smoke: parallel New/Open/switch ok ({}x{})",
 				 m_plotter->doc().canvas().width, m_plotter->doc().canvas().height);
+
+	// Optional pro-print path when myProfiles is deployed next to the exe.
+	{
+		const std::string profiles =
+			AppPaths::joinPath(AppPaths::getDataDir(), "icc/myProfiles");
+		rigkit::color::setProfilesRoot(profiles);
+		const std::string srgb = rigkit::color::resolveWellKnownProfile("srgb");
+		const std::string pso = rigkit::color::resolveWellKnownProfile("pso-coated-v3");
+		if (srgb.empty() || pso.empty()) {
+			spdlog::info("pixelEditor smoke: skip CMYK ICC path (profiles root empty)");
+		} else {
+			// Parked New session still has a Paint overlay; image session may not.
+			if (!ui->switchDocument(kNewSession)) {
+				spdlog::error("pixelEditor smoke: switch to New for CMYK failed");
+				return false;
+			}
+			auto& live = m_plotter->doc();
+			live.ensureProjectEnvelope({});
+			if (auto* proj = live.projectEnvelope()) {
+				proj->outputProfile = pso;
+				proj->untaggedRgbProfile = "srgb";
+				proj->pdfX = "PDF/X-4";
+			}
+			if (!live.convertColorMode(rigkit::ecs::PixelColorMode::CMYK) ||
+				!live.canvas().isCmyk()) {
+				spdlog::error("pixelEditor smoke: RGB to CMYK convert failed");
+				return false;
+			}
+			entt::entity paint = entt::null;
+			for (auto e : live.layerEntities()) {
+				if (live.ecs().hasComponent<rigkit::ecs::CPixelLayer>(e) &&
+					live.ecs().getComponent<rigkit::ecs::CPixelLayer>(e).name == "Paint") {
+					paint = e;
+				}
+			}
+			if (paint == entt::null) {
+				paint = live.addOverlayLayer("Paint");
+			}
+			auto brush = live.brushes().current();
+			if (paint == entt::null || !live.paintDab(paint, 40.f, 40.f, brush) ||
+				!live.render()) {
+				spdlog::error("pixelEditor smoke: CMYK paint failed");
+				return false;
+			}
+			const std::string tif = AppPaths::joinPath(exportDir, "smoke_cmyk.tif");
+			if (!live.exportImage(tif) || !std::filesystem::exists(tif)) {
+				spdlog::error("pixelEditor smoke: CMYK TIFF export failed");
+				return false;
+			}
+			if (!live.convertColorMode(rigkit::ecs::PixelColorMode::RGB)) {
+				spdlog::error("pixelEditor smoke: CMYK to RGB convert failed");
+				return false;
+			}
+			spdlog::info("pixelEditor smoke: CMYK mode + TIFF ok");
+		}
+	}
 	return true;
 }
