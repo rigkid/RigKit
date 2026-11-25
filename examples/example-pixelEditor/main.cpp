@@ -8,5 +8,5 @@ int main(int argc, char* argv[]) {
 	auto* raw = app.get();
 	rigkit::RigKitEngine engine(std::move(app), {}, argc, argv);
 	engine.run();
-	return raw->smokeFailed() ? 1 : 0;
+	return (raw->smokeFailed() || raw->batchFailed()) ? 1 : 0;
 }

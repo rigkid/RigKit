@@ -53,6 +53,7 @@ If you use VS Code, install `ms-vscode.cpptools`, `ms-vscode.cmake-tools`, and `
 - **Data over hardcoding:** prefer config / properties where it keeps Canvas flexible.
 - **UI:** no Dear ImGui includes in `src/` - see [contract/ui.md](contract/ui.md). Complete Contract = SUDE-ECS-UI.
 - **UI text:** no emoji in UI or comments; rigImGui may use IconFont icons.
+- **Author number fields:** use `rigkit::DragFloatExpr` / `DragIntExpr` / `DragDoubleExpr` / `DragFloatNExpr` from **rigImGui** (`ImGuiExpr.h`), not raw `ImGui::DragFloat` / `InputFloat`. Click-to-type runs expressions (`297*2`, `*2`, `x+10`). Do not hook Dear ImGui and do not add a separate expression pack. Chrome / preview sliders may keep stock ImGui widgets.
 
 ## API changes
 
