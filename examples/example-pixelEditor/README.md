@@ -25,7 +25,7 @@ edit in Properties: Curves shows Master plus R/G/B (or C/M/Y/K in CMYK docs);
 Levels shows input/output black-white and midtone gamma. Masks and opacity gate
 the remap. IMAGE-chain Levels still exists for effect stacks.
 
-### Batch → `.rigz` smart objects (for Relay)
+### Batch to `.rigz` smart objects (for Relay)
 
 Tune Curves then Levels on one scan, Save as a recipe `.rig`. Batch every still
 into its own `.rigz`: the package holds the recipe stack and packs the original
